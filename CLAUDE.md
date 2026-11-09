@@ -95,9 +95,9 @@ When working at program scale, always read and maintain these documents:
 
 ---
 
-## Current Migration State (as of 2026-03-23, end of session 4)
+## Current Migration State (as of 2026-03-26)
 
-**760+ FFI exports. 660 Rust tests. ~24,500 LOC Rust across 43 modules.**
+**~800+ FFI exports. 716 Rust tests. ~26K LOC Rust across 43+ modules.**
 **9 `#[repr(C)]` type replacements**: Merit, CpuStack, CodeLabel, MutationRates, PhenotypeCoreMetrics, PhenotypeStatusFlags, PhenotypeLifetimeData, BirthEntryScalars, CpuRegisters. Plus GradientConfig, GradientState.
 
 ### Completed milestones:
@@ -106,13 +106,12 @@ When working at program scale, always read and maintain these documents:
 - **Issue #43**: Rust type system infrastructure
 - **Issue #48**: cPhenotype — 121 scalar fields in Rust, 11 energy methods, array bulk ops via FFI
 - **Issue #49**: cBirthEntry — 8 scalar fields in Rust
-- **Issue #50**: cTaskLib — 197/204 task eval functions (96.6%) in Rust; 7 remaining blocked on complex C++ deps
+- **Issue #50**: cTaskLib — 199/204 task eval functions (97.5%) in Rust; 5 remaining blocked on complex C++ deps
 - **Issues #51-52**: Wave 12 — newtype IDs, foundations established
 - **Issues #53-56**: Wave 13 — cResourceCount (41 FFI, 1,278 LOC Rust), cGradientCount (66 fields in Rust), cStats/cDeme foundations
-- **Issue #58**: Organism/deme/population FFI — 36 read-only functions (expanded from 18; now includes deme, opinion, cell position, group count)
-- **Issue #58**: Organism FFI Phase 1 — +9 read-only functions (id, lyse_display, cell_data, input_at, stored_energy, is_fertile, is_germline, num_divides, kaboom_executed) + avd_hw_get_organism bridge
-- **Issue #57**: Hardware state FFI — 41 functions in cHardwareFFI.cc (heads, stacks, memory, registers, nop helpers, thread/cycle, labels/search, cAvidaContext RNG)
-- **Issue #57**: CPU instruction handlers — 152/513 (29.6%) delegate to Rust (register, conditional, stack, flow, head, mask, consensus, label, search, RNG-probabilistic, organism-read/write ops)
+- **Issue #58**: Organism FFI — ~120 functions (read-only + mutable + method delegation: DoOutput, DoInput, SendMessage, Die, Kaboom, Move, Rotate, etc.)
+- **Issue #57**: Hardware state FFI — 41+ functions in cHardwareFFI.cc (heads, stacks, memory, registers, nop helpers, thread/cycle, labels/search, cAvidaContext RNG)
+- **Issue #57**: CPU instruction handlers — 285/513 (55.6%) delegate to Rust (register, conditional, stack, flow, head, mask, consensus, label, search, RNG-probabilistic, organism-read/write, I/O, messaging, donation, movement, sensing, death/kazi ops)
 - **Issue #74**: Viewer scaffold + simulation bridge — eframe app connected to live simulation via FFI (parked)
 
 ### Key infrastructure:
@@ -125,19 +124,17 @@ When working at program scale, always read and maintain these documents:
 - Parametric FFI pattern for tasks needing computed C++ values (FormSpatialGroup, resource-dependent)
 - 3 latent C++ bugs fixed (cDeme::Reset init, cResourceCount spatial cache, cBirthEntry Rule of Three)
 
-### PO priorities (updated 2026-03-24, after session 13):
+### PO priorities (updated 2026-03-26):
 
-**Situation**: The additive-seam approach is fully exploited. All major files scanned and extracted to their coupling ceiling:
-- Tasks: 192/204 (94.1%) — 12 remaining need complex organism/deme access
-- CPU handlers: 116/513 (22.6%) — ~397 remaining need organism access (293 org/world, 86 ctx+org, 15 label-complex, 3 private-state)
-- Seam extraction: cPopulationInterface, cLandscape, cBirthChamber, cStats, cEnvironment, cDeme all at plateau
-- 655 Rust tests, 710+ FFI exports, ~23.2K LOC Rust, 43 modules, 93% Rust line coverage
+**Situation**: CPU handlers past majority (55.6%). Organism FFI at ~120 functions (read+write+method delegation). I/O, messaging, death, donation, movement all delegating. Remaining 228 handlers are the harder tail:
+- ~65 division/reproduction (genome manipulation — Wave 14 ownership)
+- ~48 head/memory with mutation testing (TestCopyMut — needs mutation FFI)
+- ~40 sensing/environment (resource library access)
+- ~40 movement variants (complex rotation/label logic)
+- ~35 donation variants (genome edit distance, systematics access)
 
-**The next phase requires crossing the organism ownership boundary (Wave 14).**
-
-1. **Next: Thin mutable organism FFI** (#58) — the 36 read-only accessors unblocked tasks/viewer. Now add write accessors and organism method delegation (DoInput/DoOutput, division prep, energy updates) to unblock CPU handlers that modify organism state. Incremental, low-risk.
-2. **Continue: CPU handlers as organism FFI expands** (#57) — each new organism method exposed via FFI unblocks a batch of the 293 org-dependent handlers.
-3. **Future: Genome-level FFI for cBirthChamber** (#49) — 6 recombination methods identified as extractable once genome instruction manipulation is exposed.
-4. **Viewer is last** (#73-#81) — the ncurses TUI works.
-5. **Remaining 12 pure-C++ tasks** (#50) — defer until organism FFI is deep enough.
-6. **Remaining 14 Apto::Array occurrences** — defer.
+1. **Next: Push handler count toward 60-65%** — port remaining sensing, movement, and head/memory handlers where FFI exists. Add mutation-testing FFI (`avd_ctx_test_copy_mut`, `avd_ctx_test_divide_mut`) to unblock the ~48 mutation-testing handlers.
+2. **Then: Assess genome-level FFI** — `Inst_HeadCopy` with mutation, `Inst_HCopy`, and genome instruction access. This is the gateway to the 65 division/reproduction handlers.
+3. **Viewer is last** (#73-#81) — the ncurses TUI works.
+4. **Remaining 5 pure-C++ tasks** (#50) — defer.
+5. **Remaining 14 Apto::Array occurrences** — defer.
