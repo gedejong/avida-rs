@@ -1,5 +1,7 @@
 # Rust Migration Waves
 
+> **Closed 2026-11-12.** The maintainer decided that the native workspace `rust/avida-native` supersedes this FFI migration. The C++ core and `rust/avida-rust` were removed from the tree; the last commit that contains them is the git tag `cpp-final`. This document is kept as history. Current state and open work: `rust/avida-native/ARCHITECTURE.md` and `CLAUDE.md`.
+
 This roadmap keeps the codebase in mixed C/C++ + Rust mode while incrementally migrating modules behind stable C ABI boundaries, and records forward-looking cleanup in `documentation/Tech-Debt-Backlog.md`.
 
 Program-wide mandatory slice gates are defined in `rust-migration-execution-playbook.md` and remain unchanged.

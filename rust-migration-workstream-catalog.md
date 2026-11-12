@@ -1,5 +1,7 @@
 # Migration Workstream Catalog (Remaining C++)
 
+> **Closed 2026-11-12.** The maintainer decided that the native workspace `rust/avida-native` supersedes this FFI migration. The C++ core and `rust/avida-rust` were removed from the tree; the last commit that contains them is the git tag `cpp-final`. This document is kept as history. Current state and open work: `rust/avida-native/ARCHITECTURE.md` and `CLAUDE.md`.
+
 This catalog breaks the full migration into concrete workstreams and slice queues.
 
 Related documents:

@@ -15,7 +15,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", ".."))
-DEFAULT_HEADER = os.path.join(REPO, "avida-core", "source", "main", "cAvidaConfig.h")
+DEFAULT_HEADER = os.path.normpath(os.path.join(HERE, "..", "testdata", "reference", "cAvidaConfig.h"))
 DEFAULT_OUT = os.path.normpath(os.path.join(HERE, "..", "src", "config_table.rs"))
 
 MACROS = (

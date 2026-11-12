@@ -406,7 +406,7 @@ mod tests {
 
     const HEADER: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../../../avida-core/source/main/cAvidaConfig.h"
+        "/testdata/reference/cAvidaConfig.h"
     );
 
     fn count_live(header: &str, mac: &str) -> usize {

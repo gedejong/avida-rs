@@ -104,3 +104,14 @@ pre-Rust C++ was fused. `otool -tv cbuild/work/avida` lists no
 libc including its trailing-zero quirk.
 
 - A new crate must be created with `Cargo.toml` and `src/lib.rs` in the same step: workspace members are a glob, so a crate directory without a library target breaks `cargo` for every other agent.
+
+## The C++ is retired (2026-11-12)
+
+The C++ core (`avida-core/source`, `avida-core/include`, the CMake build, `libs/`) and the FFI crate `rust/avida-rust` were removed from the tree; the maintainer decided that this workspace supersedes the FFI migration. The last commit that has them is the git tag `cpp-final`.
+
+What that changes for parity work:
+
+- **The reference binary** (`cbuild/work/avida`) can no longer be rebuilt from the working tree. Check out `cpp-final` in a separate worktree (`git worktree add ../avida-cpp cpp-final`), build it there with `./build_avida`, and point `SUITE_REF` at the result. `tools/run_suite.py` caches the reference output, so the binary is needed only when the cache is cleared or a test is added.
+- **Reading the original source**: `git show cpp-final:avida-core/source/main/cPopulation.cc`. The `C++: file:symbol` notes in doc comments and `unsupported:` messages refer to paths at that tag.
+- **Reference-data generators** (`crates/resources/tools/build_ref.sh`, `crates/apto/tools/*.cc`) compile against the C++ and must be run from a `cpp-final` worktree. Their output is checked in under each crate's `testdata/`.
+- Three tests compare tables with the C++ source text; the files they read are kept as `crates/tasks/testdata/reference/cTaskLib.cc`, `crates/config/testdata/reference/cAvidaConfig.h` and `crates/genome/testdata/reference/cHardwareCPU.cc`.

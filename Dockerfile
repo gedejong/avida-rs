@@ -1,22 +1,10 @@
-FROM ubuntu:22.04
+FROM rust:1-bookworm AS build
+COPY rust/avida-native /src
+WORKDIR /src
+RUN cargo build --release -p avida
 
-# Install necessary packages
-RUN apt-get update && apt-get install -y \
-    git \
-    cmake \
-    g++ \
-    make \
-    ccache \
-    libncurses5-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY . /avida
-WORKDIR "/avida"
-
-RUN git submodule update --init --recursive
-
-# Build Avida
-RUN ./build_avida
-
-# Set Avida executable as entrypoint
-ENTRYPOINT ["/avida/cbuild/work/avida"]
+FROM debian:bookworm-slim
+COPY --from=build /src/target/release/avida /usr/local/bin/avida
+COPY avida-core/support/config /config
+WORKDIR /config
+ENTRYPOINT ["/usr/local/bin/avida"]

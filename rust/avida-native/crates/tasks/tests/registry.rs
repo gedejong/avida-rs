@@ -15,7 +15,8 @@ fn repo_root() -> PathBuf {
 }
 
 fn cpp_task_lib() -> String {
-    fs::read_to_string(repo_root().join("avida-core/source/main/cTaskLib.cc"))
+    // The copy kept from the retired C++ (git tag `cpp-final`).
+    fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata/reference/cTaskLib.cc"))
         .expect("read cTaskLib.cc")
 }
 

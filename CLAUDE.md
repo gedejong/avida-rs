@@ -4,137 +4,86 @@ This file is automatically loaded by Claude Code in every session for this proje
 
 ---
 
-## C++ to Rust Migration — Slice Workflow
+## What this repository is (as of 2026-11-12)
 
-Use this workflow for any migration slice. Pair with the program-docs rules below.
+Avida is now the native Rust workspace in `rust/avida-native`. It supersedes the C++ core and the FFI migration (`rust/avida-rust`), both of which were removed from the tree. The last commit that contains them is the git tag **`cpp-final`**; `git show cpp-final:avida-core/source/<path>` reads any original file.
+
+Still in the tree from the original program, because the port uses them:
+- `avida-core/tests` — the consistency suite (configs and expected output)
+- `avida-core/support/config` — the stock configuration
+- `documentation` — the wiki (git submodule)
+
+`apps/viewer-macos` and `apps/viewer-windows` are the old native viewers. They wrapped the C++ core and no longer build; whether to delete them is the maintainer's decision.
+
+Read `rust/avida-native/ARCHITECTURE.md` (crates, layering, status, what still stops with `unsupported:`) and `rust/avida-native/PORTING.md` (how parity is kept) before changing simulation code.
+
+---
+
+## Working rules
 
 ### 1. Plan-first execution
-- If asked to plan, produce a concrete slice plan with clear scope and validation gates.
+- If asked to plan, produce a concrete plan with clear scope and validation gates.
 - Do not edit attached plan files; implement exactly from the plan unless the user requests changes.
-- Keep migration incremental: preserve C ABI boundaries and avoid ownership redesign in one slice.
 
 ### 2. Todo discipline
 - Reuse existing todos from the plan; do not create duplicates.
-- Set the first todo to `in_progress` before making edits.
 - Keep exactly one todo `in_progress`; mark each `completed` as work finishes.
 
 ### 3. Implementation constraints
-- Preserve behavior parity by default (no silent policy changes).
-- Keep exported FFI signatures stable unless the slice explicitly changes API surface.
-- Prefer helper extraction and deterministic pure-function seams before stateful rewrites.
-- **CPU handler guard ordering**: When a C++ instruction handler has a guard (e.g., `if (!occupied) return false;`) BEFORE `FindModifiedRegister`, the guard MUST remain in C++ and execute BEFORE the Rust FFI call. Do NOT pass `FindModifiedRegister` as a function parameter to the Rust FFI — it would be evaluated before the guard, consuming a nop instruction and changing IP position even when the guard fails. Always: guard in C++ first, then call Rust.
+- **Behaviour parity with the C++ is the default.** Output is compared byte for byte. No silent policy changes: a deliberate departure from the original behaviour needs the maintainer's decision and a note in `PORTING.md`.
+- A feature path that is not ported must fail loudly (`unsupported: SETTING=value (C++: file:symbol)`), never run with different behaviour.
+- No `unsafe` (the workspace lints forbid it).
+- Crates may depend only on crates below them in the layer table of `ARCHITECTURE.md`. The front ends (`gui`, `tui`) go through `session` and `viewmodel`, never through `world` directly.
+- Floating-point expressions follow the reference binary's evaluation, including where it does not fuse multiply-add; see `PORTING.md` before "simplifying" arithmetic.
+- **Instruction handler ordering**: a handler consumes its nop modifiers in the same order as the C++ did, relative to its guards. Moving a register lookup across a guard changes the instruction pointer when the guard fails.
 
 ### 4. Mandatory validation gates
 
-Rust gates (run inside `rust/avida-rust`):
+Run inside `rust/avida-native`:
 ```
-cargo test --all-targets
-cargo fmt --check
-cargo clippy --all-targets -- -D warnings
-./scripts/ci_coverage_check.sh 75
+cargo fmt --all --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
 ```
 
-Project gates (run from repo root):
+For any change to simulation behaviour, also the whole-suite comparison against the reference binary (needs `cbuild/work/avida`, built from the tag `cpp-final`):
 ```
-./build_avida -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-./cbuild/work/unit-tests
-./run_tests --mode=slave
+cargo build --release -p avida
+python3 tools/run_suite.py
 ```
+Expected: 85 same, 34 trivial, 1 UNSUPPORTED, 1 REF-TIMEOUT, no DIFF.
+
+The terminal interface's pty tests are timing-sensitive; run them on a machine that is not saturated, and check for stray `avida-tui` processes afterwards.
 
 ### 5. Documentation refresh
-After gates pass, update:
-- `documentation/Tech-Debt-Backlog.md` — completed item + next candidate
-- `rust-migration-waves.md` — slice status and scope notes
+After gates pass, update `rust/avida-native/ARCHITECTURE.md` (status, counts, the list of `unsupported:` stops) and `documentation/Tech-Debt-Backlog.md`. Keep docs factual and metric-backed; no conflicting figures between them.
 
-If the slice changes long-range prioritization, complexity assumptions, or workstream ordering, also update:
-- `rust-migration-remaining-cpp-static-analysis.md`
-- `rust-migration-full-plan.md`
-- `rust-migration-workstream-catalog.md`
-- `rust-migration-execution-playbook.md`
+The `rust-migration-*.md` files at the repository root record the FFI migration and its supersession. They are history; do not extend them.
 
 ### 6. Commit hygiene
 - Commit only when the user requests.
 - Stage intended files explicitly; avoid unrelated submodule pointer changes.
-- Use concise commit messages focused on *why* the slice was done.
+- Use concise commit messages focused on *why* the change was made.
 
 ### 7. GitHub issue discipline
 - **NEVER close issues.** Issues with the `tracking` label are protected by a CI workflow that auto-reopens them. Only a human maintainer may close tracking issues (by removing the label first).
 - **NEVER use `Fixes #N` or `Closes #N`** in commit messages or PR descriptions for tracking issues. These keywords auto-close the referenced issue when merged. Use **`Relates to #N`** or **`Part of #N`** instead.
-- When a slice completes work toward a tracking issue, **add a progress comment** to the issue describing what was done, not close it.
+- When work completes part of a tracking issue, **add a progress comment** to the issue describing what was done, not close it.
 - Only use `Fixes #N` for small, self-contained bug-fix issues that are fully resolved by a single PR.
 
 ---
 
-## Rust Migration Program Docs
+## Current state (2026-11-12)
 
-When working at program scale, always read and maintain these documents:
+- 17 crates, about 189K lines of Rust: `apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `systematics`, `resources`, `hardware`, `script`, `analyze`, `world`, `avida` (binary), `viewmodel`, `session`, `gui`, `tui`.
+- All five hardware types, all 423 distinct actions, analyze mode (batch, interactive, multi-core), demes, parasites, predator/prey, gene transfer, the energy model.
+- Suite: 85 byte-identical, 34 fail the same way the C++ does, none differs.
+- Default run (3000 updates, seed 42): about 45 s against 57–64 s for the C++.
 
-| File | Purpose |
-|------|---------|
-| `rust-migration-remaining-cpp-static-analysis.md` | Static-analysis baseline |
-| `rust-migration-full-plan.md` | Full roadmap |
-| `rust-migration-workstream-catalog.md` | Workstream registry |
-| `rust-migration-execution-playbook.md` | Mandatory slice gates + playbook |
-| `rust-migration-waves.md` | Per-wave status and scope notes |
-| `documentation/Tech-Debt-Backlog.md` | Active backlog |
-
-### During planning
-- Read the static-analysis baseline and current roadmap before proposing a new slice.
-- Align each new slice to the highest-priority remaining workstream/hotspot.
-- State where the slice fits in the full plan and what becomes the next candidate.
-
-### During implementation
-- Keep changes incremental and ABI-safe unless explicitly asked otherwise.
-- After gates pass, update the roadmap/backlog and relevant program docs in the same change set.
-- Reflect any reprioritization caused by new findings (risk, complexity, coupling, or test gaps).
-
-### Documentation quality bar
-- Keep docs factual and metric-backed; avoid vague progress notes.
-- Preserve consistency across all migration docs (no conflicting next-candidate entries).
-- If static-analysis assumptions change materially, refresh the baseline document before closing the slice.
-
----
-
-## Current Migration State (as of 2026-11-09)
-
-**807 Rust-side `avd_*` exports (plus the C++-side shims in `cHardwareFFI.cc` / `cOrganismFFI.cc`). 755 Rust tests. ~28K LOC Rust across 45 modules.**
-**9 `#[repr(C)]` type replacements**: Merit, CpuStack, CodeLabel, MutationRates, PhenotypeCoreMetrics, PhenotypeStatusFlags, PhenotypeLifetimeData, BirthEntryScalars, CpuRegisters. Plus GradientConfig, GradientState.
-
-### Completed milestones:
-- **Issue #69**: Apto::Array → AvidaArray (std::vector) — 99% complete (1,100→14 occurrences)
-- **Issue #70**: FFI ownership bridge — FfiVec<T>, FfiString, AvidaRNG (bit-exact port), generic handle utilities
-- **Issue #43**: Rust type system infrastructure
-- **Issue #48**: cPhenotype — 121 scalar fields in Rust, 11 energy methods, array bulk ops via FFI
-- **Issue #49**: cBirthEntry — 8 scalar fields in Rust
-- **Issue #50**: cTaskLib — 199/204 task eval functions (97.5%) in Rust; 5 remaining blocked on complex C++ deps
-- **Issues #51-52**: Wave 12 — newtype IDs, foundations established
-- **Issues #53-56**: Wave 13 — cResourceCount (41 FFI, 1,278 LOC Rust), cGradientCount (66 fields in Rust), cStats/cDeme foundations
-- **Issue #58**: Organism FFI — ~120 functions (read-only + mutable + method delegation: DoOutput, DoInput, SendMessage, Die, Kaboom, Move, Rotate, etc.)
-- **Issue #57**: Hardware state FFI — 41+ functions in cHardwareFFI.cc (heads, stacks, memory, registers, nop helpers, thread/cycle, labels/search, cAvidaContext RNG)
-- **Issue #57**: CPU instruction handlers — 372/518 (71.8%) delegate to Rust, counted as `Inst_*` bodies in `cHardwareCPU.cc` that call `avd_*`. Since 2026-11-09 this includes the replication core: copy/compare, head read/write/copy with copy mutations, label jumps, throw/goto, structured if/else, threads, allocate, and every divide entry point (`cpu_memory_instructions.rs`). `Allocate_Main` / `Divide_Main*` remain C++.
-- **Issue #74**: Viewer scaffold + simulation bridge — eframe app connected to live simulation via FFI (parked)
-
-### Key infrastructure:
-- AvidaArray<T> shim with operator+/+=, RemoveAt, iterator support
-- FfiVec<T> for Rust-owned containers
-- AvidaRNG bit-exact Knuth subtractive generator in Rust
-- Newtype IDs: ReactionId, ResourceId, TaskId, CellId, OrganismId, DemeId
-- ConfigSnapshot (80 fields) + TaskContextSnapshot (26 fields) for Rust config/organism access
-- Buffer-pointer FFI pattern for variable-length data (RoyalRoad, AllOnes)
-- Parametric FFI pattern for tasks needing computed C++ values (FormSpatialGroup, resource-dependent)
-- 3 latent C++ bugs fixed (cDeme::Reset init, cResourceCount spatial cache, cBirthEntry Rule of Three)
-
-### PO priorities (updated 2026-03-26; items 1-2 revised 2026-11-09 after the memory/control-flow slice):
-
-**Situation**: CPU handlers at 71.8%. Mutation-testing FFI exists (`avd_org_test_copy`, `avd_org_get_copy_prob`). New handler logic goes in `cpu_memory_instructions.rs`-style modules written against the `Machine` trait so it can be unit-tested with a mock. Remaining 146 handlers:
-- ~35 sensing/pheromone/explore/exploit (resource library access)
-- ~22 donation variants (genome edit distance, systematics access)
-- ~15 groups/tolerance, ~14 movement/rotation, ~11 mating type/preference
-- ~7 `Inst_Repro` family, ~8 resource collection, ~7 network/links, ~7 promoter/regulation
-- ~20 misc (resource-level ifs, point-mutation application, quorum, lysis)
-
-1. **Next: mating-type/mate-preference and `Inst_Repro`-family handlers**, then resource collection (`Inst_Collect*`).
-2. **Then: decide on the hot-path FFI cost** — `h-copy` crosses the boundary ~15 times per execution (measured roughly +5% user time, within noise). Options: cross-language LTO, or a direct memory/head view for Rust. After that, `Divide_Main` / `Allocate_Main` genome ownership (Wave 14).
-3. **Viewer is last** (#73-#81) — the ncurses TUI works.
-4. **Remaining 5 pure-C++ tasks** (#50) — defer.
-5. **Remaining 14 Apto::Array occurrences** — defer.
+### Open work
+1. `phenplastbonus` (needs test CPUs run from inside task evaluation; cross-crate restructuring).
+2. Edge cases of `Task_Optimize` (unknown function, negative threshold, `tot == 0`).
+3. Audit of `analyze` and the ASL interpreter for multiply-add fusion, site by site.
+4. Gene-transfer runs are 11–13% slower than the C++ (per-slice genome copy).
+5. The GUI's `Session` drop joins the simulation thread without a time limit.
+6. Settings that stop with `unsupported:` because the C++ behaviour there is undefined are listed in `ARCHITECTURE.md`; each needs a decision, not a port.

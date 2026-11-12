@@ -1,5 +1,7 @@
 # Full C++ to Rust Migration Plan (Remaining Code)
 
+> **Closed 2026-11-12.** The maintainer decided that the native workspace `rust/avida-native` supersedes this FFI migration. The C++ core and `rust/avida-rust` were removed from the tree; the last commit that contains them is the git tag `cpp-final`. This document is kept as history. Current state and open work: `rust/avida-native/ARCHITECTURE.md` and `CLAUDE.md`.
+
 This is the comprehensive plan for migrating the remaining C++ implementation into Rust while preserving behavior, ABI compatibility, and release safety.
 
 Related baseline: `rust-migration-remaining-cpp-static-analysis.md`

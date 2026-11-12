@@ -2,375 +2,46 @@ name: Continuous Integration
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    working-directory: rust/avida-native
+
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Restore C/C++ compiler cache
-      uses: actions/cache@v4
+    - uses: dtolnay/rust-toolchain@stable
       with:
-        path: ~/.cache/ccache
-        key: ${{ runner.os }}-ccache-${{ github.ref_name }}-${{ hashFiles('**/CMakeLists.txt', 'build_avida') }}
-        restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.ref_name }}-
-          ${{ runner.os }}-ccache-
-    - name: Install dependencies
+        components: rustfmt, clippy
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: rust/avida-native
+    - name: Format
+      run: cargo fmt --all --check
+    - name: Lint (simulation, analysis and terminal interface)
+      run: cargo clippy --workspace --exclude avida-gui --all-targets -- -D warnings
+    - name: Test (simulation, analysis and terminal interface)
+      run: cargo test --workspace --exclude avida-gui --release
+
+  gui:
+    # The desktop application needs windowing libraries; kept apart so a
+    # missing system package does not hide a failure of the simulation.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: rust/avida-native
+    - name: Install windowing libraries
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ make python3 ccache
-    - name: Configure/reconfigure smoke check
-      env:
-        AVIDA_DISABLE_BACKTRACE: "1"
+        sudo apt-get install -y libxkbcommon-dev libwayland-dev libgtk-3-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+    - name: Lint and test the desktop application
       run: |
-        git submodule update --init libs/apto libs/backward-cpp
-        rm -rf cbuild-reconfigure
-        cmake -S . -B cbuild-reconfigure -DCMAKE_POLICY_VERSION_MINIMUM=3.20 -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-        cmake -S . -B cbuild-reconfigure -DCMAKE_POLICY_VERSION_MINIMUM=3.20 -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-    - name: Build Avida
-      env:
-        CC: ccache gcc
-        CXX: ccache g++
-        CCACHE_DIR: ~/.cache/ccache
-      run: ./build_avida -DAVD_UNIT_TESTS:BOOL=ON
-    - name: Run tests
-      run: |
-        set -o pipefail
-        python3 - <<'PY' > selected-tests.txt
-        import re
-        import subprocess
-        exclude = {"sex", "shaded_green_beard_instructions"}
-        tests = []
-        listed = subprocess.check_output(["./run_tests", "--list-tests"], text=True)
-        for line in listed.splitlines():
-            line = line.strip()
-            if not line or line.startswith("available tests") or line.startswith("---"):
-                continue
-            m = re.match(r'^\*?\s*(?:[cp]\s+)*([A-Za-z0-9_\\-]+)$', line)
-            if not m:
-                continue
-            name = m.group(1)
-            if name == "avida-core":
-                continue
-            if name not in exclude:
-                tests.append(name)
-        print(" ".join(tests))
-        PY
-        TESTS="$(< selected-tests.txt)"
-        ./run_tests --mode=slave ${TESTS} 2>&1 | tee run_tests.log
-    - name: Run known flaky consistency diagnostics (non-blocking)
-      if: always()
-      run: |
-        set +e
-        ./run_tests --mode=slave --show-diff --diff-max-threshold=1048576 --verbose --xml-report=run_tests-diagnostics.xml sex shaded_green_beard_instructions 2>&1 | tee run_tests-diagnostics.log
-        exit 0
-    - name: Run unit tests
-      run: ./cbuild/work/unit-tests
-    - name: Upload test logs
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: tests-logs
-        path: |
-          run_tests.log
-          run_tests-diagnostics.log
-          run_tests-diagnostics.xml
-          selected-tests.txt
-        if-no-files-found: warn
-    - name: Show ccache statistics
-      if: always()
-      run: ccache -s || true
-
-  tests-backtrace-smoke:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Restore C/C++ compiler cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/ccache
-        key: ${{ runner.os }}-ccache-${{ github.ref_name }}-${{ hashFiles('**/CMakeLists.txt', 'build_avida') }}
-        restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.ref_name }}-
-          ${{ runner.os }}-ccache-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++ make python3 ccache
-    - name: Configure/reconfigure smoke check (backtrace-enabled)
-      env:
-        AVIDA_ENABLE_BACKTRACE: "1"
-      run: |
-        echo "AVIDA_ENABLE_BACKTRACE=${AVIDA_ENABLE_BACKTRACE}"
-        git submodule update --init libs/apto libs/backward-cpp
-        rm -rf cbuild-backtrace-reconfigure
-        cmake -S . -B cbuild-backtrace-reconfigure -DCMAKE_POLICY_VERSION_MINIMUM=3.20 -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-        cmake -S . -B cbuild-backtrace-reconfigure -DCMAKE_POLICY_VERSION_MINIMUM=3.20 -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-    - name: Build Avida (backtrace-enabled smoke)
-      env:
-        AVIDA_ENABLE_BACKTRACE: "1"
-        CC: ccache gcc
-        CXX: ccache g++
-        CCACHE_DIR: ~/.cache/ccache
-      run: |
-        echo "AVIDA_ENABLE_BACKTRACE=${AVIDA_ENABLE_BACKTRACE}"
-        ./build_avida -DAVD_UNIT_TESTS:BOOL=ON -DAPTO_UNIT_TESTS:BOOL=OFF
-    - name: Show ccache statistics
-      if: always()
-      run: ccache -s || true
-
-  tests-rust:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Restore C/C++ compiler cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/ccache
-        key: ${{ runner.os }}-ccache-${{ github.ref_name }}-${{ hashFiles('**/CMakeLists.txt', 'build_avida') }}
-        restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.ref_name }}-
-          ${{ runner.os }}-ccache-
-    - name: Restore Rust dependency/build cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          rust/avida-rust/target
-        key: ${{ runner.os }}-rust-${{ hashFiles('rust/avida-rust/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-rust-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++ make python3 ccache
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-    - name: Build Avida (Rust-enabled)
-      env:
-        AVD_ENABLE_RUST: "1"
-        CC: ccache gcc
-        CXX: ccache g++
-        CCACHE_DIR: ~/.cache/ccache
-      run: ./build_avida -DAVD_UNIT_TESTS:BOOL=ON
-    - name: Run tests (Rust-enabled)
-      run: |
-        set -o pipefail
-        python3 - <<'PY' > selected-tests-rust.txt
-        import re
-        import subprocess
-        exclude = {"sex", "shaded_green_beard_instructions"}
-        tests = []
-        listed = subprocess.check_output(["./run_tests", "--list-tests"], text=True)
-        for line in listed.splitlines():
-            line = line.strip()
-            if not line or line.startswith("available tests") or line.startswith("---"):
-                continue
-            m = re.match(r'^\*?\s*(?:[cp]\s+)*([A-Za-z0-9_\\-]+)$', line)
-            if not m:
-                continue
-            name = m.group(1)
-            if name == "avida-core":
-                continue
-            if name not in exclude:
-                tests.append(name)
-        print(" ".join(tests))
-        PY
-        TESTS="$(< selected-tests-rust.txt)"
-        ./run_tests --mode=slave ${TESTS} 2>&1 | tee run_tests-rust.log
-    - name: Run known flaky consistency diagnostics on Rust-enabled build (non-blocking)
-      if: always()
-      run: |
-        set +e
-        ./run_tests --mode=slave --show-diff --diff-max-threshold=1048576 --verbose --xml-report=run_tests-rust-diagnostics.xml sex shaded_green_beard_instructions 2>&1 | tee run_tests-rust-diagnostics.log
-        exit 0
-    - name: Run unit tests (RunningStats parity)
-      run: ./cbuild/work/unit-tests
-    - name: Rust checks
-      run: |
-        cd rust/avida-rust
-        cargo test --all-targets
-        cargo fmt --check
-        cargo clippy --all-targets -- -D warnings
-    - name: Upload Rust test logs
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: tests-rust-logs
-        path: |
-          run_tests-rust.log
-          run_tests-rust-diagnostics.log
-          run_tests-rust-diagnostics.xml
-          selected-tests-rust.txt
-        if-no-files-found: warn
-    - name: Show ccache statistics
-      if: always()
-      run: ccache -s || true
-
-  ffi-analysis-rust:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Restore Rust dependency/build cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          rust/avida-rust/target
-        key: ${{ runner.os }}-rust-${{ hashFiles('rust/avida-rust/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-rust-
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-    - name: Generate FFI symbol map and call graph artifacts
-      run: |
-        cd rust/avida-rust
-        python3 scripts/ci_ffi_analysis.py --output target/ffi-analysis
-    - name: ABI guard for avd_* exports
-      run: |
-        cd rust/avida-rust
-        python3 scripts/ci_abi_guard.py \
-          --baseline abi/avd_symbols_baseline.txt \
-          --current target/ffi-analysis/avd_symbols.txt
-    - name: Upload FFI analysis artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: rust-ffi-analysis
-        path: |
-          rust/avida-rust/target/ffi-analysis/avd_symbols.txt
-          rust/avida-rust/target/ffi-analysis/extern_c_index.txt
-          rust/avida-rust/target/ffi-analysis/ffi_summary.txt
-          rust/avida-rust/target/ffi-analysis/llvm_callgraph.dot
-        if-no-files-found: warn
-
-  perf-rust:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Restore Rust dependency/build cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          rust/avida-rust/target
-        key: ${{ runner.os }}-rust-${{ hashFiles('rust/avida-rust/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-rust-
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-    - name: Run Rust critical path benchmarks
-      run: |
-        cd rust/avida-rust
-        cargo bench --bench critical_paths
-    - name: Soft-gate benchmark regressions
-      run: |
-        cd rust/avida-rust
-        python3 scripts/ci_perf_check.py --threshold 0.50
-    - name: Upload benchmark artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: rust-critical-path-benchmarks
-        path: rust/avida-rust/target/criterion
-        if-no-files-found: error
-
-  coverage-rust:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Restore Rust dependency/build cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          rust/avida-rust/target
-        key: ${{ runner.os }}-rust-${{ hashFiles('rust/avida-rust/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-rust-
-    - name: Restore cargo-llvm-cov cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.cargo/bin/cargo-llvm-cov
-        key: ${{ runner.os }}-cargo-llvm-cov-0.8.4
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-    - name: Install llvm-tools-preview
-      run: rustup component add llvm-tools-preview
-    - name: Install cargo-llvm-cov
-      run: |
-        if [ ! -x "${HOME}/.cargo/bin/cargo-llvm-cov" ]; then
-          cargo install cargo-llvm-cov
-        fi
-    - name: Run Rust coverage gate (82% + scope check)
-      run: |
-        cd rust/avida-rust
-        ./scripts/ci_coverage_check.sh 82 target/coverage-summary.txt
-    - name: Upload coverage artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: rust-coverage-artifacts
-        path: |
-          rust/avida-rust/target/coverage-summary.txt
-          rust/avida-rust/target/llvm-cov-target
-        if-no-files-found: warn
-
-  # tests-windows:
-  #   runs-on: windows-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Install dependencies
-  #     run: |
-  #       choco install cmake
-  #       choco install git
-  #       choco install python
-  #       refreshenv
-  #   - name: Set up MSVC environment
-  #     run: |
-  #       choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-  #       choco install windows-sdk-10.0 --version 10.0.19041.0
-  #       refreshenv
-  #   - name: Build Avida
-  #     run: |
-  #       bash ./build_avida
-  #   - name: Run tests
-  #     run: |
-  #       bash ./run_tests
-
-  # tests-mac:
-  #   runs-on:  macos-12
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Install dependencies
-  #     run: |
-  #       brew install cmake
-  #       brew install python
-  #   - name: Build Avida
-  #     run: |
-  #       ./build_avida
-  #   - name: Run tests
-  #     run: |
-  #       ./run_tests
-
-  docker-build:
-    name: Docker Image Build
-    runs-on: ubuntu-22.04
-    needs: tests
-    if: false
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build and Push to GitHub Container Registry
-        uses: docker/build-push-action@v1
-        with:
-          push: true
-          tags: "latest"
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          repository: devosoft/avida
-          registry: ghcr.io
-          add_git_labels: true
+        cargo clippy -p avida-gui --all-targets -- -D warnings
+        cargo test -p avida-gui

@@ -141,8 +141,12 @@ fn parse_bclass(s: &str) -> BehavClass {
 fn cpu_inst_lib() -> Arc<InstLib> {
     static LIB: OnceLock<Arc<InstLib>> = OnceLock::new();
     LIB.get_or_init(|| {
-        let src = std::fs::read_to_string(avida_core().join("source/cpu/cHardwareCPU.cc"))
-            .expect("cHardwareCPU.cc");
+        let src = std::fs::read_to_string(
+            // The copy kept from the retired C++ (git tag `cpp-final`).
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("testdata/reference/cHardwareCPU.cc"),
+        )
+        .expect("cHardwareCPU.cc");
         let body_start = src
             .find("cHardwareCPU::initInstLib(void)")
             .expect("initInstLib");
