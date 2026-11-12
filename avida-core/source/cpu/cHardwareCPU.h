@@ -341,6 +341,37 @@ public:
   int FFI_GetLastCellDataValue() { return m_last_cell_data.second; }
   void FFI_SetLastCellData(int val) { m_last_cell_data = std::make_pair(true, val); }
 
+  // Memory-edit / copy-mutation forwarding (copy, head, jump, thread and alloc/divide handlers)
+  int FFI_GetCurHead() const { return m_threads[m_cur_thread].cur_head; }
+  int FFI_GetLabelNop(int idx) { return GetLabel()[idx]; }
+  void FFI_ReadInst(int op) { ReadInst(op); }
+  void FFI_SetAdvanceIP(bool advance) { m_advance_ip = advance; }
+  int FFI_GetSlipReadHead() const { return m_slip_read_head ? 1 : 0; }
+  int FFI_GetNopMod(int op) const { return m_inst_set->GetNopMod(Instruction(op)); }
+  int FFI_IsNop(int op) const { return m_inst_set->IsNop(Instruction(op)) ? 1 : 0; }
+  int FFI_GetRandomInst(cAvidaContext& ctx) { return m_inst_set->GetRandomInst(ctx).GetOp(); }
+  int FFI_CheckNoMutList(int pos) { return checkNoMutList(cHeadCPU(this, pos)) ? 1 : 0; }
+  void FFI_MemorySetFlags(int pos, int mask);
+  void FFI_MemoryClearFlags(int pos, int mask);
+  void FFI_MemoryInsert(int pos, int op) { m_memory.Insert(pos, Instruction(op)); }
+  void FFI_MemoryRemove(int pos) { m_memory.Remove(pos); }
+  void FFI_DoUniformCopyMutation(cAvidaContext& ctx, int head_id) { doUniformCopyMutation(ctx, getHead(head_id)); }
+  void FFI_DoSlipMutation(cAvidaContext& ctx, int pos) { doSlipMutation(ctx, m_memory, pos); }
+  bool FFI_ForkThread() { return ForkThread(); }
+  bool FFI_KillThread() { return KillThread(); }
+  bool FFI_AllocateMain(cAvidaContext& ctx, int size) { return Allocate_Main(ctx, size); }
+  bool FFI_DivideMain(cAvidaContext& ctx, int div_point, int extra_lines, double mut_multiplier, int kind)
+  {
+    switch (kind) {
+      case 1: return Divide_MainRS(ctx, div_point, extra_lines, mut_multiplier);
+      case 2: return Divide_Main1RS(ctx, div_point, extra_lines, mut_multiplier);
+      case 3: return Divide_Main2RS(ctx, div_point, extra_lines, mut_multiplier);
+      default: return Divide_Main(ctx, div_point, extra_lines, mut_multiplier);
+    }
+  }
+  void FFI_AdjustHeads() { AdjustHeads(); }
+  int FFI_FindInstOp(const char* name) const { return m_inst_set->GetInst(cString(name)).GetOp(); }
+
 
 private:
   // ---------- Instruction Library -----------

@@ -1884,6 +1884,67 @@ int avd_hw_get_last_cell_data_value(cHardwareBase* hw);
 void avd_cpu_inst_sense_resource_x(cHardwareBase* hw, cAvidaContext* ctx, int reg_id, int res_id, int use_faced);
 int avd_cpu_inst_if_cell_data_changed(cHardwareBase* hw);
 
+// Memory-edit / copy-mutation hardware FFI (cHardwareFFI.cc)
+void avd_hw_memory_set_flags(cHardwareBase* hw, int idx, int mask);
+void avd_hw_memory_clear_flags(cHardwareBase* hw, int idx, int mask);
+void avd_hw_memory_insert(cHardwareBase* hw, int idx, int inst_id);
+void avd_hw_memory_remove(cHardwareBase* hw, int idx);
+int avd_hw_get_nop_mod(cHardwareBase* hw, int inst_id);
+int avd_hw_is_nop(cHardwareBase* hw, int inst_id);
+int avd_hw_get_random_inst(cHardwareBase* hw, cAvidaContext* ctx);
+int avd_hw_check_no_mut_list(cHardwareBase* hw, int idx);
+int avd_hw_get_label_nop(cHardwareBase* hw, int idx);
+int avd_hw_get_cur_head(cHardwareBase* hw);
+void avd_hw_read_inst(cHardwareBase* hw, int inst_id);
+void avd_hw_set_advance_ip(cHardwareBase* hw, int advance);
+int avd_hw_get_slip_read_head(cHardwareBase* hw);
+int avd_hw_fork_thread(cHardwareBase* hw);
+int avd_hw_kill_thread(cHardwareBase* hw);
+void avd_hw_fault(cHardwareBase* hw, int fault_loc, int fault_type, const char* desc);
+int avd_org_test_copy(cOrganism* org, cAvidaContext* ctx, int kind);
+double avd_org_get_copy_prob(cOrganism* org, int kind);
+void avd_hw_do_uniform_copy_mutation(cHardwareBase* hw, cAvidaContext* ctx, int head_id);
+void avd_hw_do_slip_mutation(cHardwareBase* hw, cAvidaContext* ctx, int pos);
+int avd_hw_allocate_main(cHardwareBase* hw, cAvidaContext* ctx, int size);
+int avd_hw_divide_main(cHardwareBase* hw, cAvidaContext* ctx, int div_point, int extra_lines,
+                       double mut_multiplier, int kind);
+void avd_hw_adjust_heads(cHardwareBase* hw);
+int avd_hw_adjust_head(cHardwareBase* hw, int head_id);
+int avd_hw_find_inst_op(cHardwareBase* hw, const char* name);
+void avd_org_set_divide_sex(cOrganism* org, int divide_sex);
+void avd_org_set_cross_num(cOrganism* org, int cross_num);
+void avd_org_set_mate_select_id(cOrganism* org, int select_id);
+int avd_org_born_parent_group(cOrganism* org);
+
+// Copy / head / jump / thread / alloc handlers implemented in Rust (cpu_memory_instructions.rs)
+int avd_cpu_inst_if_x(cHardwareBase* hw, int greater);
+int avd_cpu_inst_jump_label(cHardwareBase* hw, int direction);
+int avd_cpu_inst_call(cHardwareBase* hw);
+// cond: 0 = always, 1 = only if BX != 0, 2 = only if BX == 0.
+int avd_cpu_inst_throw(cHardwareBase* hw, int catch_op, int cond);
+int avd_cpu_inst_goto(cHardwareBase* hw, int label_op, int cond);
+void avd_cpu_inst_copy(cHardwareBase* hw, cAvidaContext* ctx);
+void avd_cpu_inst_write_inst(cHardwareBase* hw, cAvidaContext* ctx, int src_reg);
+void avd_cpu_inst_stack_write_inst(cHardwareBase* hw, cAvidaContext* ctx, int dst_reg);
+void avd_cpu_inst_compare(cHardwareBase* hw, cAvidaContext* ctx, int dst_reg);
+int avd_cpu_inst_if_n_cpy(cHardwareBase* hw, cAvidaContext* ctx);
+void avd_cpu_inst_head_read(cHardwareBase* hw, cAvidaContext* ctx);
+void avd_cpu_inst_head_write(cHardwareBase* hw, cAvidaContext* ctx);
+void avd_cpu_inst_head_copy(cHardwareBase* hw, cAvidaContext* ctx, double reduction);
+void avd_cpu_inst_head_copy_if_resource(cHardwareBase* hw, cAvidaContext* ctx);
+void avd_cpu_inst_fork_thread(cHardwareBase* hw);
+int avd_cpu_inst_fork_thread_label(cHardwareBase* hw, int cond);
+void avd_cpu_inst_kill_thread(cHardwareBase* hw);
+int avd_cpu_inst_allocate(cHardwareBase* hw, cAvidaContext* ctx);
+int avd_cpu_inst_max_alloc(cHardwareBase* hw, cAvidaContext* ctx, double offspring_size_range,
+                           int max_genome_length, int move_write_head);
+int avd_cpu_inst_divide(cHardwareBase* hw, cAvidaContext* ctx, int mode);
+int avd_cpu_inst_head_divide(cHardwareBase* hw, cAvidaContext* ctx, int kind, double mut_multiplier,
+                             int tolerance_window);
+int avd_cpu_inst_head_divide_sex(cHardwareBase* hw, cAvidaContext* ctx, int mode, int tolerance_window);
+void avd_cpu_inst_if_end(cHardwareBase* hw, int cmp, int x_reg, int y_reg);
+void avd_cpu_inst_else(cHardwareBase* hw);
+
 #ifdef __cplusplus
 }
 

@@ -21,6 +21,7 @@ pub mod common;
 pub mod config_snapshot;
 pub mod cpu_helpers;
 pub mod cpu_instructions;
+pub mod cpu_memory_instructions;
 pub mod cpu_registers;
 pub mod cpu_stack;
 pub mod deme_helpers;

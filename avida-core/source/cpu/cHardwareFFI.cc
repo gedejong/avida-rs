@@ -13,6 +13,8 @@
 
 #include "cHardwareCPU.h"
 #include "cAvidaContext.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "nHardware.h"
 
 // Helper: safe downcast.  Returns nullptr if hw is null.
@@ -349,6 +351,209 @@ int avd_hw_get_last_cell_data_value(cHardwareBase* hw) {
   auto* cpu = as_cpu(hw);
   if (!cpu) return 0;
   return cpu->FFI_GetLastCellDataValue();
+}
+
+// ---- Memory editing (flags, insert/remove) ----
+// Flag masks match avd_hw_get_memory_flags: 0x01 copied, 0x02 mutated,
+// 0x04 executed, 0x08 point-mut, 0x10 copy-mut, 0x20 injected.
+
+void avd_hw_memory_set_flags(cHardwareBase* hw, int idx, int mask) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || idx < 0 || idx >= cpu->GetMemSize()) return;
+  cpu->FFI_MemorySetFlags(idx, mask);
+}
+
+void avd_hw_memory_clear_flags(cHardwareBase* hw, int idx, int mask) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || idx < 0 || idx >= cpu->GetMemSize()) return;
+  cpu->FFI_MemoryClearFlags(idx, mask);
+}
+
+void avd_hw_memory_insert(cHardwareBase* hw, int idx, int inst_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return;
+  cpu->FFI_MemoryInsert(idx, inst_id);
+}
+
+void avd_hw_memory_remove(cHardwareBase* hw, int idx) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return;
+  cpu->FFI_MemoryRemove(idx);
+}
+
+// ---- Instruction-set queries ----
+
+int avd_hw_get_nop_mod(cHardwareBase* hw, int inst_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_GetNopMod(inst_id);
+}
+
+int avd_hw_is_nop(cHardwareBase* hw, int inst_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_IsNop(inst_id);
+}
+
+int avd_hw_get_random_inst(cHardwareBase* hw, cAvidaContext* ctx) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !ctx) return 0;
+  return cpu->FFI_GetRandomInst(*ctx);
+}
+
+int avd_hw_check_no_mut_list(cHardwareBase* hw, int idx) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_CheckNoMutList(idx);
+}
+
+// ---- Label / head / thread state ----
+
+int avd_hw_get_label_nop(cHardwareBase* hw, int idx) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || idx < 0 || idx >= cpu->FFI_GetLabelSize()) return -1;
+  return cpu->FFI_GetLabelNop(idx);
+}
+
+int avd_hw_get_cur_head(cHardwareBase* hw) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_GetCurHead();
+}
+
+void avd_hw_read_inst(cHardwareBase* hw, int inst_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return;
+  cpu->FFI_ReadInst(inst_id);
+}
+
+void avd_hw_set_advance_ip(cHardwareBase* hw, int advance) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return;
+  cpu->FFI_SetAdvanceIP(advance != 0);
+}
+
+int avd_hw_get_slip_read_head(cHardwareBase* hw) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_GetSlipReadHead();
+}
+
+int avd_hw_fork_thread(cHardwareBase* hw) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_ForkThread() ? 1 : 0;
+}
+
+int avd_hw_kill_thread(cHardwareBase* hw) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return 0;
+  return cpu->FFI_KillThread() ? 1 : 0;
+}
+
+void avd_hw_fault(cHardwareBase* hw, int fault_loc, int fault_type, const char* desc) {
+  if (!hw || !hw->GetOrganism()) return;
+  hw->GetOrganism()->Fault(fault_loc, fault_type, desc ? desc : "");
+}
+
+// ---- Copy mutations ----
+// kind: 0 = point (mut), 1 = insertion, 2 = deletion, 3 = uniform, 4 = slip.
+
+int avd_org_test_copy(cOrganism* org, cAvidaContext* ctx, int kind) {
+  if (!org || !ctx) return 0;
+  switch (kind) {
+    case 0: return org->TestCopyMut(*ctx) ? 1 : 0;
+    case 1: return org->TestCopyIns(*ctx) ? 1 : 0;
+    case 2: return org->TestCopyDel(*ctx) ? 1 : 0;
+    case 3: return org->TestCopyUniform(*ctx) ? 1 : 0;
+    case 4: return org->TestCopySlip(*ctx) ? 1 : 0;
+    default: return 0;
+  }
+}
+
+double avd_org_get_copy_prob(cOrganism* org, int kind) {
+  if (!org) return 0.0;
+  switch (kind) {
+    case 0: return org->GetCopyMutProb();
+    case 1: return org->GetCopyInsProb();
+    case 2: return org->GetCopyDelProb();
+    case 3: return org->GetCopyUniformProb();
+    case 4: return org->GetCopySlipProb();
+    default: return 0.0;
+  }
+}
+
+void avd_hw_do_uniform_copy_mutation(cHardwareBase* hw, cAvidaContext* ctx, int head_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !ctx || head_id < 0 || head_id >= nHardware::NUM_HEADS) return;
+  cpu->FFI_DoUniformCopyMutation(*ctx, head_id);
+}
+
+void avd_hw_do_slip_mutation(cHardwareBase* hw, cAvidaContext* ctx, int pos) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !ctx) return;
+  cpu->FFI_DoSlipMutation(*ctx, pos);
+}
+
+// ---- Allocation / division (genome ownership stays in C++) ----
+
+int avd_hw_allocate_main(cHardwareBase* hw, cAvidaContext* ctx, int size) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !ctx) return 0;
+  return cpu->FFI_AllocateMain(*ctx, size) ? 1 : 0;
+}
+
+// kind: 0 = Divide_Main, 1 = Divide_MainRS, 2 = Divide_Main1RS, 3 = Divide_Main2RS.
+int avd_hw_divide_main(cHardwareBase* hw, cAvidaContext* ctx, int div_point, int extra_lines,
+                       double mut_multiplier, int kind) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !ctx) return 0;
+  return cpu->FFI_DivideMain(*ctx, div_point, extra_lines, mut_multiplier, kind) ? 1 : 0;
+}
+
+// cHeadCPU::Adjust on one head of the current thread; returns the adjusted position.
+int avd_hw_adjust_head(cHardwareBase* hw, int head_id) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || head_id < 0 || head_id >= nHardware::NUM_HEADS) return -1;
+  cHeadCPU& head = cpu->GetHead(head_id);
+  head.Adjust();
+  return head.GetPosition();
+}
+
+void avd_hw_adjust_heads(cHardwareBase* hw) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu) return;
+  cpu->FFI_AdjustHeads();
+}
+
+// Opcode of the named instruction in this hardware's instruction set
+// (the error opcode, 255, when the set does not contain it).
+int avd_hw_find_inst_op(cHardwareBase* hw, const char* name) {
+  auto* cpu = as_cpu(hw);
+  if (!cpu || !name) return 255;
+  return cpu->FFI_FindInstOp(name);
+}
+
+// ---- Phenotype reproduction flags ----
+
+void avd_org_set_divide_sex(cOrganism* org, int divide_sex) {
+  if (!org) return;
+  org->GetPhenotype().SetDivideSex(divide_sex != 0);
+}
+
+void avd_org_set_cross_num(cOrganism* org, int cross_num) {
+  if (!org) return;
+  org->GetPhenotype().SetCrossNum(cross_num);
+}
+
+void avd_org_set_mate_select_id(cOrganism* org, int select_id) {
+  if (!org) return;
+  org->GetPhenotype().SetMateSelectID(select_id);
+}
+
+int avd_org_born_parent_group(cOrganism* org) {
+  if (!org) return 0;
+  return org->GetPhenotype().BornParentGroup() ? 1 : 0;
 }
 
 } // extern "C"

@@ -95,9 +95,9 @@ When working at program scale, always read and maintain these documents:
 
 ---
 
-## Current Migration State (as of 2026-03-26)
+## Current Migration State (as of 2026-11-09)
 
-**~800+ FFI exports. 716 Rust tests. ~26K LOC Rust across 43+ modules.**
+**807 Rust-side `avd_*` exports (plus the C++-side shims in `cHardwareFFI.cc` / `cOrganismFFI.cc`). 755 Rust tests. ~28K LOC Rust across 45 modules.**
 **9 `#[repr(C)]` type replacements**: Merit, CpuStack, CodeLabel, MutationRates, PhenotypeCoreMetrics, PhenotypeStatusFlags, PhenotypeLifetimeData, BirthEntryScalars, CpuRegisters. Plus GradientConfig, GradientState.
 
 ### Completed milestones:
@@ -111,7 +111,7 @@ When working at program scale, always read and maintain these documents:
 - **Issues #53-56**: Wave 13 — cResourceCount (41 FFI, 1,278 LOC Rust), cGradientCount (66 fields in Rust), cStats/cDeme foundations
 - **Issue #58**: Organism FFI — ~120 functions (read-only + mutable + method delegation: DoOutput, DoInput, SendMessage, Die, Kaboom, Move, Rotate, etc.)
 - **Issue #57**: Hardware state FFI — 41+ functions in cHardwareFFI.cc (heads, stacks, memory, registers, nop helpers, thread/cycle, labels/search, cAvidaContext RNG)
-- **Issue #57**: CPU instruction handlers — 285/513 (55.6%) delegate to Rust (register, conditional, stack, flow, head, mask, consensus, label, search, RNG-probabilistic, organism-read/write, I/O, messaging, donation, movement, sensing, death/kazi ops)
+- **Issue #57**: CPU instruction handlers — 372/518 (71.8%) delegate to Rust, counted as `Inst_*` bodies in `cHardwareCPU.cc` that call `avd_*`. Since 2026-11-09 this includes the replication core: copy/compare, head read/write/copy with copy mutations, label jumps, throw/goto, structured if/else, threads, allocate, and every divide entry point (`cpu_memory_instructions.rs`). `Allocate_Main` / `Divide_Main*` remain C++.
 - **Issue #74**: Viewer scaffold + simulation bridge — eframe app connected to live simulation via FFI (parked)
 
 ### Key infrastructure:
@@ -124,17 +124,17 @@ When working at program scale, always read and maintain these documents:
 - Parametric FFI pattern for tasks needing computed C++ values (FormSpatialGroup, resource-dependent)
 - 3 latent C++ bugs fixed (cDeme::Reset init, cResourceCount spatial cache, cBirthEntry Rule of Three)
 
-### PO priorities (updated 2026-03-26):
+### PO priorities (updated 2026-03-26; items 1-2 revised 2026-11-09 after the memory/control-flow slice):
 
-**Situation**: CPU handlers past majority (55.6%). Organism FFI at ~120 functions (read+write+method delegation). I/O, messaging, death, donation, movement all delegating. Remaining 228 handlers are the harder tail:
-- ~65 division/reproduction (genome manipulation — Wave 14 ownership)
-- ~48 head/memory with mutation testing (TestCopyMut — needs mutation FFI)
-- ~40 sensing/environment (resource library access)
-- ~40 movement variants (complex rotation/label logic)
-- ~35 donation variants (genome edit distance, systematics access)
+**Situation**: CPU handlers at 71.8%. Mutation-testing FFI exists (`avd_org_test_copy`, `avd_org_get_copy_prob`). New handler logic goes in `cpu_memory_instructions.rs`-style modules written against the `Machine` trait so it can be unit-tested with a mock. Remaining 146 handlers:
+- ~35 sensing/pheromone/explore/exploit (resource library access)
+- ~22 donation variants (genome edit distance, systematics access)
+- ~15 groups/tolerance, ~14 movement/rotation, ~11 mating type/preference
+- ~7 `Inst_Repro` family, ~8 resource collection, ~7 network/links, ~7 promoter/regulation
+- ~20 misc (resource-level ifs, point-mutation application, quorum, lysis)
 
-1. **Next: Push handler count toward 60-65%** — port remaining sensing, movement, and head/memory handlers where FFI exists. Add mutation-testing FFI (`avd_ctx_test_copy_mut`, `avd_ctx_test_divide_mut`) to unblock the ~48 mutation-testing handlers.
-2. **Then: Assess genome-level FFI** — `Inst_HeadCopy` with mutation, `Inst_HCopy`, and genome instruction access. This is the gateway to the 65 division/reproduction handlers.
+1. **Next: mating-type/mate-preference and `Inst_Repro`-family handlers**, then resource collection (`Inst_Collect*`).
+2. **Then: decide on the hot-path FFI cost** — `h-copy` crosses the boundary ~15 times per execution (measured roughly +5% user time, within noise). Options: cross-language LTO, or a direct memory/head view for Rust. After that, `Divide_Main` / `Allocate_Main` genome ownership (Wave 14).
 3. **Viewer is last** (#73-#81) — the ncurses TUI works.
 4. **Remaining 5 pure-C++ tasks** (#50) — defer.
 5. **Remaining 14 Apto::Array occurrences** — defer.
