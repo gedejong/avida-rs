@@ -341,6 +341,9 @@ impl Sim {
     /// slice batches with draining the channel.
     fn serve(&mut self, rx: &Receiver<Command>) {
         loop {
+            if self.shared.stop.load(Ordering::Acquire) {
+                return;
+            }
             if self.mode != RunState::Running {
                 match rx.recv() {
                     Ok(cmd) => {
@@ -381,6 +384,9 @@ impl Sim {
     }
 
     fn handle(&mut self, cmd: Command) -> Flow {
+        if self.shared.stop.load(Ordering::Acquire) {
+            return Flow::Exit;
+        }
         if matches!(
             cmd,
             Command::Run

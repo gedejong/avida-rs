@@ -17,6 +17,7 @@
 //! without the real task library.
 
 use crate::env_reqs::EnvReqs;
+use crate::environment::Environment;
 use crate::resource_lib::ResourceLib;
 use avida_apto::AvidaRng;
 use avida_config::feedback::Feedback;
@@ -143,7 +144,18 @@ pub trait TaskEvaluator<T: ?Sized> {
 
     /// `cPhenPlastUtil::GetTaskProbability(ctx, world,
     /// organism->SystematicsGroup("genotype"), task_id)`.
-    fn task_probability(&mut self, rng: &mut AvidaRng, task_id: i32) -> f64;
+    ///
+    /// `env` is the environment under evaluation, handed back because the
+    /// C++ runs test CPUs here (`TestPlasticity`, the first time the
+    /// genotype is asked), and they evaluate their own output in it.
+    fn task_probability(
+        &mut self,
+        env: &mut Environment<T>,
+        rng: &mut AvidaRng,
+        task_id: i32,
+    ) -> f64
+    where
+        T: Sized;
 
     /// HGT metabolism: if the organism's cell is not -1 and holds genome
     /// fragments, `cell.PopGenomeFragment(ctx)`, record

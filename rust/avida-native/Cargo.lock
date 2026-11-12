@@ -588,6 +588,7 @@ dependencies = [
  "avida-resources",
  "avida-systematics",
  "avida-tasks",
+ "rayon",
 ]
 
 [[package]]

@@ -20,6 +20,12 @@ pub enum TaskKind {
     Add3,
     /// `Task_Sub`
     Sub,
+    /// Port addition, not in the C++: `add` with partial credit, see
+    /// `eval_math::eval_add_lowbits`.
+    AddLowBits,
+    /// Port addition, not in the C++: an output `add_lowbits` gives nothing,
+    /// see `eval_math::eval_add_miss`.
+    AddMiss,
     /// `Task_DontCare`
     DontCare,
     /// `Task_Not` ... `Task_Equ`: a boolean logic function by logic id.
@@ -385,6 +391,19 @@ pub(crate) static SIMPLE_TASKS: &[SimpleTask] = &[
         name: "sub",
         desc: "Sub",
         kind: TaskKind::Sub,
+        reqs: 0,
+    },
+    // Port addition, not in the C++ (PORTING.md, "Tasks the C++ does not have").
+    SimpleTask {
+        name: "add_lowbits",
+        desc: "AddLowBits",
+        kind: TaskKind::AddLowBits,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "add_miss",
+        desc: "AddMiss",
+        kind: TaskKind::AddMiss,
         reqs: 0,
     },
     SimpleTask {

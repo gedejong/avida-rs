@@ -4500,6 +4500,10 @@ pub struct Config {
     /// Value lists of the custom formats, indexed like [`FORMATS`]
     /// (`cBaseConfigCustomFormat::m_value`).
     pub(crate) format_values: Vec<Vec<String>>,
+    /// Settings of the native port that `cAvidaConfig.h` does not have
+    /// (see [`crate::port_settings`]); kept out of [`GROUPS`] so that
+    /// nothing the C++ prints about its settings changes.
+    pub port: crate::port_settings::PortSettings,
 }
 
 impl Config {
@@ -4939,6 +4943,7 @@ impl Config {
             inst_set: String::from("-"),
             inst_set_load_legacy: as_int("0"),
             format_values: vec![Vec::new(); FORMATS.len()],
+            port: crate::port_settings::PortSettings::new(),
         }
     }
 

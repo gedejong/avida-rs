@@ -260,6 +260,10 @@ pub struct OrgState {
     /// `m_parasites`: every parasite that infected this organism since its
     /// hardware was last reset, in infection order (`GetParasites()`).
     pub parasites: Vec<Arc<ParasiteUnit>>,
+    /// The organism's budget, allocation carry and random stream in
+    /// `EXECUTION_MODE 1` (not in the C++; untouched in the exact mode).
+    /// They live on the organism so that they move with it.
+    pub parallel: crate::parallel::ParallelOrgState,
 }
 
 /// Inputs of `cOrganism::cOrganism` beyond the world.
@@ -357,6 +361,7 @@ impl OrgState {
             donating_lineages: BTreeSet::new(),
             neighborhood: None,
             parasites: Vec::new(),
+            parallel: crate::parallel::ParallelOrgState::default(),
         }
     }
 
@@ -1178,7 +1183,7 @@ fn do_output_inner(
         let sizes = org.phenotype_sizes;
         let mut result = phen.take_reaction_result(&sizes);
         let rbins: Vec<f64> = phen.cur_rbins_avail.clone();
-        let services = world.output_services();
+        let mut services = world.output_services();
         let resource_names: Vec<String> = services
             .environment
             .resource_lib()
@@ -1206,6 +1211,9 @@ fn do_output_inner(
             stolen_reaction_count: &phen.cur_stolen_reaction_count,
             first_reactions: Vec::new(),
             resource_names,
+            config: services.config,
+            stats: &mut *services.stats,
+            plasticity: services.plasticity.take(),
         };
         let mut context_phenotype = context_phenotype;
         let found = services.environment.test_output(

@@ -9,7 +9,7 @@ use avida_config::config::Config;
 use avida_config::feedback::Feedback as ConfigFeedback;
 use avida_genome::inst_set_registry::convert_legacy_inst_set_file;
 use avida_genome::{Feedback as GenomeFeedback, Genome, InstCodeConfig, InstructionSequence};
-use avida_hardware::task_adapter::{Env, OutputHost, TaskLibRegistry};
+use avida_hardware::task_adapter::{Env, OutputHost, PlasticityTest, TaskLibRegistry};
 use avida_hardware::test_cpu::{CpuTestInfo, TestCpu, TestCpuHost, TestWorld, TestWorldCounts};
 use avida_hardware::tracer::{HardwareTracerPtr, StringTracer};
 use avida_hardware::HardwareManager;
@@ -171,7 +171,7 @@ impl TaskWorld for NullHost {
 }
 
 impl OutputHost for NullHost {
-    fn task_probability(&mut self, _rng: &mut AvidaRng, _task_id: i32) -> f64 {
+    fn task_probability(&mut self, _test: PlasticityTest<'_>, _task_id: i32) -> f64 {
         0.0
     }
     fn metabolize_genome_fragment(&mut self, _rng: &mut AvidaRng) -> Option<i32> {

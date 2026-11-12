@@ -17,3 +17,5 @@ avida-tasks = { path = "../tasks" }
 avida-systematics = { path = "../systematics" }
 avida-hardware = { path = "../hardware" }
 avida-analyze = { path = "../analyze" }
+# The worker pool of the parallel execution mode (EXECUTION_MODE 1).
+rayon = "1.12"

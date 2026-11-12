@@ -79,7 +79,7 @@
 mod sim;
 
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread::JoinHandle;
@@ -418,6 +418,9 @@ struct Shared {
     /// The status the `avida` binary would exit with, once the run is
     /// over ([`Session::exit_code`]).
     exit_code: Mutex<Option<i32>>,
+    /// Set by the handle before it queues `Shutdown`: the thread then
+    /// skips whatever commands are still queued ahead of it.
+    stop: AtomicBool,
 }
 
 impl Shared {
@@ -439,6 +442,7 @@ impl Shared {
             }),
             setup: Mutex::new(None),
             exit_code: Mutex::new(None),
+            stop: AtomicBool::new(false),
         }
     }
 }
@@ -577,6 +581,7 @@ impl Session {
     /// run on its own (dropping the handle no longer waits for it), and a
     /// front end that is exiting should end the process.
     pub fn shutdown(&mut self, timeout: Duration) -> bool {
+        self.shared.stop.store(true, Ordering::Release);
         let _ = self.tx.send(Command::Shutdown);
         let Some(thread) = self.thread.take() else {
             return true;
@@ -592,14 +597,20 @@ impl Session {
     }
 }
 
+/// How long dropping a [`Session`] waits for the thread before detaching
+/// it.
+pub const DROP_WAIT: Duration = Duration::from_secs(2);
+
 impl Drop for Session {
     /// Stops the thread (within one slice batch, also while running or
-    /// waiting for a throttled update) and waits for it, unless
-    /// [`Session::shutdown`] has given up on it already.
+    /// waiting for a throttled update) and waits for it at most
+    /// [`DROP_WAIT`]; a thread still inside one long step is detached. It
+    /// owns its world and an `Arc` of the shared state, so it can finish
+    /// (and flush its output files) without the handle. A no-op after
+    /// [`Session::shutdown`].
     fn drop(&mut self) {
-        let _ = self.tx.send(Command::Shutdown);
-        if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
+        if self.thread.is_some() {
+            self.shutdown(DROP_WAIT);
         }
     }
 }

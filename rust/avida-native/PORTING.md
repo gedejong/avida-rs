@@ -100,6 +100,15 @@ contract, so the port must not use `mul_add` there either, even though the
 pre-Rust C++ was fused. `otool -tv cbuild/work/avida` lists no
 `fmadd`/`fmsub` in any `_avd_*` symbol.
 
+`crates/analyze` and `crates/script` were audited site by site against the
+reference disassembly (2026-11-12): each `mul_add` there matches a fused
+instruction in the corresponding C++ function (vector `fmla` included), and
+each product left unfused matches none, or sits in the 8-wide unrolled head
+of `AnalyzeComplexityTwoSites`'s sum of products, which the C++ vectorises
+without contraction. The ASL matrix product, absent from the reference
+binary, was checked by compiling the same loop with the reference flags. No
+site needed a change.
+
 `%g`-style output must go through `avida_apto::fmt`, which reproduces macOS
 libc including its trailing-zero quirk.
 
@@ -115,3 +124,72 @@ What that changes for parity work:
 - **Reading the original source**: `git show cpp-final:avida-core/source/main/cPopulation.cc`. The `C++: file:symbol` notes in doc comments and `unsupported:` messages refer to paths at that tag.
 - **Reference-data generators** (`crates/resources/tools/build_ref.sh`, `crates/apto/tools/*.cc`) compile against the C++ and must be run from a `cpp-final` worktree. Their output is checked in under each crate's `testdata/`.
 - Three tests compare tables with the C++ source text; the files they read are kept as `crates/tasks/testdata/reference/cTaskLib.cc`, `crates/config/testdata/reference/cAvidaConfig.h` and `crates/genome/testdata/reference/cHardwareCPU.cc`.
+
+## The one approved departure from parity: `EXECUTION_MODE 1` (2026-11-12)
+
+Rule 1 has one exception, which the maintainer approved explicitly: the
+opt-in parallel execution mode (`EXECUTION_MODE 1`, a port-only setting with
+no C++ counterpart). It reschedules the instructions of an update so that
+organism-local ones run on worker threads, and its output is therefore not
+byte-identical to the C++ or to the exact mode. Everything else stays under
+rule 1:
+
+- `EXECUTION_MODE 0` (the default) is the C++ scheduler, unchanged, and
+  remains the oracle: the whole consistency suite runs in it.
+- Code for the parallel mode lives in `crates/world/src/parallel.rs` and
+  `crates/hardware/src/parallel.rs`; its hooks in the exact code paths
+  (`World::process_step`, `HardwareCpu::single_process`, `AdjustSchedule`,
+  `UpdateOrganismStats`, whose reading of the organisms the parallel mode
+  runs on its worker pool) must not change what the exact mode computes,
+  and a change there is checked with `tools/run_suite.py`.
+- The parallel mode's budgets follow the character of `SLICING_METHOD`:
+  exact shares under the deterministic methods, Poisson-distributed ones
+  under the lottery methods. Exact shares under a lottery method were
+  measured to leave cells empty longer (ARCHITECTURE.md, "Statistical
+  equivalence").
+- A parallel run depends on its configuration and seed only, never on
+  `EXECUTION_THREADS` or the machine (`crates/avida/tests/parallel.rs`).
+- Equivalence with the exact mode is statistical and is checked with
+  `tools/parallel_stats.py` (many seeds per mode, Mann-Whitney per
+  outcome). A change to the parallel mode's scheduling needs a fresh run of
+  it, reported with the change.
+
+ARCHITECTURE.md ("Parallel execution mode") describes what the mode
+guarantees and what it does not.
+
+## Tasks the C++ does not have
+
+Additions decided by the maintainer. They change nothing for a configuration
+that does not name them.
+
+- `add_lowbits` (2026-11-12): `add` with partial credit. The task quality is
+  the number of low bits in which the output agrees with the sum of two
+  inputs before the first wrong bit, divided by 32; fewer than 8 right bits
+  count as none. Made for the lab
+  experiment "an adder from NAND", where the all-or-nothing `add` gives
+  selection nothing to act on. `crates/tasks/src/eval_math.rs`.
+- `add_miss` (2026-11-12): scores 1 for an output that `add_lowbits` gives
+  nothing, once two inputs have been read. With a small negative reaction
+  value it makes wrong outputs cost merit; without it, populations in the lab
+  pilot put out values in a loop until one agreed by chance.
+
+## `Task_Optimize` follows the reference binary's helper (2026-11-12)
+
+At `cpp-final`, `cTaskLib::Task_Optimize` checks that the output buffer is
+full and hands the outputs to the Rust helper `avd_task_eval_optimize`; the
+port follows that helper, because the reference binary runs it, wherever it
+differs from the pre-Rust C++ (`crates/tasks/src/eval_misc.rs`,
+`eval_optimize`): an unknown function gives quality .001 and `Fx` 0 at once;
+proportional quality gives .001 when `maxFx - Fx + .001` or
+`maxFx - minFx + .001` is not positive (the C++ asserted); binary decoding
+whose powers of `basepow` sum to 0 leaves the variables 0 (the C++ divided by
+zero); nothing past the stored outputs is read. The `quality > 1!` line goes
+to standard output as in the C++ (through `TaskWorld::task_stdout`, which a
+host must forward to keep the C++ order; `OrgTaskWorld` and `WorldHost` do,
+the test CPU's `TestHost` does not). Arguments on which the reference binary
+crashes, aborts or does not finish (`function=20`; too few or negative
+`numvars`; a negative `varlength` with the binary decoding, function 19 or
+function 21) stop the environment at load with `unsupported:`
+(`optimize_unsupported`). Each case was run on the reference binary.
+The maintainer confirmed on 2026-11-12 that the reference binary, not the
+pre-Rust C++ source, is the behaviour to keep.

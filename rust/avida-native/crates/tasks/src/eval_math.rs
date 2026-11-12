@@ -35,6 +35,53 @@ pub(crate) fn eval_add(input: &IoBuffer, output: &IoBuffer) -> f64 {
     0.0
 }
 
+/// Fewer right low bits than this earn nothing in `add_lowbits`. An arbitrary
+/// output reaches 8 bits for one pair of inputs once in 256 times, the XOR of
+/// the inputs (a sum without carries) about once in 8.
+const ADD_LOWBITS_MIN: u32 = 8;
+
+/// The most low bits in which the output agrees with `input[i] + input[j]`
+/// before the first wrong bit, over the pairs `j < i`; `None` with fewer than
+/// two inputs.
+fn add_low_bits(input: &IoBuffer, output: &IoBuffer) -> Option<u32> {
+    let test_output = output.get(0);
+    let n = input.num_stored();
+    let mut best = None;
+    for i in 0..n {
+        for j in 0..i {
+            let sum = input.get(i).wrapping_add(input.get(j));
+            let bits = (test_output ^ sum).trailing_zeros();
+            best = Some(best.map_or(bits, |b: u32| b.max(bits)));
+        }
+    }
+    best
+}
+
+/// Port addition, not in the C++: `add` with partial credit. The quality is
+/// the share of the 32 bits, counted from the lowest, in which the output
+/// agrees with the sum of two inputs before the first wrong bit. A correct
+/// sum scores 1; fewer than [`ADD_LOWBITS_MIN`] right bits score 0, so that
+/// chance agreement rarely pays. Each round of carry propagation makes more
+/// low bits right, so a partial adder earns more than none.
+pub(crate) fn eval_add_lowbits(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    match add_low_bits(input, output) {
+        Some(bits) if bits >= ADD_LOWBITS_MIN => f64::from(bits) / 32.0,
+        _ => 0.0,
+    }
+}
+
+/// Port addition, not in the C++: the counterpart of `add_lowbits`. Scores 1
+/// for an output that `add_lowbits` gives nothing, once two inputs have been
+/// read. A reaction with a small negative value on it makes every wrong
+/// output cost merit, so that putting out many values until one agrees by
+/// chance does not pay.
+pub(crate) fn eval_add_miss(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    match add_low_bits(input, output) {
+        Some(bits) if bits < ADD_LOWBITS_MIN => 1.0,
+        _ => 0.0,
+    }
+}
+
 /// `Task_Add3`: output equals the sum of three consecutive inputs.
 pub(crate) fn eval_add3(input: &IoBuffer, output: &IoBuffer) -> f64 {
     let out = output.get(0);
@@ -447,6 +494,26 @@ mod tests {
 
     fn out(v: i32) -> IoBuffer {
         buf(&[v])
+    }
+
+    #[test]
+    fn add_lowbits_counts_the_right_low_bits() {
+        let i = buf(&[3, 5, 7]);
+        assert_eq!(eval_add_lowbits(&i, &out(12)), 1.0); // 7+5
+        assert_eq!(eval_add_lowbits(&i, &out(12 ^ (1 << 20))), 20.0 / 32.0);
+        // 9 is odd, the sums 12, 10 and 8 are even: the lowest bit is wrong.
+        assert_eq!(eval_add_lowbits(&i, &out(9)), 0.0);
+        // 2 agrees with 10 (7+3) in three low bits only: below the minimum.
+        assert_eq!(eval_add_lowbits(&i, &out(2)), 0.0);
+        assert_eq!(eval_add_lowbits(&i, &out(12 ^ (1 << 7))), 0.0);
+        assert_eq!(eval_add_lowbits(&i, &out(12 ^ (1 << 8))), 8.0 / 32.0);
+        assert_eq!(eval_add_miss(&i, &out(2)), 1.0);
+        assert_eq!(eval_add_miss(&i, &out(12)), 0.0);
+        assert_eq!(eval_add_miss(&i, &out(12 ^ (1 << 8))), 0.0);
+        // With one input there is no sum to miss.
+        assert_eq!(eval_add_miss(&buf(&[4]), &out(9)), 0.0);
+        // One input is no pair.
+        assert_eq!(eval_add_lowbits(&buf(&[4]), &out(8)), 0.0);
     }
 
     #[test]

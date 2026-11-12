@@ -27,7 +27,7 @@ use crate::hardware::Hardware;
 use crate::hardware_manager::HardwareManager;
 use crate::hardware_transsmt::ParasiteUnit;
 use crate::organism::{OrgState, OrgUid, Organism};
-use crate::task_adapter::{Env, OutputHost};
+use crate::task_adapter::{Env, OutputHost, PlasticityServices};
 use avida_apto::AvidaRng;
 use avida_config::config::Config;
 use avida_genome::{Genome, InstructionSequence};
@@ -192,6 +192,8 @@ pub struct OutputServices<'a> {
     pub deme: Option<&'a mut dyn PhenotypeDeme>,
     /// World side of `cTaskContext` (cell, deme, population, stats).
     pub host: &'a mut dyn OutputHost,
+    /// What a plasticity test needs of the world, when one may run.
+    pub plasticity: Option<PlasticityServices<'a>>,
 }
 
 /// World services needed to build an organism (`cOrganism::cOrganism`) and

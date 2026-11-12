@@ -37,9 +37,12 @@ use avida_phenotype::Merit;
 use avida_systematics::unit::{GestationInfo, GroupMembership, GroupRef, UnitInfo};
 use avida_systematics::{GenomeTestMetrics, Source, TransmissionType};
 
+use rayon::prelude::*;
+
 use crate::groups::pending_key;
 use crate::pop_interface::PopulationInterface;
 use crate::population::{position_offspring as po, Running};
+use crate::stats::Stats;
 use crate::world::{make_test_world, World};
 
 /// `ActivateOffspring` reads the parent's hardware on a divide that did not
@@ -120,6 +123,12 @@ impl World {
             );
         }
         self.pop.scheduler.adjust_priority(cell, merit);
+        if let Some(p) = usize::try_from(cell)
+            .ok()
+            .and_then(|c| self.pop.sched_priority.get_mut(c))
+        {
+            *p = merit;
+        }
     }
 
     /// `GenomeTestMetrics::GetMetrics(world, ctx, group)`.
@@ -1249,7 +1258,9 @@ impl World {
             if !self.host.state_grids.is_empty() {
                 self.host.cur_sg = org.state.cur_sg;
             }
-            self.hgt_step_begins(&org.state);
+            // No `hgt_step_begins`: `pop.running` stays empty on this path,
+            // so nothing reads the running genome before the next step that
+            // runs records its own.
             self.pop.spec_state[c] -= 1;
             let merit = if self.pop.demes.len() > 1 {
                 org.state.phenotype.merit.get_double()
@@ -1258,6 +1269,7 @@ impl World {
             };
             self.mini_trace_step_end(None, None);
             self.pop.orgs[c] = Some(org);
+            self.pop.last_step_cell = cell_id;
             self.flush_parasite_deaths();
             self.flush_host();
             self.stats.inc_executed();
@@ -1348,6 +1360,7 @@ impl World {
             // The organism may have moved (`SwapCells`) during its step.
             self.pop.orgs[running.cell_id as usize] = Some(org);
         }
+        self.pop.last_step_cell = running.cell_id;
         // Parasites the step let go of (a reset clears them) leave their
         // groups.
         self.flush_parasite_deaths();
@@ -1377,6 +1390,12 @@ impl World {
 
     /// `ProcessPostUpdate(ctx)`
     pub fn process_post_update(&mut self) {
+        self.process_post_update_with(None);
+    }
+
+    /// [`World::process_post_update`], with the organism stats gathered on
+    /// the threads of `pool` (see [`World::update_organism_stats_with`]).
+    pub fn process_post_update_with(&mut self, pool: Option<&rayon::ThreadPool>) {
         // `ProcessUpdateCellActions`
         for i in 0..self.pop.cells.len() {
             if self.pop.cells[i].mut_rates.test_death(&mut self.rng) {
@@ -1385,7 +1404,7 @@ impl World {
         }
         self.stats.num_creatures = self.pop.num_organisms;
         self.update_deme_stats();
-        self.update_organism_stats();
+        self.update_organism_stats_with(pool);
         if self.tracks_pred_prey() {
             self.update_ft_org_stats();
         }
@@ -1473,8 +1492,20 @@ impl World {
 
     /// `UpdateOrganismStats(ctx)`
     pub fn update_organism_stats(&mut self) {
+        self.update_organism_stats_with(None);
+    }
+
+    /// [`World::update_organism_stats`], reading the organisms on the
+    /// threads of `pool` when there is one (the parallel execution mode).
+    /// Either way the sums take the organisms one at a time in
+    /// `live_org_list` order, so the result does not depend on the pool.
+    pub fn update_organism_stats_with(&mut self, pool: Option<&rayon::ThreadPool>) {
         let num_tasks = self.env.num_tasks().max(0) as usize;
-        let num_reactions = self.env.num_reactions().max(0) as usize;
+        let dims = OrgStatsDims {
+            num_tasks,
+            num_reactions: self.env.num_reactions().max(0) as usize,
+            sense_size: self.stats.sense_size.max(0) as usize,
+        };
         {
             let stats = &mut self.stats;
             stats.sum_fitness.clear();
@@ -1493,218 +1524,450 @@ impl World {
             stats.zero_reactions();
         }
 
-        let mut num_breed_true = 0;
-        let mut num_parasites = 0;
-        let mut num_no_birth = 0;
-        let mut num_multi_thread = 0;
-        let mut num_single_thread = 0;
-        let mut num_threads = 0;
-        let mut num_modified = 0;
-
-        // Maximums...
-        let mut max_merit = 0.0_f64;
-        let mut max_fitness = 0.0_f64;
-        let mut max_gestation_time = 0;
-        let mut max_genome_length = 0;
-
-        // Minimums...
-        let mut min_merit = f64::from(f32::MAX);
-        let mut min_fitness = f64::from(f32::MAX);
-        let mut min_gestation_time = i32::MAX;
-        let mut min_genome_length = i32::MAX;
-
+        let mut totals = OrgStatsTotals::new();
         let collect_env = self.stats.m_collect_env_test_stats;
-        for i in 0..self.pop.live_org_list.len() {
-            let c = self.pop.live_org_list[i] as usize;
-            // The walk is bound by cache misses on each organism's state:
-            // start the next organism's loads now so they overlap with
-            // the work on this one.
-            if let Some(next) = self
-                .pop
-                .live_org_list
-                .get(i + 1)
-                .and_then(|&n| self.pop.orgs.get(n as usize))
-                .and_then(Option::as_deref)
-            {
-                touch_stats_fields(next);
+        match pool {
+            Some(pool) if !collect_env && self.pop.live_org_list.len() >= STATS_POOL_MIN => {
+                self.gather_organism_stats(pool, dims, &mut totals);
             }
+            _ => {
+                let mut events = Vec::new();
+                for i in 0..self.pop.live_org_list.len() {
+                    let c = self.pop.live_org_list[i] as usize;
+                    // The walk is bound by cache misses on each organism's
+                    // state: start the next organism's loads now so they
+                    // overlap with the work on this one.
+                    if let Some(next) = self
+                        .pop
+                        .live_org_list
+                        .get(i + 1)
+                        .and_then(|&n| self.pop.orgs.get(n as usize))
+                        .and_then(Option::as_deref)
+                    {
+                        touch_stats_fields(next);
+                    }
 
-            if collect_env {
-                if let Some(g) = self.systematics.genotype_of(&self.pop.membership[c]) {
-                    if let Some(metrics) = self.genome_test_metrics(g) {
-                        for (j, &count) in metrics.task_counts.iter().enumerate().take(num_tasks) {
-                            if count > 0 {
-                                self.stats.task_test_count[j] += 1;
+                    if collect_env {
+                        if let Some(g) = self.systematics.genotype_of(&self.pop.membership[c]) {
+                            if let Some(metrics) = self.genome_test_metrics(g) {
+                                for (j, &count) in
+                                    metrics.task_counts.iter().enumerate().take(num_tasks)
+                                {
+                                    if count > 0 {
+                                        self.stats.task_test_count[j] += 1;
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            let stats = &mut self.stats;
-            let Some(org) = self.pop.orgs[c].as_mut() else {
-                continue;
-            };
-            let state = &mut org.state;
-            let phenotype = &state.phenotype;
-            let cur_merit = phenotype.merit.get_double();
-            let cur_fitness = phenotype.fitness;
-            let cur_gestation_time = phenotype.gestation_time;
-            let cur_genome_length = phenotype.genome_length;
-
-            {
-                let inst_set = org.hardware.inst_set().inst_set_name();
-                let counts = stats.inst_from_message_exe_counts_for_inst_set(inst_set);
-                for (a, &v) in counts.iter_mut().zip(&phenotype.last_from_message_count) {
-                    a.add(v);
+                    let Some(org) = self.pop.orgs[c].as_deref_mut() else {
+                        continue;
+                    };
+                    events.clear();
+                    let rec = gather_org_stats(org, dims, &mut events);
+                    totals.add(&mut self.stats, &rec, &events);
                 }
             }
-
-            stats.sum_fitness.add(cur_fitness);
-            stats.sum_merit.add(cur_merit);
-            stats.sum_gestation.add(f64::from(phenotype.gestation_time));
-            stats.sum_creature_age.add(f64::from(phenotype.age));
-            stats.sum_generation.add(f64::from(phenotype.generation));
-            stats.sum_neutral_metric.add(phenotype.neutral_metric);
-            stats.sum_lineage_label.add(f64::from(state.lineage_label));
-            let copy_mut_prob = state.mut_rates.copy.mut_prob;
-            let div_mut = state.mut_rates.divide.divide_mut_prob / phenotype.div_type;
-            stats.sum_copy_mut_rate.push(copy_mut_prob);
-            stats.sum_log_copy_mut_rate.push(copy_mut_prob.ln());
-            stats.sum_div_mut_rate.push(div_mut);
-            stats.sum_log_div_mut_rate.push(div_mut.ln());
-            stats.sum_copy_size.add(f64::from(phenotype.copied_size));
-            stats.sum_exe_size.add(f64::from(phenotype.executed_size));
-
-            if cur_merit > max_merit {
-                max_merit = cur_merit;
-            }
-            if cur_fitness > max_fitness {
-                max_fitness = cur_fitness;
-            }
-            if cur_gestation_time > max_gestation_time {
-                max_gestation_time = cur_gestation_time;
-            }
-            if cur_genome_length > max_genome_length {
-                max_genome_length = cur_genome_length;
-            }
-
-            if cur_merit < min_merit {
-                min_merit = cur_merit;
-            }
-            if cur_fitness < min_fitness {
-                min_fitness = cur_fitness;
-            }
-            if cur_gestation_time < min_gestation_time {
-                min_gestation_time = cur_gestation_time;
-            }
-            if cur_genome_length < min_genome_length {
-                min_genome_length = cur_genome_length;
-            }
-
-            // Test what tasks this creatures has completed.
-            for j in 0..num_tasks {
-                if phenotype.cur_task_count[j] > 0 {
-                    stats.add_cur_task(j);
-                    stats.add_cur_task_quality(j, phenotype.cur_task_quality[j]);
-                }
-                if phenotype.last_task_count[j] > 0 {
-                    stats.add_last_task(j);
-                    stats.add_last_task_quality(j, phenotype.last_task_quality[j]);
-                    stats.inc_task_exe_count(j, phenotype.last_task_count[j]);
-                }
-                if phenotype.cur_host_tasks[j] > 0 {
-                    stats.add_cur_host_task(j);
-                }
-                if phenotype.last_host_tasks[j] > 0 {
-                    stats.add_last_host_task(j);
-                }
-                if phenotype.cur_para_tasks[j] > 0 {
-                    stats.add_cur_parasite_task(j);
-                }
-                if phenotype.last_para_tasks[j] > 0 {
-                    stats.add_last_parasite_task(j);
-                }
-                if phenotype.cur_internal_task_count[j] > 0 {
-                    stats.add_cur_internal_task(j);
-                    stats.add_cur_internal_task_quality(j, phenotype.cur_internal_task_quality[j]);
-                }
-                if phenotype.last_internal_task_count[j] > 0 {
-                    stats.add_last_internal_task(j);
-                    stats
-                        .add_last_internal_task_quality(j, phenotype.last_internal_task_quality[j]);
-                }
-            }
-
-            // Record what add bonuses this organism garnered for different
-            // reactions
-            for j in 0..num_reactions {
-                if phenotype.cur_reaction_count[j] > 0 {
-                    stats.add_cur_reaction(j);
-                    stats.add_cur_reaction_add_reward(j, phenotype.cur_reaction_add_reward[j]);
-                }
-                if phenotype.last_reaction_count[j] > 0 {
-                    stats.add_last_reaction(j);
-                    stats.inc_reaction_exe_count(j, phenotype.last_reaction_count[j]);
-                    stats.add_last_reaction_add_reward(j, phenotype.last_reaction_add_reward[j]);
-                }
-            }
-
-            // Test what resource combinations this creature has sensed
-            for j in 0..stats.sense_size.max(0) as usize {
-                if phenotype.last_sense_count[j] > 0 {
-                    stats.sense_last_count[j] += 1;
-                    stats.sense_last_exe_count[j] += phenotype.last_sense_count[j];
-                }
-            }
-
-            // Increment the counts for all qualities the organism has...
-            num_parasites += state.parasites.len() as i32;
-            if phenotype.parent_true {
-                num_breed_true += 1;
-            }
-            if phenotype.num_divides == 0 {
-                num_no_birth += 1;
-            }
-            if phenotype.is_multi_thread {
-                num_multi_thread += 1;
-            } else {
-                num_single_thread += 1;
-            }
-            if phenotype.is_modified {
-                num_modified += 1;
-            }
-
-            // Hardware specific collections...
-            stats
-                .sum_mem_size
-                .add(f64::from(org.hardware.memory().size()));
-            num_threads += org.hardware.num_threads();
-
-            // Increment the age of this organism.
-            state.phenotype.age += 1;
         }
-
-        let stats = &mut self.stats;
-        stats.num_breed_true_creatures = num_breed_true;
-        stats.num_no_birth_creatures = num_no_birth;
-        stats.num_parasites = num_parasites;
-        stats.num_single_thread_creatures = num_single_thread;
-        stats.num_multi_thread_creatures = num_multi_thread;
-        stats.m_num_threads = num_threads;
-        stats.num_modified = num_modified;
-
-        stats.max_merit = max_merit;
-        stats.max_fitness = max_fitness;
-        stats.max_gestation_time = max_gestation_time;
-        stats.max_genome_length = max_genome_length;
-
-        stats.min_merit = min_merit;
-        stats.min_fitness = min_fitness;
-        stats.min_gestation_time = min_gestation_time;
-        stats.min_genome_length = min_genome_length;
+        totals.store(&mut self.stats);
 
         self.pop.resource_count.update_global_resources();
+    }
+
+    /// The organisms' part of [`World::update_organism_stats_with`] on the
+    /// threads of `pool`: each task reads the organisms of a fixed run of
+    /// cells into records (and ages them), then the sums take the records
+    /// in `live_org_list` order, as the walk without a pool does.
+    fn gather_organism_stats(
+        &mut self,
+        pool: &rayon::ThreadPool,
+        dims: OrgStatsDims,
+        totals: &mut OrgStatsTotals,
+    ) {
+        let mut live = vec![false; self.pop.orgs.len()];
+        for &c in &self.pop.live_org_list {
+            live[c as usize] = true;
+        }
+        let orgs = &mut self.pop.orgs;
+        let chunks: Vec<(Vec<Option<OrgStatsRecord<'_>>>, Vec<StatsEvent>)> = pool.install(|| {
+            orgs.par_chunks_mut(STATS_CHUNK)
+                .zip(live.par_chunks(STATS_CHUNK))
+                .map(|(orgs, live)| {
+                    let mut events = Vec::new();
+                    let records = orgs
+                        .iter_mut()
+                        .zip(live)
+                        .map(|(slot, &live)| {
+                            let org = slot.as_deref_mut().filter(|_| live)?;
+                            Some(gather_org_stats(org, dims, &mut events))
+                        })
+                        .collect();
+                    (records, events)
+                })
+                .collect()
+        });
+        for &c in &self.pop.live_org_list {
+            let c = c as usize;
+            let (records, events) = &chunks[c / STATS_CHUNK];
+            if let Some(rec) = &records[c % STATS_CHUNK] {
+                totals.add(&mut self.stats, rec, events);
+            }
+        }
+    }
+}
+
+/// Fewer living organisms than this, and [`World::update_organism_stats_with`]
+/// walks them on the calling thread even with a pool.
+const STATS_POOL_MIN: usize = 512;
+
+/// The cells one task of [`World::gather_organism_stats`] reads.
+const STATS_CHUNK: usize = 256;
+
+/// The sizes of the per-organism arrays [`World::update_organism_stats`]
+/// reads.
+#[derive(Clone, Copy)]
+struct OrgStatsDims {
+    num_tasks: usize,
+    num_reactions: usize,
+    sense_size: usize,
+}
+
+/// One organism's task, reaction or sense count as
+/// [`World::update_organism_stats`] adds it to the stats.
+#[derive(Clone, Copy)]
+enum StatsEvent {
+    CurTask(usize, f64),
+    LastTask(usize, f64, i32),
+    CurHostTask(usize),
+    LastHostTask(usize),
+    CurParasiteTask(usize),
+    LastParasiteTask(usize),
+    CurInternalTask(usize, f64),
+    LastInternalTask(usize, f64),
+    CurReaction(usize, f64),
+    LastReaction(usize, i32, f64),
+    Sense(usize, i32),
+}
+
+/// What [`World::update_organism_stats`] reads from one organism.
+struct OrgStatsRecord<'a> {
+    inst_set: &'a str,
+    from_message: &'a [i32],
+    merit: f64,
+    fitness: f64,
+    gestation_time: i32,
+    age: i32,
+    generation: i32,
+    neutral_metric: f64,
+    lineage_label: i32,
+    copy_mut_prob: f64,
+    div_mut: f64,
+    copied_size: i32,
+    executed_size: i32,
+    genome_length: i32,
+    parasites: i32,
+    parent_true: bool,
+    no_birth: bool,
+    multi_thread: bool,
+    modified: bool,
+    mem_size: i32,
+    num_threads: i32,
+    /// Its task, reaction and sense counts, in the order the C++ loop
+    /// body adds them, in the buffer the record was gathered into.
+    events: std::ops::Range<usize>,
+}
+
+/// Reads `org` for [`World::update_organism_stats`], pushing its counts to
+/// `events`, and ages it (the last statement of the C++ loop body).
+fn gather_org_stats<'a>(
+    org: &'a mut Organism,
+    dims: OrgStatsDims,
+    events: &mut Vec<StatsEvent>,
+) -> OrgStatsRecord<'a> {
+    let age = org.state.phenotype.age;
+    org.state.phenotype.age += 1;
+    let org: &'a Organism = org;
+    let state = &org.state;
+    let p = &state.phenotype;
+
+    let start = events.len();
+    // Test what tasks this creatures has completed.
+    for j in 0..dims.num_tasks {
+        if p.cur_task_count[j] > 0 {
+            events.push(StatsEvent::CurTask(j, p.cur_task_quality[j]));
+        }
+        if p.last_task_count[j] > 0 {
+            events.push(StatsEvent::LastTask(
+                j,
+                p.last_task_quality[j],
+                p.last_task_count[j],
+            ));
+        }
+        if p.cur_host_tasks[j] > 0 {
+            events.push(StatsEvent::CurHostTask(j));
+        }
+        if p.last_host_tasks[j] > 0 {
+            events.push(StatsEvent::LastHostTask(j));
+        }
+        if p.cur_para_tasks[j] > 0 {
+            events.push(StatsEvent::CurParasiteTask(j));
+        }
+        if p.last_para_tasks[j] > 0 {
+            events.push(StatsEvent::LastParasiteTask(j));
+        }
+        if p.cur_internal_task_count[j] > 0 {
+            events.push(StatsEvent::CurInternalTask(
+                j,
+                p.cur_internal_task_quality[j],
+            ));
+        }
+        if p.last_internal_task_count[j] > 0 {
+            events.push(StatsEvent::LastInternalTask(
+                j,
+                p.last_internal_task_quality[j],
+            ));
+        }
+    }
+    // Record what add bonuses this organism garnered for different
+    // reactions
+    for j in 0..dims.num_reactions {
+        if p.cur_reaction_count[j] > 0 {
+            events.push(StatsEvent::CurReaction(j, p.cur_reaction_add_reward[j]));
+        }
+        if p.last_reaction_count[j] > 0 {
+            events.push(StatsEvent::LastReaction(
+                j,
+                p.last_reaction_count[j],
+                p.last_reaction_add_reward[j],
+            ));
+        }
+    }
+    // Test what resource combinations this creature has sensed
+    for j in 0..dims.sense_size {
+        if p.last_sense_count[j] > 0 {
+            events.push(StatsEvent::Sense(j, p.last_sense_count[j]));
+        }
+    }
+
+    OrgStatsRecord {
+        inst_set: org.hardware.inst_set().inst_set_name(),
+        from_message: &p.last_from_message_count,
+        merit: p.merit.get_double(),
+        fitness: p.fitness,
+        gestation_time: p.gestation_time,
+        age,
+        generation: p.generation,
+        neutral_metric: p.neutral_metric,
+        lineage_label: state.lineage_label,
+        copy_mut_prob: state.mut_rates.copy.mut_prob,
+        div_mut: state.mut_rates.divide.divide_mut_prob / p.div_type,
+        copied_size: p.copied_size,
+        executed_size: p.executed_size,
+        genome_length: p.genome_length,
+        parasites: state.parasites.len() as i32,
+        parent_true: p.parent_true,
+        no_birth: p.num_divides == 0,
+        multi_thread: p.is_multi_thread,
+        modified: p.is_modified,
+        mem_size: org.hardware.memory().size(),
+        num_threads: org.hardware.num_threads(),
+        events: start..events.len(),
+    }
+}
+
+/// The totals [`World::update_organism_stats`] keeps outside `Stats` while
+/// it walks the organisms.
+struct OrgStatsTotals {
+    num_breed_true: i32,
+    num_parasites: i32,
+    num_no_birth: i32,
+    num_multi_thread: i32,
+    num_single_thread: i32,
+    num_threads: i32,
+    num_modified: i32,
+    max_merit: f64,
+    max_fitness: f64,
+    max_gestation_time: i32,
+    max_genome_length: i32,
+    min_merit: f64,
+    min_fitness: f64,
+    min_gestation_time: i32,
+    min_genome_length: i32,
+    /// The from-message counts of the last organism's instruction set,
+    /// out of `stats` while organisms of that set follow one another: one
+    /// map lookup per instruction set instead of two per organism. Put
+    /// back by [`OrgStatsTotals::store`].
+    msg_counts: Option<(String, Vec<avida_apto::Accumulator<i32>>)>,
+}
+
+impl OrgStatsTotals {
+    fn new() -> Self {
+        OrgStatsTotals {
+            num_breed_true: 0,
+            num_parasites: 0,
+            num_no_birth: 0,
+            num_multi_thread: 0,
+            num_single_thread: 0,
+            num_threads: 0,
+            num_modified: 0,
+            // Maximums...
+            max_merit: 0.0,
+            max_fitness: 0.0,
+            max_gestation_time: 0,
+            max_genome_length: 0,
+            // Minimums...
+            min_merit: f64::from(f32::MAX),
+            min_fitness: f64::from(f32::MAX),
+            min_gestation_time: i32::MAX,
+            min_genome_length: i32::MAX,
+            msg_counts: None,
+        }
+    }
+
+    /// The C++ loop body for one organism, from its record.
+    fn add(&mut self, stats: &mut Stats, rec: &OrgStatsRecord<'_>, events: &[StatsEvent]) {
+        if self
+            .msg_counts
+            .as_ref()
+            .is_none_or(|(name, _)| name != rec.inst_set)
+        {
+            if let Some((name, counts)) = self.msg_counts.take() {
+                *stats.inst_from_message_exe_counts_for_inst_set(&name) = counts;
+            }
+            let counts =
+                std::mem::take(stats.inst_from_message_exe_counts_for_inst_set(rec.inst_set));
+            self.msg_counts = Some((rec.inst_set.to_string(), counts));
+        }
+        if let Some((_, counts)) = self.msg_counts.as_mut() {
+            for (a, &v) in counts.iter_mut().zip(rec.from_message) {
+                a.add(v);
+            }
+        }
+
+        stats.sum_fitness.add(rec.fitness);
+        stats.sum_merit.add(rec.merit);
+        stats.sum_gestation.add(f64::from(rec.gestation_time));
+        stats.sum_creature_age.add(f64::from(rec.age));
+        stats.sum_generation.add(f64::from(rec.generation));
+        stats.sum_neutral_metric.add(rec.neutral_metric);
+        stats.sum_lineage_label.add(f64::from(rec.lineage_label));
+        stats.sum_copy_mut_rate.push(rec.copy_mut_prob);
+        stats.sum_log_copy_mut_rate.push(rec.copy_mut_prob.ln());
+        stats.sum_div_mut_rate.push(rec.div_mut);
+        stats.sum_log_div_mut_rate.push(rec.div_mut.ln());
+        stats.sum_copy_size.add(f64::from(rec.copied_size));
+        stats.sum_exe_size.add(f64::from(rec.executed_size));
+
+        if rec.merit > self.max_merit {
+            self.max_merit = rec.merit;
+        }
+        if rec.fitness > self.max_fitness {
+            self.max_fitness = rec.fitness;
+        }
+        if rec.gestation_time > self.max_gestation_time {
+            self.max_gestation_time = rec.gestation_time;
+        }
+        if rec.genome_length > self.max_genome_length {
+            self.max_genome_length = rec.genome_length;
+        }
+
+        if rec.merit < self.min_merit {
+            self.min_merit = rec.merit;
+        }
+        if rec.fitness < self.min_fitness {
+            self.min_fitness = rec.fitness;
+        }
+        if rec.gestation_time < self.min_gestation_time {
+            self.min_gestation_time = rec.gestation_time;
+        }
+        if rec.genome_length < self.min_genome_length {
+            self.min_genome_length = rec.genome_length;
+        }
+
+        for event in &events[rec.events.clone()] {
+            match *event {
+                StatsEvent::CurTask(j, quality) => {
+                    stats.add_cur_task(j);
+                    stats.add_cur_task_quality(j, quality);
+                }
+                StatsEvent::LastTask(j, quality, count) => {
+                    stats.add_last_task(j);
+                    stats.add_last_task_quality(j, quality);
+                    stats.inc_task_exe_count(j, count);
+                }
+                StatsEvent::CurHostTask(j) => stats.add_cur_host_task(j),
+                StatsEvent::LastHostTask(j) => stats.add_last_host_task(j),
+                StatsEvent::CurParasiteTask(j) => stats.add_cur_parasite_task(j),
+                StatsEvent::LastParasiteTask(j) => stats.add_last_parasite_task(j),
+                StatsEvent::CurInternalTask(j, quality) => {
+                    stats.add_cur_internal_task(j);
+                    stats.add_cur_internal_task_quality(j, quality);
+                }
+                StatsEvent::LastInternalTask(j, quality) => {
+                    stats.add_last_internal_task(j);
+                    stats.add_last_internal_task_quality(j, quality);
+                }
+                StatsEvent::CurReaction(j, reward) => {
+                    stats.add_cur_reaction(j);
+                    stats.add_cur_reaction_add_reward(j, reward);
+                }
+                StatsEvent::LastReaction(j, count, reward) => {
+                    stats.add_last_reaction(j);
+                    stats.inc_reaction_exe_count(j, count);
+                    stats.add_last_reaction_add_reward(j, reward);
+                }
+                StatsEvent::Sense(j, count) => {
+                    stats.sense_last_count[j] += 1;
+                    stats.sense_last_exe_count[j] += count;
+                }
+            }
+        }
+
+        // Increment the counts for all qualities the organism has...
+        self.num_parasites += rec.parasites;
+        if rec.parent_true {
+            self.num_breed_true += 1;
+        }
+        if rec.no_birth {
+            self.num_no_birth += 1;
+        }
+        if rec.multi_thread {
+            self.num_multi_thread += 1;
+        } else {
+            self.num_single_thread += 1;
+        }
+        if rec.modified {
+            self.num_modified += 1;
+        }
+
+        // Hardware specific collections...
+        stats.sum_mem_size.add(f64::from(rec.mem_size));
+        self.num_threads += rec.num_threads;
+    }
+
+    /// The totals into `stats`, after the last organism.
+    fn store(self, stats: &mut Stats) {
+        if let Some((name, counts)) = self.msg_counts {
+            *stats.inst_from_message_exe_counts_for_inst_set(&name) = counts;
+        }
+        stats.num_breed_true_creatures = self.num_breed_true;
+        stats.num_no_birth_creatures = self.num_no_birth;
+        stats.num_parasites = self.num_parasites;
+        stats.num_single_thread_creatures = self.num_single_thread;
+        stats.num_multi_thread_creatures = self.num_multi_thread;
+        stats.m_num_threads = self.num_threads;
+        stats.num_modified = self.num_modified;
+
+        stats.max_merit = self.max_merit;
+        stats.max_fitness = self.max_fitness;
+        stats.max_gestation_time = self.max_gestation_time;
+        stats.max_genome_length = self.max_genome_length;
+
+        stats.min_merit = self.min_merit;
+        stats.min_fitness = self.min_fitness;
+        stats.min_gestation_time = self.min_gestation_time;
+        stats.min_genome_length = self.min_genome_length;
     }
 }
 

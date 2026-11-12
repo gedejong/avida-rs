@@ -52,6 +52,7 @@ pub mod migration_matrix;
 pub mod mini_trace;
 pub mod movement;
 pub mod open_slice;
+pub mod parallel;
 pub mod parasites;
 pub mod pop_demes;
 pub mod pop_interface;

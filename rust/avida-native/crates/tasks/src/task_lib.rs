@@ -180,6 +180,13 @@ impl TaskLib {
             .push(TaskEntry::new(name, desc, id, kind, args));
     }
 
+    /// Whether `entry` names an `optimize` task.
+    fn is_optimize(&self, entry: Option<usize>) -> bool {
+        entry
+            .and_then(|id| self.task_array.get(id))
+            .is_some_and(|t| matches!(t.kind, TaskKind::Optimize))
+    }
+
     /// `cTaskLib::AddTask(name, info, envreqs, feedback)`: register the task
     /// called `name` (arguments in `info`) and return its id, or `None` after
     /// reporting through `feedback`.
@@ -210,6 +217,7 @@ impl TaskLib {
 
         // Match up this name to its corresponding task
         let start_size = self.task_array.len();
+        let errors_before = feedback.num_errors();
 
         if let Some(st) = SIMPLE_TASKS.iter().find(|t| t.name == name) {
             self.new_task(name, st.desc, st.kind, st.reqs, None);
@@ -219,7 +227,15 @@ impl TaskLib {
 
         // Make sure we have actually found a task
         if self.task_array.len() == start_size {
-            feedback.error(format!("unknown/unprocessed task entry '{}'", name));
+            // A task the port refuses (`unsupported:`) needs no second error.
+            let refused = feedback
+                .errors()
+                .iter()
+                .skip(errors_before)
+                .any(|e| e.starts_with("unsupported:"));
+            if !refused {
+                feedback.error(format!("unknown/unprocessed task entry '{}'", name));
+            }
             return None;
         }
 
@@ -360,6 +376,12 @@ impl TaskLib {
                 schema.add_double("thresh", 3, -1.0);
                 schema.add_double("threshMax", 4, -1.0);
                 if let Some(args) = ArgContainer::load(info, &schema, feedback) {
+                    // Arguments the reference binary crashes, aborts or hangs on
+                    // when it evaluates the task.
+                    if let Some(msg) = eval_misc::optimize_unsupported(&args) {
+                        feedback.error(msg);
+                        return;
+                    }
                     if args.get_int(1) != 0 {
                         envreqs.set_min_outputs(args.get_int(2).wrapping_mul(args.get_int(3)));
                     } else {
@@ -640,6 +662,8 @@ impl TaskLib {
             TaskKind::Add => eval_math::eval_add(input, output),
             TaskKind::Add3 => eval_math::eval_add3(input, output),
             TaskKind::Sub => eval_math::eval_sub(input, output),
+            TaskKind::AddLowBits => eval_math::eval_add_lowbits(input, output),
+            TaskKind::AddMiss => eval_math::eval_add_miss(input, output),
             TaskKind::DontCare => eval_misc::eval_dont_care(),
             TaskKind::Logic(op) => eval_logic(op, ctx.logic_id),
             TaskKind::Logic3(targets) => eval_logic3(targets, ctx.logic_id),
@@ -677,6 +701,10 @@ impl TaskLib {
     /// (a `NULL` dereference in C++) evaluates to 0.0.
     pub fn test_output(&self, ctx: &mut TaskContext, world: &mut dyn TaskWorld) -> f64 {
         if let Some(v) = self.test_output_pure(ctx) {
+            // `Task_Optimize` reports a quality above 1 on standard output.
+            if v > 1.0 && self.is_optimize(ctx.task_entry) {
+                world.task_stdout(&eval_misc::optimize_quality_note(v, ctx.task_value));
+            }
             return v;
         }
         let Some(id) = ctx.task_entry else {

@@ -46,6 +46,17 @@ pub trait Hardware: Send {
     fn hw_type(&self) -> i32;
     /// `SupportsSpeculative()`
     fn supports_speculative(&self) -> bool;
+    /// Whether the organism can run bursts in the parallel phase of
+    /// `EXECUTION_MODE 1` (not in the C++): its speculative steps stop
+    /// before every instruction that is not on the hardware type's
+    /// parallel allow-list while [`HardwareBase::parallel_burst`] is set,
+    /// and nothing they do outside the instructions reaches the world
+    /// (no tracer, promoters, implicit reproduction, resource costs ...).
+    /// The world runs every instruction of an organism without it through
+    /// the exact code path.
+    fn parallel_capable(&self) -> bool {
+        false
+    }
     /// `GetInstSet()`
     fn inst_set(&self) -> &Arc<InstSet> {
         &self.base().inst_set
@@ -368,6 +379,12 @@ pub struct HardwareBase {
     pub ext_mem: Vec<i32>,
     /// `m_implicit_repro_active`
     pub implicit_repro_active: bool,
+    /// Set by the world while the organism runs a burst in the parallel
+    /// phase of `EXECUTION_MODE 1` (not in the C++): a speculative step
+    /// then also stops before every instruction that is not on the
+    /// hardware type's parallel allow-list (see [`crate::parallel`]).
+    /// Always false in the exact mode.
+    pub parallel_burst: bool,
 }
 
 impl std::fmt::Debug for HardwareBase {
@@ -443,6 +460,7 @@ impl HardwareBase {
             task_switching_cost: 0,
             ext_mem: Vec::new(),
             implicit_repro_active,
+            parallel_burst: false,
         }
     }
 

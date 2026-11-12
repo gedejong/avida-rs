@@ -97,6 +97,7 @@ pub mod nhardware;
 pub mod org_interface;
 pub mod org_sensor;
 pub mod organism;
+pub mod parallel;
 pub mod task_adapter;
 pub mod test_cpu;
 pub mod tracer;

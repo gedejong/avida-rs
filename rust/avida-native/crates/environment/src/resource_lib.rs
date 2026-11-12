@@ -2,15 +2,17 @@
 
 use crate::resource::Resource;
 use crate::resource_history::ResourceHistory;
-use std::cell::OnceCell;
+use std::sync::OnceLock;
 
 /// `cResourceLib`: all resources in definition order; a resource's id is its
 /// position.
 #[derive(Debug, Clone, Default)]
 pub struct ResourceLib {
     resources: Vec<Resource>,
-    /// `m_initial_levels` (computed lazily by a const method in C++).
-    initial_levels: OnceCell<ResourceHistory>,
+    /// `m_initial_levels` (computed lazily by a const method in C++). A
+    /// `OnceLock` rather than a `OnceCell` so that the environment can be
+    /// read from several threads (the parallel execution mode).
+    initial_levels: OnceLock<ResourceHistory>,
     num_deme_resources: i32,
 }
 

@@ -79,7 +79,12 @@ impl<T> TaskEvaluator<T> for Org {
     fn set_first_reaction(&mut self, reaction_id: i32) {
         self.first_reactions.push(reaction_id);
     }
-    fn task_probability(&mut self, _rng: &mut AvidaRng, task_id: i32) -> f64 {
+    fn task_probability(
+        &mut self,
+        _env: &mut Environment<T>,
+        _rng: &mut AvidaRng,
+        task_id: i32,
+    ) -> f64 {
         self.log.push(format!("prob {}", task_id));
         self.task_prob
     }
@@ -810,6 +815,27 @@ fn phenotypic_plasticity_bonus_methods() {
     );
     assert!(!r.active());
     assert!(!log.iter().any(|l| l.starts_with("prob")));
+}
+
+#[test]
+fn uses_phenplast_bonus_finds_any_non_default_method() {
+    let config = Config::new();
+    let env = env_from(
+        &[
+            "REACTION A not process:value=1",
+            "REACTION B nand process:value=1:phenplastbonus=default",
+        ],
+        &config,
+    );
+    assert!(!env.uses_phenplast_bonus());
+    let env = env_from(
+        &[
+            "REACTION A not process:value=1",
+            "REACTION B nand process:value=1:phenplastbonus=nobonus",
+        ],
+        &config,
+    );
+    assert!(env.uses_phenplast_bonus());
 }
 
 #[test]

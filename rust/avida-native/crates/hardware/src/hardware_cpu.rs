@@ -1311,6 +1311,29 @@ impl Hardware for HardwareCpu {
         true
     }
 
+    /// Everything a speculative step does besides its instruction stays
+    /// in the organism unless one of these is on: parallel thread slicing
+    /// (several instructions per step, which speculation cannot cut),
+    /// promoters and constitutive regulation (`promoter_terminate`,
+    /// `sense_regulate`), implicit reproduction (a divide after any
+    /// instruction), resource costs and the task-switching penalty (both
+    /// reach the world in `pay_pre_costs`), and any trace.
+    fn parallel_capable(&self) -> bool {
+        let b = &self.base;
+        !self.thread_slicing_parallel
+            && !self.promoters_enabled
+            && !self.constitutive_regulation
+            && !b.implicit_repro_active
+            && !b.has_res_costs
+            && !b.has_fem_res_costs
+            && b.task_switching_cost == 0
+            && b.tracer.is_none()
+            && !b.minitrace
+            && !b.microtrace
+            && !b.topnavtrace
+            && !b.reprotrace
+    }
+
     fn reset(&mut self, org: &mut OrgState, world: &mut dyn OrgInterface) {
         self.full_reset(org, world);
     }
@@ -1379,7 +1402,13 @@ impl Hardware for HardwareCpu {
             let valid = cur_inst.op() < self.base.inst_set.size();
 
             if speculative
-                && (self.spec_die || (valid && self.base.inst_set.should_stall(cur_inst)))
+                && (self.spec_die
+                    || (valid
+                        && (self.base.inst_set.should_stall(cur_inst)
+                            || (self.base.parallel_burst
+                                && !crate::parallel::cpu_parallel_ok(
+                                    self.base.inst_set.lib_function_index(cur_inst),
+                                )))))
             {
                 self.cur_thread = last_thread;
                 org.phenotype.dec_cpu_cycles_used();

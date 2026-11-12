@@ -8,9 +8,15 @@
 //! lower-cased setting name), plus the value lists of the custom formats
 //! (`INSTSETS`, retrievable with [`Config::instsets`] or
 //! [`Config::format_lines`]).
+//!
+//! Settings of the port that the C++ does not have (`EXECUTION_MODE`,
+//! `EXECUTION_THREADS`) live in [`crate::port_settings`], outside the
+//! generated table: [`Config::get`], [`Config::set`], `-set` and
+//! [`Config::load`] know them, the C++ printers do not list them.
 
 use crate::feedback::Feedback;
 use crate::init_file::InitFile;
+use crate::port_settings::{self, PORT_ENTRIES};
 use crate::string_util::{as_double, as_int, format_ostream_double, pop, pop_word, split_list};
 
 pub use crate::config_table::{Config, FORMATS, GROUPS, NUM_ENTRIES};
@@ -146,12 +152,14 @@ impl Config {
     /// `cAvidaConfig::Get(entry, ret)` / `Get()` of a setting by primary name
     /// (the value as the C++ `AsString()` renders it: doubles as `%f`).
     pub fn get(&self, name: &str) -> Option<String> {
-        find_entry(name).map(|e| self.as_string_by_id(e.id))
+        find_entry(name)
+            .map(|e| self.as_string_by_id(e.id))
+            .or_else(|| self.port.as_string(name))
     }
 
     /// `cAvidaConfig::HasEntry(entry)`.
     pub fn has_entry(&self, name: &str) -> bool {
-        find_entry(name).is_some()
+        find_entry(name).is_some() || port_settings::find(name).is_some()
     }
 
     /// `cAvidaConfig::Set(entry, val)`: load `val` into the setting named
@@ -160,6 +168,9 @@ impl Config {
     pub fn set(&mut self, name: &str, value: &str) -> bool {
         if let Some(e) = find_entry(name) {
             self.load_str_by_id(e.id, value);
+            return true;
+        }
+        if self.port.load_str(name, value) {
             return true;
         }
         for (fi, f) in FORMATS.iter().enumerate() {
@@ -190,6 +201,15 @@ impl Config {
                         }
                         break;
                     }
+                }
+            }
+        }
+        for e in PORT_ENTRIES {
+            if let Some(pos) = sets.iter().position(|(k, _)| k == e.name) {
+                let (_, val) = sets.remove(pos);
+                self.port.load_str(e.name, &val);
+                if self.verbosity > 1 {
+                    out.push(format!("CmdLine Set: {} {}", e.name, val));
                 }
             }
         }
@@ -263,6 +283,12 @@ impl Config {
                 let v = init_file.read_string_names(&names, e.default, warn_default);
                 self.load_str_by_id(e.id, &v);
             }
+        }
+        // The port's own settings: never a warning when absent (no config
+        // file written for the C++ has them).
+        for e in PORT_ENTRIES {
+            let v = init_file.read_string(e.name, e.default, false);
+            self.port.load_str(e.name, &v);
         }
 
         // Second pass over the file for custom-format keywords.
@@ -395,6 +421,7 @@ impl Config {
                 }
             }
         }
+        o.push_str(&self.port.review_lines());
         o.push('\n');
         o
     }
@@ -575,5 +602,46 @@ mod tests {
         assert!(r.contains(" WORLD_X 20 (default=60)\n"));
         assert!(r.contains(" COPY_MUT_PROB 0.02 (default=0.0075)\n"));
         assert!(r.contains(" DATA_DIR out (default=data)\n"));
+    }
+
+    #[test]
+    fn port_settings_stay_out_of_the_cpp_printers() {
+        let mut c = Config::new();
+        let printed = c.print_to_string();
+        let status = c.status();
+        let names: Vec<String> = c.iter().map(|e| e.def.names[0].to_string()).collect();
+        assert_eq!(c.get("EXECUTION_MODE").as_deref(), Some("0"));
+        assert!(c.has_entry("EXECUTION_THREADS"));
+        assert!(c.set("EXECUTION_MODE", "1"));
+        assert_eq!(c.port.execution_mode, 1);
+        let mut sets = vec![("EXECUTION_THREADS".to_string(), "3".to_string())];
+        assert!(c.set_from_map(&mut sets).is_empty());
+        assert!(sets.is_empty());
+        assert_eq!(c.port.execution_threads, 3);
+        // What the C++ prints about its settings does not change.
+        assert_eq!(c.print_to_string(), printed);
+        assert_eq!(c.status(), status);
+        assert!(!printed.contains("EXECUTION_MODE"));
+        assert!(!names.iter().any(|n| n.starts_with("EXECUTION_")));
+        assert!(c
+            .print_review()
+            .ends_with(" EXECUTION_MODE 1 (default=0)\n EXECUTION_THREADS 3 (default=0)\n\n"));
+        // From a config file, without a warning when absent.
+        let mut dir = std::env::temp_dir();
+        dir.push(format!("avida_config_port_{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let text = Config::new().print_to_string();
+        std::fs::write(dir.join("a.cfg"), &text).unwrap();
+        std::fs::write(dir.join("b.cfg"), format!("{text}EXECUTION_MODE 1\n")).unwrap();
+        let mut a = Config::new();
+        let mut fb = Feedback::new();
+        assert!(a.load("a.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
+        assert_eq!(a.port.execution_mode, 0);
+        assert_eq!(fb.num_messages(), 0, "{}", fb.render());
+        let mut b = Config::new();
+        let mut fb = Feedback::new();
+        assert!(b.load("b.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
+        assert_eq!(b.port.execution_mode, 1);
+        assert_eq!(fb.num_messages(), 0, "{}", fb.render());
     }
 }

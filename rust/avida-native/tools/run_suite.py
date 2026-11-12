@@ -10,6 +10,7 @@ Environment:
   SUITE_BIN   the Rust binary (default target/release/avida of this workspace)
   SUITE_WORK  where runs and cached reference output go (default target/suite)
   SUITE_OUT   name of the output directory of this run inside SUITE_WORK
+  SUITE_JOBS  tests run at a time (default 8)
 """
 import os, re, shutil, subprocess, sys, json, configparser
 from concurrent.futures import ThreadPoolExecutor
@@ -80,7 +81,7 @@ def one(t):
     return t, 'same', ''
 tests = sorted(t for t in os.listdir(TESTS) if os.path.exists(os.path.join(TESTS, t, 'test_list')))
 if len(sys.argv) > 1: tests = [t for t in tests if any(s in t for s in sys.argv[1:])]
-with ThreadPoolExecutor(8) as ex: res = list(ex.map(one, tests))
+with ThreadPoolExecutor(int(os.environ.get('SUITE_JOBS', '8'))) as ex: res = list(ex.map(one, tests))
 json.dump(res, open(os.path.join(S, 'results-' + RSROOT + '.json'), 'w'), indent=1)
 count = {}
 for t, st, d in res:

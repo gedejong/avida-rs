@@ -279,6 +279,10 @@ def main():
     w.append("    /// Value lists of the custom formats, indexed like [`FORMATS`]")
     w.append("    /// (`cBaseConfigCustomFormat::m_value`).")
     w.append("    pub(crate) format_values: Vec<Vec<String>>,")
+    w.append("    /// Settings of the native port that `cAvidaConfig.h` does not have")
+    w.append("    /// (see [`crate::port_settings`]); kept out of [`GROUPS`] so that")
+    w.append("    /// nothing the C++ prints about its settings changes.")
+    w.append("    pub port: crate::port_settings::PortSettings,")
     w.append("}")
     w.append("")
     w.append("impl Config {")
@@ -299,6 +303,7 @@ def main():
         else:
             w.append("            %s: String::from(%s)," % (f, d))
     w.append("            format_values: vec![Vec::new(); FORMATS.len()],")
+    w.append("            port: crate::port_settings::PortSettings::new(),")
     w.append("        }")
     w.append("    }")
     w.append("")

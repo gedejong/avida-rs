@@ -6,10 +6,15 @@
 //! [`TaskLibRegistry`] is a newtype so this crate can implement the
 //! environment's trait for the task crate's type without touching either.
 
-use crate::organism::OrgTaskSnapshot;
+use crate::hardware_manager::HardwareManager;
+use crate::organism::{OrgTaskSnapshot, OrgUid};
+use crate::test_cpu::TestWorldCounts;
 use avida_apto::AvidaRng;
+use avida_config::config::Config;
 use avida_config::feedback::Feedback as ConfigFeedback;
 use avida_environment::{EnvReqs, TaskEnvHooks, TaskEvaluator, TaskRegistry};
+use avida_genome::Genome;
+use avida_phenotype::PhenotypeStats;
 use avida_tasks::{FeedbackKind, TaskContext, TaskLib, TaskWorld};
 
 /// `cEnvironment` over the real task library.
@@ -84,12 +89,61 @@ impl TaskRegistry for TaskLibRegistry {
     }
 }
 
+/// What a population run lends `cPhenPlastUtil::TestPlasticity` beyond the
+/// output test's own borrows, so that the world can run the genotype's
+/// test CPUs from inside `cEnvironment::GetTaskProbability`: the parts of
+/// [`crate::test_cpu::TestWorld`] the output test does not hold, read before the stats are
+/// lent out. The world builds it only when a reaction process has a
+/// `phenplastbonus` method and the genotype's summary is not cached yet.
+pub struct PlasticityServices<'a> {
+    /// `m_world->GetHardwareManager()`
+    pub hardware_manager: &'a HardwareManager,
+    /// `m_world->GetStats().GetGroupAttackInsts(name).GetSize()`
+    pub group_attack_inst_count: &'a dyn Fn(&str) -> usize,
+    /// `m_world->GetStats().GetUpdate()`
+    pub update: i32,
+    /// `m_world->GetStats().GetTotCreatures()`
+    pub tot_creatures: i32,
+    /// `m_world->GetStats().GetSenseSize()`
+    pub sense_size: usize,
+    /// See [`crate::test_cpu::TestWorld::counts`].
+    pub counts: TestWorldCounts,
+    /// See [`crate::test_cpu::TestWorld::live_orgs`]; the tested organism's forage target
+    /// is `None` (it is in [`PlasticityTest::forage_target`]).
+    pub live_orgs: Option<Vec<(OrgUid, i32, Option<i32>)>>,
+    /// `m_world->GetTestSterilize()`
+    pub test_sterilize: bool,
+    /// `Genome(bg->Properties().Get("genome"))` of the organism's genotype.
+    pub genome: Genome,
+}
+
+/// The borrows of one `cPhenPlastUtil::GetTaskProbability` call: the
+/// environment under evaluation, the output test's RNG and statistics,
+/// and the world's [`PlasticityServices`] (`None` outside a population
+/// run, where the call is unreachable).
+pub struct PlasticityTest<'a> {
+    /// `m_world->GetEnvironment()`
+    pub environment: &'a mut Env,
+    /// `m_world->GetConfig()`
+    pub config: &'a Config,
+    /// `ctx.GetRandom()`
+    pub rng: &'a mut AvidaRng,
+    /// `m_world->GetStats()` as `cPhenotype` uses it.
+    pub stats: &'a mut dyn PhenotypeStats,
+    /// `GetForageTarget()` of the organism whose output is tested.
+    pub forage_target: i32,
+    /// See [`PlasticityServices`].
+    pub services: Option<&'a PlasticityServices<'a>>,
+}
+
 /// Services `cEnvironment::TestOutput` reaches through `cTaskContext` and
 /// the world that are not part of [`TaskWorld`]: the phenotypic-plasticity
 /// cache and the HGT fragment pool.
 pub trait OutputHost: TaskWorld {
-    /// `cPhenPlastUtil::GetTaskProbability(ctx, world, genotype, task_id)`.
-    fn task_probability(&mut self, rng: &mut AvidaRng, task_id: i32) -> f64;
+    /// `cPhenPlastUtil::GetTaskProbability(ctx, world, genotype, task_id)`:
+    /// the genotype's attached `cPhenPlastSummary`, made the first time by
+    /// `TestPlasticity` (test CPUs over `test`'s borrows), at `task_id`.
+    fn task_probability(&mut self, test: PlasticityTest<'_>, task_id: i32) -> f64;
     /// HGT metabolism, see [`TaskEvaluator::metabolize_genome_fragment`].
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32>;
 }
@@ -279,6 +333,9 @@ impl TaskWorld for OrgTaskWorld<'_> {
     fn std_rand(&mut self) -> i32 {
         self.host.std_rand()
     }
+    fn task_stdout(&mut self, text: &str) {
+        self.host.task_stdout(text);
+    }
     fn unreproducible_producer_choice(&mut self, producers: usize) {
         self.host.unreproducible_producer_choice(producers)
     }
@@ -309,6 +366,12 @@ pub struct OrgTaskEvaluator<'a> {
     pub first_reactions: Vec<i32>,
     /// Resource names, to translate an `xor-max` resource index.
     pub resource_names: Vec<String>,
+    /// `m_world->GetConfig()`, for a plasticity test.
+    pub config: &'a Config,
+    /// `m_world->GetStats()`, lent to a plasticity test.
+    pub stats: &'a mut dyn PhenotypeStats,
+    /// See [`PlasticityServices`].
+    pub plasticity: Option<PlasticityServices<'a>>,
 }
 
 impl TaskEvaluator<TaskLibRegistry> for OrgTaskEvaluator<'_> {
@@ -351,8 +414,16 @@ impl TaskEvaluator<TaskLibRegistry> for OrgTaskEvaluator<'_> {
         self.first_reactions.push(reaction_id);
     }
 
-    fn task_probability(&mut self, rng: &mut AvidaRng, task_id: i32) -> f64 {
-        self.world.host.task_probability(rng, task_id)
+    fn task_probability(&mut self, env: &mut Env, rng: &mut AvidaRng, task_id: i32) -> f64 {
+        let test = PlasticityTest {
+            environment: env,
+            config: self.config,
+            rng,
+            stats: &mut *self.stats,
+            forage_target: self.world.org.forage_target,
+            services: self.plasticity.as_ref(),
+        };
+        self.world.host.task_probability(test, task_id)
     }
 
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32> {

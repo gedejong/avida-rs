@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 9 -set WORLD_X 20 -set WORLD_Y 20 -set GENOTYPE_PHENPLAST_CALC 10

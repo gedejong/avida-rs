@@ -57,12 +57,17 @@ pub struct HgtState {
     /// `cPopulationInterface::m_hgt_support->_pending` by organism.
     pub pending: HashMap<OrgUid, FragmentList>,
     /// The running organism's genome (`GetOrganism()->GetGenome()` of its
-    /// cell), recorded when each step begins (`process_step` and the open
-    /// slices of the stepper) with `ENABLE_HGT` set: the hardware holds the
-    /// organism. Only read where the caller does not hold its state (a
-    /// `KillOrganism` of its cell from elsewhere); `DoHGTMutation` reads the
-    /// dividing parent it is handed.
+    /// cell), recorded when a step that runs it begins (`process_step` and
+    /// the open slices of the stepper, not a speculative step that only uses
+    /// up credit) with `ENABLE_HGT` set: the hardware holds the organism.
+    /// Read only while `pop.running` names it, and only where the caller does
+    /// not hold its state (a `KillOrganism` of its cell from elsewhere);
+    /// `DoHGTMutation` reads the dividing parent it is handed.
     pub running_genome: Option<InstructionSequence>,
+    /// The organism whose genome `running_genome` holds. A uid is never
+    /// reused and an organism's genome never changes, so a step of the same
+    /// organism keeps the copy (each instruction of an open slice).
+    pub running_genome_of: OrgUid,
 }
 
 impl HgtState {
@@ -72,6 +77,14 @@ impl HgtState {
             .ok()
             .and_then(|c| self.cells.get(c))
             .map_or(0, FragmentList::len)
+    }
+
+    /// The recorded genome of the running organism `uid`, if its step
+    /// recorded it.
+    fn running_genome_for(&self, uid: OrgUid) -> Option<&InstructionSequence> {
+        self.running_genome
+            .as_ref()
+            .filter(|_| uid != OrgUid::NONE && self.running_genome_of == uid)
     }
 
     /// `cPopulationCell::GetFragments()` (`InitHGTSupport` on first use).
@@ -141,7 +154,7 @@ impl World {
             if let Some(state) = running.filter(|s| s.uid == r.uid) {
                 return Some(state.genome().representation().clone());
             }
-            if let Some(g) = self.host.hgt.running_genome.as_ref() {
+            if let Some(g) = self.host.hgt.running_genome_for(r.uid) {
                 return Some(g.clone());
             }
             self.set_fatal("unsupported: HGT reached the running organism's genome before its step recorded it");
@@ -215,16 +228,23 @@ impl World {
         }
     }
 
-    /// Called when an organism's step begins: keeps its genome for the HGT
-    /// code that reads the running organism's cell.
+    /// Called when an organism's step begins (with `pop.running` set to
+    /// it): keeps its genome for the HGT code that reads the running
+    /// organism's cell.
     pub(crate) fn hgt_step_begins(&mut self, org: &OrgState) {
-        if self.cfg.enable_hgt != 0 {
-            let genome = org.genome().representation();
-            match &mut self.host.hgt.running_genome {
-                Some(kept) => kept.clone_from(genome),
-                kept @ None => *kept = Some(genome.clone()),
-            }
+        if self.cfg.enable_hgt == 0 {
+            return;
         }
+        let hgt = &mut self.host.hgt;
+        if hgt.running_genome_for(org.uid).is_some() {
+            return;
+        }
+        let genome = org.genome().representation();
+        match &mut hgt.running_genome {
+            Some(kept) => kept.clone_from(genome),
+            kept @ None => *kept = Some(genome.clone()),
+        }
+        hgt.running_genome_of = org.uid;
     }
 
     /// The HGT part of `KillOrganism(cell)`: with natural competence
@@ -245,20 +265,16 @@ impl World {
         if self.cfg.hgt_competence_p <= 0.0 {
             return;
         }
-        let genome = match genome {
-            Some(g) => g.clone(),
-            None => match self.host.hgt.running_genome.clone() {
-                Some(g) => g,
-                None => {
-                    self.set_fatal(
-                        "unsupported: KillOrganism with HGT of an organism whose genome is not \
-                         at hand",
-                    );
-                    return;
-                }
-            },
-        };
-        self.add_genome_fragments(cell_id, &genome);
+        if let Some(g) = genome {
+            self.add_genome_fragments(cell_id, g);
+            return;
+        }
+        match self.host.hgt.running_genome_for(uid).cloned() {
+            Some(g) => self.add_genome_fragments(cell_id, &g),
+            None => self.set_fatal(
+                "unsupported: KillOrganism with HGT of an organism whose genome is not at hand",
+            ),
+        }
     }
 
     /// The source (`DoHGTConjugation`) or target (`DoHGTDonation`) cell of

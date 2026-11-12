@@ -15,12 +15,14 @@
 //! error instead of answering silently; the run loop stops on it.
 
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
+use avida_analyze::cpu::PhenPlastGenotype;
+use avida_analyze::PhenPlastSummary;
 use avida_apto::AvidaRng;
 use avida_environment::StateGrid;
-use avida_hardware::task_adapter::OutputHost;
-use avida_hardware::test_cpu::TestCpuHost;
+use avida_hardware::task_adapter::{OutputHost, PlasticityTest};
+use avida_hardware::test_cpu::{CpuTestInfo, TestCpuHost, TestWorld};
 use avida_tasks::TaskWorld;
 
 /// A `cStats` call made while the stats object was lent out.
@@ -119,6 +121,24 @@ pub struct WorldHost {
     /// Whether the environment has `consume-public-good`, cached with its
     /// task count.
     consume_public_good: Option<(usize, bool)>,
+    /// The `cPhenPlastSummary` attached to each genotype (by group id),
+    /// made by `cPhenPlastUtil::TestPlasticity` the first time anything
+    /// asks: a reaction process with a `phenplastbonus` method or one of
+    /// the plasticity printers.
+    pub phenplast: HashMap<i32, PhenPlastSummary>,
+    /// Size of [`WorldHost::phenplast`] at which the summaries of genotypes
+    /// that have left the systematics arena are dropped (the C++ frees
+    /// them with the group).
+    pub phenplast_prune_at: usize,
+    /// The genotype (group id) of the organism whose output is tested,
+    /// set by `output_services` when a `phenplastbonus` method is in use.
+    pub cur_genotype: Option<i32>,
+    /// The cells around a test organism's cell (-1) as `Task_ConsumePublicGood`
+    /// sees them, taken with [`WorldHost::cur_genotype`] for a plasticity
+    /// test run from inside the output test.
+    plast_kaboom_cells: Vec<(i32, KaboomCell)>,
+    /// `pending.len()` when [`WorldHost::plast_kaboom_cells`] was taken.
+    plast_pending_from: usize,
 }
 
 /// A cell around the tested organism, for `Task_ConsumePublicGood`.
@@ -254,6 +274,96 @@ impl WorldHost {
                 if !self.kaboom_cells.iter().any(|&(c, _)| c == cell) {
                     self.kaboom_cells.push((cell, state));
                 }
+            }
+        }
+    }
+
+    /// Takes the snapshot a test organism (cell -1) needs for a plasticity
+    /// test run from inside the coming output test; call before the
+    /// organism's own [`WorldHost::snapshot_kaboom_cells`].
+    pub fn snapshot_plast_kaboom_cells(
+        &mut self,
+        env: &avida_hardware::task_adapter::Env,
+        pop: &crate::population::Population,
+    ) {
+        self.snapshot_kaboom_cells(env, pop, -1);
+        std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
+        self.plast_pending_from = self.pending.len();
+    }
+
+    /// Marks the cells of `ops` whose kaboom flag a task cleared in
+    /// `cells`, as [`TaskWorld::clear_kaboom_executed`] does.
+    fn apply_cleared_kaboom(cells: &mut [(i32, KaboomCell)], ops: &[HostOp]) {
+        for op in ops {
+            if let HostOp::ClearKaboom(cell) = op {
+                if let Some(entry) = cells.iter_mut().find(|(c, _)| c == cell) {
+                    entry.1 = KaboomCell::Occupied(false);
+                }
+            }
+        }
+    }
+
+    /// `cPhenPlastUtil::TestPlasticity(ctx, world, genome)` for the tested
+    /// organism's genotype: a `cPhenPlastGenotype` of
+    /// `GENOTYPE_PHENPLAST_CALC` trials on a fresh test CPU, drawing from
+    /// the world RNG in the middle of the organism's output test. The test
+    /// organisms see this host as the world (cell -1); the tested
+    /// organism's cell and kaboom snapshot are put back afterwards.
+    fn test_plasticity(&mut self, test: PlasticityTest<'_>) -> Option<PhenPlastSummary> {
+        let Some(svc) = test.services else {
+            // `output_services` lends them whenever the summary is missing.
+            if self.fatal.is_none() {
+                self.fatal = Some(
+                    "internal: a plasticity test without the world's PlasticityServices"
+                        .to_string(),
+                );
+            }
+            return None;
+        };
+        let mut live_orgs = svc.live_orgs.clone();
+        for org in live_orgs.iter_mut().flatten() {
+            // Only the tested organism is out of the world's reach.
+            org.2.get_or_insert(test.forage_target);
+        }
+        let from = self.plast_pending_from.min(self.pending.len());
+        Self::apply_cleared_kaboom(&mut self.plast_kaboom_cells, &self.pending[from..]);
+        let saved_cell = self.cur_cell;
+        std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
+        let first_op = self.pending.len();
+        self.cur_cell = -1;
+        let trials = test.config.genotype_phenplast_calc;
+        let result = {
+            let mut tw = TestWorld {
+                config: test.config,
+                environment: test.environment,
+                rng: test.rng,
+                hardware_manager: svc.hardware_manager,
+                stats: test.stats,
+                host: &mut *self,
+                update: svc.update,
+                tot_creatures: svc.tot_creatures,
+                sense_size: svc.sense_size,
+                group_attack_inst_count: svc.group_attack_inst_count,
+                counts: svc.counts,
+                live_orgs,
+                analyze_mode: false,
+                org_fault_reporting: false,
+                verbosity: test.config.verbosity,
+                test_sterilize: svc.test_sterilize,
+            };
+            let mut info = CpuTestInfo::default();
+            PhenPlastGenotype::new(&mut tw, &svc.genome, trials, &mut info).map(|pp| pp.summary())
+        };
+        self.cur_cell = saved_cell;
+        std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
+        Self::apply_cleared_kaboom(&mut self.kaboom_cells, &self.pending[first_op..]);
+        match result {
+            Ok(summary) => Some(summary),
+            Err(e) => {
+                if self.fatal.is_none() {
+                    self.fatal = Some(e.to_string());
+                }
+                None
             }
         }
     }
@@ -501,6 +611,10 @@ impl TaskWorld for WorldHost {
     fn std_rand(&mut self) -> i32 {
         self.libc_rand.next_value()
     }
+    fn task_stdout(&mut self, text: &str) {
+        // In order with the run's own buffered output, like `cout`.
+        self.pending.push(HostOp::Stdout(text.to_string()));
+    }
     fn unreproducible_producer_choice(&mut self, producers: usize) {
         self.unsupported(&format!(
             "consume-public-good choosing among {producers} producers (C++: \
@@ -523,16 +637,32 @@ impl TaskWorld for WorldHost {
 }
 
 impl OutputHost for WorldHost {
-    fn task_probability(&mut self, _rng: &mut AvidaRng, _task_id: i32) -> f64 {
-        // Reached only when a process of the reaction sets `phenplastbonus`
-        // and the organism is not in a test CPU.
-        self.unsupported(
-            "phenplastbonus on a reaction process in a population run (C++: \
-             cEnvironment::GetTaskProbability runs cPhenPlastUtil::TestPlasticity, a batch of \
-             test CPUs on the organism's genotype drawing from the world RNG, in the middle of \
-             the organism's output test, and caches the summary on the genotype)",
-        );
-        0.0
+    /// `cPhenPlastUtil::GetTaskProbability(ctx, world, genotype, task_id)`.
+    /// Reached only when a process of the reaction sets `phenplastbonus`
+    /// and the organism is not in a test CPU.
+    fn task_probability(&mut self, test: PlasticityTest<'_>, task_id: i32) -> f64 {
+        let Some(gid) = self.cur_genotype else {
+            self.unsupported(
+                "phenplastbonus for an organism without a genotype (C++: \
+                 main/cEnvironment.cc:cEnvironment::GetTaskProbability passes a NULL \
+                 Systematics::GroupPtr to cPhenPlastUtil::GetTaskProbability)",
+            );
+            return 0.0;
+        };
+        if !self.phenplast.contains_key(&gid) {
+            match self.test_plasticity(test) {
+                Some(summary) => {
+                    self.phenplast.insert(gid, summary);
+                }
+                None => return 0.0,
+            }
+        }
+        // `m_task_probabilities[task_id]` (an index the environment's own
+        // task always has).
+        usize::try_from(task_id)
+            .ok()
+            .and_then(|t| self.phenplast[&gid].task_probabilities.get(t).copied())
+            .unwrap_or(0.0)
     }
     /// `cell.PopGenomeFragment(ctx)` of the organism's cell (-1, so
     /// nothing, in the test CPU: `make_test_world` clears `cur_cell`).

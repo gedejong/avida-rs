@@ -270,7 +270,11 @@ impl OutputHost for AnalyzeServices {
     /// Never asked: every organism here runs in a test CPU, whose context
     /// is in test mode, and `cEnvironment::GetTaskProbability` returns -1
     /// in test mode before reaching `cPhenPlastUtil`.
-    fn task_probability(&mut self, _rng: &mut AvidaRng, _task_id: i32) -> f64 {
+    fn task_probability(
+        &mut self,
+        _test: avida_hardware::task_adapter::PlasticityTest<'_>,
+        _task_id: i32,
+    ) -> f64 {
         self.unsupported(
             "phenotypic-plasticity task probability outside test mode in analyze mode \
              (C++: cPhenPlastUtil::GetTaskProbability; not reachable from a test CPU)",

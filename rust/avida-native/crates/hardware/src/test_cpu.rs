@@ -19,7 +19,7 @@ use crate::org_interface::{
     Faced, OffspringTest, OrgInterface, OrgMessage, OutputServices, TestamentTarget, WorldServices,
 };
 use crate::organism::{transmission, OrgSource, OrgState, OrgUid, Organism};
-use crate::task_adapter::{Env, OutputHost};
+use crate::task_adapter::{Env, OutputHost, PlasticityTest};
 use crate::tracer::HardwareTracerPtr;
 use avida_apto::fmt::fmt_fixed;
 use avida_apto::{AvidaRng, DataFile};
@@ -756,8 +756,10 @@ impl TaskWorld for TestHost<'_> {
 }
 
 impl OutputHost for TestHost<'_> {
-    fn task_probability(&mut self, rng: &mut AvidaRng, task_id: i32) -> f64 {
-        self.inner.task_probability(rng, task_id)
+    /// Unreachable: a test CPU's context is in test mode, where
+    /// `cEnvironment::GetTaskProbability` returns -1 first.
+    fn task_probability(&mut self, test: PlasticityTest<'_>, task_id: i32) -> f64 {
+        self.inner.task_probability(test, task_id)
     }
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32> {
         self.inner.metabolize_genome_fragment(rng)
@@ -880,6 +882,7 @@ impl OrgInterface for TestCpuInterface<'_> {
             stats: &mut *self.stats,
             deme: None,
             host: &mut self.host,
+            plasticity: None,
         }
     }
     fn test_sterilize(&self) -> bool {

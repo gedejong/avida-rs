@@ -401,11 +401,28 @@ impl<T: TaskRegistry> Environment<T> {
         false
     }
 
+    /// Whether any process of any reaction sets a `phenplastbonus` method
+    /// other than `default`, so that `GetTaskProbability` asks the
+    /// plasticity of the organism's genotype.
+    pub fn uses_phenplast_bonus(&self) -> bool {
+        (0..self.reaction_lib.size().max(0) as usize).any(|i| {
+            self.reaction_lib
+                .reaction(i)
+                .processes
+                .iter()
+                .any(|p| p.pp_method != PhenPlastBonusMethod::Default)
+        })
+    }
+
     /// `GetTaskProbability(ctx, taskctx, processes, force_mark_task)`: the
     /// plastic task probability when any process uses a non-default
     /// phenplastbonus method, else -1 (always -1 in test mode).
+    ///
+    /// Takes `&mut self` to lend the environment to the evaluator: the
+    /// C++ runs test CPUs from inside this call (see
+    /// [`TaskEvaluator::task_probability`]).
     fn get_task_probability(
-        &self,
+        &mut self,
         rng: &mut AvidaRng,
         test_mode: bool,
         taskctx: &mut dyn TaskEvaluator<T>,
@@ -431,7 +448,7 @@ impl<T: TaskRegistry> Environment<T> {
         if test_plasticity {
             // taskctx.GetTaskEntry()->GetID() is the reaction's task.
             let task_id = reaction.task.unwrap_or(-1);
-            task_prob = taskctx.task_probability(rng, task_id);
+            task_prob = taskctx.task_probability(self, rng, task_id);
         }
         // An undemonstrated task need not be marked.
         *force_mark_task = *force_mark_task && task_prob > 0.0;

@@ -172,6 +172,13 @@ pub struct Population {
     pub reaper_queue: VecDeque<i32>,
     /// `m_scheduler`
     pub scheduler: Box<dyn PriorityScheduler>,
+    /// The priority each cell last got from `AdjustSchedule` (what
+    /// `scheduler` weighs it by). Only the parallel execution mode reads
+    /// it (see [`crate::parallel`]); not in the C++.
+    pub sched_priority: Vec<f64>,
+    /// The cell the organism of the last `ProcessStep` ended in (it may
+    /// have moved). Only the parallel execution mode reads it.
+    pub last_step_cell: i32,
     /// `resource_count`
     pub resource_count: ResourceCount,
     /// `m_hgt_resid`
@@ -447,6 +454,8 @@ impl Population {
                 empty_cell_id_array,
                 reaper_queue,
                 scheduler,
+                sched_priority: vec![0.0; num_cells as usize],
+                last_step_cell: -1,
                 resource_count,
                 hgt_resid,
                 num_organisms: 0,

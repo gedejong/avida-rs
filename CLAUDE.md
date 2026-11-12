@@ -13,7 +13,7 @@ Still in the tree from the original program, because the port uses them:
 - `avida-core/support/config` — the stock configuration
 - `documentation` — the wiki (git submodule)
 
-`apps/viewer-macos` and `apps/viewer-windows` are the old native viewers. They wrapped the C++ core and no longer build; whether to delete them is the maintainer's decision.
+The old native viewers (`apps/viewer-macos`, `apps/viewer-windows`) wrapped the C++ core and were removed with it; the tag `cpp-final` has them.
 
 Read `rust/avida-native/ARCHITECTURE.md` (crates, layering, status, what still stops with `unsupported:`) and `rust/avida-native/PORTING.md` (how parity is kept) before changing simulation code.
 
@@ -78,12 +78,10 @@ The `rust-migration-*.md` files at the repository root record the FFI migration 
 - 17 crates, about 189K lines of Rust: `apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `systematics`, `resources`, `hardware`, `script`, `analyze`, `world`, `avida` (binary), `viewmodel`, `session`, `gui`, `tui`.
 - All five hardware types, all 423 distinct actions, analyze mode (batch, interactive, multi-core), demes, parasites, predator/prey, gene transfer, the energy model.
 - Suite: 85 byte-identical, 34 fail the same way the C++ does, none differs.
-- Default run (3000 updates, seed 42): about 45 s against 57–64 s for the C++.
+- Default run (3000 updates, seed 42): about 47 s in exact mode against 57–64 s for the C++; 18 s in parallel mode on four threads. With gene transfer on: 35 s against 42 s.
 
 ### Open work
-1. `phenplastbonus` (needs test CPUs run from inside task evaluation; cross-crate restructuring).
-2. Edge cases of `Task_Optimize` (unknown function, negative threshold, `tot == 0`).
-3. Audit of `analyze` and the ASL interpreter for multiply-add fusion, site by site.
-4. Gene-transfer runs are 11–13% slower than the C++ (per-slice genome copy).
-5. The GUI's `Session` drop joins the simulation thread without a time limit.
-6. Settings that stop with `unsupported:` because the C++ behaviour there is undefined are listed in `ARCHITECTURE.md`; each needs a decision, not a port.
+1. Parallel execution mode (`EXECUTION_MODE 1`, opt-in, not byte-identical by design): threads beyond four add nothing; the sequential phase and the statistics gather are the limit. No demes.
+2. `unsupported:` stops listed in `ARCHITECTURE.md`: where the C++ behaviour is undefined the stop stays (maintainer's ruling, 2026-11-12: do what makes sense and record it in `PORTING.md`); where the C++ behaviour is defined the stop is a port gap to close. Two are unported paths (`consume-public-good` inside a plasticity test; an organism without a genotype there).
+3. Human review of the GUI and TUI in real windows and terminals.
+4. A single long simulation step cannot be interrupted; on close the front ends wait 2 s and detach the thread.

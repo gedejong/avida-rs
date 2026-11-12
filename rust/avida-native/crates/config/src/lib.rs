@@ -6,6 +6,7 @@ pub mod config;
 mod config_table;
 pub mod feedback;
 pub mod init_file;
+pub mod port_settings;
 pub mod string_util;
 
 pub use config::Config;

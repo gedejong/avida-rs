@@ -22,8 +22,8 @@ use avida_hardware::org_interface::{
     WorldServices,
 };
 use avida_hardware::organism::{OrgState, OrgUid, Organism};
-use avida_hardware::task_adapter::Env;
-use avida_hardware::test_cpu;
+use avida_hardware::task_adapter::{Env, PlasticityServices};
+use avida_hardware::test_cpu::{self, TestWorldCounts};
 use avida_phenotype::Merit;
 
 use crate::world::{make_test_world, World};
@@ -177,16 +177,66 @@ impl WorldServices for PopulationInterface<'_> {
     }
 }
 
+/// Fewest phenotypic-plasticity summaries kept before [`prune_phenplast`]
+/// looks for dead genotypes.
+const PHENPLAST_PRUNE_MIN: usize = 4096;
+
+/// Drops the `cPhenPlastSummary` of every genotype that has left the
+/// systematics arena (neither active nor historic): the C++ attaches it
+/// to the group and frees it with the group, and a genotype that has left
+/// can no longer be asked for. The genotype being tested is kept. Sweeps
+/// again when the cache has doubled.
+fn prune_phenplast(w: &mut World) {
+    let Some(arb) = w.systematics.genotypes() else {
+        return;
+    };
+    let live: std::collections::HashSet<i32> = arb
+        .iter_groups()
+        .into_iter()
+        .chain(arb.historic())
+        .filter_map(|h| arb.genotype(h).map(|x| x.id()))
+        .collect();
+    let cur = w.host.cur_genotype;
+    w.host
+        .phenplast
+        .retain(|id, _| live.contains(id) || Some(*id) == cur);
+    w.host.phenplast_prune_at = 2 * w.host.phenplast.len();
+}
+
 impl OrgInterface for PopulationInterface<'_> {
     fn output_services(&mut self) -> OutputServices<'_> {
         let c = self.cell();
         let cell_id = self.cell_id;
         let me = self.org_uid();
+        // `cEnvironment::GetTaskProbability` may test the genotype's
+        // plasticity during the output test (`phenplastbonus`).
+        let genotype = if self.w.env.uses_phenplast_bonus() {
+            self.own_genotype()
+        } else {
+            None
+        };
         let w = &mut *self.w;
+        w.host.cur_genotype = genotype.map(|g| w.systematics.group_id(g).unwrap_or(-1));
+        if genotype.is_some()
+            && w.host.phenplast.len() >= w.host.phenplast_prune_at.max(PHENPLAST_PRUNE_MIN)
+        {
+            prune_phenplast(w);
+        }
+        // The genome to test, unless the summary is attached already.
+        let plast_genome = genotype
+            .filter(|_| {
+                w.host
+                    .cur_genotype
+                    .is_some_and(|gid| !w.host.phenplast.contains_key(&gid))
+            })
+            .map(|g| Genome::from_string(&w.systematics.property(g, "genome").string_value()));
         w.host.cur_cell = cell_id;
         w.host.cur_cell_data = w.pop.cells[c].cell_data.contents;
         w.host.cur_inputs.clone_from(&w.pop.cells[c].inputs);
         w.host.cur_resources = w.pop.resource_count.get_frozen_resources(cell_id).to_vec();
+        if plast_genome.is_some() {
+            w.host.snapshot_plast_kaboom_cells(&w.env, &w.pop);
+        }
         w.host.snapshot_kaboom_cells(&w.env, &w.pop, cell_id);
         w.host.use_avatars = w.cfg.use_avatars != 0;
         if w.host.use_avatars {
@@ -206,6 +256,40 @@ impl OrgInterface for PopulationInterface<'_> {
             w.host.cur_deme_event_ids = d.events.event_ids();
             w.host.cur_deme_mov_preds = d.events.mov_pred_events();
         }
+        // What `make_test_world` reads of the population and the stats,
+        // read now: both are lent out while the test runs.
+        let plasticity = plast_genome.map(|genome| {
+            let live_orgs = (w.cfg.max_prey_bt != 0).then(|| {
+                let running = w.pop.running.as_ref();
+                w.pop
+                    .live_org_list
+                    .iter()
+                    .filter_map(|&lc| match w.pop.orgs[lc as usize].as_ref() {
+                        Some(o) => Some((o.state.uid, lc, Some(o.state.forage_target))),
+                        None => running
+                            .filter(|r| r.cell_id == lc)
+                            .map(|r| (r.uid, lc, None)),
+                    })
+                    .collect()
+            });
+            PlasticityServices {
+                hardware_manager: &w.hw,
+                group_attack_inst_count: &*w.group_attack_fn,
+                update,
+                tot_creatures: w.stats.tot_organisms,
+                sense_size: w.stats.sense_size.max(0) as usize,
+                counts: TestWorldCounts {
+                    num_prey: w.pop.num_prey_organisms,
+                    num_pred: w.pop.num_pred_organisms,
+                    num_top_pred: w.pop.num_top_pred_organisms,
+                    creature_age_mean: w.stats.sum_creature_age.average(),
+                    creature_age_stddev: w.stats.sum_creature_age.std_deviation(),
+                },
+                live_orgs,
+                test_sterilize: w.test_sterilize,
+                genome,
+            }
+        });
         let deme = w
             .pop
             .demes
@@ -220,6 +304,7 @@ impl OrgInterface for PopulationInterface<'_> {
             stats: &mut w.stats,
             deme,
             host: &mut w.host,
+            plasticity,
         }
     }
     fn test_sterilize(&self) -> bool {

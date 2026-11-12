@@ -8,8 +8,9 @@
 //! `cActionPrintLineageCounts`, the histogram maximum the fitness
 //! histograms round up by reference) live in [`HistState`], keyed by an id
 //! given to each parsed action. The `cPhenPlastSummary` the plasticity
-//! printers attach to a genotype (`cPhenPlastUtil`) is kept there too, by
-//! genotype id.
+//! printers attach to a genotype (`cPhenPlastUtil`) is kept by genotype id
+//! in `WorldHost::phenplast`, which `cEnvironment::GetTaskProbability`
+//! shares.
 //!
 //! Analyze-mode branches are not reachable from a run and are left out. In
 //! a run most landscape actions do nothing (their work sits in the
@@ -18,7 +19,7 @@
 //! it, whose job queue seeds itself from the world's random number
 //! generator.
 
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use avida_analyze::cpu::PhenPlastGenotype;
@@ -200,8 +201,6 @@ pub struct HistState {
     hist_fmax: BTreeMap<usize, f64>,
     /// `m_reference` of each `cActionPrintGeneticDistanceData`.
     references: BTreeMap<usize, Genome>,
-    /// The `cPhenPlastSummary` attached to each genotype (by id).
-    phenplast: HashMap<i32, PhenPlastSummary>,
     /// Whether `cWorld::GetAnalyze()` has built the `cAnalyze`.
     analyze_built: bool,
 }
@@ -1270,7 +1269,7 @@ impl World {
     /// of `GENOTYPE_PHENPLAST_CALC` trials) the first time it is asked for.
     fn hist_phenplast_summary(&mut self, g: GroupRef) -> Result<PhenPlastSummary, String> {
         let gid = self.systematics.group_id(g).unwrap_or(-1);
-        if let Some(s) = self.actions2.hist.phenplast.get(&gid) {
+        if let Some(s) = self.host.phenplast.get(&gid) {
             return Ok(s.clone());
         }
         let genome = self.hist_genome(g);
@@ -1281,7 +1280,7 @@ impl World {
                 .map(|pp| pp.summary())
                 .map_err(|e| e.to_string())
         })?;
-        self.actions2.hist.phenplast.insert(gid, summary.clone());
+        self.host.phenplast.insert(gid, summary.clone());
         Ok(summary)
     }
 

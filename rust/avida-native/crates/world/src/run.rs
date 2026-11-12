@@ -640,7 +640,7 @@ impl World {
         }
     }
 
-    fn check_fatal(&mut self) -> Result<(), String> {
+    pub(crate) fn check_fatal(&mut self) -> Result<(), String> {
         match self.take_fatal() {
             Some(f) => Err(f),
             None => Ok(()),
@@ -651,8 +651,17 @@ impl World {
     /// per-update status lines go to `stdout`.
     pub fn run(&mut self, stdout: &mut dyn Write) -> Result<(), String> {
         let mut stepper = Stepper::new(self);
-        while stepper.step_update(self, stdout)? {}
-        Ok(())
+        let result = (|| {
+            while stepper.step_update(self, stdout)? {}
+            Ok(())
+        })();
+        // A diagnostic of the port's parallel mode, not a C++ output.
+        if std::env::var_os("AVIDA_EXECUTION_STATS").is_some() {
+            if let Some(stats) = stepper.parallel_stats() {
+                eprintln!("{}", stats.summary());
+            }
+        }
+        result
     }
 }
 
@@ -665,10 +674,16 @@ impl World {
 /// [`Stepper::step_update`] does all three. [`Stepper::step_watched`] in
 /// place of `step_slice` also stops between the instructions of one
 /// organism's speculative time slices (see [`crate::open_slice`]).
+///
+/// Under `EXECUTION_MODE 1` (see [`crate::parallel`]) an update is a
+/// single slice: the first `step_slice` (or `step_watched`) of the update
+/// runs all of it, the next one returns `false` (`UpdateDone`).
 #[derive(Debug, Clone)]
 pub struct Stepper {
     point_mut_prob: f64,
     speculative: bool,
+    /// The parallel execution mode, when `EXECUTION_MODE` is 1.
+    parallel: Option<crate::parallel::ParallelExec>,
     started: bool,
     in_update: bool,
     /// `UD_size` of the update in progress.
@@ -701,13 +716,16 @@ impl Stepper {
     pub fn new(w: &World) -> Self {
         let point_mut_prob =
             w.cfg.point_mut_prob + w.cfg.point_ins_prob + w.cfg.point_del_prob + w.cfg.div_lgt_prob;
+        let parallel = crate::parallel::ParallelExec::for_world(w);
         let speculative = w.cfg.speculative
             && w.cfg.thread_slicing_method != 1
             && w.cfg.implicit_repro_end == 0
-            && point_mut_prob == 0.0;
+            && point_mut_prob == 0.0
+            && parallel.is_none();
         Stepper {
             point_mut_prob,
             speculative,
+            parallel,
             started: false,
             in_update: false,
             ud_size: 0,
@@ -723,9 +741,20 @@ impl Stepper {
     }
 
     /// Whether the run uses `ProcessStepSpeculative` (`SPECULATIVE` on and
-    /// nothing that turns it off).
+    /// nothing that turns it off; never in the parallel mode).
     pub fn speculative(&self) -> bool {
         self.speculative
+    }
+
+    /// Whether the run uses the parallel execution mode
+    /// (`EXECUTION_MODE 1`), whose updates are a single slice.
+    pub fn parallel(&self) -> bool {
+        self.parallel.is_some()
+    }
+
+    /// The performance counters of the parallel execution mode.
+    pub fn parallel_stats(&self) -> Option<crate::parallel::ParallelStats> {
+        self.parallel.as_ref().map(|p| p.stats)
     }
 
     /// The time slice [`Stepper::step_watched`] paused inside, if any.
@@ -795,6 +824,13 @@ impl Stepper {
         if self.slice >= self.ud_size || w.pop.num_organisms == 0 {
             return Ok(false);
         }
+        if let Some(par) = self.parallel.as_mut() {
+            // The whole update is one slice.
+            self.slice = self.ud_size;
+            par.run_update(w, self.ud_size, self.step_size)?;
+            w.check_fatal()?;
+            return Ok(true);
+        }
         self.slice += 1;
         let cell_id = w.pop.scheduler.next();
         w.process_step(self.step_size, cell_id, self.speculative)?;
@@ -811,6 +847,14 @@ impl Stepper {
     pub fn step_watched(&mut self, w: &mut World, watch: i32) -> Result<WatchedStep, String> {
         if !self.in_update {
             return Err("Stepper::step_watched called outside an update".to_string());
+        }
+        if self.parallel.is_some() {
+            // No time slices to cut: the update is one step.
+            return Ok(if self.step_slice(w)? {
+                WatchedStep::Slice
+            } else {
+                WatchedStep::UpdateDone
+            });
         }
         if let Some(open) = self.open.take() {
             if open.cell() != watch {
@@ -855,8 +899,9 @@ impl Stepper {
         while self.step_slice(w)? {}
         self.in_update = false;
 
-        // end of update stats...
-        w.process_post_update();
+        // end of update stats... (the parallel mode reads the organisms on
+        // its worker threads, with the same result)
+        w.process_post_update_with(self.parallel.as_ref().and_then(|p| p.pool()));
         // What organisms printed to `std::cout` during the steps.
         w.flush_action_stdout(stdout)?;
         w.check_fatal()?;

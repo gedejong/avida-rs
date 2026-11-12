@@ -4,6 +4,8 @@
 //! `Task_AllOnes`, `Task_RoyalRoad`, `Task_RoyalRoadWithDitches`
 //! (avida-core/source/main/cTaskLib.cc).
 
+use avida_apto::fmt_double;
+
 use crate::arg_schema::ArgContainer;
 use crate::context::{FibSeqState, TaskContext, TaskState};
 use crate::io_buffer::IoBuffer;
@@ -156,18 +158,113 @@ pub(crate) struct OptimizeResult {
     pub fx: Option<f64>,
 }
 
-/// `Task_Optimize`.
+/// Where the reference binary evaluates `Task_Optimize`.
+const OPTIMIZE_AT: &str = "main/cTaskLib.cc:cTaskLib::Task_Optimize, which hands the outputs to \
+     avd_task_eval_optimize in rust/avida-rust/src/task_lib_helpers.rs";
+
+/// The number of variables `function` reads by index in the reference
+/// evaluator (`vars[0]`, `vars[1]`; `tempVars[0]` for function 19).
+fn optimize_vars_needed(function: i32) -> i32 {
+    match function {
+        2..=8 | 13..=16 => 2,
+        1 | 9..=12 | 17 | 19 => 1,
+        _ => 0,
+    }
+}
+
+/// `Load_Optimize`: the arguments for which the reference binary does not
+/// finish an evaluation of `Task_Optimize`, as an `unsupported:` message.
+/// Every case below was run on the reference binary (an analyze-mode
+/// `RECALCULATE` of organisms that fill their output buffer), and is tested
+/// in the order the helper meets it:
+///
+/// - `function=20` reads the string argument 0, which `Load_Optimize` never
+///   declares: `cArgContainer::GetString(0)` indexes an empty array and the
+///   reference binary dies of a segmentation fault.
+/// - A negative `numvars` with any function that decodes variables (all but
+///   18 and 20 to 23) or with function 19 becomes a huge `usize` in the
+///   helper, whose `vec![0.0; numvars]` panics; the panic aborts the
+///   process.
+/// - A negative `varlength` with the binary decoding, or with function 19
+///   and `numvars` 2 or more, becomes a loop over about 2^64 positions that
+///   the reference binary does not finish.
+/// - Fewer variables than the function reads (`numvars` 0 for functions 1
+///   to 17 and 19, 1 for functions 2 to 8 and 13 to 16): index out of
+///   bounds in the helper, which aborts.
+/// - A negative `varlength` with function 21 loops the same way as soon as
+///   the outputs it reads are all 1 (it stops at the first 0).
+///
+/// The C++ fails only when it evaluates the task; the port refuses the
+/// environment when it is loaded instead.
+pub(crate) fn optimize_unsupported(args: &ArgContainer) -> Option<String> {
+    let function = args.get_int(0);
+    let binary = args.get_int(1);
+    let varlength = args.get_int(2);
+    let numvars = args.get_int(3);
+    // Functions other than 18 to 23 decode the outputs into variables.
+    let decodes = !(18..=23).contains(&function);
+    let needed = optimize_vars_needed(function);
+    let why = if function == 20 {
+        "function=20: GetString(0) of an argument Load_Optimize does not declare \
+         (the reference binary crashes)"
+            .to_string()
+    } else if numvars < 0 && (decodes || function == 19) {
+        format!(
+            "numvars={numvars} with function={function} \
+             (the reference binary aborts allocating the variables)"
+        )
+    } else if varlength < 0 && ((decodes && binary != 0) || (function == 19 && numvars >= 2)) {
+        format!(
+            "varlength={varlength} with function={function}{} \
+             (the reference binary loops over 2^64 positions)",
+            if decodes { ",binary=1" } else { "" }
+        )
+    } else if needed > 0 && numvars < needed {
+        format!(
+            "numvars={numvars} with function={function}, which reads {needed} variable(s) \
+             (the reference binary aborts on the out-of-bounds index)"
+        )
+    } else if varlength < 0 && function == 21 {
+        format!(
+            "varlength={varlength} with function=21 \
+             (the reference binary loops over 2^64 positions when the outputs are all 1)"
+        )
+    } else {
+        return None;
+    };
+    Some(format!("unsupported: optimize {why} (C++: {OPTIMIZE_AT})"))
+}
+
+/// `Task_Optimize` as the reference binary evaluates it: the C++ checks that
+/// the output buffer is full and passes its stored values, newest first, to
+/// the Rust helper `avd_task_eval_optimize` (rust/avida-rust/src/
+/// task_lib_helpers.rs at the tag `cpp-final`), which computes `Fx` and the
+/// quality; the C++ stores `Fx` with `SetTaskValue` and returns the quality.
+/// This follows that helper, not the pre-Rust C++, wherever the two differ:
+///
+/// - Nothing past the stored outputs is read (functions 18 to 23 and the
+///   variable decoding stop at the end of the buffer, where the C++ read
+///   around it).
+/// - An unknown function id gives quality 0.001 and `Fx` 0 at once; the C++
+///   went on to compute the quality of `Fx == 0` from the thresholds.
+/// - With the proportional quality (`thresh < 0`), `maxFx - Fx + .001 <= 0`
+///   or `maxFx - minFx + .001 <= 0` gives 0.001, where the C++ only
+///   asserted that neither happens (and divided).
+/// - Binary decoding whose powers of `basepow` sum to 0 (`varlength` 0, or
+///   `basepow=-1` with an even `varlength`) leaves every variable 0, where
+///   the C++ divided by zero.
+/// - g(x) of functions 9 to 11 averages as `(sum of vars[1..]) /
+///   (numvars - 1)`, where the C++ summed `vars[i] / (numvars - 1)`.
+/// - rustc does not contract, so no expression here is a fused multiply-add
+///   (the pre-Rust C++ was fused).
+///
+/// The arguments the helper cannot evaluate are refused when the task is
+/// loaded ([`optimize_unsupported`]); the evaluation here stays defined for
+/// them all the same. A quality above 1 is returned as it is; the C++ then
+/// prints `quality > 1!` ([`optimize_quality_note`]).
 ///
 /// Args: int 0 = function, 1 = binary, 2 = varlength, 3 = numvars; double
-/// 0 = basepow, 1 = maxFx, 2 = minFx, 3 = thresh, 4 = threshMax; string 0 =
-/// target for function 20.
-///
-/// QUIRK: an unknown function id sets `quality = .001` in the C++ `default:`
-/// case, but the threshold section below overwrites it, so the result is the
-/// quality for `Fx == 0`.
-///
-/// The C++ prints `quality > 1!` to stdout when the quality exceeds 1; that
-/// diagnostic is not reproduced (callers can test the returned value).
+/// 0 = basepow, 1 = maxFx, 2 = minFx, 3 = thresh, 4 = threshMax.
 pub(crate) fn eval_optimize(args: &ArgContainer, output: &IoBuffer) -> OptimizeResult {
     // if the org hasn't output yet enough numbers, just return without completing any tasks
     if output.num_stored() < output.capacity() {
@@ -177,244 +274,246 @@ pub(crate) fn eval_optimize(args: &ArgContainer, output: &IoBuffer) -> OptimizeR
         };
     }
 
+    // `tBuffer<int> buf(ctx.GetOutputBuffer())`, flattened for the helper.
+    let out: Vec<i32> = (0..output.num_stored()).map(|i| output.get(i)).collect();
+    // The helper's early return: quality 0, which the C++ stores as Fx 0.
+    let zero = OptimizeResult {
+        quality: 0.0,
+        fx: Some(0.0),
+    };
+    if out.is_empty() {
+        return zero;
+    }
+
     let function = args.get_int(0);
     let binary = args.get_int(1);
     let varlength = args.get_int(2);
     let numvars = args.get_int(3);
-    let nv = numvars.max(0);
+    // `numvars as usize` / `varlength as usize` in the helper: a negative
+    // value becomes a huge size. The loader refuses the arguments for which
+    // that allocates, indexes or loops past what can be run; here the sizes
+    // of allocations and loops are bounded so that nothing panics or hangs.
+    let nv = numvars.max(0) as usize;
+    let vl = varlength as usize;
+    let var = |vars: &[f64], k: usize| vars.get(k).copied().unwrap_or(0.0);
 
-    // get however many variables need, turn them into doubles between 0 and 1.
-    // Padded to two entries so that functions that read vars[1] stay defined
-    // when numvars < 2 (undefined in C++).
-    let mut vars = vec![0.0f64; nv.max(2) as usize];
+    // The literal 3.14159 (not PI) is what the C++ uses.
+    #[allow(clippy::approx_constant)]
+    const PI_APPROX: f64 = 3.14159;
 
-    let mut fx = 0.0f64;
-
-    // some of the problems don't need double variables but use the bit string as a bit string
-    // string match, Fx=length - num_matched (0 best, length worst)
-    if function == 20 {
-        let string_to_match = args.get_string(0).as_bytes();
-        let mut matched = 0;
-        for i in 0..varlength {
-            let ch = string_to_match.get(i as usize).copied().unwrap_or(0);
-            let o = output.get(i);
-            if (ch == b'0' && o == 0) || (ch == b'1' && o == 1) {
-                matched += 1;
+    let fx = match function {
+        // string match: Fx = varlength - num_matched (0 best, varlength worst)
+        20 => {
+            let pattern = args.get_string(0).as_bytes();
+            if pattern.is_empty() {
+                return zero;
             }
-        }
-        fx = f64::from(varlength.wrapping_sub(matched));
-    }
-    // string with all 1's at beginning until pattern 0101, reward for # 1's
-    else if function == 21 {
-        let mut num_ones = 0;
-        let mut pat_found = false;
-        let mut i = 0;
-        while i < varlength.wrapping_sub(3) {
-            if output.get(i) == 1 {
-                num_ones += 1;
-            } else {
-                if output.get(i + 1) == 1 && output.get(i + 2) == 0 && output.get(i + 3) == 1 {
-                    pat_found = true;
+            let limit = vl.min(out.len()).min(pattern.len());
+            let mut matched = 0i32;
+            for i in 0..limit {
+                if (pattern[i] == b'0' && out[i] == 0) || (pattern[i] == b'1' && out[i] == 1) {
+                    matched += 1;
                 }
-                break;
             }
-            i += 1;
+            f64::from(varlength.wrapping_sub(matched))
         }
-        fx = if pat_found {
-            f64::from(varlength.wrapping_sub(4).wrapping_sub(num_ones))
-        } else {
-            f64::from(varlength)
-        };
-    }
-    // simply rewared for number of 1's at beginning of string, maxFx=length of string
-    else if function == 22 {
-        let mut num_ones = 0;
-        for i in 0..varlength {
-            if output.get(i) == 1 {
-                num_ones += 1;
-            } else {
-                break;
-            }
-        }
-        fx = f64::from(varlength.wrapping_sub(num_ones));
-    }
-    // simply reward for number 0's in string
-    else if function == 23 {
-        let mut num_zeros = 0;
-        for i in 0..varlength {
-            if output.get(i) == 0 {
-                num_zeros += 1;
-            } else {
-                break;
-            }
-        }
-        fx = f64::from(varlength.wrapping_sub(num_zeros));
-    } else if function == 18 {
-        let mut tot = 0i32;
-        for i in 0..30 {
-            tot = tot.wrapping_add(output.get(i));
-        }
-        fx = f64::from(tot.wrapping_add(1));
-    } else if function == 19 {
-        let mut temp_vars = vec![0.0f64; nv.max(1) as usize];
-        for i in 0..30 {
-            temp_vars[0] += f64::from(output.get(i));
-        }
-
-        let len = varlength;
-        let mut i = len.wrapping_sub(1);
-        while i >= 0 {
-            for j in 1..numvars {
-                let idx = 30i32
-                    .wrapping_add(i)
-                    .wrapping_add(len.wrapping_mul(numvars.wrapping_sub(j).wrapping_sub(1)));
-                temp_vars[(j - 1) as usize] += f64::from(output.get(idx));
-            }
-            i -= 1;
-        }
-
-        let mut gx = 0i32;
-        for tv in temp_vars.iter().take(nv as usize).skip(1) {
-            if *tv == 5.0 {
-                gx += 1;
-            } else {
-                gx += (*tv as i32) + 2;
-            }
-        }
-        // `Gx * (1 / (1 + tempVars[0]))`: int 1 over a double.
-        fx = f64::from(gx) * (1.0 / (1.0 + temp_vars[0]));
-    } else {
-        if binary != 0 {
-            let len = varlength;
-            let base_pow = args.get_double(0);
-
-            let mut temp_vars = vec![0.0f64; nv.max(1) as usize];
-            let mut tot = 0.0f64;
-            let mut i = len.wrapping_sub(1);
-            while i >= 0 {
-                for j in 0..numvars {
-                    let idx =
-                        i.wrapping_add(len.wrapping_mul(numvars.wrapping_sub(j).wrapping_sub(1)));
-                    temp_vars[j as usize] += f64::from(output.get(idx))
-                        * base_pow.powf(f64::from(len.wrapping_sub(1).wrapping_sub(i)));
+        // string with all 1's at beginning until pattern 0101, reward for # 1's.
+        // The helper loops up to `varlength - 3` but does nothing past the
+        // stored outputs, so the loop stops there.
+        21 => {
+            let limit = vl.saturating_sub(3).min(out.len());
+            let mut num_ones = 0i32;
+            let mut pat_found = false;
+            for i in 0..limit {
+                if out[i] == 1 {
+                    num_ones += 1;
+                } else {
+                    if i + 3 < out.len() && out[i + 1] == 1 && out[i + 2] == 0 && out[i + 3] == 1 {
+                        pat_found = true;
+                    }
+                    break;
                 }
-                tot += base_pow.powf(f64::from(i));
-                i -= 1;
             }
-            for i in 0..nv as usize {
-                vars[i] = temp_vars[i] / tot;
-            }
-        } else {
-            for j in 0..nv {
-                // `/ 0xffffffff`: the divisor is an unsigned int converted to double.
-                vars[j as usize] = f64::from(output.get(j)) / 4294967295.0;
-            }
-        }
-
-        for v in vars.iter_mut().take(nv as usize) {
-            *v = v.clamp(0.0, 1.0); // NaN stays NaN, as with the C++ comparisons
-        }
-
-        // The literal 3.14159 (not PI) is what the C++ uses.
-        #[allow(clippy::approx_constant)]
-        const PI_APPROX: f64 = 3.14159;
-
-        // The reference binary evaluates this task in the Rust helper
-        // `avd_task_eval_optimize` (rust/avida-rust/src/task_lib_helpers.rs),
-        // which fuses no multiply-add (`otool -tv`: no `fmadd`/`fmsub`), so
-        // the expressions below are its unfused ones rather than the
-        // contracted pre-Rust C++. It also averages the g(x) variables as
-        // `(sum of vars[1..]) / (numvars - 1)`, where the C++ summed
-        // `vars[i] / (numvars - 1)`.
-        let gx_sum = |vars: &[f64]| -> f64 {
-            let n1 = f64::from(numvars.wrapping_sub(1));
-            if n1 > 0.0 {
-                vars.iter().skip(1).take((nv - 1) as usize).sum::<f64>() / n1
+            if pat_found {
+                f64::from(varlength.wrapping_sub(4).wrapping_sub(num_ones))
             } else {
-                0.0
+                f64::from(varlength)
             }
-        };
-        match function {
-            1 => fx = vars[0],                                                      // F1
-            2 => fx = (1.0 + vars[1]) * (1.0 - (vars[0] / (1.0 + vars[1])).sqrt()), // F2
-            3 => {
-                let t = vars[0] / (1.0 + vars[1]);
-                fx = (1.0 + vars[1]) * (1.0 - t * t); // F3
-            }
-            4 => {
-                let q = vars[0] / (1.0 + vars[1]);
-                fx = (1.0 + vars[1]) * (1.0 - q.sqrt() - q * (PI_APPROX * vars[0] * 10.0).sin());
-            }
-            5 => {
-                vars[0] *= -2.0;
-                fx = vars[0] * vars[0] + vars[1] * vars[1];
-            }
-            6 => {
-                vars[0] *= -2.0;
-                fx = (vars[0] + 2.0) * (vars[0] + 2.0) + vars[1] * vars[1];
-            }
-            7 => {
-                vars[0] *= 4.0;
-                fx = vars[0].sqrt() + vars[1];
-            }
-            8 => {
-                vars[0] *= 4.0;
-                fx = (4.0 - vars[0]).sqrt() + vars[1];
-            }
-            9 => {
-                let gx = 1.0 + 9.0 * gx_sum(&vars);
-                fx = gx * (1.0 - (vars[0] / gx).sqrt());
-            }
-            10 => {
-                let gx = 1.0 + 9.0 * gx_sum(&vars);
-                let t = vars[0] / gx;
-                fx = gx * (1.0 - t * t);
-            }
-            11 => {
-                let gx = 1.0 + 9.0 * gx_sum(&vars);
-                let q = vars[0] / gx;
-                fx = gx * (1.0 - q.sqrt() - q * (PI_APPROX * vars[0] * 10.0).sin());
-            }
-            12 => {
-                vars[0] = vars[0] * 0.9 + 0.1;
-                fx = vars[0];
-            }
-            13 => {
-                vars[0] = vars[0] * 0.9 + 0.1;
-                vars[1] *= 5.0;
-                fx = (1.0 + vars[1]) / vars[0];
-            }
-            14 => {
-                vars[0] = vars[0] * 6.0 - 3.0;
-                vars[1] = vars[1] * 6.0 - 3.0;
-                let s = vars[0] * vars[0] + vars[1] * vars[1];
-                fx = 0.5 * s + s.sin();
-            }
-            15 => {
-                vars[0] = vars[0] * 6.0 - 3.0;
-                vars[1] = vars[1] * 6.0 - 3.0;
-                let a = 3.0 * vars[0] - 2.0 * vars[1] + 4.0;
-                let b = vars[0] - vars[1] + 1.0;
-                fx = (a * a) / 8.0 + (b * b) / 27.0 + 15.0;
-            }
-            16 => {
-                vars[0] = vars[0] * 6.0 - 3.0;
-                vars[1] = vars[1] * 6.0 - 3.0;
-                let e = (-(vars[0] * vars[0]) - vars[1] * vars[1]).exp();
-                fx = 1.0 / (vars[0] * vars[0] + vars[1] * vars[1] + 1.0) - 1.1 * e;
-            }
-            17 => {
-                let mut sum = 0.0;
-                for i in 1..nv as usize {
-                    let t = vars[i] * 6.0 - 3.0;
-                    sum += (t * t - 10.0 * (4.0 * PI_APPROX * t).cos()) / 10.0;
-                }
-                let gx = 10.0 + sum;
-                fx = gx * (1.0 - (vars[0] / gx).sqrt());
-            }
-            _ => {} // QUIRK: quality = .001 here is overwritten below.
         }
-    }
+        // simply rewarded for number of 1's at beginning of string
+        22 => {
+            let num_ones = out.iter().take(vl).take_while(|&&v| v == 1).count() as i32;
+            f64::from(varlength.wrapping_sub(num_ones))
+        }
+        // simply reward for number 0's in string
+        23 => {
+            let num_zeros = out.iter().take(vl).take_while(|&&v| v == 0).count() as i32;
+            f64::from(varlength.wrapping_sub(num_zeros))
+        }
+        18 => {
+            let mut tot = 0i32;
+            for &v in out.iter().take(30) {
+                tot = tot.wrapping_add(v);
+            }
+            f64::from(1i32.wrapping_add(tot))
+        }
+        19 => {
+            let mut temp_vars = vec![0.0f64; nv.max(1)];
+            for &v in out.iter().take(30) {
+                temp_vars[0] += f64::from(v);
+            }
+            if varlength > 0 {
+                for i in (0..vl).rev() {
+                    for j in 1..nv {
+                        let idx = 30usize
+                            .wrapping_add(i)
+                            .wrapping_add(vl.wrapping_mul(nv - j - 1));
+                        if idx < out.len() {
+                            temp_vars[j - 1] += f64::from(out[idx]);
+                        }
+                    }
+                }
+            }
+            let mut gx = 0i32;
+            for tv in temp_vars.iter().take(nv).skip(1) {
+                if *tv == 5.0 {
+                    gx = gx.wrapping_add(1);
+                } else {
+                    gx = gx.wrapping_add((*tv as i32).wrapping_add(2));
+                }
+            }
+            // `Gx * (1 / (1 + tempVars[0]))`
+            f64::from(gx) * (1.0 / (1.0 + temp_vars[0]))
+        }
+        _ => {
+            // get however many variables need, turn them into doubles between 0 and 1
+            let mut vars = vec![0.0f64; nv];
+            if binary != 0 {
+                let base_pow = args.get_double(0);
+                let mut temp_vars = vec![0.0f64; nv];
+                let mut tot = 0.0f64;
+                if varlength > 0 {
+                    for i in (0..vl).rev() {
+                        for (j, tv) in temp_vars.iter_mut().enumerate() {
+                            let idx = i.wrapping_add(vl.wrapping_mul(nv - j - 1));
+                            if idx < out.len() {
+                                *tv += f64::from(out[idx]) * base_pow.powf(((vl - 1) - i) as f64);
+                            }
+                        }
+                        tot += base_pow.powf(i as f64);
+                    }
+                }
+                // The helper divides only by a non-zero total.
+                if tot != 0.0 {
+                    for (v, tv) in vars.iter_mut().zip(&temp_vars) {
+                        *v = *tv / tot;
+                    }
+                }
+            } else {
+                for (v, &o) in vars.iter_mut().zip(&out) {
+                    // `/ 0xffffffff`: the divisor is an unsigned int converted to double.
+                    *v = f64::from(o) / 4294967295.0;
+                }
+            }
+
+            for v in vars.iter_mut() {
+                *v = v.clamp(0.0, 1.0); // NaN stays NaN
+            }
+
+            // g(x) of functions 9 to 11: the mean of vars[1..].
+            let gx_mean = |vars: &[f64]| -> f64 {
+                let denom = nv as f64 - 1.0;
+                if denom > 0.0 {
+                    vars.iter().skip(1).take(nv.wrapping_sub(1)).sum::<f64>() / denom
+                } else {
+                    0.0
+                }
+            };
+            let (x0, x1) = (var(&vars, 0), var(&vars, 1));
+            match function {
+                1 => x0,
+                2 => (1.0 + x1) * (1.0 - (x0 / (1.0 + x1)).sqrt()),
+                3 => {
+                    let t = x0 / (1.0 + x1);
+                    (1.0 + x1) * (1.0 - t * t)
+                }
+                4 => {
+                    let q = x0 / (1.0 + x1);
+                    (1.0 + x1) * (1.0 - q.sqrt() - q * (PI_APPROX * x0 * 10.0).sin())
+                }
+                5 => {
+                    let x = x0 * -2.0;
+                    x * x + x1 * x1
+                }
+                6 => {
+                    let x = x0 * -2.0;
+                    (x + 2.0) * (x + 2.0) + x1 * x1
+                }
+                7 => {
+                    let x = x0 * 4.0;
+                    x.sqrt() + x1
+                }
+                8 => {
+                    let x = x0 * 4.0;
+                    (4.0 - x).sqrt() + x1
+                }
+                9 => {
+                    let gx = 1.0 + 9.0 * gx_mean(&vars);
+                    gx * (1.0 - (x0 / gx).sqrt())
+                }
+                10 => {
+                    let gx = 1.0 + 9.0 * gx_mean(&vars);
+                    let t = x0 / gx;
+                    gx * (1.0 - t * t)
+                }
+                11 => {
+                    let gx = 1.0 + 9.0 * gx_mean(&vars);
+                    let q = x0 / gx;
+                    gx * (1.0 - q.sqrt() - q * (PI_APPROX * x0 * 10.0).sin())
+                }
+                12 => x0 * 0.9 + 0.1,
+                13 => {
+                    let x = x0 * 0.9 + 0.1;
+                    let y = x1 * 5.0;
+                    (1.0 + y) / x
+                }
+                14 => {
+                    let x = x0 * 6.0 - 3.0;
+                    let y = x1 * 6.0 - 3.0;
+                    let s = x * x + y * y;
+                    0.5 * s + s.sin()
+                }
+                15 => {
+                    let x = x0 * 6.0 - 3.0;
+                    let y = x1 * 6.0 - 3.0;
+                    let a = 3.0 * x - 2.0 * y + 4.0;
+                    let b = x - y + 1.0;
+                    (a * a) / 8.0 + (b * b) / 27.0 + 15.0
+                }
+                16 => {
+                    let x = x0 * 6.0 - 3.0;
+                    let y = x1 * 6.0 - 3.0;
+                    1.0 / (x * x + y * y + 1.0) - 1.1 * (-(x * x) - y * y).exp()
+                }
+                17 => {
+                    let mut sum = 0.0;
+                    for &v in vars.iter().skip(1).take(nv.wrapping_sub(1)) {
+                        let t = v * 6.0 - 3.0;
+                        sum += (t * t - 10.0 * (4.0 * PI_APPROX * t).cos()) / 10.0;
+                    }
+                    let gx = 10.0 + sum;
+                    gx * (1.0 - (x0 / gx).sqrt())
+                }
+                // Unknown function: the helper returns at once.
+                _ => {
+                    return OptimizeResult {
+                        quality: 0.001,
+                        fx: Some(0.0),
+                    }
+                }
+            }
+        }
+    };
 
     let max_fx = args.get_double(1);
     let min_fx = args.get_double(2);
@@ -423,8 +522,12 @@ pub(crate) fn eval_optimize(args: &ArgContainer, output: &IoBuffer) -> OptimizeR
     let quality = if thresh < 0.0 {
         let q1 = max_fx - fx + 0.001;
         let q2 = max_fx - min_fx + 0.001;
-        // The C++ asserts q1 > 0 and q2 > 0.
-        q1 / q2
+        // The C++ asserted q1 > 0 and q2 > 0; the helper gives .001 instead.
+        if q1 <= 0.0 || q2 <= 0.0 {
+            0.001
+        } else {
+            q1 / q2
+        }
     } else if thresh_max < 0.0 {
         if fx <= (max_fx - min_fx) * thresh + min_fx {
             1.0
@@ -441,12 +544,23 @@ pub(crate) fn eval_optimize(args: &ArgContainer, output: &IoBuffer) -> OptimizeR
 
     // because want org to only have 1 shot to use outputs for all functions at once, even if they
     // output numbers that give a quality of 0 on a function, still want to mark it as completed
-    // so give it a very low quality instead of 0
+    // so give it a very low quality instead of 0 (a NaN quality stays NaN)
     let quality = if quality < 0.001 { 0.001 } else { quality };
     OptimizeResult {
         quality,
         fx: Some(fx),
     }
+}
+
+/// What `cTaskLib::Task_Optimize` prints to standard output when the
+/// quality exceeds 1: `cout << "\n\nquality > 1!  quality= " << quality <<
+/// "  Fx= " << Fx << endl;`.
+pub(crate) fn optimize_quality_note(quality: f64, fx: f64) -> String {
+    format!(
+        "\n\nquality > 1!  quality= {}  Fx= {}\n",
+        fmt_double(quality),
+        fmt_double(fx)
+    )
 }
 
 /// `Task_CommEcho`: the output equals a value in a neighbour's input buffer.
@@ -835,16 +949,141 @@ mod tests {
         // band that excludes Fx = 0 -> floor at .001
         let a = load(&optimize_schema(), "function=1,thresh=0.25,threshMax=0.5");
         assert_eq!(eval_optimize(&a, &o).quality, 0.001);
-        // unknown function: Fx stays 0, quality computed from the threshold code
-        let a = load(&optimize_schema(), "function=99");
+    }
+
+    #[test]
+    fn optimize_unknown_function_skips_the_thresholds() {
+        // The helper returns quality .001 and Fx 0 for an unknown function
+        // (the C++ went on to the threshold code with Fx 0, giving 1 here).
+        let o = buf_cap(2, &[0, 0]);
+        for args in [
+            "function=99",
+            "function=0",
+            "function=-3",
+            "function=99,binary=1",
+            "function=99,thresh=0.5",
+            "function=99,numvars=0",
+        ] {
+            let r = eval_optimize(&load(&optimize_schema(), args), &o);
+            assert_eq!((r.quality, r.fx), (0.001, Some(0.0)), "{args}");
+        }
+    }
+
+    #[test]
+    fn optimize_proportional_quality_guards_its_terms() {
+        let o = buf_cap(2, &[0, 0]);
+        // maxFx - minFx + .001 < 0: .001 (the C++ asserted it positive)
+        let a = load(&optimize_schema(), "function=1,maxFx=0,minFx=1");
+        assert_eq!(eval_optimize(&a, &o).quality, 0.001);
+        // ... and == 0, where dividing gave inf
+        let a = load(&optimize_schema(), "function=1,maxFx=0,minFx=0.001");
+        assert_eq!(eval_optimize(&a, &o).quality, 0.001);
+        // maxFx - Fx + .001 <= 0: Fx (about .5) above maxFx 0
+        let a = load(&optimize_schema(), "function=1,maxFx=0,minFx=-1");
+        let r = eval_optimize(&a, &buf_cap(2, &[0, i32::MAX]));
+        assert!(r.fx.unwrap() > 0.001);
+        assert_eq!(r.quality, 0.001);
+        // Fx below minFx: a quality above 1 is returned as it is
+        let a = load(&optimize_schema(), "function=1,maxFx=1,minFx=0.5");
         let r = eval_optimize(&a, &o);
-        assert_eq!(r.fx, Some(0.0));
-        assert_eq!(r.quality, 1.0);
+        assert_eq!(r.quality, (1.0 - 0.0 + 0.001) / (1.0 - 0.5 + 0.001));
+        assert_eq!(
+            optimize_quality_note(r.quality, r.fx.unwrap()),
+            "\n\nquality > 1!  quality= 1.998  Fx= 0\n"
+        );
+    }
+
+    #[test]
+    fn optimize_binary_decoding_with_a_zero_total() {
+        // Powers of basepow summing to 0 leave every variable 0 (the C++
+        // divided by zero, the old port gave NaN).
+        let o = from_get(4, &[1, 0, 1, 1]);
+        let a = load(
+            &optimize_schema(),
+            "function=1,binary=1,varlength=2,numvars=2,basepow=-1",
+        );
+        let r = eval_optimize(&a, &o);
+        assert_eq!((r.quality, r.fx), (1.0, Some(0.0)));
+        let a = load(&optimize_schema(), "function=1,binary=1,varlength=0");
+        let r = eval_optimize(&a, &o);
+        assert_eq!((r.quality, r.fx), (1.0, Some(0.0)));
+    }
+
+    #[test]
+    fn optimize_reads_only_the_stored_outputs() {
+        // varlength past the buffer capacity: leading ones / zeros are
+        // counted over the 4 stored outputs only.
+        let ones = from_get(4, &[1, 1, 1, 1]);
+        let zeros = from_get(4, &[0, 0, 0, 0]);
+        let a = load(&optimize_schema(), "function=22,varlength=8");
+        assert_eq!(eval_optimize(&a, &ones).fx, Some(4.0));
+        let a = load(&optimize_schema(), "function=23,varlength=8");
+        assert_eq!(eval_optimize(&a, &zeros).fx, Some(4.0));
+        // function 21 with all ones and no pattern: Fx = varlength
+        let a = load(&optimize_schema(), "function=21,varlength=10");
+        assert_eq!(eval_optimize(&a, &ones).fx, Some(10.0));
+        // function 19: the first 30 outputs go to tempVars[0]; positions 30
+        // and up do not exist in a buffer of 30 and add nothing.
+        let thirty = from_get(30, &[1; 30]);
+        let a = load(&optimize_schema(), "function=19,varlength=2,numvars=2");
+        // Gx = tempVars[1] + 2 = 2; Fx = 2 * (1 / (1 + 30))
+        assert_eq!(eval_optimize(&a, &thirty).fx, Some(2.0 * (1.0 / 31.0)));
+        // a negative varlength with one variable: no Gx terms, Fx 0
+        let a = load(&optimize_schema(), "function=19,varlength=-1,numvars=1");
+        let r = eval_optimize(&a, &thirty);
+        assert_eq!((r.quality, r.fx), (1.0, Some(0.0)));
+        // function 18 sums the first 30 (here all there are)
+        let a = load(&optimize_schema(), "function=18");
+        assert_eq!(eval_optimize(&a, &thirty).fx, Some(31.0));
+    }
+
+    #[test]
+    fn optimize_arguments_the_reference_cannot_evaluate() {
+        let refused = |args: &str| optimize_unsupported(&load(&optimize_schema(), args));
+        for args in [
+            "function=20",
+            "function=1,numvars=-1",
+            "function=99,numvars=-1",
+            "function=19,numvars=-1",
+            "function=1,numvars=0",
+            "function=17,numvars=0",
+            "function=19,numvars=0",
+            "function=2,numvars=1",
+            "function=16,numvars=1",
+            "function=1,binary=1,varlength=-1",
+            "function=99,binary=1,varlength=-1",
+            "function=19,varlength=-1",
+            "function=21,varlength=-1",
+        ] {
+            let msg = refused(args).unwrap_or_else(|| panic!("{args} accepted"));
+            assert!(msg.starts_with("unsupported: optimize "), "{msg}");
+            assert!(msg.contains("avd_task_eval_optimize"), "{msg}");
+        }
+        for args in [
+            "function=1",
+            "function=5",
+            "function=1,numvars=1",
+            "function=9,numvars=1",
+            "function=99,numvars=0",
+            "function=18,numvars=-1",
+            "function=22,numvars=-1,varlength=-1",
+            "function=23,varlength=-1",
+            "function=1,varlength=-1",
+            "function=1,binary=1,varlength=0",
+            // the loop over 2^64 has an empty body with one variable, and
+            // the reference binary finishes (quality 1 for any outputs)
+            "function=19,varlength=-1,numvars=1",
+        ] {
+            assert_eq!(refused(args), None, "{args}");
+        }
     }
 
     #[test]
     fn optimize_bit_string_functions() {
         let mut s = optimize_schema();
+        // Function 20 reads string 0, which `Load_Optimize` does not declare
+        // (the task library refuses function 20); declared here to test the
+        // helper's string match.
         s.add_required("string", 0, ArgType::Str);
         // function 22: leading ones, varlength 4 (buffer capacity 4)
         let a = load(&s, "function=22,varlength=4,string=0000");

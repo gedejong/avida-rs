@@ -174,8 +174,11 @@ pub struct World {
 /// offspring stays), and `NEURAL_NETWORKING` with avatars is in
 /// [`crate::messaging`] and `ActivateOrganism`. Paths that are undefined in
 /// the C++ stop the run where they are reached.
-pub fn check_supported(_cfg: &Config, _env: &Env) -> Result<(), String> {
-    Ok(())
+///
+/// The port's own `EXECUTION_MODE 1` rejects the settings it cannot run
+/// with ([`crate::parallel::check_parallel_supported`]).
+pub fn check_supported(cfg: &Config, _env: &Env) -> Result<(), String> {
+    crate::parallel::check_parallel_supported(cfg)
 }
 
 impl World {

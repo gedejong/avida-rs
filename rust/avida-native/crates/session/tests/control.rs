@@ -294,6 +294,37 @@ fn dropping_a_running_session_joins_promptly() {
 }
 
 #[test]
+fn dropping_a_paused_session_returns_promptly_and_flushes_output() {
+    let dir = endless_config("drop_paused");
+    let mut h = Harness::spawn(&dir, &[]);
+    h.send(Command::RunToUpdate(2));
+    h.wait_until(|s| s.state() == RunState::Paused && s.status().update >= 2);
+    h.pump();
+    let data = h.session.data_dir();
+    let asked = Instant::now();
+    drop(h);
+    let took = asked.elapsed();
+    assert!(took < Duration::from_secs(2), "drop took {took:?}");
+    // A normal stop flushed the open output files: the update's row is on disk.
+    let average = std::fs::read_to_string(data.join("average.dat")).unwrap();
+    assert!(
+        average
+            .lines()
+            .any(|l| !l.starts_with('#') && !l.trim().is_empty()),
+        "average.dat has no data row after the drop"
+    );
+}
+
+#[test]
+fn shutdown_reports_whether_the_thread_stopped() {
+    let mut h = Harness::spawn(&endless_config("shutdown_paused"), &[]);
+    assert!(h.session.shutdown(Duration::from_secs(60)));
+    // Already stopped: a second call and the later drop are no-ops.
+    assert!(h.session.shutdown(Duration::from_millis(1)));
+    assert!(!h.session.send(Command::Pause));
+}
+
+#[test]
 fn a_fatal_error_leaves_the_session_inspectable() {
     let dir = fresh_config("fatal");
     let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();

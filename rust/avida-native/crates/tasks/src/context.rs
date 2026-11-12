@@ -259,6 +259,14 @@ pub trait TaskWorld {
     /// that must match the C++ records a stop here; by default the
     /// evaluator carries on with the producers in cell order.
     fn unreproducible_producer_choice(&mut self, _producers: usize) {}
+    /// `cout << text` from inside a task (`Task_Optimize`'s `quality > 1!`
+    /// line). By default it goes to [`avida_apto::diag::stdout`]: standard
+    /// output, or the capture of a thread that collects its output (an
+    /// analyze worker, a session's simulation thread). A host that buffers
+    /// its own standard output must forward it to keep the C++ order.
+    fn task_stdout(&mut self, text: &str) {
+        avida_apto::diag::stdout(format_args!("{text}"));
+    }
 
     // ---- cStats --------------------------------------------------------
     /// `cStats::AddTag(int tag, int value)`

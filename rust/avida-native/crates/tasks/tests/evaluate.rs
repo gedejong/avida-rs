@@ -457,6 +457,9 @@ impl TaskWorld for Mock {
     fn stats_inc_perfect_match_org(&mut self) {
         self.log.push("perfect_org".to_string());
     }
+    fn task_stdout(&mut self, text: &str) {
+        self.log.push(format!("stdout {text}"));
+    }
 }
 
 fn run(lib: &TaskLib, id: usize, input: &IoBuffer, output: &IoBuffer, w: &mut Mock) -> f64 {
@@ -464,6 +467,58 @@ fn run(lib: &TaskLib, id: usize, input: &IoBuffer, output: &IoBuffer, w: &mut Mo
     lib.setup_tests(&mut ctx);
     ctx.set_task_entry(id);
     lib.test_output(&mut ctx, w)
+}
+
+#[test]
+fn optimize_prints_a_quality_above_one() {
+    // Fx 0 below minFx: quality (1 - 0 + .001) / (1 - .5 + .001) > 1, which
+    // `Task_Optimize` reports on standard output.
+    let mut lib = TaskLib::new();
+    let id = add(&mut lib, "optimize", "function=1,maxFx=1,minFx=0.5");
+    let input = IoBuffer::new(3);
+    let mut w = Mock::default();
+    let q = run(&lib, id, &input, &from_get(2, &[0, 0]), &mut w);
+    assert_eq!(q, 1.001 / 0.501);
+    assert_eq!(
+        w.log,
+        vec!["stdout \n\nquality > 1!  quality= 1.998  Fx= 0\n".to_string()]
+    );
+    // quality 1 or less: nothing printed
+    let id = add(&mut lib, "optimize", "function=1");
+    let mut w = Mock::default();
+    assert_eq!(run(&lib, id, &input, &from_get(2, &[0, 0]), &mut w), 1.0);
+    assert!(w.log.is_empty());
+}
+
+#[test]
+fn optimize_refuses_arguments_the_reference_cannot_evaluate() {
+    let mut lib = TaskLib::new();
+    for args in [
+        "function=20",
+        "function=2,numvars=1",
+        "function=1,binary=1,varlength=-1",
+    ] {
+        let mut er = EnvReqs::new();
+        let mut fb = Feedback::new();
+        assert_eq!(lib.add_task("optimize", args, &mut er, &mut fb), None);
+        let errors = fb.errors();
+        assert_eq!(errors.len(), 1, "{args}: {errors:?}");
+        assert!(
+            errors[0].starts_with("unsupported: optimize "),
+            "{}",
+            errors[0]
+        );
+    }
+    assert_eq!(lib.get_size(), 0);
+    // an invalid argument string still gets the generic error after the
+    // load error
+    let mut er = EnvReqs::new();
+    let mut fb = Feedback::new();
+    assert_eq!(lib.add_task("optimize", "binary=1", &mut er, &mut fb), None);
+    assert!(fb
+        .errors()
+        .iter()
+        .any(|e| e.starts_with("unknown/unprocessed task entry")));
 }
 
 #[test]
