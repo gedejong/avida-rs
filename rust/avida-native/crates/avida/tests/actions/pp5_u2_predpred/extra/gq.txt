@@ -1,0 +1,4 @@
+#filetype genotype_data
+#format id
+
+3

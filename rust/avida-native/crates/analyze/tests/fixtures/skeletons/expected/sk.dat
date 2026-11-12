@@ -1,0 +1,13 @@
+#filetype genotype_data
+#format id num_cpus length sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Number of CPUs
+# 3: Genome Length
+# 4: Genome Sequence
+
+1 0 15 rucavcutycasvab 
+2 2 18 rucavcAutycasvab 
+3 3 22 rucavcqqcpqgcutycasvab 
+4 1 24 rucavcqqcpqgcAutycasvab 

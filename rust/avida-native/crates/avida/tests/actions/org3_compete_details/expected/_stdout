@@ -1,0 +1,551 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: VERBOSITY 3
+CmdLine Set: WORLD_X 6
+CmdLine Set: WORLD_Y 6
+CmdLine Set: COPY_MUT_PROB 0.01
+Random Seed: 11
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/actions2/w3/runs/compd/ref/data/
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 11      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 97.00000   Thrd: 1       Para: 0  
+UD: 12      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 13      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 20      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 21      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 22      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 23      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 24      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Merit: 97.00000   Thrd: 2       Para: 0  
+UD: 25      Gen: 1.666667   Fit: 0.2497858  Orgs: 3       Merit: 97.00000   Thrd: 3       Para: 0  
+UD: 26      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 27      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 28      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 29      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 30      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 31      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 32      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 33      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 34      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 35      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 36      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 37      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Merit: 97.00000   Thrd: 4       Para: 0  
+UD: 38      Gen: 2.666667   Fit: 0.2501082  Orgs: 6       Merit: 96.66667   Thrd: 6       Para: 0  
+UD: 39      Gen: 2.857143   Fit: 0.2500928  Orgs: 7       Merit: 96.71429   Thrd: 7       Para: 0  
+UD: 40      Gen: 3.000000   Fit: 0.2500008  Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 41      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 42      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 43      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 44      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 45      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 46      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 47      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 48      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 49      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+UD: 50      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Merit: 96.75000   Thrd: 8       Para: 0  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.08255319, Avg fitness = 2.801561 Max Fitness = 16.16667
+Trial #1 Min Fitness = 0.3031250, Avg fitness = 0.3230947 Max Fitness = 0.3440860
+Trial fitness in cell 0 = 0.1591876
+Trial fitness in cell 4 = 0.6252911
+Trial fitness in cell 5 = 0.2542091
+Trial fitness in cell 6 = 0.1969816
+Trial fitness in cell 11 = 0.2676817
+Trial fitness in cell 17 = 0.9818538
+Trial fitness in cell 31 = 2.271221
+Trial fitness in cell 34 = 0.6905008
+Propagating from cell 34 to 0
+Propagating from cell 31 to 1
+Propagating from cell 17 to 2
+Propagating from cell 0 to 3
+Propagating from cell 31 to 4
+Propagating from cell 31 to 5
+Propagating from cell 17 to 6
+Propagating from cell 31 to 7
+Propagating from cell 31 to 8
+Propagating from cell 4 to 9
+Propagating from cell 17 to 10
+Propagating from cell 17 to 11
+Propagating from cell 17 to 12
+Propagating from cell 17 to 13
+Propagating from cell 4 to 14
+Propagating from cell 5 to 15
+Propagating from cell 31 to 16
+Propagating from cell 5 to 17
+Propagating from cell 34 to 18
+Propagating from cell 11 to 19
+Propagating from cell 31 to 20
+Propagating from cell 4 to 21
+Propagating from cell 5 to 22
+Propagating from cell 31 to 23
+Propagating from cell 4 to 24
+Propagating from cell 31 to 25
+Propagating from cell 31 to 26
+Propagating from cell 31 to 27
+Propagating from cell 11 to 28
+Propagating from cell 5 to 29
+Propagating from cell 31 to 30
+Propagating from cell 31 to 31
+Propagating from cell 11 to 32
+Propagating from cell 31 to 33
+Propagating from cell 31 to 34
+Propagating from cell 17 to 35
+Cell 0 has 1 copies in the next generation
+Cell 1 has 0 copies in the next generation
+Cell 2 has 0 copies in the next generation
+Cell 3 has 0 copies in the next generation
+Cell 4 has 4 copies in the next generation
+Cell 5 has 4 copies in the next generation
+Cell 6 has 0 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 0 copies in the next generation
+Cell 9 has 0 copies in the next generation
+Cell 10 has 0 copies in the next generation
+Cell 11 has 3 copies in the next generation
+Cell 12 has 0 copies in the next generation
+Cell 13 has 0 copies in the next generation
+Cell 14 has 0 copies in the next generation
+Cell 15 has 0 copies in the next generation
+Cell 16 has 0 copies in the next generation
+Cell 17 has 7 copies in the next generation
+Cell 18 has 0 copies in the next generation
+Cell 19 has 0 copies in the next generation
+Cell 20 has 0 copies in the next generation
+Cell 21 has 0 copies in the next generation
+Cell 22 has 0 copies in the next generation
+Cell 23 has 0 copies in the next generation
+Cell 24 has 0 copies in the next generation
+Cell 25 has 0 copies in the next generation
+Cell 26 has 0 copies in the next generation
+Cell 27 has 0 copies in the next generation
+Cell 28 has 0 copies in the next generation
+Cell 29 has 0 copies in the next generation
+Cell 30 has 0 copies in the next generation
+Cell 31 has 15 copies in the next generation
+Cell 32 has 0 copies in the next generation
+Cell 33 has 0 copies in the next generation
+Cell 34 has 2 copies in the next generation
+Cell 35 has 0 copies in the next generation
+Injecting Offspring 4 to 1
+Injecting Offspring 4 to 2
+Injecting Offspring 4 to 3
+Injecting Offspring 5 to 6
+Injecting Offspring 5 to 7
+Injecting Offspring 5 to 8
+Injecting Offspring 11 to 9
+Injecting Offspring 11 to 10
+Injecting Offspring 17 to 12
+Injecting Offspring 17 to 13
+Injecting Offspring 17 to 14
+Injecting Offspring 17 to 15
+Injecting Offspring 17 to 16
+Injecting Offspring 17 to 18
+Injecting Offspring 31 to 19
+Injecting Offspring 31 to 20
+Injecting Offspring 31 to 21
+Injecting Offspring 31 to 22
+Injecting Offspring 31 to 23
+Injecting Offspring 31 to 24
+Injecting Offspring 31 to 25
+Injecting Offspring 31 to 26
+Injecting Offspring 31 to 27
+Injecting Offspring 31 to 28
+Injecting Offspring 31 to 29
+Injecting Offspring 31 to 30
+Injecting Offspring 31 to 32
+Injecting Offspring 31 to 33
+Injecting Offspring 34 to 35
+Re-injecting Self 0 to 0
+Re-injecting Self 4 to 4
+Re-injecting Self 5 to 5
+Re-injecting Self 11 to 11
+Re-injecting Self 17 to 17
+Re-injecting Self 31 to 31
+Re-injecting Self 34 to 34
+Competed: Min fitness = 0.1591876, Avg fitness = 0.6808658 Max fitness = 2.271221
+Copied  : Min fitness = 0.1591876, Avg fitness = 1.300070, Max fitness = 2.271221
+Copied  : Different organisms = 7
+UD: 51      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 52      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 53      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 54      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 55      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 56      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 57      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 58      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 59      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 60      Gen: 4.000000   Fit: 0.3211679  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 61      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 62      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 63      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 64      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 65      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 66      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 67      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 68      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 69      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+UD: 70      Gen: 4.000000   Fit: 0.3238863  Orgs: 36      Merit: 96.80556   Thrd: 36      Para: 0  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.2803468, Avg fitness = 0.3238863 Max Fitness = 0.3789062
+Trial #1 Min Fitness = 0.2787356, Avg fitness = 0.3238427 Max Fitness = 0.3660377
+Trial fitness in cell 0 = 0.3669192
+Trial fitness in cell 1 = 0.3216085
+Trial fitness in cell 2 = 0.3169163
+Trial fitness in cell 3 = 0.3271253
+Trial fitness in cell 4 = 0.3132341
+Trial fitness in cell 5 = 0.3297718
+Trial fitness in cell 6 = 0.3206721
+Trial fitness in cell 7 = 0.3317330
+Trial fitness in cell 8 = 0.3201338
+Trial fitness in cell 9 = 0.3267197
+Trial fitness in cell 10 = 0.3380806
+Trial fitness in cell 11 = 0.3322118
+Trial fitness in cell 12 = 0.3208194
+Trial fitness in cell 13 = 0.3075354
+Trial fitness in cell 14 = 0.2952847
+Trial fitness in cell 15 = 0.3120003
+Trial fitness in cell 16 = 0.3031309
+Trial fitness in cell 17 = 0.3053396
+Trial fitness in cell 18 = 0.3043280
+Trial fitness in cell 19 = 0.3095457
+Trial fitness in cell 20 = 0.3434538
+Trial fitness in cell 21 = 0.3312916
+Trial fitness in cell 22 = 0.3272064
+Trial fitness in cell 23 = 0.3488577
+Trial fitness in cell 24 = 0.3070374
+Trial fitness in cell 25 = 0.3289667
+Trial fitness in cell 26 = 0.3031013
+Trial fitness in cell 27 = 0.3351289
+Trial fitness in cell 28 = 0.3165475
+Trial fitness in cell 29 = 0.3475163
+Trial fitness in cell 30 = 0.3278225
+Trial fitness in cell 31 = 0.3533703
+Trial fitness in cell 32 = 0.3051537
+Trial fitness in cell 33 = 0.3260509
+Trial fitness in cell 34 = 0.3260509
+Trial fitness in cell 35 = 0.3206616
+Propagating from cell 28 to 0
+Propagating from cell 24 to 1
+Propagating from cell 13 to 2
+Propagating from cell 22 to 3
+Propagating from cell 0 to 4
+Propagating from cell 10 to 5
+Propagating from cell 14 to 6
+Propagating from cell 1 to 7
+Propagating from cell 6 to 8
+Propagating from cell 22 to 9
+Propagating from cell 26 to 10
+Propagating from cell 5 to 11
+Propagating from cell 20 to 12
+Propagating from cell 1 to 13
+Propagating from cell 16 to 14
+Propagating from cell 23 to 15
+Propagating from cell 26 to 16
+Propagating from cell 20 to 17
+Propagating from cell 31 to 18
+Propagating from cell 16 to 19
+Propagating from cell 24 to 20
+Propagating from cell 10 to 21
+Propagating from cell 25 to 22
+Propagating from cell 18 to 23
+Propagating from cell 4 to 24
+Propagating from cell 20 to 25
+Propagating from cell 16 to 26
+Propagating from cell 18 to 27
+Propagating from cell 23 to 28
+Propagating from cell 8 to 29
+Propagating from cell 22 to 30
+Propagating from cell 34 to 31
+Propagating from cell 6 to 32
+Propagating from cell 19 to 33
+Propagating from cell 20 to 34
+Propagating from cell 25 to 35
+Cell 0 has 1 copies in the next generation
+Cell 1 has 2 copies in the next generation
+Cell 2 has 0 copies in the next generation
+Cell 3 has 0 copies in the next generation
+Cell 4 has 1 copies in the next generation
+Cell 5 has 1 copies in the next generation
+Cell 6 has 2 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 1 copies in the next generation
+Cell 9 has 0 copies in the next generation
+Cell 10 has 2 copies in the next generation
+Cell 11 has 0 copies in the next generation
+Cell 12 has 0 copies in the next generation
+Cell 13 has 1 copies in the next generation
+Cell 14 has 1 copies in the next generation
+Cell 15 has 0 copies in the next generation
+Cell 16 has 3 copies in the next generation
+Cell 17 has 0 copies in the next generation
+Cell 18 has 2 copies in the next generation
+Cell 19 has 1 copies in the next generation
+Cell 20 has 4 copies in the next generation
+Cell 21 has 0 copies in the next generation
+Cell 22 has 3 copies in the next generation
+Cell 23 has 2 copies in the next generation
+Cell 24 has 2 copies in the next generation
+Cell 25 has 2 copies in the next generation
+Cell 26 has 2 copies in the next generation
+Cell 27 has 0 copies in the next generation
+Cell 28 has 1 copies in the next generation
+Cell 29 has 0 copies in the next generation
+Cell 30 has 0 copies in the next generation
+Cell 31 has 1 copies in the next generation
+Cell 32 has 0 copies in the next generation
+Cell 33 has 0 copies in the next generation
+Cell 34 has 1 copies in the next generation
+Cell 35 has 0 copies in the next generation
+Injecting Offspring 1 to 2
+Injecting Offspring 6 to 3
+Injecting Offspring 10 to 7
+Injecting Offspring 16 to 9
+Injecting Offspring 16 to 11
+Injecting Offspring 18 to 12
+Injecting Offspring 20 to 15
+Injecting Offspring 20 to 17
+Injecting Offspring 20 to 21
+Injecting Offspring 22 to 27
+Injecting Offspring 22 to 29
+Injecting Offspring 23 to 30
+Injecting Offspring 24 to 32
+Injecting Offspring 25 to 33
+Injecting Offspring 26 to 35
+Re-injecting Self 0 to 0
+Re-injecting Self 1 to 1
+Re-injecting Self 4 to 4
+Re-injecting Self 5 to 5
+Re-injecting Self 6 to 6
+Re-injecting Self 8 to 8
+Re-injecting Self 10 to 10
+Re-injecting Self 13 to 13
+Re-injecting Self 14 to 14
+Re-injecting Self 16 to 16
+Re-injecting Self 18 to 18
+Re-injecting Self 19 to 19
+Re-injecting Self 20 to 20
+Re-injecting Self 22 to 22
+Re-injecting Self 23 to 23
+Re-injecting Self 24 to 24
+Re-injecting Self 25 to 25
+Re-injecting Self 26 to 26
+Re-injecting Self 28 to 28
+Re-injecting Self 31 to 31
+Re-injecting Self 34 to 34
+Competed: Min fitness = 0.2952847, Avg fitness = 0.3236480 Max fitness = 0.3669192
+Copied  : Min fitness = 0.2952847, Avg fitness = 0.3235701, Max fitness = 0.3669192
+Copied  : Different organisms = 21
+UD: 71      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 72      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 73      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 74      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 75      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 76      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 77      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 78      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 79      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 80      Gen: 5.000000   Fit: 0.3227298  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 81      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 82      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 83      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 84      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 85      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 86      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 87      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 88      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 89      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 90      Gen: 5.000000   Fit: 0.3237796  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.2957317, Avg fitness = 0.3237796 Max Fitness = 0.3632959
+Trial #1 Min Fitness = 0.2975460, Avg fitness = 0.3235978 Max Fitness = 0.3660377
+Trial fitness in cell 0 = 0.3196155
+Trial fitness in cell 1 = 0.3168334
+Trial fitness in cell 2 = 0.3307711
+Trial fitness in cell 3 = 0.3239494
+Trial fitness in cell 4 = 0.3227442
+Trial fitness in cell 5 = 0.3026702
+Trial fitness in cell 6 = 0.3182792
+Trial fitness in cell 7 = 0.3038218
+Trial fitness in cell 8 = 0.3260343
+Trial fitness in cell 9 = 0.3092247
+Trial fitness in cell 10 = 0.3147812
+Trial fitness in cell 11 = 0.3197961
+Trial fitness in cell 12 = 0.3339313
+Trial fitness in cell 13 = 0.3051280
+Trial fitness in cell 14 = 0.3295433
+Trial fitness in cell 15 = 0.3099105
+Trial fitness in cell 16 = 0.3452154
+Trial fitness in cell 17 = 0.3209792
+Trial fitness in cell 18 = 0.3294103
+Trial fitness in cell 19 = 0.3548332
+Trial fitness in cell 20 = 0.3111677
+Trial fitness in cell 21 = 0.3339432
+Trial fitness in cell 22 = 0.3106900
+Trial fitness in cell 23 = 0.3003456
+Trial fitness in cell 24 = 0.3379976
+Trial fitness in cell 25 = 0.3245309
+Trial fitness in cell 26 = 0.3380119
+Trial fitness in cell 27 = 0.3445962
+Trial fitness in cell 28 = 0.3421650
+Trial fitness in cell 29 = 0.3175229
+Trial fitness in cell 30 = 0.3228494
+Trial fitness in cell 31 = 0.3266067
+Trial fitness in cell 32 = 0.3089188
+Trial fitness in cell 33 = 0.3224745
+Trial fitness in cell 34 = 0.3322873
+Trial fitness in cell 35 = 0.3356582
+Propagating from cell 34 to 0
+Propagating from cell 2 to 1
+Propagating from cell 28 to 2
+Propagating from cell 30 to 3
+Propagating from cell 20 to 4
+Propagating from cell 30 to 5
+Propagating from cell 30 to 6
+Propagating from cell 18 to 7
+Propagating from cell 17 to 8
+Propagating from cell 19 to 9
+Propagating from cell 23 to 10
+Propagating from cell 12 to 11
+Propagating from cell 1 to 12
+Propagating from cell 18 to 13
+Propagating from cell 27 to 14
+Propagating from cell 4 to 15
+Propagating from cell 2 to 16
+Propagating from cell 14 to 17
+Propagating from cell 12 to 18
+Propagating from cell 17 to 19
+Propagating from cell 15 to 20
+Propagating from cell 12 to 21
+Propagating from cell 9 to 22
+Propagating from cell 16 to 23
+Propagating from cell 2 to 24
+Propagating from cell 19 to 25
+Propagating from cell 27 to 26
+Propagating from cell 27 to 27
+Propagating from cell 13 to 28
+Propagating from cell 3 to 29
+Propagating from cell 18 to 30
+Propagating from cell 6 to 31
+Propagating from cell 16 to 32
+Propagating from cell 9 to 33
+Propagating from cell 17 to 34
+Propagating from cell 15 to 35
+Cell 0 has 0 copies in the next generation
+Cell 1 has 1 copies in the next generation
+Cell 2 has 3 copies in the next generation
+Cell 3 has 1 copies in the next generation
+Cell 4 has 1 copies in the next generation
+Cell 5 has 0 copies in the next generation
+Cell 6 has 1 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 0 copies in the next generation
+Cell 9 has 2 copies in the next generation
+Cell 10 has 0 copies in the next generation
+Cell 11 has 0 copies in the next generation
+Cell 12 has 3 copies in the next generation
+Cell 13 has 1 copies in the next generation
+Cell 14 has 1 copies in the next generation
+Cell 15 has 2 copies in the next generation
+Cell 16 has 2 copies in the next generation
+Cell 17 has 3 copies in the next generation
+Cell 18 has 3 copies in the next generation
+Cell 19 has 2 copies in the next generation
+Cell 20 has 1 copies in the next generation
+Cell 21 has 0 copies in the next generation
+Cell 22 has 0 copies in the next generation
+Cell 23 has 1 copies in the next generation
+Cell 24 has 0 copies in the next generation
+Cell 25 has 0 copies in the next generation
+Cell 26 has 0 copies in the next generation
+Cell 27 has 3 copies in the next generation
+Cell 28 has 1 copies in the next generation
+Cell 29 has 0 copies in the next generation
+Cell 30 has 3 copies in the next generation
+Cell 31 has 0 copies in the next generation
+Cell 32 has 0 copies in the next generation
+Cell 33 has 0 copies in the next generation
+Cell 34 has 1 copies in the next generation
+Cell 35 has 0 copies in the next generation
+Injecting Offspring 2 to 0
+Injecting Offspring 2 to 5
+Injecting Offspring 9 to 7
+Injecting Offspring 12 to 8
+Injecting Offspring 12 to 10
+Injecting Offspring 15 to 11
+Injecting Offspring 16 to 21
+Injecting Offspring 17 to 22
+Injecting Offspring 17 to 24
+Injecting Offspring 18 to 25
+Injecting Offspring 18 to 26
+Injecting Offspring 19 to 29
+Injecting Offspring 27 to 31
+Injecting Offspring 27 to 32
+Injecting Offspring 30 to 33
+Injecting Offspring 30 to 35
+Re-injecting Self 1 to 1
+Re-injecting Self 2 to 2
+Re-injecting Self 3 to 3
+Re-injecting Self 4 to 4
+Re-injecting Self 6 to 6
+Re-injecting Self 9 to 9
+Re-injecting Self 12 to 12
+Re-injecting Self 13 to 13
+Re-injecting Self 14 to 14
+Re-injecting Self 15 to 15
+Re-injecting Self 16 to 16
+Re-injecting Self 17 to 17
+Re-injecting Self 18 to 18
+Re-injecting Self 19 to 19
+Re-injecting Self 20 to 20
+Re-injecting Self 23 to 23
+Re-injecting Self 27 to 27
+Re-injecting Self 28 to 28
+Re-injecting Self 30 to 30
+Re-injecting Self 34 to 34
+Competed: Min fitness = 0.3003456, Avg fitness = 0.3235344 Max fitness = 0.3548332
+Copied  : Min fitness = 0.3003456, Avg fitness = 0.3274562, Max fitness = 0.3548332
+Copied  : Different organisms = 20
+UD: 91      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 92      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 93      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 94      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 95      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 96      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 97      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 98      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 99      Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 100     Gen: 6.000000   Fit: 0.3314238  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  
+UD: 101     Gen: 6.000000   Fit: 0.3240106  Orgs: 36      Merit: 96.86111   Thrd: 36      Para: 0  

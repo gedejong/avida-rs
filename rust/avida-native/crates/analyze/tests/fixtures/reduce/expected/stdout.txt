@@ -1,0 +1,59 @@
+Verbose ON: Using verbose log messages...
+Loading: data/detail-5000.pop
+Loading file of type: genotype_data
+Loading: data/historic-50000.pop
+Loading file of type: genotype_data
+Duplicating from batch 0 to batch 1.
+Duplicating from batch 0 to batch 2.
+Duplicating from batch 0 to batch 3.
+Duplicating from batch 0 to batch 4.
+Duplicating from batch 0 to batch 5.
+Duplicating from batch 0 to batch 6.
+Duplicating from batch 0 to batch 7.
+Setting current batch to 1
+Filtering batch 1 to genotypes where num_cpus > 5
+Detailing batch 1
+Setting current batch to 2
+Sampling 0.1 organisms from batch 2.
+  Removed 3240 organisms (1566 genotypes); 360 orgs (228 gens) remaining.
+Detailing batch 2
+Setting current batch to 3
+Sampling 0.05 genotypes from batch 3.
+  Removed 1720 genotypes; 74 remaining.
+Detailing batch 3
+Setting current batch to 4
+Detailing batch 4
+Setting current batch to 5
+Reducing batch 5 to clade 508717.
+  Clade has 559 genotypes; 1235 were removed.
+Detailing batch 5
+Setting current batch to 6
+Reducing batch 6 to genotypes: 508717 num_cpus total_cpus fitness 
+Detailing batch 6
+Setting current batch to 7
+Reducing batch 7 to num_cpus lineage 
+  Lineage has 54 genotypes; 1740 were removed.
+Finding last common ancestor of batch 7
+  Connecting genotypes to parents. 
+  Finding earliest genotype. 
+  Following children to last common ancestor. 
+Detailing batch 7
+Setting current batch to 0
+Histogram batch 0
+Histogram batch 0
+Detailing batch 0 based on time
+  Time step = 1000
+  Max time = 5000
+Detailing batches for num_cpus
+Average detailing batch 0
+Creating a Detail Index...
+Printing tasks in batch 0
+Status Report:
+  Batch 0 -- 1794 genotypes.  <current>
+  Batch 1 -- 132 genotypes.
+  Batch 2 -- 228 genotypes.
+  Batch 3 -- 74 genotypes.
+  Batch 4 -- 7 genotypes.
+  Batch 5 -- 559 genotypes.
+  Batch 6 -- 4 genotypes.
+  Batch 7 -- 1 genotypes.  <lineage>

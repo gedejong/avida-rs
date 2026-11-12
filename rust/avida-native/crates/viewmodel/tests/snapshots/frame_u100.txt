@@ -1,0 +1,182 @@
+frame update=100
+world 60x60 seed=101 inst_set=heads_default done=true
+progress in_update=false slices=0/0 last_finished=100 layers=21 inst_names=[nop-A,nop-B,nop-C,if-n-equ,if-less,pop,push,swap-stk,swap,shift-r,shift-l,inc,dec,add,sub,nand,IO,h-alloc,h-divide,h-copy,h-search,mov-head,jmp-head,get-head,if-label,set-flow]
+pop orgs=53 genotypes=32 threshold=4 births=1 deaths=1 breed_true=0 executed=1590 threads=53 tot_orgs=66
+ave fitness=0.237699 merit=91.0189 gestation=381 generation=7.01887 age=9.96226 mem_size=279.943
+max fitness=0.251948 merit=97
+tasks_last not=0 nand=0 and=0 orn=0 or=0 andn=0 nor=0 xor=0 equ=0
+resources none
+map 60x60 occupied=53 top=[1,7,9,3,17,20,19] top_cells=[7,5,4,3,2,2,2] genotypes_on_map=32
+  genotype 1 first_cell=0 cells=7
+  genotype 3 first_cell=120 cells=3
+  genotype 6 first_cell=60 cells=1
+  genotype 7 first_cell=3422 cells=5
+  genotype 8 first_cell=3540 cells=1
+  genotype 9 first_cell=3477 cells=4
+  genotype 10 first_cell=239 cells=1
+  genotype 12 first_cell=122 cells=1
+  genotype 13 first_cell=3481 cells=1
+  genotype 16 first_cell=118 cells=2
+  genotype 17 first_cell=121 cells=2
+  genotype 18 first_cell=123 cells=1
+  genotype 19 first_cell=3419 cells=2
+  genotype 20 first_cell=119 cells=2
+  genotype 21 first_cell=57 cells=2
+  genotype 22 first_cell=2 cells=2
+  genotype 23 first_cell=3596 cells=1
+  genotype 25 first_cell=3538 cells=1
+  genotype 26 first_cell=3539 cells=1
+  genotype 27 first_cell=177 cells=1
+  genotype 28 first_cell=3536 cells=1
+  genotype 29 first_cell=180 cells=1
+  genotype 30 first_cell=62 cells=1
+  genotype 31 first_cell=298 cells=1
+  genotype 32 first_cell=3361 cells=1
+  genotype 33 first_cell=59 cells=1
+  genotype 34 first_cell=3 cells=1
+  genotype 35 first_cell=3418 cells=1
+  genotype 36 first_cell=3478 cells=1
+  genotype 37 first_cell=3479 cells=1
+  genotype 38 first_cell=176 cells=1
+  genotype 39 first_cell=61 cells=1
+  AA++.....................................................+A+
+  +++.....................................................+A+F
+  DE++....................................................+++F
+  +DE........................................................+
+  .D........................................................+.
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  ............................................................
+  .+........................................................+G
+  GAB......................................................C++
+  A+BB....................................................+C++
+  +BB+....................................................+CCA
+layer fitness n=53 min=0.125984 max=0.251948 mean=0.237699 fnv=9fef00523d46a8af
+layer merit n=53 min=48 max=97 mean=91.0189 fnv=d194cb39294defc6
+layer gestation n=53 min=285 max=389 mean=381 fnv=6b440280eaab2bb1
+layer age n=53 min=1 max=35 mean=10.9623 fnv=5a1c6487c657eb03
+layer generation n=53 min=5 max=8 mean=7.01887 fnv=c9f362122964f338
+layer genome_len n=53 min=99 max=101 mean=99.9057 fnv=4f306480f9e60034
+layer lineage n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer breed_true n=53 min=0 max=1 mean=0.433962 fnv=fed349e9df664d65
+layer modified n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer threads n=53 min=1 max=1 mean=1 fnv=039c7b16717e87a5
+layer task_count n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task not n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task nand n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task and n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task orn n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task or n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task andn n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task nor n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task xor n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer task equ n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+tasks_done not=0 nand=0 and=0 orn=0 or=0 andn=0 nor=0 xor=0 equ=0
+dominant #0 id=1 parent=-1 name=100-aaaaa n=7 depth=0 born=-1 len=100 threshold=1 fitness=0.249357 merit=97 gestation=389 births=0
+  copy_size=100 exe_size=0 repro_rate=0.00257069 max_fitness=0.249357 breed_true=0 breed_in=0 parents=-
+  genome=rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab
+genotypes n=8
+  #0 id=1 parent=-1 name=100-aaaaa n=7 depth=0 born=-1 len=100 threshold=1 fitness=0.249357 merit=97 gestation=389 births=0
+  #1 id=7 parent=1 name=099-aaaaa n=5 depth=1 born=52 len=99 threshold=1 fitness=0.249351 merit=96 gestation=385 births=0
+  #2 id=9 parent=5 name=100-aaaac n=4 depth=2 born=53 len=100 threshold=1 fitness=0.25 merit=97 gestation=388 births=0
+  #3 id=3 parent=1 name=100-aaaab n=3 depth=1 born=38 len=100 threshold=1 fitness=0.25 merit=97 gestation=388 births=1
+  #4 id=17 parent=6 name=100-no_name n=2 depth=2 born=76 len=100 threshold=0 fitness=0.250646 merit=97 gestation=387 births=0
+  #5 id=20 parent=10 name=100-no_name n=2 depth=3 born=78 len=100 threshold=0 fitness=0.251948 merit=97 gestation=385 births=0
+  #6 id=19 parent=1 name=101-no_name n=2 depth=1 born=78 len=101 threshold=0 fitness=0.230366 merit=88 gestation=382 births=0
+  #7 id=21 parent=5 name=100-no_name n=2 depth=2 born=78 len=100 threshold=0 fitness=0.25 merit=97 gestation=388 births=0
+inspect cell=0 xy=(0,0) org=0 genotype=1 (100-aaaaa) lineage=0 faces=59
+  phenotype merit=97 fitness=0.249357 bonus=1 gestation=389 age=12 generation=7 len=100 copied=100 executed=97
+  cycles=388 time=388 divides=7 born=89 breed_true=true modified=false multi_thread=false to_die=false
+  tasks cur=[0,0,0,0,0,0,0,0,0] last=[0,0,0,0,0,0,0,0,0]
+  reactions cur=[0,0,0,0,0,0,0,0,0] last=[0,0,0,0,0,0,0,0,0]
+  io cell_inputs=[0f0fba90,33cc4cda,55c77ef4] input=[] output=[]
+  cpu inst_set=heads_default hw_type=0 insts=26 threads=1 cur=0 mem=300
+  thread 0 id=0 regs=[100,0,0] heads=[96,100,200,92] active_stack=0 read_label=AB next_label=AB
+    stack0=[0,0,0,0,0,0,0,0,0,0]
+    stack1=[0,0,0,0,0,0,0,0,0,0]
+  mem    0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  flg    0 444.444444444444444444444444444444444444444444444444444444444444
+  hds    0
+  mem   64 cccccccccccccccccccccccccccutycasvabrucavccccccccccccccccccccccc
+  flg   64 4444444444444444444444444444444..44.1111111111111111111111111111
+  hds   64                             f   i   r
+  mem  128 ccccccccccccccccccccccccrccccccccccccccccccccccccccccccccccccccu
+  flg  128 111111111111111111111111j111111111111111111111111111111111111111
+  hds  128
+  mem  192 tycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  flg  192 11111111........................................................
+  hds  192         w
+  mem  256 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  flg  256 ............................................
+  hds  256
+lineage n=3
+  #31 id=39 parent=3 name=099-no_name n=1 depth=2 born=100 len=99 threshold=0 fitness=0 merit=0 gestation=0 births=0
+  #3 id=3 parent=1 name=100-aaaab n=3 depth=1 born=38 len=100 threshold=1 fitness=0.25 merit=97 gestation=388 births=1
+  #0 id=1 parent=-1 name=100-aaaaa n=7 depth=0 born=-1 len=100 threshold=1 fitness=0.249357 merit=97 gestation=389 births=0
+env
+  reaction name=NOT task=not value=1 last=0
+  reaction name=NAND task=nand value=1 last=0
+  reaction name=AND task=and value=2 last=0
+  reaction name=ORN task=orn value=2 last=0
+  reaction name=OR task=or value=3 last=0
+  reaction name=ANDN task=andn value=3 last=0
+  reaction name=NOR task=nor value=4 last=0
+  reaction name=XOR task=xor value=4 last=0
+  reaction name=EQU task=equ value=5 last=0
+  task name=not desc=Not last=0
+  task name=nand desc=Nand last=0
+  task name=and desc=And last=0
+  task name=orn desc=OrNot last=0
+  task name=or desc=Or last=0
+  task name=andn desc=AndNot last=0
+  task name=nor desc=Nor last=0
+  task name=xor desc=Xor last=0
+  task name=equ desc=Equals last=0

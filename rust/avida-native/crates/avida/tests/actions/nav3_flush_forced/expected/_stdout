@@ -1,0 +1,63 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 3
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 2       
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 2       
+UD: 2       Gen: 0.6666667  Fit: 0.2846442  Orgs: 3       
+UD: 3       Gen: 1.000000   Fit: 0.4269663  Orgs: 4       
+UD: 4       Gen: 1.000000   Fit: 0.4269663  Orgs: 4       
+UD: 5       Gen: 1.666667   Fit: 0.3558052  Orgs: 6       
+UD: 6       Gen: 2.000000   Fit: 0.3735955  Orgs: 8       
+UD: 7       Gen: 2.000000   Fit: 0.3735955  Orgs: 8       
+UD: 8       Gen: 2.545455   Fit: 0.3881512  Orgs: 11      
+UD: 9       Gen: 2.857143   Fit: 0.3964687  Orgs: 14      
+UD: 10      Gen: 2.857143   Fit: 0.3964687  Orgs: 14      
+UD: 11      Gen: 3.500000   Fit: 0.4056180  Orgs: 20      
+UD: 12      Gen: 3.857143   Fit: 0.3966931  Orgs: 28      
+UD: 13      Gen: 3.857143   Fit: 0.3966931  Orgs: 28      
+UD: 14      Gen: 4.378378   Fit: 0.4058101  Orgs: 37      
+UD: 15      Gen: 4.787234   Fit: 0.4116917  Orgs: 47      
+UD: 16      Gen: 4.812500   Fit: 0.4084839  Orgs: 48      
+UD: 17      Gen: 5.228070   Fit: 0.4083086  Orgs: 57      
+UD: 18      Gen: 5.743243   Fit: 0.4107338  Orgs: 74      
+UD: 19      Gen: 5.802632   Fit: 0.4069431  Orgs: 76      
+UD: 20      Gen: 6.333333   Fit: 0.4081419  Orgs: 93      
+UD: 21      Gen: 6.647619   Fit: 0.4138793  Orgs: 105     
+UD: 22      Gen: 6.779817   Fit: 0.4094811  Orgs: 109     
+UD: 23      Gen: 7.246154   Fit: 0.4097768  Orgs: 130     
+UD: 24      Gen: 7.528169   Fit: 0.4106413  Orgs: 142     
+UD: 25      Gen: 7.719178   Fit: 0.4100643  Orgs: 146     
+UD: 26      Gen: 8.099379   Fit: 0.4120488  Orgs: 161     
+UD: 27      Gen: 8.483146   Fit: 0.4110296  Orgs: 178     
+UD: 28      Gen: 8.690608   Fit: 0.4146999  Orgs: 181     
+UD: 29      Gen: 9.161616   Fit: 0.4147738  Orgs: 198     
+UD: 30      Gen: 9.497630   Fit: 0.4129966  Orgs: 211     
+UD: 31      Gen: 9.710407   Fit: 0.4076860  Orgs: 221     
+UD: 32      Gen: 10.18565   Fit: 0.4120714  Orgs: 237     
+UD: 33      Gen: 10.40496   Fit: 0.4138699  Orgs: 242     
+UD: 34      Gen: 10.66008   Fit: 0.4092057  Orgs: 253     
+UD: 35      Gen: 11.15217   Fit: 0.4116221  Orgs: 276     
+UD: 36      Gen: 11.41197   Fit: 0.4134831  Orgs: 284     
+UD: 37      Gen: 11.69625   Fit: 0.4121898  Orgs: 293     
+UD: 38      Gen: 12.15655   Fit: 0.4115303  Orgs: 313     
+UD: 39      Gen: 12.41049   Fit: 0.4121398  Orgs: 324     
+UD: 40      Gen: 12.72321   Fit: 0.4107467  Orgs: 336     

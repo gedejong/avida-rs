@@ -1,0 +1,2 @@
+base sex
+args -set WORLD_X 30 -set WORLD_Y 30 -set NUM_DEMES 3 -set ALLOW_MATE_SELECTION 1 -set DIV_MUT_PROB 0.05

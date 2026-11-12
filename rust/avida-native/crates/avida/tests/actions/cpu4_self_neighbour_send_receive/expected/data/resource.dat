@@ -1,0 +1,13 @@
+# Avida resource data
+# Thu Nov 12 06:40:33 2026
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+
+0 
+20 
+40 
+60 
+80 
+100 
+120 

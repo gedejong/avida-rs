@@ -1,0 +1,10 @@
+[package]
+name = "avida-config"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }

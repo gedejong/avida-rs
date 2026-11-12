@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 3 -set SET_FT_AT_BIRTH 1 -set MAX_PREY_BT 5 -set WORLD_X 15 -set WORLD_Y 15

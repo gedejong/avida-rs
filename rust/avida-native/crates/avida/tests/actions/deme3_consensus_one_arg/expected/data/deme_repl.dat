@@ -1,0 +1,15 @@
+# Avida deme replication data
+# Wed Nov 11 18:16:36 2026
+#  1: Update [update]
+#  2: Number of deme replications [numrepl]
+#  3: Mean deme gestation time [gesttime]
+#  4: Mean number of births within replicated demes [numbirths]
+#  5: Mean heritable merit of replicated demes [merit]
+#  6: Mean generation of replicated demes [generation]
+#  7: Mean density of replicated demes [density]
+
+0 0 0 0 0 0 0 
+50 5 8.2 0 1 2 1 
+100 5 8 0 1 7 1 
+150 5 8 0 1 12 1 
+200 10 8 0 1 19.5 1 

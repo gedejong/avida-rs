@@ -1,0 +1,145 @@
+# Wed Nov 11 23:43:59 2026
+# Filename........: archive/116-aaaab.org
+# Update Output...: 250
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 107.000000
+# Gestation Time..: 422
+# Fitness.........: 0.253555
+# Errors..........: 1
+# Genome Size.....: 116
+# Copied Size.....: 116
+# Executed Size...: 107
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 1 (1.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+IO
+push
+pop
+nop-C
+nand
+IO
+push
+dec
+h-divide
+h-copy
+h-alloc
+nop-B
+swap
+nand
+nop-C
+push
+nop-C
+push
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+inc
+nop-C
+nop-C
+nop-C
+push
+nop-B
+add
+set-flow
+IO
+nop-A
+IO
+nop-B
+h-copy
+nop-C
+nop-C
+sub
+push
+shift-r
+nop-C
+if-n-equ
+nand
+push
+h-search
+nop-A
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+pop
+sub
+add
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+inc
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+h-divide
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+swap
+dec
+if-less
+h-search
+nop-C
+shift-l
+h-copy
+h-copy
+inc
+if-less
+nop-C
+nop-C
+h-divide
+nop-C
+nop-C
+nop-C
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B

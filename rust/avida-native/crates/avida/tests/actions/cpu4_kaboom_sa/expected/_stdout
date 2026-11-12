@@ -1,0 +1,1259 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 101
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 11      Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 12      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 13      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 20      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 21      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 22      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 23      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 24      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 25      Gen: 1.666667   Fit: 0.2493573  Orgs: 3       
+UD: 26      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 27      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 28      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 29      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 30      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 31      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 32      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       
+UD: 33      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       
+UD: 34      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       
+UD: 35      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       
+UD: 36      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       
+UD: 37      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 38      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 39      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 40      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 41      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 42      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 43      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 44      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 45      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 46      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 47      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 48      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 49      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 50      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 51      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 52      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 53      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       
+UD: 54      Gen: 3.166667   Fit: 0.2229512  Orgs: 6       
+UD: 55      Gen: 3.166667   Fit: 0.2229512  Orgs: 6       
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+UD: 56      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 57      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 58      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 59      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 60      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 61      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 62      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 63      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 64      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 65      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 66      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 67      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       
+UD: 68      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 69      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 70      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 71      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 72      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 73      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       
+UD: 74      Gen: 4.428571   Fit: 0.2274599  Orgs: 7       
+UD: 75      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 76      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 77      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 78      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 79      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 80      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 81      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       
+UD: 82      Gen: 5.111111   Fit: 0.2326123  Orgs: 9       
+UD: 83      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 84      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 85      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 86      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 87      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 88      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 89      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 90      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      
+UD: 91      Gen: 5.727273   Fit: 0.2358921  Orgs: 11      
+UD: 92      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 93      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 94      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 95      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 96      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 97      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 98      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 99      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 100     Gen: 6.166667   Fit: 0.2374480  Orgs: 12      
+UD: 101     Gen: 6.769231   Fit: 0.2386141  Orgs: 13      
+UD: 102     Gen: 6.846154   Fit: 0.2386141  Orgs: 13      
+UD: 103     Gen: 6.928571   Fit: 0.2402642  Orgs: 14      
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 6.125000
+effect is 0.5000000
+new shoudl be 3.062500
+after 3.062500
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+UD: 104     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      
+UD: 105     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      
+UD: 106     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      
+UD: 107     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      
+UD: 108     Gen: 7.071429   Fit: 0.2373017  Orgs: 14      
+UD: 109     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 110     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 111     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 112     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 113     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 114     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      
+UD: 115     Gen: 8.000000   Fit: 0.2413194  Orgs: 17      
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 88.00000
+effect is 0.5000000
+new shoudl be 44.00000
+after 44.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 44.00000
+effect is 0.5000000
+new shoudl be 22.00000
+after 22.00000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+UD: 116     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      
+UD: 117     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      
+UD: 118     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      
+UD: 119     Gen: 8.133333   Fit: 0.2401226  Orgs: 15      
+UD: 120     Gen: 8.133333   Fit: 0.2401226  Orgs: 15      
+UD: 121     Gen: 8.611111   Fit: 0.2425670  Orgs: 18      
+UD: 122     Gen: 8.611111   Fit: 0.2425670  Orgs: 18      
+UD: 123     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      
+UD: 124     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      
+UD: 125     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      
+UD: 126     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      
+UD: 127     Gen: 8.944444   Fit: 0.2425005  Orgs: 18      
+UD: 128     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      
+UD: 129     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      
+UD: 130     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      
+UD: 131     Gen: 9.210526   Fit: 0.2429967  Orgs: 19      
+UD: 132     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      
+UD: 133     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      
+UD: 134     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      
+UD: 135     Gen: 9.500000   Fit: 0.2424197  Orgs: 20      
+UD: 136     Gen: 9.550000   Fit: 0.2424197  Orgs: 20      
+UD: 137     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      
+UD: 138     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      
+UD: 139     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      
+UD: 140     Gen: 9.476190   Fit: 0.2370458  Orgs: 21      
+UD: 141     Gen: 9.681818   Fit: 0.2378126  Orgs: 22      
+UD: 142     Gen: 9.772727   Fit: 0.2378518  Orgs: 22      
+UD: 143     Gen: 9.772727   Fit: 0.2378518  Orgs: 22      
+UD: 144     Gen: 9.956522   Fit: 0.2385725  Orgs: 23      
+UD: 145     Gen: 10.45455   Fit: 0.2418021  Orgs: 22      
+UD: 146     Gen: 10.50000   Fit: 0.2415654  Orgs: 22      
+UD: 147     Gen: 10.52174   Fit: 0.2420159  Orgs: 23      
+UD: 148     Gen: 10.52174   Fit: 0.2420159  Orgs: 23      
+UD: 149     Gen: 10.52174   Fit: 0.2419037  Orgs: 23      
+UD: 150     Gen: 10.39130   Fit: 0.2418461  Orgs: 23      
+UD: 151     Gen: 10.54167   Fit: 0.2424326  Orgs: 24      
+UD: 152     Gen: 10.62500   Fit: 0.2417820  Orgs: 24      
+UD: 153     Gen: 10.66667   Fit: 0.2424326  Orgs: 24      
+UD: 154     Gen: 10.66667   Fit: 0.2424326  Orgs: 24      
+UD: 155     Gen: 10.75000   Fit: 0.2424326  Orgs: 24      
+UD: 156     Gen: 10.75000   Fit: 0.2424326  Orgs: 24      
+UD: 157     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      
+UD: 158     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      
+UD: 159     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      
+UD: 160     Gen: 10.91667   Fit: 0.2408247  Orgs: 24      
+UD: 161     Gen: 10.75000   Fit: 0.2406563  Orgs: 24      
+UD: 162     Gen: 11.07692   Fit: 0.2417321  Orgs: 26      
+UD: 163     Gen: 11.23077   Fit: 0.2417321  Orgs: 26      
+UD: 164     Gen: 11.26923   Fit: 0.2417321  Orgs: 26      
+UD: 165     Gen: 11.38462   Fit: 0.2410344  Orgs: 26      
+UD: 166     Gen: 11.42308   Fit: 0.2410344  Orgs: 26      
+UD: 167     Gen: 11.65385   Fit: 0.2410582  Orgs: 26      
+UD: 168     Gen: 11.65385   Fit: 0.2410582  Orgs: 26      
+UD: 169     Gen: 11.59259   Fit: 0.2400279  Orgs: 27      
+UD: 170     Gen: 11.74074   Fit: 0.2311668  Orgs: 27      
+UD: 171     Gen: 11.74074   Fit: 0.2311668  Orgs: 27      
+UD: 172     Gen: 11.81481   Fit: 0.2312154  Orgs: 27      
+before 101.0000
+effect is 0.5000000
+new shoudl be 50.50000
+after 50.50000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 101.0000
+effect is 0.5000000
+new shoudl be 50.50000
+after 50.50000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 195.0000
+effect is 0.5000000
+new shoudl be 97.50000
+after 97.50000
+before 50.50000
+effect is 0.5000000
+new shoudl be 25.25000
+after 25.25000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 50.50000
+effect is 0.5000000
+new shoudl be 25.25000
+after 25.25000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 97.50000
+effect is 0.5000000
+new shoudl be 48.75000
+after 48.75000
+before 25.25000
+effect is 0.5000000
+new shoudl be 12.62500
+after 12.62500
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+UD: 173     Gen: 12.11111   Fit: 0.2342997  Orgs: 27      
+UD: 174     Gen: 12.14815   Fit: 0.2386713  Orgs: 27      
+UD: 175     Gen: 12.38462   Fit: 0.2382113  Orgs: 26      
+UD: 176     Gen: 12.53846   Fit: 0.2382367  Orgs: 26      
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+before 6.125000
+effect is 0.5000000
+new shoudl be 3.062500
+after 3.062500
+before 6.125000
+effect is 0.5000000
+new shoudl be 3.062500
+after 3.062500
+UD: 177     Gen: 12.69231   Fit: 0.2404791  Orgs: 26      
+UD: 178     Gen: 12.76923   Fit: 0.2397332  Orgs: 26      
+UD: 179     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      
+UD: 180     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      
+UD: 181     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      
+UD: 182     Gen: 12.88462   Fit: 0.2404956  Orgs: 26      
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 101.0000
+effect is 0.5000000
+new shoudl be 50.50000
+after 50.50000
+before 81.00000
+effect is 0.5000000
+new shoudl be 40.50000
+after 40.50000
+before 87.00000
+effect is 0.5000000
+new shoudl be 43.50000
+after 43.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 87.00000
+effect is 0.5000000
+new shoudl be 43.50000
+after 43.50000
+before 81.00000
+effect is 0.5000000
+new shoudl be 40.50000
+after 40.50000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 50.50000
+effect is 0.5000000
+new shoudl be 25.25000
+after 25.25000
+before 40.50000
+effect is 0.5000000
+new shoudl be 20.25000
+after 20.25000
+before 43.50000
+effect is 0.5000000
+new shoudl be 21.75000
+after 21.75000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 43.50000
+effect is 0.5000000
+new shoudl be 21.75000
+after 21.75000
+before 40.50000
+effect is 0.5000000
+new shoudl be 20.25000
+after 20.25000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 25.25000
+effect is 0.5000000
+new shoudl be 12.62500
+after 12.62500
+before 20.25000
+effect is 0.5000000
+new shoudl be 10.12500
+after 10.12500
+before 21.75000
+effect is 0.5000000
+new shoudl be 10.87500
+after 10.87500
+UD: 183     Gen: 12.76000   Fit: 0.2399646  Orgs: 25      
+UD: 184     Gen: 13.44444   Fit: 0.2441814  Orgs: 27      
+UD: 185     Gen: 13.51852   Fit: 0.2383403  Orgs: 27      
+UD: 186     Gen: 13.66667   Fit: 0.2382688  Orgs: 27      
+UD: 187     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      
+UD: 188     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      
+UD: 189     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      
+UD: 190     Gen: 13.82143   Fit: 0.2388044  Orgs: 28      
+UD: 191     Gen: 14.00000   Fit: 0.2388303  Orgs: 28      
+UD: 192     Gen: 14.13793   Fit: 0.2393989  Orgs: 29      
+UD: 193     Gen: 14.13793   Fit: 0.2394431  Orgs: 29      
+UD: 194     Gen: 14.20690   Fit: 0.2421893  Orgs: 29      
+UD: 195     Gen: 14.30000   Fit: 0.2424281  Orgs: 30      
+UD: 196     Gen: 14.33333   Fit: 0.2430745  Orgs: 30      
+UD: 197     Gen: 14.36667   Fit: 0.2431177  Orgs: 30      
+UD: 198     Gen: 14.43333   Fit: 0.2377962  Orgs: 30      
+UD: 199     Gen: 14.43333   Fit: 0.2377962  Orgs: 30      
+UD: 200     Gen: 14.53333   Fit: 0.2404005  Orgs: 30      
+UD: 201     Gen: 14.86667   Fit: 0.2401858  Orgs: 30      
+UD: 202     Gen: 14.96667   Fit: 0.2401858  Orgs: 30      
+UD: 203     Gen: 15.16129   Fit: 0.2406959  Orgs: 31      
+UD: 204     Gen: 15.16129   Fit: 0.2406959  Orgs: 31      
+UD: 205     Gen: 15.21212   Fit: 0.2413375  Orgs: 33      
+UD: 206     Gen: 15.24242   Fit: 0.2413576  Orgs: 33      
+UD: 207     Gen: 15.24242   Fit: 0.2413576  Orgs: 33      
+UD: 208     Gen: 15.27273   Fit: 0.2404744  Orgs: 33      
+UD: 209     Gen: 15.34375   Fit: 0.2406119  Orgs: 32      
+UD: 210     Gen: 15.34375   Fit: 0.2406119  Orgs: 32      
+UD: 211     Gen: 15.34375   Fit: 0.2406119  Orgs: 32      
+UD: 212     Gen: 15.72727   Fit: 0.2404730  Orgs: 33      
+UD: 213     Gen: 15.87879   Fit: 0.2402317  Orgs: 33      
+UD: 214     Gen: 15.87879   Fit: 0.2402317  Orgs: 33      
+UD: 215     Gen: 16.06061   Fit: 0.2440524  Orgs: 33      
+UD: 216     Gen: 16.06061   Fit: 0.2440524  Orgs: 33      
+UD: 217     Gen: 16.21212   Fit: 0.2446529  Orgs: 33      
+UD: 218     Gen: 16.47059   Fit: 0.2389002  Orgs: 34      
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 25.25000
+effect is 0.5000000
+new shoudl be 12.62500
+after 12.62500
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 12.62500
+effect is 0.5000000
+new shoudl be 6.312500
+after 6.312500
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+UD: 219     Gen: 16.54545   Fit: 0.2385250  Orgs: 33      
+UD: 220     Gen: 16.54545   Fit: 0.2385250  Orgs: 33      
+UD: 221     Gen: 16.54545   Fit: 0.2385250  Orgs: 33      
+UD: 222     Gen: 16.54545   Fit: 0.2385250  Orgs: 33      
+UD: 223     Gen: 16.82353   Fit: 0.2389782  Orgs: 34      
+UD: 224     Gen: 16.85294   Fit: 0.2389782  Orgs: 34      
+UD: 225     Gen: 16.88235   Fit: 0.2389782  Orgs: 34      
+UD: 226     Gen: 17.11429   Fit: 0.2395071  Orgs: 35      
+UD: 227     Gen: 17.13889   Fit: 0.2397388  Orgs: 36      
+UD: 228     Gen: 17.11111   Fit: 0.2421523  Orgs: 36      
+UD: 229     Gen: 17.11111   Fit: 0.2421523  Orgs: 36      
+UD: 230     Gen: 17.11111   Fit: 0.2421523  Orgs: 36      
+UD: 231     Gen: 17.11111   Fit: 0.2421523  Orgs: 36      
+UD: 232     Gen: 17.13889   Fit: 0.2418598  Orgs: 36      
+UD: 233     Gen: 17.22222   Fit: 0.2418598  Orgs: 36      
+UD: 234     Gen: 17.30556   Fit: 0.2418787  Orgs: 36      
+UD: 235     Gen: 17.36111   Fit: 0.2418787  Orgs: 36      
+UD: 236     Gen: 17.71795   Fit: 0.2427455  Orgs: 39      
+UD: 237     Gen: 17.79487   Fit: 0.2426958  Orgs: 39      
+UD: 238     Gen: 17.81579   Fit: 0.2427108  Orgs: 38      
+UD: 239     Gen: 17.86842   Fit: 0.2427108  Orgs: 38      
+UD: 240     Gen: 17.92105   Fit: 0.2426871  Orgs: 38      
+UD: 241     Gen: 18.05128   Fit: 0.2429267  Orgs: 39      
+UD: 242     Gen: 18.05128   Fit: 0.2429267  Orgs: 39      
+UD: 243     Gen: 18.28205   Fit: 0.2448493  Orgs: 39      
+UD: 244     Gen: 18.41026   Fit: 0.2456918  Orgs: 39      
+UD: 245     Gen: 18.43590   Fit: 0.2456070  Orgs: 39      
+UD: 246     Gen: 18.43590   Fit: 0.2456070  Orgs: 39      
+UD: 247     Gen: 18.79487   Fit: 0.2487358  Orgs: 39      
+UD: 248     Gen: 19.05000   Fit: 0.2489515  Orgs: 40      
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 81.00000
+effect is 0.5000000
+new shoudl be 40.50000
+after 40.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 93.00000
+effect is 0.5000000
+new shoudl be 46.50000
+after 46.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 40.50000
+effect is 0.5000000
+new shoudl be 20.25000
+after 20.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 46.50000
+effect is 0.5000000
+new shoudl be 23.25000
+after 23.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 20.25000
+effect is 0.5000000
+new shoudl be 10.12500
+after 10.12500
+UD: 249     Gen: 19.02564   Fit: 0.2489932  Orgs: 39      
+UD: 250     Gen: 19.05128   Fit: 0.2490606  Orgs: 39      
+UD: 251     Gen: 19.20000   Fit: 0.2490987  Orgs: 40      
+UD: 252     Gen: 19.51220   Fit: 0.2493714  Orgs: 41      
+UD: 253     Gen: 19.51220   Fit: 0.2493714  Orgs: 41      
+UD: 254     Gen: 19.68293   Fit: 0.2468906  Orgs: 41      
+UD: 255     Gen: 19.87805   Fit: 0.2470644  Orgs: 41      
+before 93.00000
+effect is 0.5000000
+new shoudl be 46.50000
+after 46.50000
+before 95.00000
+effect is 0.5000000
+new shoudl be 47.50000
+after 47.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 93.00000
+effect is 0.5000000
+new shoudl be 46.50000
+after 46.50000
+before 95.00000
+effect is 0.5000000
+new shoudl be 47.50000
+after 47.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 46.50000
+effect is 0.5000000
+new shoudl be 23.25000
+after 23.25000
+before 47.50000
+effect is 0.5000000
+new shoudl be 23.75000
+after 23.75000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 46.50000
+effect is 0.5000000
+new shoudl be 23.25000
+after 23.25000
+before 47.50000
+effect is 0.5000000
+new shoudl be 23.75000
+after 23.75000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 23.25000
+effect is 0.5000000
+new shoudl be 11.62500
+after 11.62500
+before 23.75000
+effect is 0.5000000
+new shoudl be 11.87500
+after 11.87500
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+UD: 256     Gen: 19.80000   Fit: 0.2468257  Orgs: 40      
+UD: 257     Gen: 19.75610   Fit: 0.2470107  Orgs: 41      
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+UD: 258     Gen: 20.00000   Fit: 0.2469515  Orgs: 41      
+before 23.25000
+effect is 0.5000000
+new shoudl be 11.62500
+after 11.62500
+before 23.75000
+effect is 0.5000000
+new shoudl be 11.87500
+after 11.87500
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 11.62500
+effect is 0.5000000
+new shoudl be 5.812500
+after 5.812500
+before 11.87500
+effect is 0.5000000
+new shoudl be 5.937500
+after 5.937500
+before 12.00000
+effect is 0.5000000
+new shoudl be 6.000000
+after 6.000000
+before 11.62500
+effect is 0.5000000
+new shoudl be 5.812500
+after 5.812500
+before 11.87500
+effect is 0.5000000
+new shoudl be 5.937500
+after 5.937500
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 12.00000
+effect is 0.5000000
+new shoudl be 6.000000
+after 6.000000
+before 5.812500
+effect is 0.5000000
+new shoudl be 2.906250
+after 2.906250
+before 5.937500
+effect is 0.5000000
+new shoudl be 2.968750
+after 2.968750
+before 6.000000
+effect is 0.5000000
+new shoudl be 3.000000
+after 3.000000
+before 5.812500
+effect is 0.5000000
+new shoudl be 2.906250
+after 2.906250
+before 5.937500
+effect is 0.5000000
+new shoudl be 2.968750
+after 2.968750
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 6.000000
+effect is 0.5000000
+new shoudl be 3.000000
+after 3.000000
+UD: 259     Gen: 19.97500   Fit: 0.2467587  Orgs: 40      
+UD: 260     Gen: 20.05000   Fit: 0.2467253  Orgs: 40      
+UD: 261     Gen: 20.26829   Fit: 0.2470546  Orgs: 41      
+UD: 262     Gen: 20.36585   Fit: 0.2466300  Orgs: 41      
+UD: 263     Gen: 20.41463   Fit: 0.2466300  Orgs: 41      
+UD: 264     Gen: 20.46341   Fit: 0.2466300  Orgs: 41      
+UD: 265     Gen: 20.46341   Fit: 0.2466300  Orgs: 41      
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 89.00000
+effect is 0.5000000
+new shoudl be 44.50000
+after 44.50000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 100.0000
+effect is 0.5000000
+new shoudl be 50.00000
+after 50.00000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 6.125000
+effect is 0.5000000
+new shoudl be 3.062500
+after 3.062500
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 44.50000
+effect is 0.5000000
+new shoudl be 22.25000
+after 22.25000
+before 12.25000
+effect is 0.5000000
+new shoudl be 6.125000
+after 6.125000
+before 50.00000
+effect is 0.5000000
+new shoudl be 25.00000
+after 25.00000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 3.062500
+effect is 0.5000000
+new shoudl be 1.531250
+after 1.531250
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 12.12500
+effect is 0.5000000
+new shoudl be 6.062500
+after 6.062500
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 10.12500
+effect is 0.5000000
+new shoudl be 5.062500
+after 5.062500
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 23.25000
+effect is 0.5000000
+new shoudl be 11.62500
+after 11.62500
+before 84.00000
+effect is 0.5000000
+new shoudl be 42.00000
+after 42.00000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 6.062500
+effect is 0.5000000
+new shoudl be 3.031250
+after 3.031250
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 5.062500
+effect is 0.5000000
+new shoudl be 2.531250
+after 2.531250
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 12.00000
+effect is 0.5000000
+new shoudl be 6.000000
+after 6.000000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 11.62500
+effect is 0.5000000
+new shoudl be 5.812500
+after 5.812500
+before 42.00000
+effect is 0.5000000
+new shoudl be 21.00000
+after 21.00000
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 3.031250
+effect is 0.5000000
+new shoudl be 1.515625
+after 1.515625
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 2.531250
+effect is 0.5000000
+new shoudl be 1.265625
+after 1.265625
+UD: 266     Gen: 20.72500   Fit: 0.2462226  Orgs: 40      
+UD: 267     Gen: 20.75000   Fit: 0.2462059  Orgs: 40      
+UD: 268     Gen: 20.69767   Fit: 0.2465280  Orgs: 43      
+before 98.00000
+effect is 0.5000000
+new shoudl be 49.00000
+after 49.00000
+before 1.531250
+effect is 0.5000000
+new shoudl be 0.7656250
+after 0.7656250
+before 6.125000
+effect is 0.5000000
+new shoudl be 3.062500
+after 3.062500
+before 100.0000
+effect is 0.5000000
+new shoudl be 50.00000
+after 50.00000
+before 49.00000
+effect is 0.5000000
+new shoudl be 24.50000
+after 24.50000
+before 0.7656250
+effect is 0.5000000
+new shoudl be 0.3828125
+after 0.3828125
+before 3.062500
+effect is 0.5000000
+new shoudl be 1.531250
+after 1.531250
+before 50.00000
+effect is 0.5000000
+new shoudl be 25.00000
+after 25.00000
+before 24.50000
+effect is 0.5000000
+new shoudl be 12.25000
+after 12.25000
+before 0.3828125
+effect is 0.5000000
+new shoudl be 0.1914062
+after 0.1914062
+UD: 269     Gen: 20.92857   Fit: 0.2464859  Orgs: 42      
+UD: 270     Gen: 21.06977   Fit: 0.2468008  Orgs: 43      
+UD: 271     Gen: 21.20930   Fit: 0.2495230  Orgs: 43      
+UD: 272     Gen: 21.14286   Fit: 0.2493657  Orgs: 42      
+UD: 273     Gen: 21.21429   Fit: 0.2493975  Orgs: 42      
+UD: 274     Gen: 21.40476   Fit: 0.2493657  Orgs: 42      
+UD: 275     Gen: 21.40476   Fit: 0.2493657  Orgs: 42      
+UD: 276     Gen: 21.54762   Fit: 0.2496351  Orgs: 42      
+UD: 277     Gen: 21.88095   Fit: 0.2503296  Orgs: 42      
+UD: 278     Gen: 21.92857   Fit: 0.2455638  Orgs: 42      
+UD: 279     Gen: 21.97619   Fit: 0.2455432  Orgs: 42      
+UD: 280     Gen: 22.04878   Fit: 0.2439525  Orgs: 41      
+UD: 281     Gen: 22.09524   Fit: 0.2441499  Orgs: 42      
+UD: 282     Gen: 22.36364   Fit: 0.2447263  Orgs: 44      
+UD: 283     Gen: 22.43182   Fit: 0.2447579  Orgs: 44      
+UD: 284     Gen: 22.61364   Fit: 0.2446499  Orgs: 44      
+UD: 285     Gen: 22.61364   Fit: 0.2446499  Orgs: 44      
+UD: 286     Gen: 22.71111   Fit: 0.2449809  Orgs: 45      
+UD: 287     Gen: 22.91111   Fit: 0.2453761  Orgs: 45      
+UD: 288     Gen: 22.95652   Fit: 0.2456235  Orgs: 46      
+UD: 289     Gen: 23.00000   Fit: 0.2457389  Orgs: 46      
+UD: 290     Gen: 23.29787   Fit: 0.2439428  Orgs: 47      
+UD: 291     Gen: 23.31915   Fit: 0.2438860  Orgs: 47      
+UD: 292     Gen: 23.45833   Fit: 0.2461318  Orgs: 48      
+UD: 293     Gen: 23.47917   Fit: 0.2460673  Orgs: 48      
+UD: 294     Gen: 23.72917   Fit: 0.2454982  Orgs: 48      
+UD: 295     Gen: 23.75000   Fit: 0.2456688  Orgs: 48      
+UD: 296     Gen: 23.75000   Fit: 0.2456688  Orgs: 48      
+UD: 297     Gen: 23.85417   Fit: 0.2460852  Orgs: 48      
+UD: 298     Gen: 24.06250   Fit: 0.2467262  Orgs: 48      
+before 95.00000
+effect is 0.5000000
+new shoudl be 47.50000
+after 47.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 95.00000
+effect is 0.5000000
+new shoudl be 47.50000
+after 47.50000
+before 96.00000
+effect is 0.5000000
+new shoudl be 48.00000
+after 48.00000
+before 93.00000
+effect is 0.5000000
+new shoudl be 46.50000
+after 46.50000
+before 93.00000
+effect is 0.5000000
+new shoudl be 46.50000
+after 46.50000
+before 97.00000
+effect is 0.5000000
+new shoudl be 48.50000
+after 48.50000
+before 47.50000
+effect is 0.5000000
+new shoudl be 23.75000
+after 23.75000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 47.50000
+effect is 0.5000000
+new shoudl be 23.75000
+after 23.75000
+before 48.00000
+effect is 0.5000000
+new shoudl be 24.00000
+after 24.00000
+before 46.50000
+effect is 0.5000000
+new shoudl be 23.25000
+after 23.25000
+before 46.50000
+effect is 0.5000000
+new shoudl be 23.25000
+after 23.25000
+before 48.50000
+effect is 0.5000000
+new shoudl be 24.25000
+after 24.25000
+before 23.75000
+effect is 0.5000000
+new shoudl be 11.87500
+after 11.87500
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+before 24.25000
+effect is 0.5000000
+new shoudl be 12.12500
+after 12.12500
+before 24.00000
+effect is 0.5000000
+new shoudl be 12.00000
+after 12.00000
+UD: 299     Gen: 24.18750   Fit: 0.2489405  Orgs: 48      
+UD: 300     Gen: 24.22917   Fit: 0.2489128  Orgs: 48      

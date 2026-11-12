@@ -1,0 +1,50 @@
+# Avida count data
+# Thu Nov 12 01:04:44 2026
+#  1: update
+#  2: number of insts executed this update
+#  3: number of organisms
+#  4: number of different genotypes
+#  5: number of different threshold genotypes
+#  6: (deprecated) number of different species
+#  7: (deprecated) number of different threshold species
+#  8: (deprecated) number of different lineages
+#  9: number of births in this update
+# 10: number of deaths in this update
+# 11: number of breed true
+# 12: number of breed true organisms?
+# 13: number of no-birth organisms
+# 14: number of single-threaded organisms
+# 15: number of multi-threaded organisms
+# 16: number of modified organisms
+
+0 30 1 1 1 0 0 0 1 0 1 1 1 1 0 0 
+10 30 1 1 1 0 0 0 0 0 0 1 1 1 0 0 
+20 60 2 2 1 0 0 0 0 0 0 1 1 2 0 0 
+30 120 4 4 1 0 0 0 0 0 0 1 2 4 0 0 
+40 210 7 7 1 0 0 0 0 0 0 1 4 7 0 0 
+50 210 7 7 1 0 0 0 0 0 0 1 4 7 0 0 
+60 390 13 11 2 0 0 0 0 0 0 2 7 13 0 0 
+70 660 22 16 3 0 0 0 0 0 0 3 12 22 0 0 
+80 1050 35 23 4 0 0 0 2 2 0 5 19 35 0 0 
+90 1050 37 25 4 0 0 0 2 0 0 5 20 37 0 0 
+100 1590 53 36 7 0 0 0 0 0 0 8 28 53 0 0 
+110 2370 79 60 6 0 0 0 0 0 0 8 42 79 0 0 
+120 3000 106 86 6 0 0 0 12 6 0 13 59 106 0 0 
+130 3270 110 89 6 0 0 0 6 5 1 14 63 110 0 0 
+140 4110 137 113 10 0 0 0 0 0 0 16 76 137 0 0 
+150 5190 173 137 11 0 0 0 0 0 0 22 96 173 0 0 
+160 5760 197 158 15 0 0 0 23 18 3 32 112 197 0 0 
+170 6120 206 169 17 0 0 0 7 5 2 36 115 206 0 0 
+180 6570 219 187 18 0 0 0 0 0 0 31 126 219 0 0 
+190 6750 225 205 17 0 0 0 12 12 0 29 120 225 0 0 
+200 6750 225 199 17 0 0 0 16 16 3 34 127 225 0 0 
+210 6720 224 199 17 0 0 0 6 6 2 37 126 224 0 0 
+220 6750 225 204 13 0 0 0 1 1 0 33 127 225 0 0 
+230 6750 225 206 12 0 0 0 16 16 1 30 129 225 0 0 
+240 6750 225 198 11 0 0 0 12 12 3 39 126 225 0 0 
+250 6750 225 194 10 0 0 0 6 6 3 49 128 225 0 0 
+260 6750 224 192 14 0 0 0 8 9 3 52 126 224 0 0 
+270 6720 224 201 16 0 0 0 17 17 3 40 122 224 0 0 
+280 6750 225 205 13 0 0 0 7 7 2 39 131 225 0 0 
+290 6750 225 209 13 0 0 0 4 4 0 36 124 225 0 0 
+300 6750 225 203 11 0 0 0 10 10 2 41 127 225 0 0 

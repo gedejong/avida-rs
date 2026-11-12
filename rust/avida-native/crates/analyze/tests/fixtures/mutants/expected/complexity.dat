@@ -1,0 +1,11 @@
+# Lineage Complexity Analysis
+# Wed Nov 11 13:53:02 2026
+#  1: Genotype ID
+#  2: Genotype Fitness
+#  3: Genotype Length
+#  4: Positive Mutations
+#  5: Positive and Neutral Mutations
+#  6: Entropy
+#  7: Complexity
+
+-1 0 5 0 6760 5 0 

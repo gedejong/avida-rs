@@ -1,0 +1,104 @@
+Verbose ON: Using verbose log messages...
+Setting a to 5
+::: a=5
+Initiating Foreach loop...
+Foreach: setting x to 1
+::: x is 1
+Foreach: setting x to 2
+::: x is 2
+Foreach: setting x to 3
+::: x is 3
+Ending Foreach on x
+Initiating FORRANGE loop...
+FORRANGE: setting i to 1
+::: i is 1
+FORRANGE: setting i to 2
+::: i is 2
+FORRANGE: setting i to 3
+::: i is 3
+Ending FORRANGE on i
+Initiating FORRANGE loop...
+FORRANGE: setting d to 0.500000
+::: d is 0.500000
+FORRANGE: setting d to 1.000000
+::: d is 1.000000
+FORRANGE: setting d to 1.500000
+::: d is 1.500000
+Ending FORRANGE on d
+Creating function: greet
+Running function: greet
+::: hello world and there from greet
+Setting A to local
+::: A=local
+::: after A=
+Setting variable w to 60
+::: w=60
+Setting configuration variable WORLD_X to 77
+Setting variable w to 77
+::: w=77
+Loading: rucavcc
+Loading: rucavccc
+Setting current batch to 3
+Loading: rucav
+Duplicating from batch 0 to batch 3.
+Tagging batch 3 with tag 'some tag'
+Status Report:
+  Batch 0 -- 2 genotypes.
+  Batch 3 -- 3 genotypes.  <current>
+Detailing batch 3
+Purging batch 3
+Status Report:
+  Batch 0 -- 2 genotypes.
+  Batch 3 -- 0 genotypes.  <current>
+Setting current batch to 0
+Renaming organisms in batch 0
+Detailing batch 0
+Detailing batch 0
+AsString:  0:Testing 1:1 2:2.000000 3:3 4:four 5:9 6:9.000000 7:9 8:9 9:0 
+AsInt:  0:0 1:1 2:2 3:51 4:0 5:9 6:9 7:57 8:9 9:0 
+     vars[0] <= vars[1] ?  1     vars[1] <= vars[0] ?  0
+     vars[0] <= vars[2] ?  1     vars[2] <= vars[0] ?  0
+     vars[0] <= vars[3] ?  0     vars[3] <= vars[0] ?  1
+     vars[0] <= vars[4] ?  1     vars[4] <= vars[0] ?  0
+     vars[0] <= vars[5] ?  1     vars[5] <= vars[0] ?  0
+     vars[0] <= vars[6] ?  1     vars[6] <= vars[0] ?  0
+     vars[0] <= vars[7] ?  0     vars[7] <= vars[0] ?  1
+     vars[0] <= vars[8] ?  0     vars[8] <= vars[0] ?  1
+     vars[0] <= vars[9] ?  1     vars[9] <= vars[0] ?  1
+     vars[1] <= vars[2] ?  1     vars[2] <= vars[1] ?  0
+     vars[1] <= vars[3] ?  1     vars[3] <= vars[1] ?  0
+     vars[1] <= vars[4] ?  0     vars[4] <= vars[1] ?  1
+     vars[1] <= vars[5] ?  1     vars[5] <= vars[1] ?  0
+     vars[1] <= vars[6] ?  1     vars[6] <= vars[1] ?  0
+     vars[1] <= vars[7] ?  1     vars[7] <= vars[1] ?  0
+     vars[1] <= vars[8] ?  1     vars[8] <= vars[1] ?  0
+     vars[1] <= vars[9] ?  0     vars[9] <= vars[1] ?  1
+     vars[2] <= vars[3] ?  1     vars[3] <= vars[2] ?  0
+     vars[2] <= vars[4] ?  0     vars[4] <= vars[2] ?  1
+     vars[2] <= vars[5] ?  1     vars[5] <= vars[2] ?  0
+     vars[2] <= vars[6] ?  1     vars[6] <= vars[2] ?  0
+     vars[2] <= vars[7] ?  1     vars[7] <= vars[2] ?  0
+     vars[2] <= vars[8] ?  1     vars[8] <= vars[2] ?  0
+     vars[2] <= vars[9] ?  0     vars[9] <= vars[2] ?  1
+     vars[3] <= vars[4] ?  1     vars[4] <= vars[3] ?  0
+     vars[3] <= vars[5] ?  0     vars[5] <= vars[3] ?  1
+     vars[3] <= vars[6] ?  0     vars[6] <= vars[3] ?  1
+     vars[3] <= vars[7] ?  1     vars[7] <= vars[3] ?  0
+     vars[3] <= vars[8] ?  1     vars[8] <= vars[3] ?  0
+     vars[3] <= vars[9] ?  0     vars[9] <= vars[3] ?  1
+     vars[4] <= vars[5] ?  1     vars[5] <= vars[4] ?  0
+     vars[4] <= vars[6] ?  1     vars[6] <= vars[4] ?  0
+     vars[4] <= vars[7] ?  0     vars[7] <= vars[4] ?  1
+     vars[4] <= vars[8] ?  0     vars[8] <= vars[4] ?  1
+     vars[4] <= vars[9] ?  1     vars[9] <= vars[4] ?  1
+     vars[5] <= vars[6] ?  1     vars[6] <= vars[5] ?  1
+     vars[5] <= vars[7] ?  1     vars[7] <= vars[5] ?  0
+     vars[5] <= vars[8] ?  1     vars[8] <= vars[5] ?  1
+     vars[5] <= vars[9] ?  0     vars[9] <= vars[5] ?  1
+     vars[6] <= vars[7] ?  1     vars[7] <= vars[6] ?  0
+     vars[6] <= vars[8] ?  1     vars[8] <= vars[6] ?  1
+     vars[6] <= vars[9] ?  0     vars[9] <= vars[6] ?  1
+     vars[7] <= vars[8] ?  1     vars[8] <= vars[7] ?  1
+     vars[7] <= vars[9] ?  0     vars[9] <= vars[7] ?  1
+     vars[8] <= vars[9] ?  0     vars[9] <= vars[8] ?  1
+::: price $5

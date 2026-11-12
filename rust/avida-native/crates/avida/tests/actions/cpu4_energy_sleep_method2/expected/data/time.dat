@@ -1,0 +1,14 @@
+# Avida time data
+# Wed Nov 11 20:05:28 2026
+#  1: update
+#  2: avida time
+#  3: average generation
+#  4: num_executed?
+
+0 0 0 1 
+100 20 0 1 
+200 40 0 1 
+300 60 0 1 
+400 83.3158 1 2 
+500 116.387 1 2 
+600 146.051 1 2 

@@ -1,0 +1,51 @@
+# Avida instruction execution data
+# Thu Nov 12 06:40:33 2026
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: h-divide
+# 26: IO
+# 27: h-search
+# 28: donate-rnd
+# 29: donate-kin
+# 30: donate-edt
+# 31: donate-gbg
+# 32: donate-shadedgb
+# 33: donate-threshgb
+# 34: donate-quantagb
+# 35: donate-gbsl
+# 36: donate-NUL
+# 37: get-faced-edit-dist
+# 38: rotate-to-tag
+# 39: if-donor
+# 40: donate-facing
+# 41: rotate-r
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+25 0 0 510 0 0 700 700 0 0 0 0 0 0 0 0 0 0 0 0 0 0 700 6 6 0 12 6 6 6 6 4 4 4 4 4 0 4 4 0 36 
+50 0 0 999 0 0 1385 1385 0 0 0 0 0 0 0 0 0 2 0 0 0 0 1385 12 12 0 25 12 12 12 12 7 7 9 7 7 7 7 9 0 69 
+75 1 0 977 0 0 1309 1309 0 0 0 0 0 0 0 0 0 4 0 0 0 0 1309 12 12 0 26 12 12 12 12 6 6 10 6 6 6 6 10 0 66 
+100 1 0 953 0 1 1283 1283 0 0 0 0 0 0 0 0 0 4 0 0 0 0 1283 12 12 0 28 12 12 12 12 4 4 8 4 4 4 4 8 0 60 
+125 1 0 928 0 3 1272 1272 0 0 0 2 0 0 0 0 0 4 0 0 0 0 1272 12 12 0 29 12 14 12 12 3 3 7 3 3 5 3 7 0 57 
+150 0 0 849 0 2 1209 1209 0 0 0 2 0 0 2 0 0 4 2 0 0 0 1209 11 11 0 26 11 12 11 11 2 4 6 2 3 4 2 6 0 50 

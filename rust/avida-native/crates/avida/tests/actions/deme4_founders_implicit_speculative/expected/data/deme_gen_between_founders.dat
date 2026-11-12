@@ -1,0 +1,23 @@
+# Avida org generations between deme founders
+# Wed Nov 11 20:05:12 2026
+# First column gives the current update, all further columns give the number
+# number of generations that passed between the parent and current deme's founders
+#  1: Update
+#  2: deme.0
+#  3: deme.1
+#  4: deme.2
+#  5: deme.3
+#  6: deme.4
+#  7: deme.5
+#  8: deme.6
+#  9: deme.7
+# 10: deme.8
+# 11: deme.9
+
+0 0 0 0 0 0 0 0 0 0 0 
+25 0 0 0 0 0 0 0 0 0 0 
+50 0 0 0 0 0 0 0 0 0 0 
+75 6 5.5 5.5 6 0 6 6 6 6 5 
+100 8 7.5 8 7.5 0 7.5 8 7.5 8 8 
+125 9 10 10 9.5 0 9 9 9 9.5 9.5 
+150 11 11 11 12 0 12 12 12 11 12 

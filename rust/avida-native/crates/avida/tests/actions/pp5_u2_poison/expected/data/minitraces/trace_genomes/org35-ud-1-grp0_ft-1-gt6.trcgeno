@@ -1,0 +1,179 @@
+# Thu Nov 12 00:02:37 2026
+# Filename........: minitraces/trace_genomes/org35-ud-1-grp0_ft-1-gt6.trcgeno
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 148.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 148
+# Copied Size.....: 148
+# Executed Size...: 148
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# Tasks Performed Using Internal Resources:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# Resources Collected: Name		Total		Available
+#                 0 : food		0.000000		0.000000		
+
+
+zero
+dec
+dec
+set-forage-target
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one
+zero
+nop-A
+inc
+nop-A
+inc
+nop-A
+zero
+nop-C
+dec
+nop-C
+zero
+dec
+get-faced-org-id
+if-n-equ
+attack-poison-ft-mixed-prey
+nop-A
+nop-C
+rotate-right-one

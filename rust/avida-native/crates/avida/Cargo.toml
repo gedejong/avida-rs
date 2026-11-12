@@ -1,0 +1,16 @@
+[package]
+name = "avida"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "avida"
+path = "src/main.rs"
+
+[dependencies]
+avida-analyze = { path = "../analyze" }
+avida-config = { path = "../config" }
+avida-world = { path = "../world" }

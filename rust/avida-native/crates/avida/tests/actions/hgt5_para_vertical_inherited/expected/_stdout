@@ -1,0 +1,283 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: WORLD_X 20
+CmdLine Set: WORLD_Y 20
+CmdLine Set: INJECT_IS_TASK_SPECIFIC 0
+CmdLine Set: VIRULENCE_SOURCE 1
+CmdLine Set: VIRULENCE_MUT_RATE 0.5
+CmdLine Set: VIRULENCE_SD 0.2
+CmdLine Set: FULL_VERTICAL_TRANS 0.5
+CmdLine Set: AVE_TIME_SLICE 400
+Setting up resource resECHO(GLOBAL) with initial quantity=0, decay=0.9, inflow=40
+Random Seed: 2
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/hgt5/runs/q_vt05_vs1/ref/data/
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 320.0000   Thrd: 1       Para: 0  
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 320.0000   Thrd: 1       Para: 0  
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 320.0000   Thrd: 1       Para: 0  
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Merit: 320.0000   Thrd: 1       Para: 0  
+UD: 4       Gen: 1.000000   Fit: 0.1666667  Orgs: 2       Merit: 315.0000   Thrd: 2       Para: 0  
+UD: 5       Gen: 1.000000   Fit: 0.1666667  Orgs: 2       Merit: 315.0000   Thrd: 2       Para: 0  
+UD: 6       Gen: 1.000000   Fit: 0.1666667  Orgs: 2       Merit: 315.0000   Thrd: 2       Para: 0  
+UD: 7       Gen: 1.000000   Fit: 0.1666667  Orgs: 2       Merit: 315.0000   Thrd: 2       Para: 0  
+UD: 8       Gen: 1.000000   Fit: 0.1666667  Orgs: 2       Merit: 315.0000   Thrd: 2       Para: 0  
+UD: 9       Gen: 2.000000   Fit: 0.1666667  Orgs: 4       Merit: 315.0000   Thrd: 4       Para: 0  
+UD: 10      Gen: 2.000000   Fit: 0.1666667  Orgs: 4       Merit: 315.0000   Thrd: 4       Para: 0  
+UD: 11      Gen: 2.000000   Fit: 0.1666667  Orgs: 4       Merit: 315.0000   Thrd: 4       Para: 0  
+UD: 12      Gen: 2.000000   Fit: 0.1666667  Orgs: 4       Merit: 315.0000   Thrd: 4       Para: 0  
+UD: 13      Gen: 2.000000   Fit: 0.1666667  Orgs: 4       Merit: 315.0000   Thrd: 4       Para: 0  
+UD: 14      Gen: 3.000000   Fit: 0.1666667  Orgs: 8       Merit: 315.0000   Thrd: 8       Para: 0  
+UD: 15      Gen: 3.000000   Fit: 0.1666667  Orgs: 8       Merit: 315.0000   Thrd: 8       Para: 0  
+UD: 16      Gen: 3.000000   Fit: 0.1666667  Orgs: 8       Merit: 315.0000   Thrd: 8       Para: 0  
+UD: 17      Gen: 3.000000   Fit: 0.1666667  Orgs: 8       Merit: 315.0000   Thrd: 8       Para: 0  
+UD: 18      Gen: 3.000000   Fit: 0.1666667  Orgs: 8       Merit: 315.0000   Thrd: 8       Para: 0  
+UD: 19      Gen: 4.000000   Fit: 0.1666667  Orgs: 13      Merit: 315.0000   Thrd: 13      Para: 0  
+UD: 20      Gen: 4.000000   Fit: 0.1666667  Orgs: 13      Merit: 315.0000   Thrd: 13      Para: 0  
+UD: 21      Gen: 4.000000   Fit: 0.1666667  Orgs: 13      Merit: 315.0000   Thrd: 13      Para: 0  
+UD: 22      Gen: 4.000000   Fit: 0.1666667  Orgs: 13      Merit: 315.0000   Thrd: 13      Para: 0  
+UD: 23      Gen: 4.142857   Fit: 0.1666667  Orgs: 14      Merit: 315.0000   Thrd: 14      Para: 0  
+UD: 24      Gen: 4.960000   Fit: 0.1666808  Orgs: 25      Merit: 315.0000   Thrd: 25      Para: 0  
+UD: 25      Gen: 4.960000   Fit: 0.1666808  Orgs: 25      Merit: 315.0000   Thrd: 25      Para: 0  
+UD: 26      Gen: 4.960000   Fit: 0.1666808  Orgs: 25      Merit: 315.0000   Thrd: 25      Para: 0  
+UD: 27      Gen: 4.960000   Fit: 0.1666808  Orgs: 25      Merit: 315.0000   Thrd: 25      Para: 0  
+UD: 28      Gen: 5.111111   Fit: 0.1666797  Orgs: 27      Merit: 315.0000   Thrd: 27      Para: 0  
+UD: 29      Gen: 5.906977   Fit: 0.1666831  Orgs: 43      Merit: 315.0000   Thrd: 43      Para: 0  
+UD: 30      Gen: 5.931818   Fit: 0.1666827  Orgs: 44      Merit: 315.0000   Thrd: 44      Para: 0  
+UD: 31      Gen: 5.931818   Fit: 0.1666827  Orgs: 44      Merit: 315.0000   Thrd: 44      Para: 0  
+UD: 32      Gen: 5.931818   Fit: 0.1666827  Orgs: 44      Merit: 315.0000   Thrd: 44      Para: 0  
+UD: 33      Gen: 6.063830   Fit: 0.1666817  Orgs: 47      Merit: 315.0000   Thrd: 47      Para: 0  
+UD: 34      Gen: 6.853333   Fit: 0.1666973  Orgs: 75      Merit: 315.0000   Thrd: 75      Para: 0  
+UD: 35      Gen: 6.881579   Fit: 0.1666969  Orgs: 76      Merit: 315.0000   Thrd: 76      Para: 0  
+UD: 36      Gen: 6.881579   Fit: 0.1666969  Orgs: 76      Merit: 315.0000   Thrd: 76      Para: 0  
+UD: 37      Gen: 6.881579   Fit: 0.1666969  Orgs: 76      Merit: 315.0000   Thrd: 76      Para: 0  
+UD: 38      Gen: 7.193182   Fit: 0.1648083  Orgs: 88      Merit: 315.0000   Thrd: 88      Para: 0  
+UD: 39      Gen: 7.825000   Fit: 0.1653054  Orgs: 120     Merit: 314.9667   Thrd: 120     Para: 0  
+UD: 40      Gen: 7.852459   Fit: 0.1653233  Orgs: 122     Merit: 314.9508   Thrd: 122     Para: 0  
+UD: 41      Gen: 7.852459   Fit: 0.1653233  Orgs: 122     Merit: 314.9508   Thrd: 122     Para: 0  
+UD: 42      Gen: 7.852459   Fit: 0.1653233  Orgs: 122     Merit: 314.9508   Thrd: 122     Para: 0  
+UD: 43      Gen: 8.239130   Fit: 0.1654784  Orgs: 138     Merit: 314.9275   Thrd: 138     Para: 0  
+UD: 44      Gen: 8.907514   Fit: 0.1662058  Orgs: 173     Merit: 314.8844   Thrd: 173     Para: 0  
+UD: 45      Gen: 8.920000   Fit: 0.1662111  Orgs: 175     Merit: 314.8857   Thrd: 175     Para: 0  
+UD: 46      Gen: 8.920000   Fit: 0.1662111  Orgs: 175     Merit: 314.8857   Thrd: 175     Para: 0  
+UD: 47      Gen: 8.920000   Fit: 0.1662111  Orgs: 175     Merit: 314.8857   Thrd: 175     Para: 0  
+UD: 48      Gen: 9.432836   Fit: 0.1662770  Orgs: 201     Merit: 314.8706   Thrd: 201     Para: 0  
+UD: 49      Gen: 9.900000   Fit: 0.1663304  Orgs: 230     Merit: 314.8739   Thrd: 230     Para: 0  
+UD: 50      Gen: 9.908696   Fit: 0.1663304  Orgs: 230     Merit: 314.8739   Thrd: 230     Para: 0  
+UD: 51      Gen: 9.908696   Fit: 0.1663304  Orgs: 230     Merit: 314.8739   Thrd: 230     Para: 0  
+UD: 52      Gen: 9.908696   Fit: 0.1663304  Orgs: 230     Merit: 314.8739   Thrd: 230     Para: 0  
+UD: 53      Gen: 10.52529   Fit: 0.1663702  Orgs: 257     Merit: 314.8755   Thrd: 257     Para: 0  
+UD: 54      Gen: 10.92727   Fit: 0.1663832  Orgs: 275     Merit: 314.8764   Thrd: 275     Para: 0  
+UD: 55      Gen: 10.92727   Fit: 0.1663832  Orgs: 275     Merit: 314.8764   Thrd: 275     Para: 0  
+UD: 56      Gen: 10.92727   Fit: 0.1663832  Orgs: 275     Merit: 314.8764   Thrd: 275     Para: 0  
+UD: 57      Gen: 10.93455   Fit: 0.1663822  Orgs: 275     Merit: 314.8764   Thrd: 275     Para: 0  
+UD: 58      Gen: 11.50329   Fit: 0.1661488  Orgs: 304     Merit: 314.9079   Thrd: 304     Para: 0  
+UD: 59      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 311     Para: 0  
+UD: 60      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 311     Para: 0  
+UD: 61      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 62      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 63      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 64      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 65      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 66      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 67      Gen: 11.59486   Fit: 0.1650932  Orgs: 311     Merit: 314.9068   Thrd: 622     Para: 311  
+UD: 68      Gen: 11.60323   Fit: 0.1650873  Orgs: 310     Merit: 314.9065   Thrd: 620     Para: 310  
+UD: 69      Gen: 11.60323   Fit: 0.1650873  Orgs: 310     Merit: 314.9065   Thrd: 620     Para: 310  
+UD: 70      Gen: 11.60323   Fit: 0.1650873  Orgs: 310     Merit: 314.9065   Thrd: 620     Para: 310  
+UD: 71      Gen: 11.60323   Fit: 0.1650873  Orgs: 310     Merit: 314.9065   Thrd: 620     Para: 310  
+UD: 72      Gen: 11.64630   Fit: 0.1607160  Orgs: 311     Merit: 314.9035   Thrd: 614     Para: 303  
+UD: 73      Gen: 11.74675   Fit: 0.1520747  Orgs: 308     Merit: 314.9091   Thrd: 597     Para: 289  
+UD: 74      Gen: 11.86774   Fit: 0.1398678  Orgs: 310     Merit: 314.9032   Thrd: 579     Para: 269  
+UD: 75      Gen: 12.08599   Fit: 0.1166344  Orgs: 314     Merit: 314.9076   Thrd: 563     Para: 249  
+UD: 76      Gen: 12.20820   Fit: 0.1046252  Orgs: 317     Merit: 314.9148   Thrd: 551     Para: 234  
+UD: 77      Gen: 12.26688   Fit: 0.1004080  Orgs: 311     Merit: 314.9260   Thrd: 567     Para: 256  
+UD: 78      Gen: 12.73333   Fit: 0.08374002  Orgs: 240     Merit: 314.9375   Thrd: 426     Para: 186  
+UD: 79      Gen: 12.78423   Fit: 0.08606679  Orgs: 241     Merit: 314.9378   Thrd: 437     Para: 196  
+UD: 80      Gen: 12.92800   Fit: 0.09885326  Orgs: 250     Merit: 314.9360   Thrd: 442     Para: 192  
+UD: 81      Gen: 13.00797   Fit: 0.1061483  Orgs: 251     Merit: 314.8685   Thrd: 446     Para: 195  
+UD: 82      Gen: 13.26267   Fit: 0.09964986  Orgs: 217     Merit: 314.8571   Thrd: 386     Para: 169  
+UD: 83      Gen: 13.49751   Fit: 0.09519245  Orgs: 201     Merit: 314.8905   Thrd: 346     Para: 145  
+UD: 84      Gen: 13.62319   Fit: 0.09939582  Orgs: 207     Merit: 314.8841   Thrd: 356     Para: 149  
+UD: 85      Gen: 13.73239   Fit: 0.1022470  Orgs: 213     Merit: 314.8592   Thrd: 365     Para: 152  
+UD: 86      Gen: 13.84018   Fit: 0.1051122  Orgs: 219     Merit: 314.8676   Thrd: 370     Para: 151  
+UD: 87      Gen: 13.90991   Fit: 0.1070617  Orgs: 222     Merit: 314.8649   Thrd: 385     Para: 163  
+UD: 88      Gen: 14.00000   Fit: 0.1084995  Orgs: 230     Merit: 314.8609   Thrd: 387     Para: 157  
+UD: 89      Gen: 14.08547   Fit: 0.1083509  Orgs: 234     Merit: 314.8718   Thrd: 404     Para: 170  
+UD: 90      Gen: 14.29098   Fit: 0.1131232  Orgs: 244     Merit: 314.8689   Thrd: 414     Para: 170  
+UD: 91      Gen: 14.40562   Fit: 0.1132000  Orgs: 249     Merit: 314.8835   Thrd: 430     Para: 181  
+UD: 92      Gen: 14.46032   Fit: 0.1145871  Orgs: 252     Merit: 314.8889   Thrd: 439     Para: 187  
+UD: 93      Gen: 14.55039   Fit: 0.1143818  Orgs: 258     Merit: 314.9109   Thrd: 451     Para: 193  
+UD: 94      Gen: 14.70076   Fit: 0.1166788  Orgs: 264     Merit: 314.9167   Thrd: 458     Para: 194  
+UD: 95      Gen: 14.82222   Fit: 0.1182895  Orgs: 270     Merit: 314.9185   Thrd: 480     Para: 210  
+UD: 96      Gen: 14.93796   Fit: 0.1215180  Orgs: 274     Merit: 314.9088   Thrd: 484     Para: 210  
+UD: 97      Gen: 15.06642   Fit: 0.1216156  Orgs: 271     Merit: 314.9446   Thrd: 475     Para: 204  
+UD: 98      Gen: 15.20896   Fit: 0.1209539  Orgs: 268     Merit: 314.9440   Thrd: 464     Para: 196  
+UD: 99      Gen: 15.49213   Fit: 0.1247099  Orgs: 254     Merit: 314.9528   Thrd: 441     Para: 187  
+UD: 100     Gen: 15.70204   Fit: 0.1279344  Orgs: 245     Merit: 314.9347   Thrd: 426     Para: 181  
+UD: 101     Gen: 15.79253   Fit: 0.1282986  Orgs: 241     Merit: 314.9170   Thrd: 474     Para: 233  
+UD: 102     Gen: 15.86008   Fit: 0.1262889  Orgs: 243     Merit: 314.9218   Thrd: 471     Para: 228  
+UD: 103     Gen: 15.89712   Fit: 0.1238961  Orgs: 243     Merit: 314.9218   Thrd: 467     Para: 224  
+UD: 104     Gen: 15.97917   Fit: 0.1202910  Orgs: 240     Merit: 314.8833   Thrd: 457     Para: 217  
+UD: 105     Gen: 16.07173   Fit: 0.1174919  Orgs: 237     Merit: 314.8819   Thrd: 448     Para: 211  
+UD: 106     Gen: 16.12605   Fit: 0.1170833  Orgs: 238     Merit: 314.8866   Thrd: 446     Para: 208  
+UD: 107     Gen: 16.20253   Fit: 0.1176677  Orgs: 237     Merit: 314.8819   Thrd: 444     Para: 207  
+UD: 108     Gen: 16.32906   Fit: 0.1163965  Orgs: 234     Merit: 314.8675   Thrd: 436     Para: 202  
+UD: 109     Gen: 16.36752   Fit: 0.1165956  Orgs: 234     Merit: 314.8419   Thrd: 439     Para: 205  
+UD: 110     Gen: 16.46983   Fit: 0.1178284  Orgs: 232     Merit: 314.8405   Thrd: 431     Para: 199  
+UD: 111     Gen: 16.54348   Fit: 0.1170581  Orgs: 230     Merit: 314.8304   Thrd: 425     Para: 195  
+UD: 112     Gen: 16.64502   Fit: 0.1144928  Orgs: 231     Merit: 314.8182   Thrd: 427     Para: 196  
+UD: 113     Gen: 16.74449   Fit: 0.1155817  Orgs: 227     Merit: 314.8150   Thrd: 423     Para: 196  
+UD: 114     Gen: 16.78182   Fit: 0.1128555  Orgs: 220     Merit: 314.8136   Thrd: 411     Para: 191  
+UD: 115     Gen: 16.91855   Fit: 0.1129960  Orgs: 221     Merit: 314.7602   Thrd: 406     Para: 185  
+UD: 116     Gen: 16.96818   Fit: 0.1131800  Orgs: 220     Merit: 314.7591   Thrd: 403     Para: 183  
+UD: 117     Gen: 17.10811   Fit: 0.1088549  Orgs: 222     Merit: 314.7342   Thrd: 401     Para: 179  
+UD: 118     Gen: 17.17757   Fit: 0.1065436  Orgs: 214     Merit: 314.6822   Thrd: 384     Para: 170  
+UD: 119     Gen: 17.22535   Fit: 0.1058400  Orgs: 213     Merit: 314.6432   Thrd: 383     Para: 170  
+UD: 120     Gen: 17.38462   Fit: 0.1084347  Orgs: 208     Merit: 314.6298   Thrd: 371     Para: 163  
+UD: 121     Gen: 17.48039   Fit: 0.1090428  Orgs: 204     Merit: 314.6569   Thrd: 361     Para: 157  
+UD: 122     Gen: 17.74038   Fit: 0.1122665  Orgs: 208     Merit: 314.6058   Thrd: 351     Para: 143  
+UD: 123     Gen: 17.76238   Fit: 0.1132762  Orgs: 202     Merit: 314.5693   Thrd: 344     Para: 142  
+UD: 124     Gen: 17.93782   Fit: 0.1128599  Orgs: 193     Merit: 314.4560   Thrd: 322     Para: 129  
+UD: 125     Gen: 18.09137   Fit: 0.1135265  Orgs: 197     Merit: 314.5076   Thrd: 327     Para: 130  
+UD: 126     Gen: 18.23000   Fit: 0.1177048  Orgs: 200     Merit: 314.5500   Thrd: 329     Para: 129  
+UD: 127     Gen: 18.52195   Fit: 0.1206301  Orgs: 205     Merit: 314.5317   Thrd: 330     Para: 125  
+UD: 128     Gen: 18.63768   Fit: 0.1203845  Orgs: 207     Merit: 314.5266   Thrd: 329     Para: 122  
+UD: 129     Gen: 18.80193   Fit: 0.1211262  Orgs: 207     Merit: 314.5266   Thrd: 333     Para: 126  
+UD: 130     Gen: 18.90141   Fit: 0.1240858  Orgs: 213     Merit: 314.5305   Thrd: 341     Para: 128  
+UD: 131     Gen: 19.13514   Fit: 0.1266692  Orgs: 222     Merit: 314.5180   Thrd: 348     Para: 126  
+UD: 132     Gen: 19.35683   Fit: 0.1337864  Orgs: 227     Merit: 314.5154   Thrd: 352     Para: 125  
+UD: 133     Gen: 19.42291   Fit: 0.1351847  Orgs: 227     Merit: 314.5242   Thrd: 357     Para: 130  
+UD: 134     Gen: 19.62661   Fit: 0.1353398  Orgs: 233     Merit: 314.4979   Thrd: 367     Para: 134  
+UD: 135     Gen: 19.78008   Fit: 0.1384451  Orgs: 241     Merit: 314.5602   Thrd: 386     Para: 145  
+UD: 136     Gen: 20.05263   Fit: 0.1415990  Orgs: 247     Merit: 314.5466   Thrd: 389     Para: 142  
+UD: 137     Gen: 20.16667   Fit: 0.1420159  Orgs: 252     Merit: 314.5516   Thrd: 410     Para: 158  
+UD: 138     Gen: 20.24609   Fit: 0.1418182  Orgs: 256     Merit: 314.5586   Thrd: 416     Para: 160  
+UD: 139     Gen: 20.45038   Fit: 0.1425949  Orgs: 262     Merit: 314.5382   Thrd: 426     Para: 164  
+UD: 140     Gen: 20.59851   Fit: 0.1424059  Orgs: 269     Merit: 314.5539   Thrd: 431     Para: 162  
+UD: 141     Gen: 20.72556   Fit: 0.1435645  Orgs: 266     Merit: 314.5564   Thrd: 524     Para: 258  
+UD: 142     Gen: 20.82642   Fit: 0.1417523  Orgs: 265     Merit: 314.5585   Thrd: 516     Para: 251  
+UD: 143     Gen: 20.90370   Fit: 0.1388717  Orgs: 270     Merit: 314.5333   Thrd: 518     Para: 248  
+UD: 144     Gen: 20.97770   Fit: 0.1366838  Orgs: 269     Merit: 314.5390   Thrd: 513     Para: 244  
+UD: 145     Gen: 21.03346   Fit: 0.1323879  Orgs: 269     Merit: 314.5390   Thrd: 511     Para: 242  
+UD: 146     Gen: 21.19331   Fit: 0.1305247  Orgs: 269     Merit: 314.5874   Thrd: 503     Para: 234  
+UD: 147     Gen: 21.30037   Fit: 0.1260308  Orgs: 273     Merit: 314.5201   Thrd: 504     Para: 231  
+UD: 148     Gen: 21.35766   Fit: 0.1245592  Orgs: 274     Merit: 314.4927   Thrd: 508     Para: 234  
+UD: 149     Gen: 21.48148   Fit: 0.1254419  Orgs: 270     Merit: 314.5444   Thrd: 504     Para: 234  
+UD: 150     Gen: 21.57143   Fit: 0.1240893  Orgs: 266     Merit: 314.5451   Thrd: 494     Para: 228  
+UD: 151     Gen: 21.62500   Fit: 0.1250788  Orgs: 264     Merit: 314.5038   Thrd: 494     Para: 230  
+UD: 152     Gen: 21.70522   Fit: 0.1283314  Orgs: 268     Merit: 314.5299   Thrd: 501     Para: 233  
+UD: 153     Gen: 21.83521   Fit: 0.1251430  Orgs: 267     Merit: 314.4981   Thrd: 497     Para: 230  
+UD: 154     Gen: 21.95489   Fit: 0.1249356  Orgs: 266     Merit: 314.5677   Thrd: 491     Para: 225  
+UD: 155     Gen: 22.12782   Fit: 0.1240192  Orgs: 266     Merit: 314.5752   Thrd: 484     Para: 218  
+UD: 156     Gen: 22.20543   Fit: 0.1210434  Orgs: 258     Merit: 314.6008   Thrd: 467     Para: 209  
+UD: 157     Gen: 22.35632   Fit: 0.1199012  Orgs: 261     Merit: 314.6398   Thrd: 480     Para: 219  
+UD: 158     Gen: 22.38403   Fit: 0.1186637  Orgs: 263     Merit: 314.6122   Thrd: 481     Para: 218  
+UD: 159     Gen: 22.50000   Fit: 0.1143514  Orgs: 256     Merit: 314.6445   Thrd: 468     Para: 212  
+UD: 160     Gen: 22.67181   Fit: 0.1147572  Orgs: 259     Merit: 314.6911   Thrd: 462     Para: 203  
+UD: 161     Gen: 22.75581   Fit: 0.1115647  Orgs: 258     Merit: 314.7287   Thrd: 460     Para: 202  
+UD: 162     Gen: 22.92803   Fit: 0.1098480  Orgs: 264     Merit: 314.6818   Thrd: 461     Para: 197  
+UD: 163     Gen: 23.16216   Fit: 0.1082099  Orgs: 259     Merit: 314.6602   Thrd: 454     Para: 195  
+UD: 164     Gen: 23.39837   Fit: 0.1094397  Orgs: 246     Merit: 314.6911   Thrd: 425     Para: 179  
+UD: 165     Gen: 23.52459   Fit: 0.1101767  Orgs: 244     Merit: 314.6885   Thrd: 422     Para: 178  
+UD: 166     Gen: 23.73361   Fit: 0.1116229  Orgs: 244     Merit: 314.6475   Thrd: 419     Para: 175  
+UD: 167     Gen: 23.88934   Fit: 0.1160542  Orgs: 244     Merit: 314.6598   Thrd: 422     Para: 178  
+UD: 168     Gen: 24.02449   Fit: 0.1196275  Orgs: 245     Merit: 314.6898   Thrd: 420     Para: 175  
+UD: 169     Gen: 24.20000   Fit: 0.1212010  Orgs: 250     Merit: 314.6800   Thrd: 432     Para: 182  
+UD: 170     Gen: 24.29482   Fit: 0.1213907  Orgs: 251     Merit: 314.6853   Thrd: 430     Para: 179  
+UD: 171     Gen: 24.29719   Fit: 0.1224095  Orgs: 249     Merit: 314.7149   Thrd: 438     Para: 189  
+UD: 172     Gen: 24.48425   Fit: 0.1237366  Orgs: 254     Merit: 314.6614   Thrd: 444     Para: 190  
+UD: 173     Gen: 24.66016   Fit: 0.1253485  Orgs: 256     Merit: 314.6680   Thrd: 454     Para: 198  
+UD: 174     Gen: 24.86154   Fit: 0.1266274  Orgs: 260     Merit: 314.6385   Thrd: 453     Para: 193  
+UD: 175     Gen: 24.97744   Fit: 0.1268889  Orgs: 266     Merit: 314.6541   Thrd: 460     Para: 194  
+UD: 176     Gen: 25.01115   Fit: 0.1262691  Orgs: 269     Merit: 314.6840   Thrd: 471     Para: 202  
+UD: 177     Gen: 25.07011   Fit: 0.1258266  Orgs: 271     Merit: 314.6568   Thrd: 481     Para: 210  
+UD: 178     Gen: 25.23704   Fit: 0.1244555  Orgs: 270     Merit: 314.6148   Thrd: 480     Para: 210  
+UD: 179     Gen: 25.31022   Fit: 0.1245573  Orgs: 274     Merit: 314.6168   Thrd: 489     Para: 215  
+UD: 180     Gen: 25.38267   Fit: 0.1250666  Orgs: 277     Merit: 314.5523   Thrd: 497     Para: 220  
+UD: 181     Gen: 25.44689   Fit: 0.1244827  Orgs: 273     Merit: 314.5495   Thrd: 535     Para: 262  
+UD: 182     Gen: 25.48708   Fit: 0.1211911  Orgs: 271     Merit: 314.6125   Thrd: 527     Para: 256  
+UD: 183     Gen: 25.53358   Fit: 0.1191153  Orgs: 268     Merit: 314.6045   Thrd: 514     Para: 246  
+UD: 184     Gen: 25.62264   Fit: 0.1165857  Orgs: 265     Merit: 314.5887   Thrd: 509     Para: 244  
+UD: 185     Gen: 25.68199   Fit: 0.1171284  Orgs: 261     Merit: 314.5824   Thrd: 504     Para: 243  
+UD: 186     Gen: 25.76654   Fit: 0.1177776  Orgs: 257     Merit: 314.5992   Thrd: 495     Para: 238  
+UD: 187     Gen: 25.94779   Fit: 0.1189556  Orgs: 249     Merit: 314.5622   Thrd: 475     Para: 226  
+UD: 188     Gen: 26.01210   Fit: 0.1185963  Orgs: 248     Merit: 314.5645   Thrd: 471     Para: 223  
+UD: 189     Gen: 26.00820   Fit: 0.1195099  Orgs: 244     Merit: 314.5615   Thrd: 462     Para: 218  
+UD: 190     Gen: 26.02941   Fit: 0.1194562  Orgs: 238     Merit: 314.5462   Thrd: 453     Para: 215  
+UD: 191     Gen: 26.19665   Fit: 0.1173487  Orgs: 239     Merit: 314.5941   Thrd: 444     Para: 205  
+UD: 192     Gen: 26.39407   Fit: 0.1161886  Orgs: 236     Merit: 314.5720   Thrd: 436     Para: 200  
+UD: 193     Gen: 26.49356   Fit: 0.1133011  Orgs: 233     Merit: 314.5966   Thrd: 429     Para: 196  
+UD: 194     Gen: 26.55411   Fit: 0.1100767  Orgs: 231     Merit: 314.5887   Thrd: 428     Para: 197  
+UD: 195     Gen: 26.63043   Fit: 0.1099505  Orgs: 230     Merit: 314.5739   Thrd: 431     Para: 201  
+UD: 196     Gen: 26.65022   Fit: 0.1071303  Orgs: 223     Merit: 314.6368   Thrd: 418     Para: 195  
+UD: 197     Gen: 26.79909   Fit: 0.1073587  Orgs: 219     Merit: 314.6986   Thrd: 403     Para: 184  
+UD: 198     Gen: 26.92958   Fit: 0.1066901  Orgs: 213     Merit: 314.6948   Thrd: 392     Para: 179  
+UD: 199     Gen: 26.98551   Fit: 0.1099154  Orgs: 207     Merit: 314.6860   Thrd: 380     Para: 173  
+UD: 200     Gen: 27.07212   Fit: 0.1092524  Orgs: 208     Merit: 314.6923   Thrd: 381     Para: 173  
+UD: 201     Gen: 27.08867   Fit: 0.1094983  Orgs: 203     Merit: 314.6700   Thrd: 369     Para: 166  
+UD: 202     Gen: 27.32843   Fit: 0.1073430  Orgs: 204     Merit: 314.7108   Thrd: 363     Para: 159  
+UD: 203     Gen: 27.54974   Fit: 0.1044298  Orgs: 191     Merit: 314.7068   Thrd: 334     Para: 143  
+UD: 204     Gen: 27.60963   Fit: 0.1070696  Orgs: 187     Merit: 314.7166   Thrd: 326     Para: 139  
+UD: 205     Gen: 27.77174   Fit: 0.1072494  Orgs: 184     Merit: 314.8913   Thrd: 323     Para: 139  
+UD: 206     Gen: 27.96757   Fit: 0.1125190  Orgs: 185     Merit: 314.8865   Thrd: 322     Para: 137  
+UD: 207     Gen: 28.12834   Fit: 0.1191021  Orgs: 187     Merit: 314.8877   Thrd: 322     Para: 135  
+UD: 208     Gen: 28.21466   Fit: 0.1209054  Orgs: 191     Merit: 314.8743   Thrd: 323     Para: 132  
+UD: 209     Gen: 28.29167   Fit: 0.1207208  Orgs: 192     Merit: 314.9010   Thrd: 325     Para: 133  
+UD: 210     Gen: 28.37500   Fit: 0.1217011  Orgs: 192     Merit: 314.9271   Thrd: 327     Para: 135  
+UD: 211     Gen: 28.51531   Fit: 0.1283474  Orgs: 196     Merit: 314.9133   Thrd: 327     Para: 131  
+UD: 212     Gen: 28.66000   Fit: 0.1306485  Orgs: 200     Merit: 314.8750   Thrd: 327     Para: 127  
+UD: 213     Gen: 28.68342   Fit: 0.1313039  Orgs: 199     Merit: 314.8643   Thrd: 330     Para: 131  
+UD: 214     Gen: 28.75879   Fit: 0.1341451  Orgs: 199     Merit: 314.8894   Thrd: 331     Para: 132  
+UD: 215     Gen: 28.89340   Fit: 0.1348592  Orgs: 197     Merit: 314.9086   Thrd: 321     Para: 124  
+UD: 216     Gen: 29.09804   Fit: 0.1377072  Orgs: 204     Merit: 314.9510   Thrd: 327     Para: 123  
+UD: 217     Gen: 29.37255   Fit: 0.1409083  Orgs: 204     Merit: 314.9902   Thrd: 323     Para: 119  
+UD: 218     Gen: 29.47143   Fit: 0.1388207  Orgs: 210     Merit: 315.0000   Thrd: 331     Para: 121  
+UD: 219     Gen: 29.60094   Fit: 0.1375786  Orgs: 213     Merit: 314.9906   Thrd: 337     Para: 124  
+UD: 220     Gen: 29.89908   Fit: 0.1384186  Orgs: 218     Merit: 315.0000   Thrd: 339     Para: 121  
+UD: 221     Gen: 30.12054   Fit: 0.1406252  Orgs: 224     Merit: 314.8705   Thrd: 347     Para: 123  
+UD: 222     Gen: 30.24670   Fit: 0.1404476  Orgs: 227     Merit: 314.8546   Thrd: 358     Para: 131  
+UD: 223     Gen: 30.30472   Fit: 0.1434904  Orgs: 233     Merit: 314.8798   Thrd: 371     Para: 138  
+UD: 224     Gen: 30.48101   Fit: 0.1464378  Orgs: 237     Merit: 314.8523   Thrd: 377     Para: 140  
+UD: 225     Gen: 30.78661   Fit: 0.1480319  Orgs: 239     Merit: 314.8243   Thrd: 377     Para: 138  
+UD: 226     Gen: 31.02893   Fit: 0.1491886  Orgs: 242     Merit: 314.7851   Thrd: 382     Para: 140  
+UD: 227     Gen: 31.02881   Fit: 0.1493418  Orgs: 243     Merit: 314.7490   Thrd: 388     Para: 145  
+UD: 228     Gen: 31.21138   Fit: 0.1479447  Orgs: 246     Merit: 314.7602   Thrd: 403     Para: 157  
+UD: 229     Gen: 31.34127   Fit: 0.1466871  Orgs: 252     Merit: 314.7738   Thrd: 421     Para: 169  
+UD: 230     Gen: 31.56078   Fit: 0.1434690  Orgs: 255     Merit: 314.7882   Thrd: 420     Para: 165  
+UD: 231     Gen: 31.75391   Fit: 0.1414174  Orgs: 256     Merit: 314.8008   Thrd: 430     Para: 174  
+UD: 232     Gen: 31.84615   Fit: 0.1394011  Orgs: 260     Merit: 314.7500   Thrd: 447     Para: 187  
+UD: 233     Gen: 31.95849   Fit: 0.1388618  Orgs: 265     Merit: 314.7736   Thrd: 452     Para: 187  
+UD: 234     Gen: 32.10037   Fit: 0.1368964  Orgs: 269     Merit: 314.7807   Thrd: 451     Para: 182  
+UD: 235     Gen: 32.20652   Fit: 0.1371857  Orgs: 276     Merit: 314.7935   Thrd: 467     Para: 191  
+UD: 236     Gen: 32.31636   Fit: 0.1368461  Orgs: 275     Merit: 314.8073   Thrd: 475     Para: 200  
+UD: 237     Gen: 32.40942   Fit: 0.1360691  Orgs: 276     Merit: 314.7645   Thrd: 481     Para: 205  
+UD: 238     Gen: 32.51625   Fit: 0.1349024  Orgs: 277     Merit: 314.7653   Thrd: 489     Para: 212  
+UD: 239     Gen: 32.73759   Fit: 0.1370564  Orgs: 282     Merit: 314.7447   Thrd: 498     Para: 216  
+UD: 240     Gen: 32.84043   Fit: 0.1351288  Orgs: 282     Merit: 314.7447   Thrd: 504     Para: 222  
+UD: 241     Gen: 32.89510   Fit: 0.1345967  Orgs: 286     Merit: 314.7657   Thrd: 514     Para: 228  
+UD: 242     Gen: 32.97173   Fit: 0.1355762  Orgs: 283     Merit: 314.7668   Thrd: 517     Para: 234  
+UD: 243     Gen: 33.12111   Fit: 0.1338028  Orgs: 289     Merit: 314.7855   Thrd: 519     Para: 230  
+UD: 244     Gen: 33.22615   Fit: 0.1339712  Orgs: 283     Merit: 314.7562   Thrd: 511     Para: 228  
+UD: 245     Gen: 33.21201   Fit: 0.1334613  Orgs: 283     Merit: 314.7456   Thrd: 513     Para: 230  
+UD: 246     Gen: 33.35943   Fit: 0.1343311  Orgs: 281     Merit: 314.7580   Thrd: 507     Para: 226  
+UD: 247     Gen: 33.53929   Fit: 0.1323925  Orgs: 280     Merit: 314.7607   Thrd: 499     Para: 219  
+UD: 248     Gen: 33.71533   Fit: 0.1334095  Orgs: 274     Merit: 314.7518   Thrd: 493     Para: 219  
+UD: 249     Gen: 33.87313   Fit: 0.1328947  Orgs: 268     Merit: 314.7537   Thrd: 481     Para: 213  
+UD: 250     Gen: 33.94297   Fit: 0.1319283  Orgs: 263     Merit: 314.7490   Thrd: 471     Para: 208  

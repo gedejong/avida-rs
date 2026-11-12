@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 4 -set WORLD_X 15 -set WORLD_Y 15 -set BIRTH_METHOD 10 -set ALLOW_PARENT 0

@@ -1,0 +1,13 @@
+#filetype genotype_data
+#format id parent_id parent_dist sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Parent ID
+# 3: Parent Distance
+# 4: Genome Sequence
+
+0 10641910 0 qcemocaqpqgrpdqcocpizaqifaqqhpncqblcoqogcvciqcqpipbfcoqutttttycsva 
+0 10627940 0 qcbpochqpqrprqcocphzaqcygqqhpnccqlcoqgcnvcjqcqtpdpyfcoquttttttycsva 
+0 10713761 0 qcbpocmqpqgrpdqcocpszaibqcqqhpncqslcoqgcvcaqcqprprfcoquttttttycsva 
+0 10720273 0 qcepocqpqzprrqcocpizaqilaqqhpncqblcoqgcpvccqcqpzpyfcoquttttttycsva 

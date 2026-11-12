@@ -1,0 +1,45 @@
+# Hand-written genomes that put INT_MIN (one, then 31 shift-l) into the
+# register an experimental (hw_type 3) instruction folds with abs(): the
+# C++ abs(INT_MIN) stays INT_MIN, and the compiled code then reduces it as
+# an unsigned value (set-forage-target and show-ft: unsigned % with the
+# forage-target count; look-around / look-around-ft: unsigned % 3;
+# rotate-x: & 7; deposit-resource / nop-deposit-resource: an unsigned
+# compare with the stored amount), while get-res-stored keeps the signed
+# division. Traced by the C++ reference (cbuild/work/avida -a, analyze
+# LOAD_SEQUENCE... + TRACE trace_out/ 0 -1 0) with the
+# tests/fixtures/exp_env/ft1 config and the instruction set below
+# (INSTSET diff:hw_type=3). The deposit genomes end on `zero` so that the
+# next deposit does not index GetRBins() with -1.
+# SEQ <sequence> <fnv1a64 of the trace> <trace length in bytes>
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST one
+INST shift-l
+INST set-forage-target
+INST get-forage-target
+INST show-ft
+INST zero
+INST inc
+INST collect-specific
+INST nop-deposit-resource
+INST deposit-resource
+INST get-res-stored
+INST look-around
+INST look-around-ft
+INST rotate-x
+SEQ ijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkl b1f677b7bf0f5a8b 546210
+SEQ ijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkkl e994d9a892989fa4 563028
+SEQ ikijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjml f0fb9134b27f10c9 579402
+SEQ noookijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjm 1e233687a32af2b7 612733
+SEQ picjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcqrn 31d34a50cb1a5c14 1147452
+SEQ ppicjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcjcr e7cdb23820562f04 1128161
+SEQ pijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjs bfcb6ff16e45a061 548572
+SEQ ifjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjftu 7caac45abc7c808a 1104700
+SEQ ijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjvl 89bde06eb21e5fad 546520

@@ -1,0 +1,20 @@
+# Org That Reproduced the Fastest (fewest cycles) Among Orgs with the Highest Reaction ID
+# Wed Nov 11 19:26:25 2026
+# GenotypeID
+# OrgID
+# Cycle at First Reproduction (parallel multithread execs = 1 cycle)
+# Exec Count at Trace Start
+# Exec Count at First Reproduction
+# Reaction Counts at First Reproduction
+# CPU Cycle at First Trigger of Each Reaction
+# Exec Count at First Trigger (== index into execution trace and nav traces)
+# 
+# Updates for each entry in each following trace (to match with res data)
+# CellIDs to First Reproduction
+# OrgFacings to First Reproduction
+# Execution Trace to First Reproduction
+
+
+
+1 0 69 0 69 1 4 3 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 210,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 wByyzgzjvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgv
+1 0 -1 0 69 1 4 3 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 210,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 wByyzgzjvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgvAgv

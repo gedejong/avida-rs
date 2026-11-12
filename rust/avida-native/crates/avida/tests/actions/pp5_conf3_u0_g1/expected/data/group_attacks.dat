@@ -1,0 +1,58 @@
+# Attack Instruction Execution Circumstances
+# Gives count of attacks with given number of neighbors present.
+# Thu Nov 12 00:11:24 2026
+# Instruction
+# Update
+# 0Neighbors
+# 1Neighbors
+# 2Neighbors
+# 3Neighbors
+# 4Neighbors
+# 5Neighbors
+# 6Neighbors
+# 7Neighbors
+# 8Neighbors
+# 8+Neighbors
+# 0InGroupNeighbors
+# 1InGroupNeighbors
+# 2InGroupNeighbors
+# 3InGroupNeighbors
+# 4InGroupNeighbors
+# 5InGroupNeighbors
+# 6InGroupNeighbors
+# 7InGroupNeighbors
+# 8InGroupNeighbors
+# 8+InGroupNeighbors
+
+0,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-group,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-no-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-fake-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-prey-fake-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-group,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-no-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-fake-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey-fake-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-group,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-no-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-fake-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey-fake-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-group,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-no-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-fake-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey-fake-group-share,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

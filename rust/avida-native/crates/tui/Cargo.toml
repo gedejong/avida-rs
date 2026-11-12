@@ -1,0 +1,33 @@
+[package]
+name = "avida-tui"
+version.workspace = true
+edition.workspace = true
+description = "Terminal front end (ratatui) for the native Avida port"
+
+[lints]
+workspace = true
+
+[lib]
+name = "avida_tui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "avida-tui"
+path = "src/main.rs"
+
+[dependencies]
+avida-session = { path = "../session" }
+avida-viewmodel = { path = "../viewmodel" }
+ratatui = "0.30"
+# Already in the build through crossterm; here for SIGTERM, SIGHUP and SIGINT,
+# which must give the terminal back before the process ends.
+signal-hook = { version = "0.3", default-features = false }
+
+# Safe wrappers to notice that the terminal has gone away (poll and
+# FIONREAD on standard input), and to leave a terminal nobody reads without
+# blocking (a non-blocking descriptor of /dev/tty, tcdrain, tcflush, and
+# tcgetsid with the FLUSHO mode for a session leader's exit).
+rustix = { version = "1.1", default-features = false, features = ["std", "event", "fs", "termios"] }
+
+[dev-dependencies]
+avida-config = { path = "../config" }

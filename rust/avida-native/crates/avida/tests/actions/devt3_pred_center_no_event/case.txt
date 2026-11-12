@@ -1,0 +1,3 @@
+base multi_level_selection
+args -s 5 -set WORLD_X 5 -set WORLD_Y 20 -set WORLD_GEOMETRY 2 -set SPECULATIVE 0 -set INST_SET instset.cfg -set EVENT_FILE events.cfg -set ENVIRONMENT_FILE environment.cfg -set NUM_DEMES 4 -set DEMES_REPLICATE_SIZE 25 -set DEMES_ORGANISM_SELECTION 1 -set DEMES_ORGANISM_PLACEMENT 3 -set DEMES_ORGANISM_FACING 2 -set SLICING_METHOD 1 -set INST_SET_LOAD_LEGACY 1
+rc 1

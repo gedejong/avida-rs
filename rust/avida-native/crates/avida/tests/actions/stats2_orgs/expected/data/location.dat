@@ -1,0 +1,16 @@
+# Organism location data
+# Wed Nov 11 13:20:49 2026
+#  1: Update [update]
+#  2: Cell ID [cellid]
+#  3: Organism ID [orgid]
+
+0 0 0 
+20 0 0 
+20 10 1 
+40 0 0 
+40 10 1 
+40 20 3 
+40 21 6 
+40 29 5 
+40 90 2 
+40 91 4 

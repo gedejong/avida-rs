@@ -1,0 +1,10 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+#  1: ID
+
+10690282 10473576 1 30 349 66 1.38412e+08 129 1.07296e+06 49780 -1 376 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva 
+10641910 10612514 1 24 1338 65 1.36315e+08 133 1.02492e+06 49562 -1 383 qcepoccqpqzprqcocpizaqifaqqhpncqblcoqogcvciqcqpipbfcoqutttttycsva 
+10713761 10687665 1 23 186 67 1.40509e+08 132 1.06446e+06 49885 -1 395 qcbpochqpqrphqcocphzaqcygqqdpnccqlcoqgcnvcyqcqtpdpyfcoquttttttycsva 
+10598744 10561755 1 23 1700 66 1.38412e+08 130 1.06471e+06 49368 -1 363 qcemocmqpqgrpdqcocpszaibqcqqhpncqslcoqgcvcaqcqprprfcoquttttttycsva 
+10689390 10642639 1 22 217 66 1.38412e+08 129 1.07296e+06 49776 -1 370 qcemocaqpqgrpdqcocpbzaisqcqqhpncqblcoqgcvcbqcqpipdfcoquttttttycsva 
+10677194 10656315 1 22 719 66 1.38412e+08 131 1.05658e+06 49721 -1 381 qccpoccqpqzprqcocpizaqilaqqhpncqylcoqgcavccqcqpzprfcoquttttttycsva 

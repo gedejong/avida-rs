@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 3 -set WORLD_X 15 -set WORLD_Y 15 -set PRECALC_PHENOTYPE 3 -set RESET_INPUTS_ON_DIVIDE 1

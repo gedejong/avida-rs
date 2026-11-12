@@ -1,0 +1,120 @@
+# Wed Nov 11 19:16:08 2026
+# Filename........: minitraces/trace_genomes/org0-ud-1-grp-1_ft-1-gt1.trcgeno
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 95.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 95
+# Copied Size.....: 95
+# Executed Size...: 95
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+
+
+zero
+dec
+dec
+set-forage-target
+zero
+dec
+dec
+zero
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+zero
+nop-D
+dec
+nop-D
+zero
+nop-E
+dec
+nop-E
+one
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+shift-l
+nop-F
+look-around
+nop-B
+look-around-ft
+nop-B

@@ -1,0 +1,60 @@
+# Thu Nov 12 04:42:28 2026
+# Filename........: minitraces/trace_genomes/org2-ud-1-grp0_ft-1-gt1.trcgeno
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 280.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 23
+# Copied Size.....: 23
+# Executed Size...: 23
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# Tasks Performed Using Internal Resources:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# Resources Collected: Name		Total		Available
+#                 0 : food		0.000000		0.000000		
+#                 1 : den		0.000000		0.000000		
+#                 2 : food2		0.000000		0.000000		
+
+
+set-rand-p-ft-once
+get-loc-org-density
+rotate-x
+move
+get-faced-org-density
+rotate-x
+move
+collect-edible
+nop2-collect-edible
+collect-specific
+donate-specific
+get-res-stored
+rotate-x
+move
+set-guard
+get-num-guards
+rotate-x
+get-num-juvs
+rotate-x
+move
+input
+output
+repro

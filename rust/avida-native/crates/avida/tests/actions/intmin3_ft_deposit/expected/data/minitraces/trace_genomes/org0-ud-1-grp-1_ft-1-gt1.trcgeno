@@ -1,0 +1,59 @@
+# Wed Nov 11 19:16:08 2026
+# Filename........: minitraces/trace_genomes/org0-ud-1-grp-1_ft-1-gt1.trcgeno
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 34.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 34
+# Copied Size.....: 34
+# Executed Size...: 34
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+
+
+one
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+shift-l
+set-forage-target
+get-forage-target

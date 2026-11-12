@@ -1,0 +1,42 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+
+In analyze mode!!
+Loading: dgcahcccccccccccccccccccccccccccccccgficaehab
+Predicting W Landscape...
+Predicting Nu Landscape...
+Pair Testing Landscape...
+warning: AnalyzePopulation not currently supported in Analyze Mode.
+Loading: dgcahcgficaehab
+Loading: dgcahcccgficaehab
+Pair Testing Landscape...
+Verbose ON: Using verbose log messages...
+Pair Testing Landscape on batch 1
+Setting current batch to 2
+Loading: dgcahcccccccfcccccccdcccccccccccccccgficaehab
+Predicting W Landscape on batch 2
+Predicting Nu Landscape on batch 2
+Pair Testing Landscape on batch 2
+Setting current batch to 5
+Predicting W Landscape on batch 5
+Pair Testing Landscape on batch 5
+Calculating Hill Climb on batch 5

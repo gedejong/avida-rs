@@ -1,0 +1,34 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 14:05:16 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+94 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccccccccccncccccccccccccccccccccccccccccccccccccccccjccccccccbccccccccccccccccccccccccutycasvab 30 330 0 
+95 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavcccccccwcccccccqmcccccccccccccccccccycccccccccccccccccccccccccccgcgtccccccccccccccccccutycasvab 50 280 0 
+96 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccccccccxcccccccmcccwcccccccccccccccycpcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 90 297 0 
+97 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavcccccccdccccccccmcccccccccccccccccccyccpccccccccccccccccccccccccccctccccccccccccccccccutycasvab 110 297 0 
+98 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccqccccccccccccccccccccpccccccccccclccccccccccccccccuccwccccccccccutycascab 150 312 0 
+99 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccctcccccccccccccccaccccccccccccccccccccccccccccccccccccccccclcccccccccccccaccccccccccubycasvab 170 330 0 
+100 dup:int germline (none) 2 2 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccccccccxcccccccmcccccccccccccccccccycpcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 10,130 330,363 0,0 
+101 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccqcccccccccccccccccccccccccccccccclzccccccccpccccccucccccccccccccutycasvab 190 288 0 
+102 dup:int germline (none) 1 1 100 0 0 0 0 141 -1 0 0 instset-heads.cfg rucapccccccccccccccccccccccqcccccccccccccccccccccccccccccccclzccccccccpccccccucccccccccccccutycasvab 70 321 0 

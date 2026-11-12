@@ -1,0 +1,2 @@
+base avatars-pred_look
+args -s 3 -set JUV_PERIOD 2000000000

@@ -1,0 +1,18 @@
+#filetype genotype_data
+#format id tasks_done insts_tasks tasks_prop ave_tasks_per_site ave_sites_per_task ave_prop_nonoverlap sites_per_task sites_inv_x_tasks task_length ave_task_position ave_task_position 
+
+# Legend:
+# 1: Genotype ID
+# 2: Number of Tasks Performed
+# 3: Number of Instructions Involved in Tasks
+# 4: Proportion of Sites in Tasks
+# 5: Average Number of Tasks Per Site
+# 6: Average Number of Sites Per Task
+# 7: Average Proportion of the Non-overlapping Region of a Task
+# 8: Number of Sites Per Task 1
+# 9: Number of Sites Involved in 2 Tasks
+# 10: Task 2 Length
+# 11: Task 6 Position
+# 12: Task 7 Position
+
+10690282 8 38 0.575758 2.18421 10.375 0.575758 5 8 15 8.76923 nan 

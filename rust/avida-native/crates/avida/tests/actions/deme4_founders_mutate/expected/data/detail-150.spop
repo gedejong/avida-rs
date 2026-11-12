@@ -1,0 +1,52 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 19:57:09 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+184 dup:int (none) (none) 1 1 101 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjctccccccccccqcucccccccccccccccutycsxsvabrucavccccccccccccccccsccccxcccccccccccccccccccnl 71 346 0 
+185 dup:int (none) (none) 1 1 98 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjccfcccccccoqcccccccccccccccutycsxsvabducavcccccwcccccraccaccccxccccccccccccccccccccnl 190 312 0 
+186 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjlccccccccccqccccccccccccccccutycsxsvabrucavccccccccccuccccccccccxcccdcgciccccccccccccnl 191 334 0 
+187 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg cccccccccqccjccfcccccccoqccczcccccccccccutycmxsvybrucavcccccccccccrcccccccccxccccccccccccccccccccnl 90 329 0 
+188 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjlccccccccccqccccccccccccccccutycsxsvabrucavmcccccccccuccccccccccxcccdcgcccccccccccccpnl 91 349 0 
+169 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg julavciccccccccccaccccccccccccccccncqccccciclccccivcpccchccccccgccmsccccccccccctccccchcdccutychsvab 170 302 0 
+170 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg julavciccccccccccaccccccccccccccccncqhccccciclccccivcpccccccccccgccmsccccccccccctccvcchcdccutychsvab 171 335 0 
+171 dup:int (none) (none) 1 1 98 0 0 0 0 140 -1 0 0 instset-heads.cfg julavciccccccccccadccccycccccccccncqccccciclccccivcpccccccccccgccmsccccccccccctccccchcdccutychsvab 10 315 0 
+172 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg julavciccccccccccackcccccccccclcccncqccccciclccccivcpccccccccccgccmsccccccccccctccccchcdccutychsvab 11 324 0 
+173 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjcccccxccccqccccccccccccccocutycbsvhbfrucavcccccccccclcccccccccmxccscccccbccccccccccccl 150 318 0 
+174 dup:int (none) (none) 1 1 98 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccacccccxccccqccccccccccccccocutycssvabrucavcccccccccclcccccccccyxccscccccuccccccccccccl 151 341 0 
+175 dup:int (none) (none) 1 1 98 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjcccccxccculqccccccccccccccocutcssvabrucavcccccccccclcccccccccyxccscccccbccccccccccccl 30 361 0 
+176 dup:int (none) (none) 1 1 98 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccjcccccxcccqccccccccccccccocutccssvabrucavcccccccccclcccccccccyxccscoccccbccccccccccccl 31 327 0 
+177 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccctcccccccccccccxccccccccyccccccccbutytcssvabrtcavccccccccccctccccccccxcyxccicccccccccccccpxcc 130 356 0 
+178 dup:int (none) (none) 1 1 97 0 0 0 0 140 -1 0 0 instset-heads.cfg cccccccwccccccccccccacccccccccccccccccbutycisvabruhavccccccccccctceccccccxcyoccccccccccccccfccccz 131 319 0 
+179 dup:int (none) (none) 1 1 99 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccctcccccccccccccacccccccccccccccccbutycssgvabrncavccccccccccctcctcccccxcycccicccccccccccccpxcc 50 334 0 
+180 dup:int (none) (none) 1 1 97 0 0 0 0 140 -1 0 0 instset-heads.cfg cccccccwcccccccccchcacccccccccccccccccbutscisvabruhavccccccccccctceccccccxcycccccccccceccccfccccc 51 307 0 
+181 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg ccacccccccccjcccccccccccqcucccccccccccccccutacsxsvabrucavccccccccccccccccsccccxcccccccccccccccccccnl 110 370 0 
+182 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg ccccccccccccdcccccccccccqcucccccccccccccccutycsxsvabrucavccccccccccccccccsccccxcccccccccccccccccbcnl 111 359 0 
+183 dup:int (none) (none) 1 1 100 0 0 0 0 140 -1 0 0 instset-heads.cfg cccccccbccccjcccccccccccqcucccccccccccccccutycsxsvabrucavccccccccccceccccscyccxcccccccccccccccccccnl 70 330 0 
+160 dup:int (none) (none) 0 1 99 0 0 0 0 120 140 0 0 instset-heads.cfg ccccccccccccjccfcccccccoqcccccccccccccccutycsxsvabrucavcccccccccccrcccccccccxccccccccccccccccccccnl 
+159 dup:int (none) (none) 0 1 100 0 0 0 0 120 140 0 0 instset-heads.cfg ccccccccccccjlccccccccccqccccccccccccccccutycsxsvabrucavccccccccccuccccccccccxcccdcgccccccccccccccnl 
+158 dup:int (none) (none) 0 1 100 0 0 0 0 120 140 0 0 instset-heads.cfg ccccccccccccjcccccccccccqcucccccccccccccccutycsxsvabrucavccccccccccccccccsccccxcccccccccccccccccccnl 
+156 dup:int (none) (none) 0 1 97 0 0 0 0 120 140 0 0 instset-heads.cfg cccccccwccccccccccccacccccccccccccccccbutycisvabruhavccccccccccctceccccccxcycccccccccccccccfccccc 
+155 dup:int (none) (none) 0 1 98 0 0 0 0 120 140 0 0 instset-heads.cfg ccccccctcccccccccccccacccccccccccccccccbutycssvabrtcavccccccccccctccccccccxcycccicccccccccccccpxcc 
+165 dup:int (none) (none) 0 1 98 0 0 0 0 120 140 0 0 instset-heads.cfg ccccccccccccjcccccxccccqccccccccccccccocutycssvabrucavcccccccccclcccccccccyxccscccccbccccccccccccl 
+148 dup:int (none) (none) 0 1 99 0 0 0 0 120 140 0 0 instset-heads.cfg julavciccccccccccaccccccccccccccccncqccccciclccccivcpccccccccccgccmsccccccccccctccccchcdccutychsvab 

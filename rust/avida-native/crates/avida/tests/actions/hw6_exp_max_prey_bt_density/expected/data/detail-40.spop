@@ -1,0 +1,27 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Thu Nov 12 04:42:28 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+1 div:ext (none) (none) 19 206 23 250 23 10.8696 0 -1 -1 0 3 instset stpqupqvwxyCpqzApBpqmnl 2,3,5,6,12,13,17,18,20,21,22,27,28,29,31,32,33,34,35 1,5,1,6,22,19,5,5,19,7,0,16,0,6,18,20,2,18,1 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+2 div:ext (none) (none) 1 2 16 0 0 0 0 -1 -1 0 3 instset ikkrtpqupqApcccc 8 455 0 

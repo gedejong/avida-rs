@@ -1,0 +1,12 @@
+# Legend:
+# 1:Child Genotype ID
+# 2:Parent Genotype ID
+# 3:Information of Child about Environment I(C:E)
+# 4:Information of Parent about Environment I(P:E)
+# 5:I(C:E)-I(P:E)
+# 6:Information Gained in Child
+# 7:Information Decreased in Child
+# 8:Net Increasing of Information in Child
+
+76 1 15.2309 14.9759 0.254975 1.14863 0.893656 0.254975
+1439 76 15.224 15.2309 -0.00681516 0.0164247 0.0232399 -0.00681516

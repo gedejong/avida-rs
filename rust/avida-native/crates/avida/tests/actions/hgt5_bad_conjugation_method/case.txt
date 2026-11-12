@@ -1,0 +1,3 @@
+base heads_default_100u
+args -s 12 -set ENABLE_HGT 1 -set HGT_FRAGMENT_SELECTION 2 -set WORLD_X 15 -set WORLD_Y 15 -set HGT_CONJUGATION_METHOD 5
+rc 2

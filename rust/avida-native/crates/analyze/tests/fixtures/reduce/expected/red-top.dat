@@ -1,0 +1,14 @@
+#filetype genotype_data
+#format id num_cpus 
+
+# Legend:
+# 1: Genotype ID
+# 2: Number of CPUs
+
+508717 314 
+510983 148 
+437360 44 
+456507 36 
+455367 35 
+490460 33 
+473084 33 

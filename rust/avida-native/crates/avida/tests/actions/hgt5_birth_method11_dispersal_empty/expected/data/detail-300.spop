@@ -1,0 +1,346 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 23:58:06 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+736 div:int (none) 555 1 4 99 96 383 0.250653 17 218 -1 5 0 heads_default rucavccgcccccsccccccccccccccczccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccutycasvab 4 108 0 
+529 div:int (none) 430 5 10 100 96 382 0.251309 14 184 -1 5 0 heads_default rucavccgccccceczcccccccccccccccccxccccccccccccccccccccccccccccscccccnccccccccccccccccceccccutycasvab 83,126,127,156,169 154,187,88,187,88 0,0,0,0,0 
+1265 div:int (none) 1196 1 1 100 0 0 0 23 296 -1 5 0 heads_default rucavccgcccccccpcccccccccccchcccccccccccccceccccccccccccccccccccccccccccccccccccclcccccccccutycasvab 124 165 0 
+1058 div:int (none) 583 1 1 99 0 0 0 21 268 -1 5 0 heads_default rucavccccccccrccccrcccccczccccccccccgcccccccccceccccccccccccqcccccccccccccccccccccccccccccumycasvab 129 1011 0 
+1196 div:int (none) 132 1 1 100 97 386 0.251295 22 284 -1 4 0 heads_default rucavccgcccccccpcccccccccccchccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccutycasvab 137 131 0 
+1219 div:int (none) 1133 1 1 100 0 0 0 22 291 -1 8 0 heads_default rucavccccccccyccccpcccxccccoccclccccceccccgccccccccccccccccccbcccccvccccceccccccccccccccccuutycasvab 167 330 0 
+1242 div:int (none) 1079 1 1 100 0 0 0 23 293 -1 6 0 heads_default rucavccccccccccccccccccccccczcqccfccccccvccccccccccctccccccccclccccjcccccccccccccccccccccccutycasvab 179 224 0 
+1127 div:int (none) 960 1 1 99 0 0 0 21 275 -1 9 0 heads_default rucavccccccccyccccpcccxccccoccclccccceccccccccruccccccccccccbccccbcccccceccccccccccccccccuutycavvab 185 759 0 
+967 div:int (none) 128 3 4 100 97 386 0.251295 20 254 -1 2 0 heads_default rucavcccccccccpccccccccccccmccccpccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 14,222,223 297,264,263 0,0,0 
+1266 div:int (none) 907 1 1 100 0 0 0 23 297 -1 6 0 heads_default rucavccgccccccccccccccyckccccccbccccccccccccdcccccccccccccccccccccccccccccccccnccccccccccccutycasvab 34 132 0 
+300 div:int (none) 222 1 5 100 97 384 0.252604 12 155 -1 5 0 heads_default rucavccccccccccccccececczcccccccccccccccccccccccccccccccrczccccccccccccccccccccccicccccccccutycasvab 82 164 0 
+1128 div:int (none) 868 1 1 120 0 0 0 21 275 -1 8 0 heads_default aaaaaaaaaaaaaaaaauaaaarucavcccrccccccclcccccccccccccccccccrcccccccclcccccccccccccccclcccccccccccccccccwccccccccxtycasvab 104 891 0 
+1243 div:int (none) 1152 1 1 100 0 0 0 23 293 -1 8 0 heads_default rucavcccrccccccclccocccccccccccccccvscccccccmlccccccccccccccccccczccccccnccccccccxccccccczcutycasvab 141 231 0 
+1013 div:int (none) 907 1 1 100 96 384 0.25 20 258 -1 6 0 heads_default rucavccgccccccccccccccyckcccoccbccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 159 131 0 
+714 div:int (none) 471 2 4 98 95 377 0.251989 17 216 -1 5 0 heads_default rucavcccrccccczclcccccccccccccccccccccccccccclcccccccccccccccccccccccccccdcccccccccccccccutycasvab 162,177 263,230 0,0 
+1220 div:int (none) 789 1 1 100 0 0 0 22 291 -1 8 0 heads_default rucavccccccccyccccpcccxccccoccclccccceccccccccrccccccccccccccbccccccccccceccccccccccccccccgutycasvab 183 297 0 
+830 div:int (none) 752 4 4 99 96 380 0.252632 18 232 -1 5 0 heads_default rucavccmccccccccccccccccicccpcccccccccccccccclcccccccccccccccccccccccccvccccccccccccccccccutycasvab 5,20,214,216 165,197,132,131 0,0,0,0 
+1037 div:int (none) 952 1 1 200 100 783 0.127714 20 260 -1 5 0 heads_default aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavcccccccccccccccccxccccccccccwcccccecccccccccccccccccccccccccccccccacccccccccmczcccccccutycasvab 53 494 0 
+646 div:int (none) 300 1 4 100 97 384 0.252604 16 205 -1 6 0 heads_default rucavccccccccccccccececczcccccccccccacccccccccccccccccccrczccccccccccccccccccccccicccccccccutycasvab 110 263 0 
+1083 div:int (none) 1015 1 1 100 0 0 0 21 270 -1 4 0 heads_default xucavcccccccccccgcccccxccccccccccccccccccccccccccccccccccccccccccccccccccqcccccckccccccccccutycasvab 133 982 0 
+1267 div:int (none) 800 1 1 100 0 0 0 23 297 -1 10 0 heads_default rucavccccccccccccyccccccccccccccclcccjccdcfccmccnkcccccccccccccccccxcccccczcccccccccccchcicutycasvab 187 132 0 
+1244 div:int (none) 741 1 1 99 0 0 0 23 293 -1 7 0 heads_default rucevccccccccccccccccccccccccccccjcecccccccccccmccccccccccccnclccccccrccccccccccccccccccccutycasvab 197 264 0 
+923 div:int (none) 830 1 4 99 96 380 0.252632 19 244 -1 6 0 heads_default rucavccmccccccccccccccccicccpzccccccccccccccclcccccccccccccccccccccccccvccccccccccccccccccutycasvab 19 132 0 
+1084 div:int (none) 522 1 1 99 0 0 0 21 270 -1 6 0 heads_default rucavccccccccccccccccccccccccuwcccnccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 36 957 0 
+1176 div:int (none) 768 2 2 196 0 0 0 22 282 -1 5 0 heads_default aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavccgcoccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccwccccccccccccccccutycasvab 49,76 231,528 0,0 
+1199 div:int (none) 529 1 1 100 49 331 0.148036 22 284 -1 6 0 heads_default rucavccgccccceczcccccccccccccccccxccccccccccccccccccccccccccccscccccnccccccccccccccccceccccutywasvab 68 98 0 
+1222 div:int (none) 1138 1 1 98 0 0 0 23 291 -1 6 0 heads_default rucavccccccccrcccrcccccczccccccccccccccccccccceccccccccccccqcccccccccccccccccccccccccccccutytasvab 130 292 0 
+992 div:int (none) 392 1 2 101 98 387 0.25323 20 256 -1 4 0 heads_default rucavcccccccccczcccccccczcccccccccccccccccccclccncccccccccccrccccccccpcccccccccccccccpccccccutycasvab 131 164 0 
+1268 div:int (none) 1013 1 1 100 0 0 0 23 297 -1 7 0 heads_default rucavccgcccccyccccccccyckcccoccbcccccccccoccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 175 132 0 
+1107 div:int (none) 628 1 2 100 87 376 0.231383 21 271 -1 5 0 heads_default rucavccgccccccccccccccyccccccccbccccccccccccdccccccccccccccccccccccccccscccccccccccccccccccutycasvab 188 88 0 
+1153 div:int (none) 1079 1 1 100 97 379 0.255937 22 280 -1 6 0 heads_default rucavccccccccccccccccccccvccccqccfcccccccccccmccqccctccccccccclccccjcccccccccccccccccccccccutycasvab 224 272 0 
+1269 div:int (none) 879 1 1 100 0 0 0 21 297 -1 9 0 heads_default rucavccccccccccccdcccccccqiccccccccccccccycccccccccccecccccccciccccyccccyccccccccccrcccccccutycasbab 15 120 0 
+1177 div:int (none) 1100 1 1 99 95 378 0.251323 22 282 -1 8 0 heads_default rucavccccccccccccccctcccccccccccccccccscccccrcccccccpcccccccclcccccsccccccccccqrcccccyczccutycasvab 31 205 0 
+1246 div:int (none) 856 1 1 99 0 0 0 23 294 -1 6 0 heads_default rucavccgccccccccccgccccccccccccccccccccdccccccclcccccgccdcccccccccccccccccccccccccccccccccutycasvab 178 231 0 
+1154 div:int (none) 980 1 2 98 95 374 0.254011 22 281 -1 7 0 heads_default rucavcccrccccczclcccclcccccccccccccccccccmccclcccccccccccccccccccccccccccdcccczccccccccccutycasvab 192 296 0 
+741 div:int (none) 668 3 9 99 96 381 0.251969 17 219 -1 6 0 heads_default rucavccccccccccccccccccccccccccccccecccccccccccmccccccccccccnclccccccrccccccccccccccccccccutycasvab 0,198,212 231,263,231 0,0,0 
+879 div:int (none) 463 3 7 100 82 368 0.222826 17 237 -1 8 0 heads_default rucavccccccccccccdcccccccqiccccccccccccccycccccccccccecccccccciccccyccccyccccccccccrcccccccutycasvab 2,13,220 153,120,120 0,0,0 
+856 div:int (none) 763 3 7 99 96 380 0.252632 18 233 -1 5 0 heads_default rucavccgccccccccccgcccccccccccccccccccccccccccclcccccgccdcccccccccccccccccccccccccccccccccutycasvab 8,193,194 197,230,197 0,0,0 
+787 div:int (none) 706 1 5 100 89 377 0.236074 17 223 -1 6 0 heads_default rucavccccccccyccccccccxccccocccccccccsccccnccccccccccccccccccbcccccccccccccczqccccccccccccmutycasvab 56 261 0 
+695 div:int (none) 601 3 6 99 96 381 0.251969 16 208 -1 5 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccrcccccccpcccccccclccccccccccccccccqcccccccczccutycasvab 64,94,95 139,172,172 0,0,0 
+1247 div:int (none) 927 1 1 102 0 0 0 23 294 -1 6 0 heads_default rucavcccclqccccccccccmccccccccccfccceccccccccccccccccccccccccccclccccccccccvcccjcccccccccccccutycasvaq 72 238 0 
+1086 div:int (none) 839 1 1 100 97 384 0.252604 21 270 -1 5 0 heads_default rucavcccjcccccccccccccccgccccccccccccccccbkcccccccccccccccccccpcccccbccpcccccccccccrcccccccutycasvab 74 197 0 
+1201 div:int (none) 956 1 2 100 97 386 0.251295 22 285 -1 4 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccdcccccccccccccccccrccutycasvab 77 99 0 
+1270 div:int (none) 1113 1 1 101 0 0 0 23 297 -1 13 0 heads_default rucavccccccccccccyccccccccccccccsccccjccdcfccmccnzcccccccmcccccccccccdcccfccccctcccccvcchcicutycasvab 142 84 0 
+1109 div:int (none) 1013 1 1 100 48 853 0.056272 21 271 -1 7 0 heads_default rucavccgcccccccccccoccyckcccoccbccccccccccccdccccccccccccccccccccccccccocccccccccccccccccccutyuasvab 171 32 0 
+1248 div:int (none) 1177 1 1 99 0 0 0 23 294 -1 9 0 heads_default rucavccccccccccccccctcccccccccccccccccscccccrcccccccpcccccccclcccccsycccccccccqrcccccyczccutycasvab 29 194 0 
+1225 div:int (none) 583 1 1 99 0 0 0 23 292 -1 5 0 heads_default rucavccccccccrccccrcccccczcccbcccccccccccccccccectccccccccccqcccccccccccccccccccccccccccccutycasvab 84 286 0 
+1271 div:int (none) 800 1 1 100 0 0 0 23 297 -1 10 0 heads_default rucavccccccccccccyccccccccccccccclcccjccdcfccmccnkccccccccccccccccccccccccccccccccccccchcicutycvsvab 96 97 0 
+1202 div:int (none) 951 1 1 200 0 0 0 22 286 -1 5 0 heads_default aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavchccscccccccccccccccrcccccccccccccccccccccccccccccccccccclcdicccccccccccccczccccccwcccutycasvab 109 469 0 
+1179 div:int (none) 87 1 1 100 0 0 0 22 283 -1 3 0 heads_default rucajccgccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 122 552 0 
+1156 div:int (none) 913 1 2 101 98 388 0.252577 22 281 -1 4 0 heads_default rucavccccccccccccdccccxccccccccccccccccccccccccckccccccccccccccxccccccccccccccccccccccccncccutycasvab 165 264 0 
+1203 div:int (none) 1033 1 1 100 0 0 0 22 286 -1 4 0 heads_default rucavccccccucccccccccccccccccccccccuccccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 25 363 0 
+1272 div:int (none) 1186 1 1 99 0 0 0 23 297 -1 8 0 heads_default rucavccmccccccccccccccccicccpzccccccvcccccccclcccccccccccccccccccccccchvccccccccccccccccccutycasvab 66 99 0 
+927 div:int (none) 106 2 3 102 99 390 0.253846 19 245 -1 5 0 heads_default rucavcccclqccccccccccmccccccccccfccceccccccccccccccccccccccccccclccccccccccvcccjcccccccccccccutycasvab 86,101 205,172 0,0 
+950 div:int (none) 783 1 3 122 119 473 0.251586 19 247 -1 12 0 heads_default aaaaaaaaaawaaaaaaaaaaarucavccccccccccccccccccfccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 117 98 0 
+904 div:int (none) 392 2 4 100 97 384 0.252604 19 243 -1 4 0 heads_default rucavcccccccccczcccccccczcccccccccccccccccccclccnccccccccccccccccccccgcccccccccccccccccccccutycasvab 134,163 197,230 0,0 
+1226 div:int (none) 470 1 1 100 0 0 0 23 292 -1 8 0 heads_default rucavccccaccccccccccccccccccccccclcccjccccfcclccnkcccccccccccccccccccccccccccccccccccccscccutycasvab 208 277 0 
+1273 div:int (none) 736 1 1 99 0 0 0 23 297 -1 6 0 heads_default rucavccgcccccsccccccccccccccczccccccccccccccchcccccccccccccccccccccccbccccccccccccccccccccotycasvab 9 131 0 
+1204 div:int (none) 1118 1 1 100 98 389 0.251928 22 286 -1 4 0 heads_default ruuavccgcccccccccccccccccccccccccccccccccccchcccccccccccccccccccccccccscccccccccccccccccrccutycasvab 35 65 0 
+1112 div:int (none) 830 1 1 99 95 376 0.25266 21 271 -1 6 0 heads_default rucavccmccccccccccccccccicccpcccccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccutycasvabb 37 131 0 
+583 div:int (none) 390 1 8 99 96 382 0.251309 15 194 -1 4 0 heads_default rucavccccccccrccccrcccccczccccccccccccccccccccceccccccccccccqcccccccccccccccccccccccccccccutycasvab 98 286 0 
+1135 div:int (none) 1047 2 2 101 93 381 0.244094 21 278 -1 8 0 heads_default rucavccccccccyccccpcccxccccocvclcccccencccccccccccccccccccccccbcccccccccccecccccccccxccccccuutycasvab 139,153 330,329 0,0 
+1158 div:int (none) 1070 1 1 99 86 368 0.233696 22 281 -1 8 0 heads_default rucavcccdcicccccccccmcxccccoccccccaccccccccccyccccccccccccccccccccccccckccccccccccccccccccutycasvab 174 164 0 
+1227 div:int (none) 1056 1 1 98 0 0 0 23 292 -1 6 0 heads_default rucavcncrccccccclcccccccccccccccccccncccccccclcccccccccccccccccccccccccccdccccccccqccccccutycasvab 201 272 0 
+1067 div:int (none) 976 1 1 99 0 0 0 21 268 -1 6 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccclccccflccccccccccccccccqcccccccczccutycahvab 21 997 0 
+768 div:int (none) 234 1 1 102 99 393 0.251908 17 221 -1 4 0 heads_default aarucavccgcoccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccwccccccccccccccccutycasvab 62 197 0 
+1228 div:int (none) 87 1 1 100 0 0 0 23 292 -1 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccdcccdccccccccccccccccccccccccccccccccccccccccccutycasvab 91 264 0 
+1113 div:int (none) 1014 1 1 101 88 369 0.238482 21 271 -1 12 0 heads_default rucavccccccccccccyccccccccccccccslcccjccdcfccmccnkcccccccmcccccccccccdcccfccccctcccccccchcicutycasvab 144 117 0 
+1251 div:int (none) 1158 1 1 99 0 0 0 23 294 -1 9 0 heads_default rucavcccdcicccccccccmcwccccoccccccaccccccccccyccccccccccccccccccccccccckccccccccccccccccccutycusvab 172 157 0 
+1045 div:int (none) 870 1 1 100 0 0 0 20 262 -1 4 0 heads_default rucavcccccccccccccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccmczcccccccukycasvab 26 1155 0 
+355 div:int (none) 6 2 7 100 97 388 0.25 12 161 -1 2 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrccutycasvab 33,47 66,65 0,0 
+953 div:int (none) 431 1 3 100 96 385 0.249351 19 248 -1 3 0 heads_default rucavcccccccvcccccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 41 65 0 
+56 div:int (none) 29 1 14 99 96 382 0.251309 7 93 -1 3 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccqcccccccczccutycasvab 42 239 0 
+1114 div:int (none) 431 1 1 100 0 0 0 21 271 -1 3 0 heads_default rucaucccccccccccccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 44 905 0 
+1252 div:int (none) 1172 1 1 100 0 0 0 23 294 -1 7 0 heads_default rucavcccjccccccccccccgccgccccccccccccccccbecccccccccccccccscccpcccccbccpcccccccccccrcccccccutycasvab 46 216 0 
+1160 div:int (none) 87 1 2 101 97 389 0.249357 22 281 -1 3 0 heads_default rucavccgccccccecccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccccccccccccccepccutycasvab 105 197 0 
+1068 div:int (none) 913 1 2 100 97 386 0.251295 21 268 -1 4 0 heads_default rucavcccccccccccccccccxccccccccccccccccccccccbccccccccccccccccxccccccccccccccccccccccccncccutycasvab 108 198 0 
+907 div:int (none) 628 6 7 100 96 385 0.249351 19 243 -1 5 0 heads_default rucavccgccccccccccccccyckccccccbccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 138,154,168,170,186,202 165,164,165,164,131,99 0,0,0,0,0,0 
+723 div:int (none) 470 3 6 99 96 380 0.252632 17 217 -1 8 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccfcclccnkccccccccccccccccccccccccccccccccccccscccutycasvab 143,157,173 276,243,276 0,0,0 
+815 div:int (none) 757 1 1 100 0 0 0 18 230 -1 3 0 heads_default cccccccccccccccccccccccccccccccccccccccccutymasvabrucavcccccccccccccccbccccmcccccccccccccccccccccccc 146 1070 0 
+1137 div:int (none) 741 1 1 99 96 380 0.252632 22 279 -1 7 0 heads_default rucavccccccccccccccccccccccccccccccecccccccccccmccccccccccccnclccccccrccccccccccocccccccccutycasvab 182 296 0 
+1275 div:int (none) 1194 1 1 99 0 0 0 23 298 -1 7 0 heads_default rucavccccccrccccucccdcccccccccccccccceccccccccccccccccccccccccccccccccycccccccccccccccccjcutycasvab 189 99 0 
+1229 div:int (none) 714 1 1 98 0 0 0 23 292 -1 6 0 heads_default rucavcccrccccczclcccccccccccccccccccccccccccclcccccccccccccccccccccccccccdcccccccccccccchutycasvab 205 297 0 
+470 div:int (none) 307 1 9 100 97 384 0.252604 14 179 -1 7 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccfcclccnkcccccccccccccccccccccccccccccccccccccscccutycasvab 206 277 0 
+1184 div:int (none) 711 2 2 100 87 376 0.231383 21 283 -1 5 0 heads_default rucavccgcccccccccccccccccccccccyccccccccccecccccccccccccccqcccsccccccccccccccccccccccccccccutycasvab 1,196 79,79 0,0 
+977 div:int (none) 741 2 4 99 96 380 0.252632 20 255 -1 7 0 heads_default rucavccccccccccccccccccccccccccccccecccccccccccmccccccccckccnclccccccrccccccccccccccccccccutycasvab 17,215 263,197 0,0 
+839 div:int (none) 755 4 7 100 97 386 0.251295 18 232 -1 4 0 heads_default rucavccccccccccccccccccccccccccccccccccccckcccccccccccccccccccpcccccbccpcccccccccccrcccccccutycasvab 30,59,60,61 165,164,131,165 0,0,0,0 
+1276 div:int (none) 431 1 1 100 0 0 0 23 298 -1 3 0 heads_default rucavcccccccccccccccccxcccsccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 39 88 0 
+1207 div:int (none) 1039 1 2 101 98 390 0.251282 22 286 -1 4 0 heads_default rucavccdccccccccccccocccccccccckcccccccccccccccccccccccccccccccccccccccccccccccccccccccccrccutycasvab 67 66 0 
+931 div:int (none) 855 2 2 100 87 376 0.231383 19 245 -1 4 0 heads_default rucavccccccrccccccccdccccccccccccccccccccccccccccccccccccccccccccccccccycccccccccccccccccjcutycasvab 181,211 99,98 0,0 
+1253 div:int (none) 977 1 1 99 0 0 0 23 294 -1 8 0 heads_default rucavcccccccccccccccccccczcccccccccecccccccccccmccccccccckccnclccccccrccccccccccccccccccccutycasvab 199 198 0 
+1208 div:int (none) 1037 1 1 400 0 0 0 21 287 -1 6 0 heads_default aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaayaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavccccccccsccccccccxccccccccccwcccccecccccccccccccccccccccccccccccccacccccccccmczcccccccutycasvab 23 431 0 
+1162 div:int (none) 1073 1 1 110 98 412 0.237864 22 281 -1 7 0 heads_default aaaaaaaaaarucavccccqccccccccccmccccccxcccfcccuccccccccccccccccccccccccccnccccccccccvcccjcccccccccccccutycasvab 24 214 0 
+1231 div:int (none) 87 1 1 101 0 0 0 23 293 -1 3 0 heads_default rucavccgcccccbcccccccccccccccccccccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 89 297 0 
+1254 div:int (none) 1199 1 1 100 0 0 0 23 294 -1 7 0 heads_default ccccccccccccscccccnccccccccccccccccceccccutywasvabrucavccgccccceczcccqcccccccccccccxcccccccccccccscc 97 122 0 
+1024 div:int (none) 929 1 1 119 0 0 0 20 258 -1 10 0 heads_default aaaakaaaaaaaaaaaaarucavmcccccccccccccccccccccccccccccccccccccccccccccccccccccaccctcccccccccccccccccccwccccccccutycasvab 135 1485 0 
+1047 div:int (none) 617 1 2 100 93 378 0.246032 20 264 -1 7 0 heads_default rucavccccccccyccccpcccxccccocvclcccccecccccccccccccccccccccccbccccccccccceccccccccccccccccuutycasvab 151 297 0 
+1139 div:int (none) 818 1 2 100 97 381 0.254593 22 279 -1 6 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccccclccnccctccccmcccccccccccccccccccccccccccccccccutycasvab 158 296 0 
+1185 div:int (none) 1113 1 1 102 0 0 0 22 283 -1 13 0 heads_default rumcavccccccccccccyccccccccccccccslcccjccdcfccmccnkcccccccmcccccccccccdcccfccccctcccccccchcicutycasvab 160 482 0 
+1277 div:int (none) 20 1 1 100 0 0 0 23 298 -1 3 0 heads_default rucavccccccccccccccccccccccccccccccccuccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 191 99 0 
+1232 div:int (none) 56 1 1 99 0 0 0 23 293 -1 4 0 heads_default mucavccccccccccccccccccccccccccccxccccccccccccccccccccccccccclccccpcccccccccccqcccccqcczccutycasvab 7 242 0 
+956 div:int (none) 355 5 7 100 97 387 0.250646 19 248 -1 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccccccccccccccrccutycasvab 22,50,52,65,79 65,66,65,33,65 0,0,0,0,0 
+1278 div:int (none) 911 1 1 100 0 0 0 23 298 -1 7 0 heads_default rucaqccgcccccccccccccfccwcccycccccccccccccccvcccccccccccccccccccccucccccccccccccccjacccccucutycasvab 78 68 0 
+1071 div:int (none) 583 2 2 100 97 385 0.251948 21 268 -1 5 0 heads_default rucavccccccccrccccrcccccczccccccccccccccccccccceccccccccccccqccccccccccpcccccccccccccccccccutycasvab 114,115 154,154 0,0 
+1255 div:int (none) 1066 1 1 98 0 0 0 23 295 -1 11 0 heads_default rucavccccccccccckccccccmcccycsccclsccjccccfcclccnkcccccccccccccccccfcccccccccccccccccscccutycasvab 136 205 0 
+911 div:int (none) 827 4 5 100 87 373 0.233244 19 244 -1 6 0 heads_default rucaqccgcccccccccccccfccccccycccccccccccccccvcccccccccccccccccccccccccccccccccccccjacccccucutycasvab 18,32,63,213 101,167,101,68 0,0,0,0 
+106 div:int (none) 32 2 19 101 98 386 0.253886 9 116 -1 4 0 heads_default rucavccccqccccccccccmccccccccccfccceccccccccccccccccccccccccccclccccccccccvcccjcccccccccccccutycasvab 55,69 204,204 0,0 
+1256 div:int (none) 1086 1 1 101 0 0 0 23 295 -1 6 0 heads_default rucavcccjcccccccccccccccgccccccccccccccccbkcccccccccccccccccccpcccccbccpcccccccccccrcccccccutyrcasvab 73 182 0 
+1279 div:int (none) 950 1 1 122 0 0 0 23 298 -1 13 0 heads_default aaaaaaaaaawaaaaaaaaaaarucavccccccccccccccccccfccccccccccccccceccccccccccccqcccbcccccccccccccccccccccccccwccccccccutycasvab 102 134 0 
+1188 div:int (none) 862 1 1 99 0 0 0 22 283 -1 4 0 heads_default rucpvcccccccccccccccccxccccccccccccccccecccccccccccccccccccccccncccccccccccccccccccccccclcutycasvab 16 495 0 
+1142 div:int (none) 893 1 2 98 95 374 0.254011 22 280 -1 10 0 heads_default rucavccccccccccckcccccccccccccccclcccjccccfcclccnkccccccccccccccccccccccccccccoccccccscccutycasvab 112 273 0 
+1096 div:int (none) 828 1 3 100 96 383 0.250653 21 270 -1 4 0 heads_default rucavcccceccccccccccccxcccccccccccccecccccacccccccccccccccccnccccccccccccccccccccccccccncccutycasvab 123 230 0 
+1119 div:int (none) 950 2 2 123 120 477 0.251572 21 272 -1 13 0 heads_default aaaaaaaaaawaaaaaaaaaaarucavccccccccrccccccccccfccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 148,149 131,98 0,0 
+1165 div:int (none) 1074 1 1 101 0 0 0 22 281 -1 4 0 heads_default rucafccccccoccccccccccccccccccccccccctcccyeccccccccceccccccccccccccccsccccgcccccccccccccccccutycasvab 210 649 0 
+774 div:int (none) 486 1 3 100 86 371 0.231806 17 221 -1 5 0 heads_default rucavccccccccrcdnccyccccccccccccccccccccccvcczcccccccccccccccqcccceccccccccccccclccccccccccutycasvab 217 308 0 
+1073 div:int (none) 997 1 1 100 88 373 0.235925 21 269 -1 6 0 heads_default rucavccccqccccccccccmccccccccccfcccuccccccccccccccccccccccccccnccccccccccvcccjcccccccccccccutycasvab 218 138 0 
+1280 div:int (none) 1107 1 1 100 0 0 0 23 298 -1 6 0 heads_default rucavccgccccccccccccccyccccccccbccccccccccccdccccccccccccccccccccccccccscccccccccccccccccccxtycasvab 221 88 0 
+1258 div:int (none) 1162 1 1 120 0 0 0 23 295 -1 8 0 heads_default aaaaaaaaaaaaaaaaaaaarucavccccqccccccccccmccccccxcccfcccuccccccccccccccccccccccccccnccccccccccvcccjcccccccccccccutycasvab 10 158 0 
+913 div:int (none) 509 1 3 100 97 386 0.251295 19 244 -1 3 0 heads_default rucavcccccccccccccccccxcccccccccccccccccccccccccccccccccccccccxccccccccccccccccccccccccncccutycasvab 150 164 0 
+1235 div:int (none) 1009 1 1 101 0 0 0 23 293 -1 6 0 heads_default rucavccccccccccccccccccciccccccccccccxccccccclccccccccccnccccccccccccccvccccccccccccccckcccuutycasvab 204 264 0 
+1281 div:int (none) 1101 1 1 100 0 0 0 23 298 -1 6 0 heads_default rucavccccccrccccucccdccccccccccacccccccncccccccccccccccccccccccccccccccycccccccccccccccccjcutycasvab 209 99 0 
+1144 div:int (none) 962 1 1 100 0 0 0 21 280 -1 4 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccccocccccccccccccccccccccuccccbccccccuxycasvab 51 594 0 
+1259 div:int (none) 300 1 1 100 0 0 0 23 295 -1 6 0 heads_default rucavccccccccccccccececczcccccccccccccccccccccccccccccccrczccccccccccccccccccccccrcccccccccutycasvab 54 165 0 
+1213 div:int (none) 870 1 1 100 0 0 0 22 288 -1 4 0 heads_default rucavcccrcccccccjcccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccmczcccccccutycasvab 57 382 0 
+431 div:int (none) 13 1 12 100 96 386 0.248705 13 170 -1 2 0 heads_default rucavcccccccccccccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 71 98 0 
+684 div:int (none) 1 1 8 100 97 388 0.25 16 207 -1 1 0 heads_default rucavcccccccccccccccbccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 81 131 0 
+1282 div:int (none) 1119 1 1 123 0 0 0 23 298 -1 14 0 heads_default aaiaaaaaaawaaaaaaaaaaarucavccccccccrccccccccccfccccccccccccccceccccccccccccccccbcccccccccncccccccccccccccwccccccccuqycasvab 121 99 0 
+960 div:int (none) 789 1 2 100 93 379 0.245383 19 251 -1 8 0 heads_default rucavccccccccyccccpcccxccccoccclccccceccccccccrccccccccccccccbccccbcccccceccccccccccccccccuutycasvab 184 378 0 
+1283 div:int (none) 956 1 1 99 0 0 0 23 298 -1 4 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccccccccccccccrccutycasvab 80 66 0 
+1168 div:int (none) 927 2 2 102 99 389 0.254499 22 282 -1 6 0 heads_default rucavcccclqccccccccccmccccccccccfccceccccccpcccccccccccccccccccclccccccccccvcccjcccccccccccccutycasvab 85,99 172,172 0,0 
+87 div:int (none) 6 2 16 100 97 387 0.250646 8 106 -1 2 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 90,120 263,263 0,0 
+1214 div:int (none) 1126 1 1 124 0 0 0 22 289 -1 12 0 heads_default aaaaaaaaaaaaaaaaaaajaaaarucavccccccccccccwccyccccccccccccccccckeccccccccccccccdcbcccyccfccccccccccccccccccwccccccccutycasvab 113 462 0 
+1145 div:int (none) 724 2 2 98 95 376 0.25266 22 280 -1 7 0 heads_default rucavcccdcicccccccccmcxccccoccccccaccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 132,145 264,296 0,0 
+800 div:int (none) 718 1 4 100 87 371 0.234501 18 229 -1 9 0 heads_default rucavccccccccccccyccccccccccccccclcccjccdcfccmccnkccccccccccccccccccccccccccccccccccccchcicutycasvab 140 131 0 
+1237 div:int (none) 714 1 1 98 0 0 0 23 293 -1 6 0 heads_default rucavcccrccccczclccccccccccccccccccccccccccccjccccccccccccccclcccccccccccdcccccccccccccccutycasvab 161 231 0 
+1260 div:int (none) 1073 1 1 110 0 0 0 23 296 -1 7 0 heads_default aaaaaaaaaarucavccccqccccccccccmccccccccccfcccuccccccccccccccccccccccccccnccccccccccvcccjcccccccccccccutycasvab 219 148 0 
+1215 div:int (none) 774 1 1 100 0 0 0 22 289 -1 6 0 heads_default rucavccccmcccrcdnccyccccccccccccccccccccccvcczcccccccccccccccqcccceccccccccccccclccccccccccutycasvab 6 307 0 
+1123 div:int (none) 1033 2 2 100 89 378 0.23545 21 273 -1 4 0 heads_default rucavccccccccccccccccccccccccccccccuccccccccclccncccccccccccbccccccccccccccccccccccccccccccutycasvab 27,28 362,363 0,0 
+870 div:int (none) 431 1 3 100 96 384 0.25 18 235 -1 3 0 heads_default rucavcccccccccccccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccmczcccccccutycasvab 40 362 0 
+1100 div:int (none) 854 2 2 99 95 381 0.249344 21 270 -1 7 0 heads_default rucavcccccccccccccccccccccccccccccccccscccccrcccccccpcccccccclcccccsccccccccccqrcccccyczccutycasvab 45,88 172,205 0,0 
+1169 div:int (none) 1025 1 1 101 98 382 0.256545 22 282 -1 6 0 heads_default rucavccccqccccccpcccmccccccccccfcccecccccccccccccccccctcccccccclccccccccccvcccjcccccccccccccutycasvab 100 204 0 
+1261 div:int (none) 529 1 1 101 0 0 0 23 296 -1 6 0 heads_default rucaoccgccccceczcccccccccccccccccxccccccccccccccccccccccccccccscccccncccccccccccdcccccceccccutycasvab 111 154 0 
+1238 div:int (none) 723 1 1 99 0 0 0 23 293 -1 9 0 heads_default uucavcccccccccccccccccccccccccccclcccjccccfcclccnkccccccccccccccccccccccccccccccccccccscccutycasvab 128 243 0 
+617 div:int (none) 441 2 6 100 93 379 0.245383 15 197 -1 6 0 heads_default rucavccccccccyccccpcccxccccoccclcccccecccccccccccccccccccccccbccccccccccceccccccccccccccccuutycasvab 152,166 296,330 0,0 
+985 div:int (none) 904 1 2 99 96 380 0.252632 20 256 -1 5 0 heads_default rucavcccccccccczcccccccczccccccccccccccccccclccnccccccccccccccccccccgcccccccccccccccccccccutycasvab 164 165 0 
+1284 div:int (none) 1109 1 1 100 0 0 0 22 298 -1 8 0 heads_default cccccccccccccccccccccocccccccccccccccccccutyuasvabruravccgcccccccccccoccyckcccoccbccccccccccccdccccc 200 33 0 
+1216 div:int (none) 128 1 1 100 0 0 0 23 290 -1 2 0 heads_default rucavcccccccccpccccccccccccmcccccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccutycasvab 43 330 0 
+1285 div:int (none) 1204 1 1 100 0 0 0 23 299 -1 5 0 heads_default ruuavccgcccccccccccccccccccccccccccccccccccchcccccccccccccccccccccccccscccccccacccccccccrccutycxsvab 48 66 0 
+1055 div:int (none) 973 3 3 98 88 365 0.241096 21 267 -1 8 0 heads_default rucavcccrccmcczciccccccciccccccccccccyccccccclccccccccccccccctcccccccccccdcccccccccccccccutycasvab 75,106,119 230,198,197 0,0,0 
+1262 div:int (none) 992 1 1 101 0 0 0 23 296 -1 5 0 heads_default rucavcccccccccczcccccccczcccccccccccccccccccclccncccccccccccrccccccccpcccccccccccccccpccccccutycasvaq 118 165 0 
+1147 div:int (none) 470 2 2 100 97 383 0.253264 22 280 -1 8 0 heads_default rucavcccccccccccccccvcccccccccccclcccjccccfcclccnkcccccccccccccccccccccccccccccccccccccscccutycasvab 176,207 309,243 0,0 
+20 div:int (none) 7 1 9 100 97 387 0.250646 5 67 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 190 98 0 
+1101 div:int (none) 931 1 1 100 85 373 0.227882 21 270 -1 5 0 heads_default rucavccccccrccccucccdccccccccccccccccccccccccccccccccccccccccccccccccccycccccccccccccccccjcutycasvab 195 65 0 
+1009 div:int (none) 677 1 2 101 98 388 0.252577 20 257 -1 5 0 heads_default rucavcccccccccccccccccccicccccccccccccccccccclccccccccccnccccccccccccccvccccccccccccccckcccuutycasvab 203 263 0 
+711 div:int (none) 189 2 6 100 87 376 0.231383 16 214 -1 4 0 heads_default rucavccgcccccccccccccccccccccccyccccccccccccccccccccccccccqcccsccccccccccccccccccccccccccccutycasvab 3,38 112,112 0,0 
+1286 div:int (none) 953 1 1 100 0 0 0 23 299 -1 4 0 heads_default rucavcccccccvcicccccccxccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 70 33 0 
+1263 div:int (none) 1192 1 1 100 0 0 0 23 296 -1 8 0 heads_default aarucavccmccccccccccccccccicccpcccccccccccccccclccccccccccccccccccccccuccvcccccccccccccccccutycasvab 87 132 0 
+1217 div:int (none) 868 1 1 120 0 0 0 22 290 -1 8 0 heads_default aaaaaaaaaaaaaaaaauaaaarucavcccrccccccclcccsccccccctcccccccrcccccccclccccccccccpccccclcccccccccccccccccwccccccccutycasvab 103 364 0 
+1240 div:int (none) 1169 1 1 100 0 0 0 23 293 -1 7 0 heads_default ucavccccaccccccpcccmccccccccccfcccecccccccccccccccccctcccccccclccccccccccvcccjcccccjcccccccutycasvab 116 264 0 
+1056 div:int (none) 471 1 2 98 95 377 0.251989 21 267 -1 5 0 heads_default rucavcccrccccccclcccccccccccccccccccccccccccclcccccccccccccccccccccccccccdccccccccqccccccutycasvab 155 340 0 
+1194 div:int (none) 1101 1 1 100 85 372 0.228495 22 284 -1 6 0 heads_default rucavccccccrccccucccdccccccccccccccccceccccccccccccccccccccccccccccccccycccccccccccccccccjcutycasvab 180 98 0 
+942 div:int (none) 837 1 3 99 96 379 0.253298 19 246 -1 8 0 heads_default rucavcccccccccccccccccvcccccccwcccnccccccccclccccccbccccccccccccccccccvccccnccccccccccccccutycasvab 12 165 0 
+1172 div:int (none) 1086 1 1 100 97 384 0.252604 22 282 -1 6 0 heads_default rucavcccjcccccccccccccccgccccccccccccccccbecccccccccccccccccccpcccccbccpcccccccccccrcccccccutycasvab 58 230 0 
+1034 div:int (none) 694 3 5 100 88 374 0.235294 20 260 -1 7 0 heads_default rucavccgcccuccccccccccccccccccccccccccccccceccccccccacceccccccccccccccccqccbccccocccccccccautycasvab 92,93,107 89,155,89 0,0,0 
+1218 div:int (none) 1056 1 1 98 0 0 0 23 290 -1 6 0 heads_default rucavcccrccccccclcccccccccccccccccccccccccccclcccccccccccccccccccccccccccdccccccccqccccccutycasvtb 125 307 0 
+1080 div:int (none) 992 1 3 101 98 385 0.254545 21 269 -1 5 0 heads_default rucavcccccccccczcccccccczccccccccccckcccccccclccncccccccccccrccccccccpcccccccccccccccpccccjcutycasvab 147 264 0 
+1118 div:int (none) 355 0 1 100 98 389 0.251928 21 272 299 3 0 heads_default ruuavccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccscccccccccccccccccrccutycasvab 
+1066 div:int (none) 893 0 2 98 94 373 0.252011 21 268 298 10 0 heads_default rucavccccccccccccccccccmcccycsccclcccjccccfcclccnkcccccccccccccccccccccccccccccccccccscccutycasvab 
+1079 div:int (none) 1005 0 1 100 97 382 0.253927 21 269 298 5 0 heads_default rucavcccccccccccccccccccccccccqccfcccccccccccccccccctccccccccclccccjcccccccccccccccccccccccutycasvab 
+1192 div:int (none) 1112 0 1 98 94 374 0.251337 22 284 298 7 0 heads_default rucavccmccccccccccccccccicccpcccccccccccccccclccccccccccccccccccccccuccvcccccccccccccccccutycasvab 
+868 div:int (none) 702 0 1 115 109 441 0.247166 18 234 297 7 0 heads_default aaaaaaaaaaaauaaaarucavcccrccccccclcccccccccccccccccccrcccccccclcccccccccccccccclcccccccccccccccccwccccccccutycasvab 
+1186 div:int (none) 923 0 1 99 96 380 0.252632 22 283 297 7 0 heads_default rucavccmccccccccccccccccicccpzccccccccccccccclcccccccccccccccccccccccchvccccccccccccccccccutycasvab 
+1039 div:int (none) 355 0 2 101 98 391 0.250639 20 261 297 3 0 heads_default rucavccgccccccccccccccccccccccckcccccccccccccccccccccccccccccccccccccccccccccccccccccccccrccutycasvab 
+1070 div:int (none) 724 0 1 99 86 369 0.233062 21 268 297 7 0 heads_default rucavcccdcicccccccccmcxccccoccccccaccccccccccyccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+951 div:int (none) 618 0 1 100 97 385 0.251948 19 247 295 4 0 heads_default rucavchccscccccccccccccccrcccccccccccccccccccccccccccccccccccclcdicccccccccccccczccccccwcccutycasvab 
+1033 div:int (none) 20 0 1 100 89 378 0.23545 20 259 295 3 0 heads_default rucavccccccccccccccccccccccccccccccuccccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 
+1025 div:int (none) 106 0 1 101 98 385 0.254545 20 258 295 5 0 heads_default rucavccccqccccccpcccmccccccccccfccceccccccccccccccccccccccccccclccccccccccvcccjcccccccccccccutycasvab 
+962 div:int (none) 237 0 2 100 88 377 0.233422 19 252 295 3 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccccocccccccccccccccccccccuccccbccccccutycasvab 
+789 div:int (none) 617 0 4 100 93 379 0.245383 17 223 294 7 0 heads_default rucavccccccccyccccpcccxccccoccclccccceccccccccrccccccccccccccbccccccccccceccccccccccccccccuutycasvab 
+1152 div:int (none) 905 0 1 100 97 382 0.253927 22 280 294 7 0 heads_default rucavcccrccccccclccoccccccccccccccccscccccccmlccccccccccccccccccczccccccnccccccccxccccccczcutycasvab 
+128 div:int (none) 1 0 14 100 97 387 0.250646 9 118 294 1 0 heads_default rucavcccccccccpccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+820 div:int (none) 13 0 1 100 97 387 0.250646 18 231 294 2 0 heads_default rucavcccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccccccccccccccckccccccccccutycasvab 
+818 div:int (none) 71 0 3 100 97 382 0.253927 18 231 293 5 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccccclccnccctccccccccccccccccccccccccccccccccccccccutycasvab 
+862 div:int (none) 431 0 1 100 96 385 0.249351 18 234 293 3 0 heads_default rucavcccccccccccccccccxcccccccccccccccceccccccccccccccccccccccccccccccccccccccccccccccccclcutycasvab 
+976 div:int (none) 902 0 2 99 96 381 0.251969 20 255 293 5 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccclccccflccccccccccccccccqcccccccczccutycasvab 
+724 div:int (none) 561 0 7 99 96 380 0.252632 17 217 293 6 0 heads_default rucavcccdcicccccccccmcxccccoccccccacccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+1005 div:int (none) 414 0 2 100 97 383 0.253264 20 257 292 4 0 heads_default rucavcccccccccccccccccccccccccqccfcccccccccccccccccctccccccccclccccccccccccccccccccccccccccutycasvab 
+439 div:int (none) 6 0 6 100 97 386 0.251295 13 171 292 2 0 heads_default rucavccgcccccccccccgccccccccccccccccccccccccccccccccccgccccccccccccccccccccccccccccccccccccutycasvab 
+1138 div:int (none) 583 0 1 98 95 378 0.251323 22 279 291 5 0 heads_default rucavccccccccrcccrcccccczccccccccccccccccccccceccccccccccccqcccccccccccccccccccccccccccccutycasvab 
+1133 div:int (none) 617 0 1 100 93 378 0.246032 21 277 291 7 0 heads_default rucavccccccccyccccpcccxccccoccclcccccecccccccccccccccccccccccbcccccvccccceccccccccccccccccuutycasvab 
+132 div:int (none) 58 0 12 100 97 386 0.251295 9 119 291 3 0 heads_default rucavccgcccccccpcccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+706 div:int (none) 435 0 3 100 89 378 0.23545 16 211 290 5 0 heads_default rucavccccccccyccccccccxccccocccccccccscccccccccccccccccccccccbcccccccccccccczqccccccccccccmutycasvab 
+1126 div:int (none) 958 0 1 120 105 450 0.233333 21 274 289 11 0 heads_default aaaaaaaaaaaaaaajaaaarucavccccccccccccwccyccccccccccccccccckeccccccccccccccdcbcccyccfccccccccccccccccccwccccccccutycasvab 
+893 div:int (none) 723 0 4 98 95 376 0.25266 19 242 288 9 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccfcclccnkcccccccccccccccccccccccccccccccccccscccutycasvab 
+929 div:int (none) 687 0 1 116 113 452 0.25 19 245 285 9 0 heads_default aaaaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccacccccccccccccccccccccccwccccccccutycasvab 
+522 div:int (none) 429 0 11 99 96 381 0.251969 14 183 284 5 0 heads_default rucavcccccccccccccccccccccccccwcccnccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+1074 div:int (none) 476 0 1 100 97 384 0.252604 21 269 283 3 0 heads_default rucavccccccccccccccccccccccccccccccctcccyeccccccccccccccccccccccccccsccccgcccccccccccccccccutycasvab 
+958 div:int (none) 524 0 1 118 105 447 0.234899 19 249 283 10 0 heads_default aaaaaaaaaaaaajaaaarucavccccccccccccccccccccccccccccccccckeccccccccccccccccbcccycccccccccccccccccccccwccccccccutycasvab 
+980 div:int (none) 714 0 1 98 95 375 0.253333 20 255 283 6 0 heads_default rucavcccrccccczclcccclccccccccccccccccccccccclcccccccccccccccccccccccccccdcccczccccccccccutycasvab 
+854 div:int (none) 695 0 3 99 96 381 0.251969 18 233 282 6 0 heads_default rucavcccccccccccccccccccccccccccccccccscccccrcccccccpcccccccclccccccccccccccccqcccccccczccutycasvab 
+509 div:int (none) 13 0 4 100 97 387 0.250646 14 182 282 2 0 heads_default rucavcccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccutycasvab 
+476 div:int (none) 288 0 7 100 97 387 0.250646 14 180 281 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccyeccccccccccccccccccccccccccsccccgcccccccccccccccccutycasvab 
+392 div:int (none) 20 0 9 100 97 385 0.251948 13 168 281 3 0 heads_default rucavcccccccccczcccccccczcccccccccccccccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 
+905 div:int (none) 661 0 2 99 96 381 0.251969 19 243 281 6 0 heads_default rucavcccrccccccclccoccccccccccccccccscccccccmlcccccccccccccccccccccccccccccccccccccccccczcutycasvab 
+997 div:int (none) 106 0 1 100 97 382 0.253927 20 256 281 5 0 heads_default rucavccccqccccccccccmccccccccccfccceccccccccccccccccccccccccccnccccccccccvcccjcccccccccccccutycasvab 
+1014 div:int (none) 900 0 1 101 88 372 0.236559 20 258 280 11 0 heads_default rucavccccccccccccyccccccccccccccslcccjccdcfccmccnkcccccccmcccccccccccdcccfcccccccccccccchcicutycasvab 
+71 div:int (none) 33 0 13 100 97 385 0.251948 8 104 278 4 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 
+524 div:int (none) 325 0 1 116 113 451 0.250554 14 183 274 9 0 heads_default aaaaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 
+603 div:int (none) 522 0 3 99 96 381 0.251969 15 195 272 6 0 heads_default rucavcccccccccccccccccccccccccwcccnccccccccclccccccbccccccccccccccccccvcccccccccccccccccccutycasvab 
+628 div:int (none) 163 0 4 100 87 376 0.231383 16 203 271 4 0 heads_default rucavccgccccccccccccccyccccccccbccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+973 div:int (none) 891 0 1 98 88 369 0.238482 20 255 270 7 0 heads_default rucavcccrccccczciccccccciccccccccccccyccccccclcccccccccccccccccccccccccccdcccccccccccccccutycasvab 
+702 div:int (none) 440 0 1 110 106 425 0.249412 16 209 270 6 0 heads_default aaaaaaaaaaaarucavcccrccccccclcccccccccccccccccccrcccccccclcccccccccccccccclcccccccccccccccccwccccccccutycasvab 
+828 div:int (none) 509 0 1 100 97 387 0.250646 18 231 270 3 0 heads_default rucavcccccccccccccccccxcccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccncccutycasvab 
+827 div:int (none) 733 0 1 100 97 384 0.252604 18 231 270 5 0 heads_default rucaqccgcccccccccccccfccccccccccccccccccccccvcccccccccccccccccccccccccccccccccccccjacccccucutycasvab 
+1015 div:int (none) 820 0 1 100 97 385 0.251948 20 258 270 3 0 heads_default rucavcccccccccccgcccccxccccccccccccccccccccccccccccccccccccccccccccccccccqcccccckccccccccccutycasvab 
+952 div:int (none) 870 0 1 100 96 383 0.250653 19 248 270 4 0 heads_default rucavcccccccccccccccccxccccccccccwcccccecccccccccccccccccccccccccccccccccccccccccmczcccccccutycasvab 
+237 div:int (none) 6 0 7 100 88 378 0.232804 11 143 270 2 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuccccbccccccutycasvab 
+694 div:int (none) 610 0 3 100 97 384 0.252604 16 208 269 6 0 heads_default rucavccgccccccccccccccccccccccccccccccccccceccccccccacceccccccccccccccccqccbccccocccccccccautycasvab 
+471 div:int (none) 384 0 6 98 95 378 0.251323 14 179 269 4 0 heads_default rucavcccrccccccclcccccccccccccccccccccccccccclcccccccccccccccccccccccccccdcccccccccccccccutycasvab 
+414 div:int (none) 81 0 7 100 97 384 0.252604 13 169 269 3 0 heads_default rucavcccccccccccccccccccccccccqccccccccccccccccccccctccccccccclccccccccccccccccccccccccccccutycasvab 
+677 div:int (none) 122 0 4 100 97 384 0.252604 16 207 267 4 0 heads_default rucavcccccccccccccccccccicccccccccccccccccccclccccccccccnccccccccccccccvccccccccccccccckcccutycasvab 
+900 div:int (none) 800 0 1 100 87 369 0.235772 19 243 266 10 0 heads_default rucavccccccccccccyccccccccccccccclcccjccdcfccmccnkccccccccccccccccccdcccfcccccccccccccchcicutycasvab 
+891 div:int (none) 714 0 1 98 95 376 0.25266 19 241 258 6 0 heads_default rucavcccrccccczcicccccccicccccccccccccccccccclcccccccccccccccccccccccccccdcccccccccccccccutycasvab 
+783 div:int (none) 703 0 1 120 117 467 0.250535 17 222 258 11 0 heads_default aaaaaaaaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 
+502 div:int (none) 289 0 2 100 97 387 0.250646 14 181 257 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccpccccccccpcccccccccccrcccccccutycasvab 
+109 div:int (none) 15 0 7 99 96 383 0.250653 9 116 257 3 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccmcccccccccccccclcccccccccccccccccccccccccccutycasvab 
+902 div:int (none) 56 0 1 99 96 382 0.251309 19 243 256 4 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccflccccccccccccccccqcccccccczccutycasvab 
+618 div:int (none) 337 0 3 100 97 387 0.250646 15 197 256 3 0 heads_default rucavccccscccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccczccccccccccutycasvab 
+837 div:int (none) 603 0 1 99 96 380 0.252632 18 232 255 7 0 heads_default rucavcccccccccccccccccccccccccwcccnccccccccclccccccbccccccccccccccccccvccccnccccccccccccccutycasvab 
+757 div:int (none) 684 0 1 100 49 337 0.145401 17 220 248 2 0 heads_default rucavcccccccccccccccbccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutymasvab 
+855 div:int (none) 57 0 1 100 97 387 0.250646 18 233 245 3 0 heads_default rucavccccccrccccccccjccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccjcutycasvab 
+752 div:int (none) 122 0 2 100 97 385 0.251948 17 219 245 4 0 heads_default rucavcccccccccccccccccccicccpcccccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+687 div:int (none) 177 0 1 114 111 444 0.25 16 208 245 8 0 heads_default aaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccacccccccccccccccccccccccwccccccccutycasvab 
+57 div:int (none) 9 0 8 100 97 388 0.25 7 93 244 2 0 heads_default rucavccccccrcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccjcutycasvab 
+189 div:int (none) 139 0 4 100 87 377 0.230769 10 133 244 3 0 heads_default rucavccgcccccccccccccccccccccccyccccccccccccccccccccccccccccccsccccccccccccccccccccccccccccutycasvab 
+661 div:int (none) 212 0 3 99 96 381 0.251969 16 206 243 5 0 heads_default rucavcccrccccccclccoccccccccccccccccscccccccclcccccccccccccccccccccccccccccccccccccccccczcutycasvab 
+763 div:int (none) 612 0 1 99 96 381 0.251969 17 220 242 4 0 heads_default rucavccgccccccccccgcccccccccccccccccccccccccccclcccccgccccccccccccccccccccccccccccccccccccutycasvab 
+234 div:int (none) 87 0 1 100 97 386 0.251295 11 143 242 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccwccccccccccccccccutycasvab 
+463 div:int (none) 366 0 3 100 82 369 0.222222 13 179 241 7 0 heads_default rucavccccccccccccccccccccqiccccccccccccccycccccccccccecccccccciccccyccccyccccccccccrcccccccutycasvab 
+555 div:int (none) 495 0 2 99 96 383 0.250653 15 192 239 4 0 heads_default rucavccgccccccccccccccccccccczccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+212 div:int (none) 115 0 7 99 96 381 0.251969 11 142 235 4 0 heads_default rucavcccrccccccclccoccccccccccccccccccccccccclcccccccccccccccccccccccccccccccccccccccccczcutycasvab 
+733 div:int (none) 485 0 1 100 97 385 0.251948 17 218 234 4 0 heads_default rucavccgcccccccccccccfccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccccucutycasvab 
+612 div:int (none) 439 0 3 99 96 382 0.251309 15 197 233 3 0 heads_default rucavccgccccccccccgccccccccccccccccccccccccccccccccccgccccccccccccccccccccccccccccccccccccutycasvab 
+755 div:int (none) 502 0 1 100 97 386 0.251295 17 220 233 3 0 heads_default rucavccccccccccccccccccccccccccccccccccccckcccccccccccccccccccpccccccccpcccccccccccrcccccccutycasvab 
+485 div:int (none) 181 0 2 100 97 386 0.251295 14 180 232 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccccucutycasvab 
+610 div:int (none) 436 0 1 100 97 384 0.252604 15 196 231 5 0 heads_default rucavccgccccccccccccccccccccccccccccccccccceccccccccacceccccccccccccccccdccbccccocccccccccautycasvab 
+13 div:int (none) 1 0 14 100 97 388 0.25 5 65 231 1 0 heads_default rucavcccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+668 div:int (none) 299 0 1 99 96 381 0.251969 16 206 230 5 0 heads_default rucavccccccccccccccccccccccccccccccecccccccccccmccccccccccccnclcccccccccccccccccccccccccccutycasvab 
+390 div:int (none) 310 0 3 99 96 383 0.250653 13 167 230 3 0 heads_default rucavccccccccrccccrcccccczccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccutycasvab 
+718 div:int (none) 470 0 1 100 87 372 0.233871 17 217 229 8 0 heads_default rucavccccccccccccyccccccccccccccclcccjccdcfccmccnkcccccccccccccccccccccccccccccccccccccscccutycasvab 
+561 div:int (none) 490 0 1 99 96 381 0.251969 15 193 228 5 0 heads_default rucavcccccicccccccccmcxccccoccccccacccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+486 div:int (none) 412 0 1 100 86 372 0.231183 14 180 225 4 0 heads_default rucavccccccccrcdcccyccccccccccccccccccccccccczcccccccccccccccqcccceccccccccccccclccccccccccutycasvab 
+703 div:int (none) 524 0 1 118 115 459 0.250545 16 210 222 10 0 heads_default aaaaaaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 
+440 div:int (none) 351 0 1 106 103 410 0.25122 13 171 222 5 0 heads_default aaaaaaaarucavcccrccccccclcccccccccccccccccccrcccccccclccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+153 div:int (none) 71 0 4 100 97 385 0.251948 10 129 221 5 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccccclccnccccccccccccccccccccccccccccccccccccccscccutycasvab 
+601 div:int (none) 56 0 1 99 96 382 0.251309 15 195 220 4 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccrcccccccccccccccclccccccccccccccccqcccccccczccutycasvab 
+435 div:int (none) 119 0 2 100 89 378 0.23545 13 170 220 4 0 heads_default rucavccccccccyccccccccxccccocccccccccecccccccccccccccccccccccbccccccccccccccccccccccccccccmutycasvab 
+122 div:int (none) 31 0 2 100 97 386 0.251295 9 118 219 3 0 heads_default rucavcccccccccccccccccccicccccccccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+490 div:int (none) 238 0 1 99 96 381 0.251969 14 181 218 4 0 heads_default rucavcccccicccccccccmcxccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+366 div:int (none) 276 0 1 100 82 370 0.221622 12 165 217 6 0 heads_default rucavccccccccccccccccccccqiccccccccccccccycccccccccccecccccccccccccyccccyccccccccccrcccccccutycasvab 
+177 div:int (none) 86 0 3 112 109 436 0.25 10 131 216 7 0 heads_default aaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+1 div:ext (none) (none) 0 36 100 97 389 0.249357 0 -1 216 0 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+337 div:int (none) 2 0 3 100 97 388 0.25 12 157 210 2 0 heads_default rucavccccscccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccutycasvab 
+299 div:int (none) 109 0 2 99 96 382 0.251309 12 155 209 4 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccmccccccccccccnclcccccccccccccccccccccccccccutycasvab 
+289 div:int (none) 1 0 2 100 97 388 0.25 12 154 206 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccpccccccccccccccccccccrcccccccutycasvab 
+436 div:int (none) 268 0 3 100 97 385 0.251948 13 170 205 4 0 heads_default rucavccgccccccccccccccccccccccccccccccccccceccccccccacccccccccccccccccccdcccccccoccccccccccutycasvab 
+163 div:int (none) 87 0 6 100 97 387 0.250646 10 130 204 3 0 heads_default rucavccgcccccccccccccccccccccccbccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+441 div:int (none) 347 0 2 100 93 380 0.244737 13 171 197 5 0 heads_default rucavccccccccyccccpcccxccccocccccccccecccccccccccccccccccccccbccccccccccceccccccccccccccccuutycasvab 
+495 div:int (none) 182 0 1 99 96 384 0.25 14 181 196 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+238 div:int (none) 27 0 3 99 96 382 0.251309 11 143 196 3 0 heads_default rucavcccccccccccccccmcxccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+6 div:int (none) 1 0 18 100 97 388 0.25 4 52 195 1 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+253 div:int (none) 31 0 2 99 96 383 0.250653 11 144 194 3 0 heads_default rucavccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+325 div:int (none) 245 0 1 114 111 443 0.250564 12 156 194 8 0 heads_default aaaaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 
+412 div:int (none) 219 0 1 100 87 374 0.23262 13 169 194 3 0 heads_default rucavccccccccrcdcccyccccccccccccccccccccccccczcccccccccccccccqcccccccccccccccccclccccccccccutycasvab 
+429 div:int (none) 253 0 1 99 96 382 0.251309 13 170 193 4 0 heads_default rucavcccccccccccccccccccccccccwccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+384 div:int (none) 52 0 1 99 96 382 0.251309 13 167 192 3 0 heads_default rucavcccrccccccclcccccccccccccccccccccccccccclccccccccccccccccccccccccccccdcccccccccccccccutycasvab 
+351 div:int (none) 78 0 1 103 99 398 0.248744 12 159 192 4 0 heads_default aaaarucavcccrccccccclcccccccccccccccccccrcccccccclcccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+288 div:int (none) 1 0 1 100 97 387 0.250646 12 154 192 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccecccccccccccccccccccccccccccccccgcccccccccccccccccutycasvab 
+430 div:int (none) 265 0 1 100 97 384 0.252604 13 170 186 4 0 heads_default rucavccgccccceczccccccccccccccccccccccccccccccccccccccccccccccscccccnccccccccccccccccceccccutycasvab 
+86 div:int (none) 60 0 3 110 107 428 0.25 8 106 183 6 0 heads_default aaaaaaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+58 div:int (none) 6 0 8 100 97 387 0.250646 7 93 181 2 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+265 div:int (none) 139 0 1 100 97 385 0.251948 11 145 181 3 0 heads_default rucavccgccccceczccccccccccccccccccccccccccccccccccccccccccccccsccccccccccccccccccccccceccccutycasvab 
+182 div:int (none) 6 0 1 99 96 384 0.25 10 132 181 2 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+32 div:int (none) 19 0 2 101 98 387 0.25323 6 79 181 3 0 heads_default rucavccccqccccccccccmccccccccccfccceccccccccccccccccccccccccccclccccccccccccccjcccccccccccccutycasvab 
+219 div:int (none) 114 0 1 100 97 386 0.251295 11 142 180 2 0 heads_default rucavccccccccrccccchccccccccccccccccccccccccczcccccccccccccccqcccccccccccccccccclccccccccccutycasvab 
+181 div:int (none) 6 0 1 100 97 387 0.250646 10 132 180 2 0 heads_default rucavccgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccucutycasvab 
+268 div:int (none) 58 0 1 100 97 386 0.251295 11 146 180 3 0 heads_default rucavccgccccccccccccccccccccccccccccccccccceccccccccccccccccccccccccccccdccccccccccccccccccutycasvab 
+119 div:int (none) 27 0 5 100 89 378 0.23545 9 117 180 3 0 heads_default rucavccccccccyccccccccxccccocccccccccecccccccccccccccccccccccbccccccccccccccccccccccccccccgutycasvab 
+81 div:int (none) 2 0 2 100 97 385 0.251948 8 105 180 2 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccctccccccccclccccccccccccccccccccccccccccutycasvab 
+310 div:int (none) 114 0 1 100 97 388 0.25 12 156 179 2 0 heads_default rucavccccccccrccccrccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccutycasvab 
+347 div:int (none) 119 0 1 100 93 380 0.244737 12 158 179 4 0 heads_default rucavccccccccyccccpcccxccccocccccccccecccccccccccccccccccccccbccccccccccceccccccccccccccccgutycasvab 
+307 div:int (none) 153 0 1 100 97 384 0.252604 12 155 179 6 0 heads_default rucavcccccccccccccccccccccccccccclcccjccccfcclccnccccccccccccccccccccccccccccccccccccccscccutycasvab 
+78 div:int (none) 52 0 1 99 96 382 0.251309 8 105 172 3 0 heads_default rucavcccrccccccclcccccccccccccccccccrcccccccclcccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+2 div:int (none) 1 0 7 100 97 388 0.25 2 26 170 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccutycasvab 
+276 div:int (none) 192 0 1 100 76 364 0.208791 11 150 168 5 0 heads_default rucavccccccccccccccccccccqcccccccccccccccyccccccccccceccccccccccccccccccyccccccccccrcccccccutycasvab 
+222 div:int (none) 164 0 1 100 97 385 0.251948 11 142 167 4 0 heads_default rucavccccccccccccccececcccccccccccccccccccccccccccccccccrczccccccccccccccccccccccicccccccccutycasvab 
+52 div:int (none) 7 0 3 99 96 383 0.250653 7 92 167 2 0 heads_default rucavcccrccccccclcccccccccccccccccccccccccccclccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+60 div:int (none) 35 0 1 108 105 420 0.25 7 93 159 5 0 heads_default aaaaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+114 div:int (none) 1 0 1 100 97 388 0.25 9 117 158 1 0 heads_default rucavccccccccrcccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccutycasvab 
+245 div:int (none) 86 0 1 112 109 435 0.250575 11 144 157 7 0 heads_default aaaaaaaaaaaarucavcccccccccccccccccccccccccccccccccceccccccccccccccccbcccccccccccccccccccccccccwccccccccutycasvab 
+138 div:int (none) 95 0 1 100 77 366 0.210383 9 120 156 3 0 heads_default rucavccccccccccccccccccccccccccccccccccccyccccccccccceccccccccccccccccccyccccccccccccccccccutycasvab 
+117 div:int (none) 50 0 1 100 97 387 0.250646 9 117 155 2 0 heads_default rucavcccccccccccccccceccccccccccccccccccccccccccccccccccrczccccccccccccccccccccccccccccccccutycasvab 
+164 div:int (none) 117 0 1 100 97 386 0.251295 10 130 154 3 0 heads_default rucavcccccccccccccccceccccccccccccccccccccccccccccccccccrczccccccccccccccccccccccicccccccccutycasvab 
+192 div:int (none) 138 0 1 100 77 366 0.210383 10 134 154 4 0 heads_default rucavccccccccccccccccccccccccccccccccccccyccccccccccceccccccccccccccccccyccccccccccrcccccccutycasvab 
+115 div:int (none) 52 0 3 99 96 382 0.251309 9 117 153 3 0 heads_default rucavcccrccccccclccoccccccccccccccccccccccccclccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+139 div:int (none) 6 0 1 100 97 388 0.25 9 120 147 2 0 heads_default rucavccgccccccccccccccccccccccccccccccccccccccccccccccccccccccsccccccccccccccccccccccccccccutycasvab 
+31 div:int (none) 7 0 4 100 97 387 0.250646 6 79 144 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccvcccccccccccccccccccutycasvab 
+15 div:int (none) 2 0 3 100 97 387 0.250646 5 65 144 2 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccfccccccccutycasvab 
+27 div:int (none) 13 0 2 100 97 387 0.250646 6 79 143 2 0 heads_default rucavcccccccccccccccccxccccocccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+50 div:int (none) 1 0 2 100 97 388 0.25 7 92 142 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccczccccccccccccccccccccccccccccccccutycasvab 
+33 div:int (none) 20 0 2 100 97 386 0.251295 6 80 142 3 0 heads_default rucavcccccccccccccccccccccccccccclccccccccccclccnccccccccccccccccccccccccccccccccccccccccccutycasvab 
+17 div:int (none) 8 0 2 104 101 404 0.25 5 66 130 3 0 heads_default aaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+95 div:int (none) 26 0 1 100 87 377 0.230769 8 107 120 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccceccccccccccccccccccyccccccccccccccccccutycasvab 
+9 div:int (none) 1 0 2 100 97 389 0.249357 4 52 117 1 0 heads_default rucavccccccrcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+26 div:int (none) 1 0 2 100 87 378 0.230159 6 78 116 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccutycasvab 
+29 div:int (none) 2 0 1 99 96 383 0.250653 6 79 107 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccqcccccccccccutycasvab 
+19 div:int (none) 2 0 1 101 98 390 0.251282 5 66 104 2 0 heads_default rucavcccccccccccccccmccccccccccfccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccutycasvab 
+7 div:int (none) 1 0 1 100 97 388 0.25 4 52 103 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+35 div:int (none) 17 0 1 106 103 412 0.25 6 80 93 4 0 heads_default aaaaaarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+8 div:int (none) 3 0 1 102 99 396 0.25 4 52 92 2 0 heads_default aarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+3 div:int (none) 1 0 1 100 97 388 0.25 3 38 78 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 

@@ -1,0 +1,13 @@
+# Mate selection information
+# Wed Nov 11 18:19:43 2026
+#  1: Average fraction failed
+#  2: Average fraction of mate matches failed
+#  3: Total number of crossovers tested
+#  4: Number of crossovers with matching mate IDs
+#  5: Number of genotypes in test batch
+#  6: Number of organisms in test batch
+#  7: Number of distinct mate IDs
+#  8: Size of the largest distinct mate ID group
+#  9: Diversity of mate IDs (entropy)
+
+nan nan 0 0 4 14 1 14 0 

@@ -1,0 +1,16 @@
+[package]
+name = "avida-analyze"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }
+avida-genome = { path = "../genome" }
+avida-environment = { path = "../environment" }
+avida-hardware = { path = "../hardware" }
+avida-phenotype = { path = "../phenotype" }
+avida-tasks = { path = "../tasks" }

@@ -1,0 +1,36 @@
+# Avida instruction execution data
+# Thu Nov 12 06:40:34 2026
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: h-divide
+# 26: IO
+# 27: h-search
+# 28: move
+# 29: rotate-r
+# 30: collect-specific
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+10 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

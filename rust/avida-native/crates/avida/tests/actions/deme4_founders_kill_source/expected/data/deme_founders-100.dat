@@ -1,0 +1,16 @@
+#filetype deme_founders
+#format deme_id num_founders genotype_ids
+
+#  1: Deme ID
+#  2: Number of founders
+#  3+: founder genotype ids
+
+0 3 8 8 21
+1 3 1 7 7
+2 3 32 1 46
+3 3 1 48 54
+4 3 44 44 8
+5 3 18 1 1
+6 3 8 44 44
+7 3 40 75 40
+8 3 1 46 1

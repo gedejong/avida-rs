@@ -1,0 +1,45 @@
+# Avida instruction execution data
+# Thu Nov 12 06:40:34 2026
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: h-divide
+# 26: IO
+# 27: h-search
+# 28: collect-specific
+# 29: mark-cell-with-vitality
+# 30: get-faced-vitality-diff
+# 31: get-faced-org-id
+# 32: attack-faced-org
+# 33: get-attack-odds
+# 34: donate-specific
+# 35: rotate-r
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+20 0 0 425 0 0 555 555 0 0 0 0 0 0 0 0 0 0 0 0 0 0 555 5 5 0 10 8 3 0 0 0 3 3 20 
+40 0 0 595 0 0 771 771 0 0 0 0 0 0 0 0 0 0 0 0 0 0 771 7 7 0 14 10 3 2 7 1 5 5 28 
+60 1 0 833 2 0 1101 1101 0 0 0 0 0 0 0 0 0 0 0 0 2 0 1105 10 10 0 21 15 5 5 10 3 8 8 40 
+80 1 0 805 2 0 1097 1095 0 0 0 0 0 0 0 0 0 0 1 0 2 0 1101 10 10 0 21 14 4 4 11 4 10 10 40 
+100 4 0 794 2 0 1099 1096 0 0 0 0 0 0 0 0 0 0 2 0 2 0 1104 10 10 0 20 10 4 6 9 1 7 7 40 
+120 1 0 792 3 0 1096 1093 1 0 0 0 0 1 0 0 0 0 1 0 1 0 1102 10 10 0 20 12 7 5 11 4 10 6 40 

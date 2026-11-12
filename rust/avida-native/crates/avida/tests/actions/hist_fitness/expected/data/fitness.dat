@@ -1,0 +1,11 @@
+#  1: Update
+#  2: Generation
+#  3: Average Fitness
+#  4: Average Test Fitness
+#  5: Organism Total
+#  6: Maximum Fitness
+#  7: Maxfit genotype name
+
+100 6.8125 0.218919 0.218254 48 0.251948 100-no_name-u100 
+150 10.9401 0.219714 0.219241 167 0.253927 100-no_name-u150 
+200 14.7863 0.196279 0.196693 351 0.255208 101-no_name-u200 

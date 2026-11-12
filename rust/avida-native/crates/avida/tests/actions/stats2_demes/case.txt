@@ -1,0 +1,2 @@
+base demes_grid_repl
+args -s 100 -set WORLD_Y 40 -set NUM_DEMES 4 -set DEMES_MAX_AGE 15

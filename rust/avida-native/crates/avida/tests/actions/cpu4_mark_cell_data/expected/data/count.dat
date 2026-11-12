@@ -1,0 +1,40 @@
+# Avida count data
+# Thu Nov 12 00:47:25 2026
+#  1: update
+#  2: number of insts executed this update
+#  3: number of organisms
+#  4: number of different genotypes
+#  5: number of different threshold genotypes
+#  6: (deprecated) number of different species
+#  7: (deprecated) number of different threshold species
+#  8: (deprecated) number of different lineages
+#  9: number of births in this update
+# 10: number of deaths in this update
+# 11: number of breed true
+# 12: number of breed true organisms?
+# 13: number of no-birth organisms
+# 14: number of single-threaded organisms
+# 15: number of multi-threaded organisms
+# 16: number of modified organisms
+
+0 120 4 1 1 0 0 0 4 0 4 4 4 4 0 0 
+5 120 4 1 1 0 0 0 0 0 0 4 4 4 0 0 
+10 120 4 1 1 0 0 0 0 0 0 4 4 4 0 0 
+15 240 8 4 1 0 0 0 0 0 0 5 4 8 0 0 
+20 240 8 4 1 0 0 0 0 0 0 5 4 8 0 0 
+25 270 12 6 1 0 0 0 3 0 2 7 7 12 0 0 
+30 480 16 7 1 0 0 0 0 0 0 10 8 16 0 0 
+35 480 16 7 1 0 0 0 0 0 0 10 8 16 0 0 
+40 750 29 16 1 0 0 0 4 0 1 14 14 29 0 0 
+45 960 32 18 1 0 0 0 0 0 0 15 16 32 0 0 
+50 990 34 19 1 0 0 0 1 0 0 16 16 34 0 0 
+55 1830 63 31 4 0 0 0 2 0 1 33 32 63 0 0 
+60 1890 63 31 4 0 0 0 0 0 0 33 32 63 0 0 
+65 2220 91 46 6 0 0 0 17 0 9 47 46 91 0 0 
+70 2910 97 56 7 0 0 0 0 0 0 46 54 97 0 0 
+75 2910 97 55 7 0 0 0 3 3 2 47 53 97 0 0 
+80 3000 100 64 8 0 0 0 6 6 2 46 54 100 0 0 
+85 3000 100 64 8 0 0 0 0 0 0 46 55 100 0 0 
+90 3000 100 63 9 0 0 0 13 13 9 50 53 100 0 0 
+95 3000 100 62 8 0 0 0 4 4 2 46 53 100 0 0 
+100 3000 100 61 9 0 0 0 1 1 1 48 55 100 0 0 

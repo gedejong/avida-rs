@@ -1,0 +1,24 @@
+# Avida tasks data
+# Thu Nov 12 06:40:34 2026
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: And
+#  5: OrNot
+#  6: Or
+#  7: AndNot
+#  8: Nor
+#  9: Xor
+# 10: Equals
+# 11: Echo of Neighbor's Input
+# 12: Not of Neighbor's Input
+
+0 0 0 0 0 0 0 0 0 0 0 0 
+20 0 0 0 0 0 0 0 0 0 4 0 
+40 0 0 0 0 0 0 0 0 0 8 0 
+60 0 0 0 0 0 0 0 0 0 12 0 
+80 0 0 0 0 0 0 0 0 0 12 0 
+100 0 0 0 0 0 0 0 0 0 12 0 
+120 0 0 0 0 0 0 0 0 0 12 0 

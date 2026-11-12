@@ -1,0 +1,13 @@
+# Legend:
+# 1: Genotype ID
+# 2: Entropy given Known Genotypes
+# 3: Entropy given Both Known Genotypes and Env
+# 4: New Information about Environment
+# 5: Total Complexity
+# 6: Hamming Distance to Closest Given Genotype
+# 7: Total Hamming Distance to Closest Neighbor
+# 8: Number of Organisms
+# 9: Total Number of Organisms
+# 10 - : Tasks Implemented
+
+1 0 0 0 0   0 0   5 5   0 0 0 0 0 0 0 0 0 

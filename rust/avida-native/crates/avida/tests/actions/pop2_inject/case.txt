@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 7 -set WORLD_X 12 -set WORLD_Y 12

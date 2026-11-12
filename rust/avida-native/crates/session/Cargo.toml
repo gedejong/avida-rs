@@ -1,0 +1,14 @@
+[package]
+name = "avida-session"
+version.workspace = true
+edition.workspace = true
+description = "Owns the simulation thread between an Avida world and its desktop/terminal front ends"
+
+[lints]
+workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }
+avida-viewmodel = { path = "../viewmodel" }
+avida-world = { path = "../world" }

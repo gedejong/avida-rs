@@ -1,0 +1,66 @@
+# Wed Nov 11 13:47:22 2026
+# Filename........: grp_grp4_ft-1
+# Update Output...: 20
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 26.000000
+# Gestation Time..: 24
+# Fitness.........: 1.083333
+# Errors..........: 0
+# Genome Size.....: 43
+# Copied Size.....: 43
+# Executed Size...: 26
+# Last Birth Group ID........: 4
+# Last Birth Forager Type....: -1
+# Last Birth Cell............: 355
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+
+
+repro
+zero
+nop-A
+nop-B
+nop-A
+zero
+nop-C
+dec
+get-tolerance
+get-group-tolerance
+nop-A
+nop-C
+dec-tolerance
+nop-C
+nop-C
+nop-A
+nop-A
+nop-A
+nop-C
+nop-C
+nop-B
+nop-B
+nop-C
+nop-B
+nop-C
+repro
+nop-C
+dec
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-A
+nop-C
+nop-C
+nop-C
+nop-C
+repro
+nop-C

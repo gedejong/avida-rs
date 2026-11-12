@@ -1,0 +1,51 @@
+# Pop potential tasks (test cpu).
+# Wed Nov 11 13:17:56 2026
+# First set of columns gives number of organisms that can perform that particular reaction at least once. 
+# Second set of columns gives total number of times that reaction can be performed. 
+# Third set of columns gives number of organisms that can perform that particular task at least once. 
+# Fourth set of columns gives total number of times that task can be performed. 
+# Orgs are tested for each resource in the environment with res level of 1 for the current test resource and levels of 0 for other resources.
+#  1: Update
+#  2: Generation
+#  3: PopSize
+#  4: Not
+#  5: Nand
+#  6: And
+#  7: OrNot
+#  8: Or
+#  9: AndNot
+# 10: Nor
+# 11: Xor
+# 12: Equals
+# 13: Not_reac_totals
+# 14: Nand_reac_totals
+# 15: And_reac_totals
+# 16: OrNot_reac_totals
+# 17: Or_reac_totals
+# 18: AndNot_reac_totals
+# 19: Nor_reac_totals
+# 20: Xor_reac_totals
+# 21: Equals_reac_totals
+# 22: Not
+# 23: Nand
+# 24: And
+# 25: OrNot
+# 26: Or
+# 27: AndNot
+# 28: Nor
+# 29: Xor
+# 30: Equals
+# 31: Not_task_totals
+# 32: Nand_task_totals
+# 33: And_task_totals
+# 34: OrNot_task_totals
+# 35: Or_task_totals
+# 36: AndNot_task_totals
+# 37: Nor_task_totals
+# 38: Xor_task_totals
+# 39: Equals_task_totals
+# 40: Generation
+
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+30 2 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 
+60 4 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 

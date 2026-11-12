@@ -1,0 +1,3 @@
+base heads_default_100u
+args -s 7 -set WORLD_X 12 -set WORLD_Y 12 -set COPY_MUT_PROB 0.01
+rc 1

@@ -1,0 +1,2 @@
+base string_producing_and_donating
+args -set ENVIRONMENT_FILE environment.cfg -set INHERIT_REPUTATION 1

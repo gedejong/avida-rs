@@ -1,0 +1,96 @@
+# Thu Nov 12 00:02:36 2026
+# Filename........: minitraces/trace_genomes/org35-ud-1-grp0_ft-1-gt6.trcgeno
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 65.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 65
+# Copied Size.....: 65
+# Executed Size...: 65
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# Tasks Performed Using Internal Resources:
+# echo 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# Resources Collected: Name		Total		Available
+#                 0 : food		0.000000		0.000000		
+
+
+zero
+dec
+dec
+set-forage-target
+zero
+inc
+inc
+inc
+set-opinion
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one
+mark-cell
+read-faced-cell
+mark-pred-cell
+read-faced-pred-cell
+read-group-cell
+attack-prey
+rotate-right-one

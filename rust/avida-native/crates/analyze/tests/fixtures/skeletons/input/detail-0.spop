@@ -1,0 +1,5 @@
+#filetype genotype_data
+#format id parent_id num_cpus update_born sequence
+
+2 1 3 20 rucavccccutycasvab
+7 -1 1 70 rucavcqcutycasvab

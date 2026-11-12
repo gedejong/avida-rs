@@ -1,0 +1,14 @@
+# Avida analyze modularity data
+# 1: organism length
+# 2: number of tasks done
+# 3: number of sites used in tasks
+# 4: proportion of sites used in tasks
+# 5: average number of tasks done per site
+# 6: average number sites per task done
+# 7: average number tasks per site per task
+# 8: average proportion of the non-overlaping region of a task
+# 9-17: average StDev in positions used for task 1-9
+# 18-26: average number of sites necessary for each of the tasks
+# 27-36: number of sites involved in 0-9 tasks
+# 37-45: average task length (distance from first to last inst used)
+

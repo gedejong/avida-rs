@@ -1,0 +1,48 @@
+# Wed Nov 11 19:26:24 2026
+# Filename........: topnav_genome/org0-ud-1-grp-1_ft-1-gt1.navgeno
+# Update Output...: 30
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 38.000000
+# Gestation Time..: 89
+# Fitness.........: 0.426966
+# Errors..........: 0
+# Genome Size.....: 27
+# Copied Size.....: 27
+# Executed Size...: 19
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# echo 1 (1.000000)
+
+
+h-alloc
+move
+IO
+IO
+search-lbl-direct-s
+nop-D
+nop-A
+mov-head
+nop-C
+search-lbl-direct-s
+nop-B
+nop-C
+label
+nop-B
+nop-C
+h-copy
+if-copied-lbl-direct
+nop-D
+nop-A
+h-divide
+mov-head
+add
+nop-B
+nop-B
+label
+nop-D
+nop-A

@@ -1,0 +1,14 @@
+# Redundancy calculated by changing the probability of instruction failure
+# 3 replicates at each chance of instruction failure
+# Wed Nov 11 19:36:31 2026
+#  1: genotype name
+#  2: genotype id
+#  3: fitness
+#  4: Avg fitness when inst prob fail 0.1
+#  5: Avg fitness when inst prob fail 0.316
+#  6: Avg fitness when inst prob fail 1
+#  7: Avg fitness when inst prob fail 3.16
+
+org-Seq1 -1 0.181818 0.14205 0.135687 0 0 
+org-Seq3 -1 0.181818 0.162193 0.119983 0 0 
+org-Seq4 -1 0.205882 0.193094 0.156608 0 0 

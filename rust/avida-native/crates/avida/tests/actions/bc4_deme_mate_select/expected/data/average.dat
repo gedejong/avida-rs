@@ -1,0 +1,27 @@
+# Avida Average Data
+# Wed Nov 11 19:16:13 2026
+#  1: Update
+#  2: Merit
+#  3: Gestation Time
+#  4: Fitness
+#  5: Repro Rate?
+#  6: (deprecated) Size
+#  7: Copied Size
+#  8: Executed Size
+#  9: (deprecated) Abundance
+# 10: Proportion of organisms that gave birth in this update
+# 11: Proportion of Breed True Organisms
+# 12: (deprecated) Genotype Depth
+# 13: Generation
+# 14: Neutral Metric
+# 15: Lineage Label
+# 16: True Replication Rate (based on births/update, time-averaged)
+
+0 47 189 0 0 0 50 47 0 1 1 0 0 0 0 0 
+20 47 189 0.248677 0 0 50 47 0 0 0 0 2.54545 1.02921 0 0 
+40 46.4062 187.75 0.247453 0 0 50 46.4688 0 0 0 0 5 1.12831 0 0 
+60 45.8942 190.06 0.243812 0 0 50 46.2169 0 0 0 0 8.37349 0.507626 0 0 
+80 45.8078 191.873 0.24025 0 0 50 45.7746 0 0 0 0 11.3146 0.126278 0 0 
+100 45.7724 196.038 0.236495 0 0 50 45.6758 0 0.172632 0.00842105 0 14.7579 -0.0853471 0 0 
+120 45.4583 196.974 0.235239 0 0 50 45.4707 0 0.0486409 0.00572246 0 17.804 -0.711938 0 0 
+140 45.4868 196.033 0.23623 0 0 50 45.4651 0 0.0228137 0 0 20.8657 -0.807601 0 0 

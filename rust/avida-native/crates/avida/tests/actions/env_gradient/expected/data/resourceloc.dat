@@ -1,0 +1,11 @@
+# Avida resource location data
+# Wed Nov 11 13:27:20 2026
+# First column gives the current update, all further columns give the cell id
+# for center of gradient resources at that update.
+#  1: Update
+#  2: CellID
+
+0 7260 
+10 7260 
+20 7260 
+30 7260 

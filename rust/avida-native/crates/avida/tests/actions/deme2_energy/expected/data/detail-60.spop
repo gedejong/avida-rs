@@ -1,0 +1,78 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 14:05:16 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+1 div:ext (none) (none) 18 77 42 39 146 0.267123 0 -1 -1 0 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcpqutycasvab 101,104,105,112,113,115,116,121,123,125,135,139,151,152,160,172,180,181 117,84,84,117,84,51,84,84,84,84,51,51,84,145,84,117,117,117 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+70 div:int (none) 22 1 1 43 40 150 0.266667 10 51 -1 2 0 instset-TEST.cfg rucavcqcqcqcqkcicqcpcqcqcqqcpqqcpqutycasvab 132 149 0 
+2 div:int (none) 1 11 38 42 39 156 0.25 1 4 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcDcqqcpqqcpqutycasvab 100,107,108,110,111,119,129,155,157,166,176 61,155,94,94,94,61,94,61,94,94,61 0,0,0,0,0,0,0,0,0,0,0 
+94 div:int (none) 5 1 1 42 0 0 0 11 56 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqGcpuutycasvab 106 128 0 
+48 div:int (none) 30 2 3 42 39 147 0.265306 9 46 -1 4 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqiqcqqcpqgcluutycasvab 136,145 115,115 0,0 
+71 div:int (none) 28 1 2 42 39 157 0.248408 10 52 -1 3 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqqqcDcqqcaqqcpqutycasvab 189 128 0 
+96 div:int (none) 78 1 1 42 0 0 0 11 57 -1 3 0 instset-TEST.cfg cqcqqcpqqcpuutyctsvabrucavcqcqcqcqcqcqcqcq 198 109 0 
+5 div:int (none) 1 8 14 42 39 146 0.267123 4 19 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcpuutycasvab 117,118,127,137,138,185,186,187 145,145,115,115,115,115,115,82 0,0,0,0,0,0,0,0 
+74 div:int (none) 5 1 1 42 39 146 0.267123 10 53 -1 2 0 instset-TEST.cfg rucavcqbcqcqcqcqcqcqcqcqcqqcpqqcputycasvab 175 116 0 
+98 div:int (none) 1 1 1 42 0 0 0 12 57 -1 1 0 instset-TEST.cfg rucavcqcqxqcqcqcqcqcqcqcqqcpqqcpqutycasvab 130 118 0 
+6 div:int (none) 2 5 29 43 40 160 0.25 4 20 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcDcqqcpqqcpqputycasvab 149,156,158,167,168 61,94,94,61,127 0,0,0,0,0 
+75 div:int (none) 1 1 1 42 0 0 0 11 53 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqwpqutycasvab 191 293 0 
+7 div:int (none) 3 6 16 42 39 157 0.248408 5 26 -1 3 0 instset-TEST.cfg rucavcqzdcqcqcqcqcqcqcDcqqcpqqcpqutycasvab 102,182,183,184,192,193 156,6,26,128,156,26 0,0,0,0,0,0 
+99 div:int (none) 74 1 1 42 0 0 0 11 58 -1 3 0 instset-TEST.cfg rucfvcqbcqcqcqcqcqcqcqcqcqqcpqqcputwccsvab 164 89 0 
+53 div:int (none) 2 2 2 42 39 156 0.25 9 49 -1 2 0 instset-TEST.cfg rucavcqcncqcqcqcqcqcqcDcqqcpqqcpqutycasvab 179,188 16,18 0,0 
+8 div:int (none) 3 2 4 42 39 236 0.165254 5 27 -1 3 0 instset-TEST.cfg rucavcqcdcqcqcqcqcqcqGDcqqcpqqcpqutycasvab 109,190 29,22 0,0 
+77 div:int (none) 1 1 2 42 39 146 0.267123 11 53 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcgqutycasvab 150 84 0 
+55 div:int (none) 2 2 3 42 38 156 0.24359 9 49 -1 2 0 instset-TEST.cfg rucavcqcqcqcBcqcqcqcqcDcqqcpqqcpqutycasvab 154,165 61,61 0,0 
+78 div:int (none) 5 1 1 42 20 103 0.194175 10 53 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcpuutyctsvab 197 107 0 
+79 div:int (none) 2 1 1 42 39 156 0.25 10 53 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcDcqqcpqqcfqutycasvab 177 61 0 
+102 div:int (none) 2 1 1 42 0 0 0 11 58 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcocqcqcqcDcqqcuqqcpqutycasvab 199 94 0 
+57 div:int (none) 44 1 2 42 38 177 0.214689 9 49 -1 5 0 instset-TEST.cfg rucavcqzdcqcqcqcqcBcqcDcqqcpqEcpqutycasvab 163 115 0 
+103 div:int (none) 1 1 1 42 0 0 0 12 58 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqckcqcqcqcqqcpqqcpqutycasvab 169 84 0 
+104 div:int (none) 1 1 1 42 0 0 0 12 58 -1 1 0 instset-TEST.cfg rucavcqvqcqcqcqcqcqcqcqcqqcpqqcpqutycasvab 114 92 0 
+12 div:int (none) 1 1 6 41 38 143 0.265734 6 30 -1 1 0 instset-TEST.cfg rucavcqcqqcqcqcqcqcqcqcqqcpqqcpqutycasvab 147 117 0 
+105 div:int (none) 1 1 1 42 0 0 0 12 58 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqgqcqcqcqcqqcpqqcpqutycasvab 103 85 0 
+59 div:int (none) 1 1 2 42 39 225 0.173333 10 49 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcGqcpqqcpqutycasvab 148 130 0 
+37 div:int (none) 23 1 1 42 0 0 0 8 40 -1 2 0 instset-TEST.cfg rucaccqcqcqcqcqcqcqcqgcqcqqcpqqpqutycasvab 153 656 0 
+14 div:int (none) 2 2 5 42 39 156 0.25 6 31 -1 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcDcqmcpqqcpqutycasvab 173,174 127,94 0,0 
+106 div:int (none) 79 1 1 42 0 0 0 11 58 -1 3 0 instset-TEST.cfg rucuvcqcqcqcqcqcqcqcqcDcqqcpqqcfqutycasvab 178 62 0 
+83 div:int (none) 7 1 1 42 0 0 0 10 55 -1 4 0 instset-TEST.cfg rucevcqzdcqcqcqcqcqcqcDcqqcpqqcpqutycasvjb 194 162 0 
+107 div:int (none) 6 1 1 43 0 0 0 11 59 -1 3 0 instset-TEST.cfg rucavcqcqcqcqcqoqcqcqcDcqqcpqqcpqputycasvab 146 95 0 
+108 div:int (none) 1 1 1 42 0 0 0 12 59 -1 1 0 instset-TEST.cfg rucavcqcqcqcqwqcqcqcqcqcqqcpqqcpqutycasvab 141 72 0 
+109 div:int (none) 2 1 1 42 0 0 0 11 59 -1 2 0 instset-TEST.cfg rucavcqcqcqcqaqcqcqcqcDcqqcpqqcpqutycasvab 144 61 0 
+86 div:int (none) 7 1 1 43 0 0 0 10 56 -1 4 0 instset-TEST.cfg yrucavcqddcqcqcqcqcqcqcDcqqcpqqcpqutycasvab 195 129 0 
+41 div:int (none) 2 1 1 41 0 0 0 8 42 -1 2 0 instset-TEST.cfg rucvcqcqcqcqcqcqcqcqcDcqqcpqqcpqutycasvab 128 559 0 
+110 div:int (none) 6 1 1 44 0 0 0 11 59 -1 3 0 instset-TEST.cfg rucavjqcqcqcqcqcqcqcqcDcqqcpcqqcpqputycaGvab 159 66 0 
+64 div:int (none) 3 1 1 42 39 157 0.248408 9 50 -1 3 0 instset-TEST.cfg rucavcqcdcqcqcqcqcqcqcDcqqspqqcpqutycasvab 170 128 0 
+111 div:int (none) 1 1 1 41 0 0 0 12 59 -1 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcpqutycavab 120 51 0 
+65 div:int (none) 3 2 2 42 39 157 0.248408 9 51 -1 3 0 instset-TEST.cfg rucavcqcdcqcqcqcqcqcqcDcqqxpmqcpqutycasvab 161,162 95,128 0,0 
+88 div:int (none) 64 1 1 41 0 0 0 10 56 -1 4 0 instset-TEST.cfg rucavcqccqcqcqcqcqcqcDcqqspqqcpqutycasvab 171 128 0 
+20 div:int (none) 10 1 1 43 0 0 0 7 35 -1 2 0 instset-TEST.cfg rugavcqcqcqcqcqcqcqcqcgqcqqcpqqcpqutycasvab 140 878 0 
+89 div:int (none) 2 1 1 43 0 0 0 11 56 -1 2 0 instset-TEST.cfg rucavcqcqcqcqccqcqcqcqcDcqqcpqqcpqutycasvab 196 159 0 
+90 div:int (none) 70 1 1 43 0 0 0 11 56 -1 3 0 instset-TEST.cfg rucavcqcqcqcqkcicqcpcqcqcqqcpqqcpqutxcasvab 142 119 0 
+22 div:int (none) 1 6 8 43 40 150 0.266667 7 35 -1 1 0 instset-TEST.cfg rucavcqcqcqcqkcqcqcpcqcqcqqcpqqcpqutycasvab 122,124,131,133,134,143 3,14,3,13,118,149 0,0,0,0,0,0 
+91 div:int (none) 48 1 1 41 0 0 0 11 56 -1 5 0 instset-TEST.cfg rucavcqcqcqcqccqcqcqiqcqqcpqgcluutycasvab 126 143 0 
+3 div:int (none) 2 0 9 42 39 156 0.25 2 10 58 2 0 instset-TEST.cfg rucavcqcdcqcqcqcqcqcqcDcqqcpqqcpqutycasvab 
+28 div:int (none) 2 0 3 42 39 157 0.248408 7 37 52 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqqqcDcqqcpqqcpqutycasvab 
+44 div:int (none) 7 0 1 42 39 177 0.220339 8 44 50 4 0 instset-TEST.cfg rucavcqzdcqcqcqcqcqcqcDcqqcpqEcpqutycasvab 
+30 div:int (none) 21 0 1 42 39 147 0.265306 8 39 47 3 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqiqcqqcpqqcluutycasvab 
+23 div:int (none) 1 0 1 43 40 150 0.266667 7 35 45 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqgcqcqqcpqqcpqutycasvab 
+21 div:int (none) 5 0 1 42 39 146 0.267123 7 35 42 2 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcqcqqcpqqcluutycasvab 
+10 div:int (none) 1 0 1 43 40 150 0.266667 6 30 36 1 0 instset-TEST.cfg rucavcqcqcqcqcqcqcqcqcgqcqqcpqqcpqutycasvab 

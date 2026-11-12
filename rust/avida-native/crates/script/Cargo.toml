@@ -1,0 +1,19 @@
+[package]
+name = "avida-script"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "avida_script"
+path = "src/lib.rs"
+
+[[bin]]
+name = "avida-s"
+path = "src/main.rs"
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }
+
+[lints]
+workspace = true

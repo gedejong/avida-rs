@@ -1,0 +1,13 @@
+[package]
+name = "avida-phenotype"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }
+avida-environment = { path = "../environment" }
+avida-tasks = { path = "../tasks" }
+
+[lints]
+workspace = true

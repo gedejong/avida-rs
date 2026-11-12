@@ -1,0 +1,43 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 14:41:18 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+1 div:ext (none) (none) 7 7 100 97 389 0.249357 0 -1 -1 0 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 0,11,12,13,23,25,142 0,0,0,0,0,0,0 0,0,0,0,0,0,0 
+2 div:int (none) 1 1 1 101 89 382 0.232984 2 34 -1 1 0 heads_default rucavcccccccccccccccccccccccccccucccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccutycasvab 35 0 0 
+3 div:int (none) 2 2 2 101 98 391 0.250639 3 53 -1 2 0 heads_default rucavcccccccccccccccccccccccccccupcccccccccccccccccccccccccccccccccccccccccccccccbqcccccccccutycasvab 22,33 0,0 0,0 
+4 div:int (none) 1 1 1 100 0 0 0 3 54 -1 1 0 heads_default rycavcccccccccccccccccccnccccccccccccccccycccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 24 0 0 
+5 div:int (none) 1 2 2 100 97 387 0.250646 3 54 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccecccccccccdcccccccccccccccccccccccccccutycasvab 26,39 0,0 0,0 
+6 div:int (none) 1 1 1 100 97 388 0.25 4 73 -1 1 0 heads_default rucavcccccccccccccccccccccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2 0 0 
+8 div:int (none) 2 2 2 101 89 381 0.233596 4 74 -1 2 0 heads_default rucavcccccccccccccecccccccccccccucccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccutycasvab 36,59 0,0 0,0 
+9 div:int (none) 1 1 1 100 0 0 0 5 92 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccicccccccccccccccccccccccccccutycasvab 1 0 0 
+10 div:int (none) 1 1 1 100 0 0 0 5 93 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccutycasvab 143 0 0 
+11 div:int (none) 3 1 1 101 0 0 0 5 93 -1 3 0 heads_default rucafcccccccccccccccccccccccccccupcccccccccccccccccccccccccccccccccccccccccccccccbqcccccccccutycasvab 21 0 0 
+12 div:int (none) 5 1 1 100 0 0 0 5 93 -1 2 0 heads_default rucavycccccccccccccccccccccccccccccccccccccccccccccccecccccccccdcccccccccccccccccccccccccccutycasvab 38 0 0 
+13 div:int (none) 1 1 1 100 0 0 0 5 93 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccccccutycasvab 34 0 0 
+14 div:int (none) 1 1 1 100 0 0 0 5 93 -1 1 0 heads_default ruiavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 37 0 0 
+15 div:int (none) 1 1 1 100 0 0 0 5 94 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccchccccccccutycasvxb 14 0 0 
+16 div:int (none) 2 1 1 101 0 0 0 5 94 -1 2 0 heads_default rucavcccccccccccccccccccccccccccucccccccccccccccccccccccccccccccccccccccccccccccccqccccccccchtycasvab 46 0 0 
+17 div:int (none) 6 1 1 100 0 0 0 5 94 -1 2 0 heads_default rucavcccccccccccccccccccccccccgccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccutycasvab 15 0 0 
+18 div:int (none) 3 1 1 101 0 0 0 5 94 -1 3 0 heads_default rucavcccccccccccccccfcccccccccccupcccccccccccccccccccccccccccccccccccccccccccccccbqcccccccccutycasvab 45 0 0 
+19 div:int (none) 5 1 1 100 0 0 0 5 95 -1 2 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccscccccccccdcccccccccccccccccccccccccccutycasvab 52 0 0 

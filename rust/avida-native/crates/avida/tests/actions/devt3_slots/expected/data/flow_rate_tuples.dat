@@ -1,0 +1,59 @@
+# Flow Rate Tuples
+# Wed Nov 11 19:03:13 2026
+#  1: Update
+#  2: flow rate -2
+#  3: flow rate -2 deme pop size
+#  4: flow rate -2 events killed
+#  5: flow rate -2 events attempted to kill
+#  6: flow rate -2 exe ratio
+#  7: flow rate -2 total births
+#  8: flow rate -2 total sleeping
+#  9: flow rate 0
+# 10: flow rate 0 deme pop size
+# 11: flow rate 0 events killed
+# 12: flow rate 0 events attempted to kill
+# 13: flow rate 0 exe ratio
+# 14: flow rate 0 total births
+# 15: flow rate 0 total sleeping
+
+0 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+5 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+10 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+15 -2 1 0 1 0 0 0 0 1 0 1 0 0 0 
+20 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+25 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+30 -2 1 0 0 0 0 0 0 1 0 0 0 0 0 
+35 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+40 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+45 -2 2 0 2 0 1 0 0 2 0 2 0 1 0 
+50 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+55 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+60 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+65 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+70 -2 2 0 2 0 0 0 0 2 0 2 0 0 0 
+75 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+80 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+85 -2 2 0 0 0 0 0 0 2 0 0 0 0 0 
+90 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+95 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+100 -2 4 0 3 0 2 0 0 4 0 4.66667 0 2 0 
+105 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+110 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+115 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+120 -2 4 0 4 0 0 0 0 4 0 4 0 0 0 
+125 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+130 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+135 -2 5 0 0 0 1 0 0 4 0 0 0 0 0 
+140 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+145 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+150 -2 8 0 8 0 4 0 0 7.66667 0 6.66667 0 3 0 
+155 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+160 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+165 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+170 -2 7.5 0 7.5 0 0 0 0 8 0 8 0 0 0 
+175 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+180 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+185 -2 12 0 0 0 4.5 0 0 12 0 0 0 4 0 
+190 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+195 -2 nan nan nan 0 nan nan 0 nan nan nan 0 nan nan 
+200 -2 16 0 16 0 4 0 0 14.6667 0 14 0 2.66667 0 

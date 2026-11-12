@@ -1,0 +1,50 @@
+# Avida count data
+# Wed Nov 11 19:50:01 2026
+#  1: update
+#  2: number of insts executed this update
+#  3: number of organisms
+#  4: number of different genotypes
+#  5: number of different threshold genotypes
+#  6: (deprecated) number of different species
+#  7: (deprecated) number of different threshold species
+#  8: (deprecated) number of different lineages
+#  9: number of births in this update
+# 10: number of deaths in this update
+# 11: number of breed true
+# 12: number of breed true organisms?
+# 13: number of no-birth organisms
+# 14: number of single-threaded organisms
+# 15: number of multi-threaded organisms
+# 16: number of modified organisms
+
+0 30 1 1 1 0 0 0 1 0 1 1 1 1 0 0 
+10 30 1 1 1 0 0 0 0 0 0 1 1 1 0 0 
+20 60 2 1 1 0 0 0 0 0 0 2 1 2 0 0 
+30 120 4 3 1 0 0 0 0 0 0 2 2 4 0 0 
+40 240 8 7 1 0 0 0 0 0 0 2 4 8 0 0 
+50 330 13 10 1 0 0 0 2 0 1 4 6 13 0 0 
+60 480 18 12 2 0 0 0 2 0 2 7 9 18 0 0 
+70 660 22 15 3 0 0 0 0 0 0 8 12 22 0 0 
+80 1020 34 23 4 0 0 0 0 0 0 12 18 34 0 0 
+90 1500 50 35 6 0 0 0 0 0 0 18 30 50 0 0 
+100 2010 70 48 9 0 0 0 7 4 4 29 40 70 0 0 
+110 2550 88 63 10 0 0 0 4 1 2 33 48 88 0 0 
+120 2970 103 71 11 0 0 0 7 3 5 41 58 103 0 0 
+130 3960 132 88 15 0 0 0 2 2 1 54 70 132 0 0 
+140 4890 168 119 20 0 0 0 7 2 3 71 97 168 0 0 
+150 5670 191 142 23 0 0 0 7 5 2 75 112 191 0 0 
+160 6720 229 172 27 0 0 0 14 9 6 82 128 229 0 0 
+170 7530 256 193 28 0 0 0 13 8 4 96 143 256 0 0 
+180 8490 287 217 31 0 0 0 17 13 10 109 162 287 0 0 
+190 9540 322 247 36 0 0 0 11 7 5 123 190 322 0 0 
+200 10650 357 276 42 0 0 0 12 10 2 133 194 357 0 0 
+210 11880 400 308 50 0 0 0 20 16 8 148 214 400 0 0 
+220 13290 445 350 52 0 0 0 27 25 9 145 249 445 0 0 
+230 14550 491 398 50 0 0 0 29 23 7 142 276 491 0 0 
+240 15570 524 430 57 0 0 0 21 16 9 149 295 524 0 0 
+250 17010 567 460 54 0 0 0 11 11 4 165 315 567 0 0 
+260 18270 613 497 51 0 0 0 19 15 3 178 346 613 0 0 
+270 19410 654 526 59 0 0 0 36 29 10 196 373 654 0 0 
+280 20580 690 564 58 0 0 0 44 40 9 198 395 690 0 0 
+290 21570 725 601 60 0 0 0 36 30 10 213 412 725 0 0 
+300 23070 772 647 68 0 0 0 19 16 2 211 440 772 0 0 

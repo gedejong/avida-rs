@@ -1,0 +1,3 @@
+warning: config file version number mismatch -- Avida: '2.14.0'  File: '2.12.0'
+using default instruction set: instset-heads.cfg
+  Warning: trying to traceback mutations outside of lineage.

@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 23 -set ENABLE_HGT 1 -set HGT_FRAGMENT_SELECTION 2 -set WORLD_X 15 -set WORLD_Y 15 -set HGT_CONJUGATION_P 0.4 -set HGT_MAX_FRAGMENTS_PER_CELL 5

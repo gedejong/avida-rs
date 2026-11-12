@@ -1,0 +1,19 @@
+# Avida reaction data
+# Wed Nov 11 13:27:09 2026
+# First column gives the current update, all further columns give the number
+# of currently living organisms each reaction has affected.
+#  1: Update
+#  2: NOT
+#  3: NAND
+#  4: AND
+#  5: ORN
+#  6: OR
+#  7: ANDN
+#  8: NOR
+#  9: XOR
+# 10: EQU
+
+0 0 0 0 0 0 0 0 0 0 
+20 0 0 0 0 0 0 0 0 0 
+40 0 0 0 0 0 0 0 0 0 
+60 0 0 0 0 0 0 0 0 0 

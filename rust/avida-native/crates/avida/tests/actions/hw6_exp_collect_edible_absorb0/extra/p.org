@@ -1,0 +1,16 @@
+zero
+dec
+dec
+set-forage-target
+get-loc-org-density
+rotate-x
+move
+get-faced-org-density
+rotate-x
+move
+get-num-guards
+rotate-x
+nop-C
+nop-C
+nop-C
+nop-C

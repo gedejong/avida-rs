@@ -1,0 +1,2 @@
+base energy_deme_level_res
+args -set FRAC_ENERGY_TRANSFER 0.25 -set FRAC_ENERGY_DECAY_AT_DEME_BIRTH 0.5 -s 5

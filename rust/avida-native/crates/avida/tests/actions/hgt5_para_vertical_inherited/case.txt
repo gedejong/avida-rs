@@ -1,0 +1,2 @@
+base parasites_inject_stride
+args -s 2 -set WORLD_X 20 -set WORLD_Y 20 -set AVE_TIME_SLICE 400 -set INJECT_IS_TASK_SPECIFIC 0 -set FULL_VERTICAL_TRANS 0.5 -set VIRULENCE_SOURCE 1 -set VIRULENCE_MUT_RATE 0.5 -set VIRULENCE_SD 0.2

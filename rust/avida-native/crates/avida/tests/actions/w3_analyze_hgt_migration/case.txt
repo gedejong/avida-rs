@@ -1,0 +1,2 @@
+base analyze_print_withargs
+args -a -set WORLD_GEOMETRY 7 -set WORLD_X 12 -set WORLD_Y 10 -set NUM_DEMES 10 -set ENABLE_HGT 1 -set DEMES_MIGRATION_METHOD 4 -set MIGRATION_FILE migration.mat

@@ -1,0 +1,25 @@
+# Avida tasks data
+# Thu Nov 12 04:42:28 2026
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: Echo
+
+0 0 0 0 
+10 0 0 0 
+20 0 0 4 
+30 0 0 5 
+40 0 0 8 
+50 0 0 14 
+60 0 0 14 
+70 0 0 28 
+80 0 0 52 
+90 0 0 51 
+100 0 0 51 
+110 0 0 52 
+120 0 0 50 
+130 0 0 51 
+140 0 0 54 
+150 0 0 48 

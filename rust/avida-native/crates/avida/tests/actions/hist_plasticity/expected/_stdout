@@ -1,0 +1,174 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 7
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 11      Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 12      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 13      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 20      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 21      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 22      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 23      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 24      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       
+UD: 25      Gen: 1.666667   Fit: 0.2493573  Orgs: 3       
+UD: 26      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 27      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 28      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 29      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 30      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 31      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 32      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 33      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 34      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 35      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 36      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 37      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       
+UD: 38      Gen: 2.400000   Fit: 0.2493573  Orgs: 5       
+UD: 39      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 40      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 41      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 42      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 43      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 44      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 45      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 46      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 47      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 48      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 49      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 50      Gen: 2.857143   Fit: 0.2493573  Orgs: 7       
+UD: 51      Gen: 3.333333   Fit: 0.2495001  Orgs: 9       
+UD: 52      Gen: 3.500000   Fit: 0.2494859  Orgs: 10      
+UD: 53      Gen: 3.636364   Fit: 0.2494742  Orgs: 11      
+UD: 54      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 55      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 56      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 57      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 58      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 59      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 60      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 61      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 62      Gen: 3.750000   Fit: 0.2494644  Orgs: 12      
+UD: 63      Gen: 3.923077   Fit: 0.2494562  Orgs: 13      
+UD: 64      Gen: 4.411765   Fit: 0.2495838  Orgs: 17      
+UD: 65      Gen: 4.411765   Fit: 0.2495838  Orgs: 17      
+UD: 66      Gen: 4.500000   Fit: 0.2495712  Orgs: 18      
+UD: 67      Gen: 4.631579   Fit: 0.2495599  Orgs: 19      
+UD: 68      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 69      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 70      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 71      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 72      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 73      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 74      Gen: 4.700000   Fit: 0.2496787  Orgs: 20      
+UD: 75      Gen: 4.809524   Fit: 0.2496634  Orgs: 21      
+UD: 76      Gen: 5.000000   Fit: 0.2496647  Orgs: 23      
+UD: 77      Gen: 5.407407   Fit: 0.2484643  Orgs: 27      
+UD: 78      Gen: 5.464286   Fit: 0.2485879  Orgs: 28      
+UD: 79      Gen: 5.517241   Fit: 0.2486587  Orgs: 29      
+UD: 80      Gen: 5.586207   Fit: 0.2486587  Orgs: 29      
+UD: 81      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 82      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 83      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 84      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 85      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 86      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 87      Gen: 5.787879   Fit: 0.2489382  Orgs: 33      
+UD: 88      Gen: 5.914286   Fit: 0.2489621  Orgs: 35      
+UD: 89      Gen: 6.055556   Fit: 0.2490088  Orgs: 36      
+UD: 90      Gen: 6.333333   Fit: 0.2488622  Orgs: 42      
+UD: 91      Gen: 6.510638   Fit: 0.2486173  Orgs: 47      
+UD: 92      Gen: 6.541667   Fit: 0.2486728  Orgs: 48      
+UD: 93      Gen: 6.740000   Fit: 0.2480509  Orgs: 50      
+UD: 94      Gen: 6.803922   Fit: 0.2481778  Orgs: 51      
+UD: 95      Gen: 6.867925   Fit: 0.2482835  Orgs: 53      
+UD: 96      Gen: 6.886792   Fit: 0.2482835  Orgs: 53      
+UD: 97      Gen: 6.886792   Fit: 0.2482835  Orgs: 53      
+UD: 98      Gen: 6.886792   Fit: 0.2482835  Orgs: 53      
+UD: 99      Gen: 6.886792   Fit: 0.2482835  Orgs: 53      
+UD: 100     Gen: 6.963636   Fit: 0.2483225  Orgs: 55      
+UD: 101     Gen: 7.052632   Fit: 0.2483701  Orgs: 57      
+UD: 102     Gen: 7.152542   Fit: 0.2484144  Orgs: 59      
+UD: 103     Gen: 7.338462   Fit: 0.2486200  Orgs: 65      
+UD: 104     Gen: 7.471429   Fit: 0.2482907  Orgs: 70      
+UD: 105     Gen: 7.611111   Fit: 0.2481084  Orgs: 72      
+UD: 106     Gen: 7.743243   Fit: 0.2481947  Orgs: 74      
+UD: 107     Gen: 7.815789   Fit: 0.2482930  Orgs: 76      
+UD: 108     Gen: 7.886076   Fit: 0.2479310  Orgs: 79      
+UD: 109     Gen: 7.937500   Fit: 0.2481480  Orgs: 80      
+UD: 110     Gen: 7.937500   Fit: 0.2481480  Orgs: 80      
+UD: 111     Gen: 7.962963   Fit: 0.2462125  Orgs: 81      
+UD: 112     Gen: 7.987805   Fit: 0.2462587  Orgs: 82      
+UD: 113     Gen: 8.058824   Fit: 0.2459307  Orgs: 85      
+UD: 114     Gen: 8.127907   Fit: 0.2425773  Orgs: 86      
+UD: 115     Gen: 8.258427   Fit: 0.2430653  Orgs: 89      
+UD: 116     Gen: 8.451613   Fit: 0.2414290  Orgs: 93      
+UD: 117     Gen: 8.591837   Fit: 0.2421336  Orgs: 98      
+UD: 118     Gen: 8.642857   Fit: 0.2421401  Orgs: 98      
+UD: 119     Gen: 8.754902   Fit: 0.2424063  Orgs: 102     
+UD: 120     Gen: 8.839623   Fit: 0.2441303  Orgs: 106     
+UD: 121     Gen: 8.880734   Fit: 0.2438185  Orgs: 109     
+UD: 122     Gen: 8.936364   Fit: 0.2437060  Orgs: 110     
+UD: 123     Gen: 8.945455   Fit: 0.2438565  Orgs: 110     
+UD: 124     Gen: 8.945455   Fit: 0.2438565  Orgs: 110     
+UD: 125     Gen: 9.000000   Fit: 0.2440252  Orgs: 113     
+UD: 126     Gen: 9.086207   Fit: 0.2440227  Orgs: 116     
+UD: 127     Gen: 9.214876   Fit: 0.2445121  Orgs: 121     
+UD: 128     Gen: 9.336000   Fit: 0.2458262  Orgs: 125     
+UD: 129     Gen: 9.429688   Fit: 0.2458588  Orgs: 128     
+UD: 130     Gen: 9.527132   Fit: 0.2459610  Orgs: 129     
+UD: 131     Gen: 9.580153   Fit: 0.2460819  Orgs: 131     
+UD: 132     Gen: 9.688889   Fit: 0.2459994  Orgs: 135     
+UD: 133     Gen: 9.779412   Fit: 0.2458326  Orgs: 136     
+UD: 134     Gen: 9.797101   Fit: 0.2457192  Orgs: 138     
+UD: 135     Gen: 9.827338   Fit: 0.2456185  Orgs: 139     
+UD: 136     Gen: 9.872340   Fit: 0.2453011  Orgs: 141     
+UD: 137     Gen: 9.872340   Fit: 0.2453011  Orgs: 141     
+UD: 138     Gen: 10.00676   Fit: 0.2434121  Orgs: 148     
+UD: 139     Gen: 10.15484   Fit: 0.2439483  Orgs: 155     
+UD: 140     Gen: 10.29193   Fit: 0.2443889  Orgs: 161     
+UD: 141     Gen: 10.39264   Fit: 0.2431916  Orgs: 163     
+UD: 142     Gen: 10.53659   Fit: 0.2438602  Orgs: 164     
+UD: 143     Gen: 10.59036   Fit: 0.2439576  Orgs: 166     
+UD: 144     Gen: 10.63905   Fit: 0.2446089  Orgs: 169     
+UD: 145     Gen: 10.69822   Fit: 0.2452086  Orgs: 169     
+UD: 146     Gen: 10.75581   Fit: 0.2452481  Orgs: 172     
+UD: 147     Gen: 10.80814   Fit: 0.2452452  Orgs: 172     
+UD: 148     Gen: 10.84000   Fit: 0.2448739  Orgs: 175     
+UD: 149     Gen: 10.89266   Fit: 0.2452142  Orgs: 177     
+UD: 150     Gen: 10.91573   Fit: 0.2452625  Orgs: 178     
+UD: 151     Gen: 11.03825   Fit: 0.2454165  Orgs: 183     

@@ -1,0 +1,273 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: VERBOSITY 2
+CmdLine Set: WORLD_Y 20
+CmdLine Set: NUM_DEMES 10
+CmdLine Set: DEMES_USE_GERMLINE 0
+CmdLine Set: DEMES_ORGANISM_SELECTION 2
+CmdLine Set: DEMES_MAX_AGE 20
+CmdLine Set: DEMES_SEED_METHOD 1
+CmdLine Set: DEMES_DEFAULT_GERMLINE_PROPENSITY 0.5
+Random Seed: 100
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/deme4/runs/deme4_founders_propensity/ref/work/data/
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.00000   Thrd: 10      Para: 0  
+UD: 11      Gen: 0.1818182  Fit: 0.04533770  Orgs: 11      Demes: 10   Merit: 97.00000   Thrd: 11      Para: 0  
+UD: 12      Gen: 0.6666667  Fit: 0.1662382  Orgs: 15      Demes: 10   Merit: 97.00000   Thrd: 15      Para: 0  
+UD: 13      Gen: 0.8235294  Fit: 0.2053531  Orgs: 17      Demes: 10   Merit: 97.00000   Thrd: 17      Para: 0  
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 20      Demes: 10   Merit: 97.00000   Thrd: 20      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 20      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 21      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 22      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 23      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 24      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 25      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 26      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 27      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 28      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 29      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 30      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 31      Gen: 1.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.40000   Thrd: 10      Para: 0  
+UD: 32      Gen: 1.571429   Fit: 0.1424899  Orgs: 14      Demes: 10   Merit: 97.28571   Thrd: 14      Para: 0  
+UD: 33      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 34      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 35      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 36      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 37      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 38      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+UD: 39      Gen: 1.947368   Fit: 0.2363682  Orgs: 19      Demes: 10   Merit: 97.26316   Thrd: 19      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 40      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 41      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 42      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 43      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 44      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 45      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 46      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 47      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 48      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 49      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 50      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 51      Gen: 2.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 97.20000   Thrd: 10      Para: 0  
+UD: 52      Gen: 2.666667   Fit: 0.1663239  Orgs: 15      Demes: 10   Merit: 97.20000   Thrd: 15      Para: 0  
+UD: 53      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 54      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 55      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 56      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 57      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 58      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+UD: 59      Gen: 3.000000   Fit: 0.2495498  Orgs: 20      Demes: 10   Merit: 97.20000   Thrd: 20      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 60      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 61      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 62      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 63      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 64      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 65      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 66      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 67      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 68      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 69      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 70      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 71      Gen: 3.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.40000   Thrd: 10      Para: 0  
+UD: 72      Gen: 3.750000   Fit: 0.1853541  Orgs: 16      Demes: 10   Merit: 96.18750   Thrd: 16      Para: 0  
+UD: 73      Gen: 3.947368   Fit: 0.2348997  Orgs: 19      Demes: 10   Merit: 96.36842   Thrd: 19      Para: 0  
+UD: 74      Gen: 3.947368   Fit: 0.2348997  Orgs: 19      Demes: 10   Merit: 96.36842   Thrd: 19      Para: 0  
+UD: 75      Gen: 4.000000   Fit: 0.2480905  Orgs: 20      Demes: 10   Merit: 96.40000   Thrd: 20      Para: 0  
+UD: 76      Gen: 4.000000   Fit: 0.2480905  Orgs: 20      Demes: 10   Merit: 96.40000   Thrd: 20      Para: 0  
+UD: 77      Gen: 4.000000   Fit: 0.2480905  Orgs: 20      Demes: 10   Merit: 96.40000   Thrd: 20      Para: 0  
+UD: 78      Gen: 4.000000   Fit: 0.2480905  Orgs: 20      Demes: 10   Merit: 96.40000   Thrd: 20      Para: 0  
+UD: 79      Gen: 4.000000   Fit: 0.2480905  Orgs: 20      Demes: 10   Merit: 96.40000   Thrd: 20      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 80      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 81      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 82      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 83      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 84      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 85      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 86      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 87      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 88      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 89      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 90      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 91      Gen: 4.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 95.70000   Thrd: 10      Para: 0  
+UD: 92      Gen: 4.571429   Fit: 0.1425817  Orgs: 14      Demes: 10   Merit: 96.07143   Thrd: 14      Para: 0  
+UD: 93      Gen: 4.888889   Fit: 0.2203060  Orgs: 18      Demes: 10   Merit: 95.83333   Thrd: 18      Para: 0  
+UD: 94      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+UD: 95      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+UD: 96      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+UD: 97      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+UD: 98      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+UD: 99      Gen: 4.947368   Fit: 0.2331520  Orgs: 19      Demes: 10   Merit: 95.42105   Thrd: 19      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 100     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 101     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 102     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 103     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 104     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 105     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 106     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 107     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 108     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 109     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 110     Gen: 5.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 94.50000   Thrd: 10      Para: 0  
+UD: 111     Gen: 5.333333   Fit: 0.08354701  Orgs: 12      Demes: 10   Merit: 95.00000   Thrd: 12      Para: 0  
+UD: 112     Gen: 5.666667   Fit: 0.1667519  Orgs: 15      Demes: 10   Merit: 95.40000   Thrd: 15      Para: 0  
+UD: 113     Gen: 5.947368   Fit: 0.2336259  Orgs: 19      Demes: 10   Merit: 94.84211   Thrd: 19      Para: 0  
+UD: 114     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+UD: 115     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+UD: 116     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+UD: 117     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+UD: 118     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+UD: 119     Gen: 6.000000   Fit: 0.2453488  Orgs: 20      Demes: 10   Merit: 94.50000   Thrd: 20      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 120     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 121     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 122     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 123     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 124     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 125     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 126     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 127     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 128     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 129     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 130     Gen: 6.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 93.60000   Thrd: 10      Para: 0  
+UD: 131     Gen: 6.333333   Fit: 0.08354701  Orgs: 12      Demes: 10   Merit: 94.25000   Thrd: 12      Para: 0  
+UD: 132     Gen: 6.823529   Fit: 0.2003128  Orgs: 17      Demes: 10   Merit: 93.41176   Thrd: 17      Para: 0  
+UD: 133     Gen: 6.888889   Fit: 0.2169621  Orgs: 18      Demes: 10   Merit: 93.61111   Thrd: 18      Para: 0  
+UD: 134     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+UD: 135     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+UD: 136     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+UD: 137     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+UD: 138     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+UD: 139     Gen: 6.947368   Fit: 0.2301791  Orgs: 19      Demes: 10   Merit: 93.31579   Thrd: 19      Para: 0  
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+Germline Propensity Sum: 1.000000
+Num prospective founders: 2
+UD: 140     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 141     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 142     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 143     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 144     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 145     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 146     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 147     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 148     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 149     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 150     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  
+UD: 151     Gen: 7.000000   Fit: 0.000000   Orgs: 10      Demes: 10   Merit: 96.10000   Thrd: 10      Para: 0  

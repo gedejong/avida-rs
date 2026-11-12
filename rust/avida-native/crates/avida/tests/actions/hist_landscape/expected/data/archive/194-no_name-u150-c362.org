@@ -1,0 +1,243 @@
+# Wed Nov 11 13:50:42 2026
+# Filename........: archive/194-no_name-u150-c362.org
+# Update Output...: N/A
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 191.000000
+# Gestation Time..: 762
+# Fitness.........: 0.250656
+# Errors..........: 0
+# Genome Size.....: 194
+# Copied Size.....: 194
+# Executed Size...: 191
+# Offspring.......: 1
+# 
+# Generation: 1
+# Merit...........: 284.000000
+# Gestation Time..: 1134
+# Fitness.........: 0.250441
+# Errors..........: 0
+# Genome Size.....: 194
+# Copied Size.....: 287
+# Executed Size...: 284
+# Offspring.......: 2
+# 
+# Generation: 2
+# Merit...........: 377.000000
+# Gestation Time..: 1506
+# Fitness.........: 0.250332
+# Errors..........: 0
+# Genome Size.....: 194
+# Copied Size.....: 380
+# Executed Size...: 377
+# Offspring.......: 3
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+nop-A
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+mov-head
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+sub
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-A
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+jmp-head
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B

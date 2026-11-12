@@ -1,0 +1,66 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+
+In analyze mode!!
+Verbose ON: Using verbose log messages...
+Loading: detail-50000.pop
+Loading file of type: genotype_data
+Filtering batch 0 to genotypes where num_cpus > 15
+Setting current batch to 1
+Loading: detail-50000.pop
+Loading file of type: genotype_data
+Filtering batch 1 to genotypes where num_cpus > 20
+Calculating Hamming Distance between batches 1 and 0
+ ave distance = 30.189
+Calculating Levenstein Distance between batch 1 and 0
+ ave distance = 13.2793
+Calculating Species Distance between batch 1 and 0
+  ave distance = 0.191758 in 315810 tests.
+Calculating Edit Distance between all pairs of genotypes.
+0
+Printing diversity data for batch 1
+Creating recombinants between batch 1 and 0
+Setting current batch to 2
+Detailing batch 2
+Setting current batch to 1
+Creating recombinants between batch 0 and 1
+Setting current batch to 3
+Detailing batch 3
+Detailing batch 3
+Setting current batch to 1
+Writing Competition events...
+...assuming population size 20x20.
+Analyzing Instructions in batch 1
+Analyzing Instructions in batch 1
+Constructing depth map...
+max_depth = 395
+Output to depth.dat
+Setting current batch to 4
+Loading: qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva
+Loading: qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoqutttttaycsva
+Analyzing mutation traceback in batch 4
+Status Report:
+  Batch 0 -- 16 genotypes.
+  Batch 1 -- 7 genotypes.
+  Batch 2 -- 448 genotypes.
+  Batch 3 -- 4 genotypes.
+  Batch 4 -- 2 genotypes.  <current>

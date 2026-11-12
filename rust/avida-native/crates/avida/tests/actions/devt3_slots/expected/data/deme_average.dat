@@ -1,0 +1,28 @@
+# Avida Average Deme Data
+# Wed Nov 11 19:03:13 2026
+#  1: Update
+#  2: Count
+#  3: Age
+#  4: Births
+#  5: Organisms
+#  6: Generation
+#  7: Births (at last replication)
+#  8: Organisms (at last replication)
+#  9: Merit
+# 10: Gestation Time
+# 11: Time Used (normalized by org fitness)
+# 12: Generations between current and last founders
+# 13: Events killed
+# 14: Attempts to kill event
+
+0 4 0 0 1 0 0 0 1 0 0 0 0 0 
+20 4 20 0 1 0 0 0 1 0 0 0 0 0 
+40 4 40 1 2 0 0 0 1 0 0 0 0 0 
+60 4 9 0 2 1 0.163934 0.327869 1 2043 8.59586 0 0 0 
+80 4 29 0 2 1 0.37037 0.740741 1 2043 8.59586 0 0 0 
+100 4 49 2 4 1 0.49505 0.990099 1 2043 8.59586 0 0 0 
+120 4 19 0 4 2 0.743802 1.4876 1 4013 8.41946 0 0 0 
+140 4 39 3.75 7.75 2 0.921986 1.84397 1 4013 8.41946 0 0 0 
+160 4 9 0 7.75 3 1.1646 2.32919 1 8016 8.77484 0 0 0 
+180 4 29 1.5 9.25 3 1.45028 2.90055 1 8016 8.77484 0 0 0 
+200 4 49 7.25 15 3 1.6791 3.35821 1 8016 8.77484 0 0 0 

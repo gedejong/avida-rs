@@ -1,0 +1,1708 @@
+# cHardwareGP8 (hw_type 4) test-CPU traces by the C++ reference
+# (cbuild/work/avida -a, analyze LOAD_SEQUENCE... + TRACE trace_out/ 0
+# <update> <random>), one BATCH per reference run:
+# BATCH <config dir under tests/fixtures> <fixed|random inputs> <update>
+# INST <name>  (the instruction set, INSTSET diff:hw_type=4)
+# SEQ <sequence> <fnv1a64 of the trace> <trace length in bytes>
+# One world RNG and one test CPU carry over from genome to genome within a
+# batch, as in cAnalyze::CommandTrace; each fixture batch keeps the first
+# sequences of its run (at most 5; a prefix keeps the RNG sequence).
+# Random batches hold nop-A..nop-H plus up to 54 other instructions of the library,
+# 100-instruction genomes drawn uniformly; every reference run of a random
+# batch traced 40 genomes and all 40 Rust traces matched. Left out everywhere:
+# die (the reference segfaults in a test CPU). Left out in configs without
+# forage targets (exp_env/abs1, abs2av, gene_env/mut1, div2, thr, misc1):
+# set-forage-target, set-ft-once, set-rand-ft-once (folding a target with
+# no resource targets divides by zero and dereferences an empty set's
+# begin() in C++; Err in Rust). The last batches are hand-written genomes
+# (self-replicators over set-memory / h-copy / divide-memory, repro,
+# threads, I/O, movement) in each config, and in exp_env/ft1 genomes that
+# put INT_MIN into the forage-target, look-direction and rotate registers
+# (the reference binary folds abs(INT_MIN) as 2^31).
+BATCH exp_env/abs1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST swap
+INST one
+INST sg-rotate-r
+INST look-around-ex
+INST get-forage-target
+INST mult
+INST nand
+INST if-less
+INST rotate-x
+INST mov-head
+INST wait-cond-equ
+INST inc
+INST rotate-away-org-id
+INST if-gtr-0
+INST look-again-ex
+INST rand
+INST yield
+INST search-lbl-d
+INST wait-cond-less
+INST h-copy
+INST attack-prey
+INST dec
+INST search-seq-d
+INST get-head
+INST wait-cond-gtr
+INST maxint
+INST div
+INST swap-stk
+INST if-equ-0
+INST h-read
+INST eat
+INST sense-resource-id
+INST label
+INST output
+INST divide-memory
+INST sg-rotate-l
+INST if-not-0
+INST sub
+INST promoter
+INST sg-sense
+INST search-lbl-s
+INST look-ahead-ex
+INST learn-parent
+INST regulate-pause
+INST regulate-resume
+INST mod
+INST nop-X
+INST did-copy-lbl
+INST set-memory
+INST sg-move
+INST push
+INST h-write
+INST push-all
+INST add
+SEQ EyTzAeKOmXRrvftva9AW7hipTgadDZFlRJmCGmUXiAPyhzAnar3ZLt4bnlz2MPKgcjnCqaXNv1syeefnLOpaMxxNDi9LE1Ki3ylO b68e56299b83d49a 866
+SEQ jt6o0NpUmkVO8JmR8y4EMfAdggcG9qpVTzqA05MFsHl7UeioEJP2NNern66nVberACpdclsxHKifxi5CvQUSHL8iLc7bE6wSt9cb 4527605d2383cfd4 9531693
+SEQ MOeEeUtuieeCIxVc57VVTiY96vwfRE5e32A8Yb3FKaNQyyLaMeffOhq4AUvy7VSLDCD1IfHWGbtMfEbo9ShFXNQ6Fq5axtjRNmHk 9a4082e7a746d933 15848
+SEQ W5vQ7CF5puzQqmOBZZW6m4nyoL6uniiFw152cTe8r0khCEr7n1AyOHFRuT11NCue1cr3McRTrKwtPYKbPizDmbX1rpXjYdOhCgOI 0a2b05dafee4497e 4767639
+SEQ POZx9eRmm0EqlTaWEITclorXwIS8HGNWkz2YS5ofA75UyiCDmO46ayJKP4GY08vDuPngU30ZP7Thnp5yftIY7uq6T2bwGfcCvJAX 0a7cbeba55eb3093 15600
+BATCH exp_env/abs1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST shift-l
+INST sense-nest
+INST terminator
+INST pop-all
+INST input
+INST move
+INST repro
+INST zero
+INST regulate-reset
+INST if-n-equ
+INST pop
+INST teach-offspring
+INST jmp-head
+INST collect-specific
+INST rotate-org-id
+INST get-faced-org-id
+INST if-less-0
+INST shift-r
+INST sense-faced-habitat
+INST scramble-registers
+INST rotate-home
+INST get-res-stored
+INST get-north-offset
+SEQ ebEvvceanseCvBzDqrcnqvfcqwltpDgCwdnepgcwparECrceCjikhwiEerEBDeBnDzatpzsvstCtkDfcyqfEDbddjBjEanbeAfwt e6368cfc051bb4ee 9080185
+SEQ qBsyyvzcalcEzgmAhnlkhlmaCyhibslqxkqvlouhDCnfgegiophzDkfhvutitqsisCafjhcjqkxxgvbzhrccvyqhogbnrelvlcDc 5b5c4edfbd9654c5 7540
+SEQ AmenzvzhkzgmDjrsExcpADabpbmEcnDfecgfCpEhDkkeDeezwkEbghewvhCBxCEvollxdDieEBcfxlvbdjkfsdiqqrAsoyzqiEcc 3d9f4741c09aa723 13048
+SEQ uhacDjyDDvqffEkusdjpzCtoltBpobgeEpvaoysmrbjfbfmxAgEaahnzEptucoafkafjbkiBtrlwpitxkfleCsstnnrsoikEDphv e6368cfc051bb4ee 9080185
+SEQ DtBCCvfoqrDjyfDxkhrsmfwEkjuduvalprdpxDzqumvavpmipsBusobckpupbueairobcizbhsAmzbigCuqdnlrbEcpBpejkAvqq e6dff0b168fc5f11 1978
+BATCH exp_env/abs1 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST attack-prey
+INST pop-all
+INST sg-rotate-r
+INST yield
+INST teach-offspring
+INST if-gtr-0
+INST rand
+INST mov-head
+INST wait-cond-equ
+INST scramble-registers
+INST sense-faced-habitat
+INST repro
+INST push-all
+INST sense-resource-id
+INST mult
+INST learn-parent
+INST sense-nest
+INST nand
+INST h-read
+INST mod
+INST search-lbl-s
+INST shift-r
+INST get-res-stored
+INST move
+INST if-less
+INST sg-rotate-l
+INST terminator
+INST inc
+INST search-lbl-d
+INST push
+INST search-seq-d
+INST eat
+INST rotate-home
+INST if-not-0
+INST wait-cond-gtr
+INST pop
+INST wait-cond-less
+INST look-again-ex
+INST dec
+INST output
+INST label
+INST did-copy-lbl
+INST swap-stk
+INST sg-sense
+INST collect-specific
+INST regulate-reset
+INST shift-l
+INST divide-memory
+INST look-ahead-ex
+INST swap
+INST div
+INST regulate-resume
+INST jmp-head
+INST sg-move
+SEQ GKZWGlby02BcHboRBcynXMgWJoleSrcBrFwMOUdGDxnvsDES92Ep9kD7JxlmXVo6Ma8r6XZvlpYaGcpNhxIGjb7u4YQ1rOhoYHGE a33a134965bd1941 5406
+SEQ FOwqR8C5VkCsN3crv83GOSCTYnUsHqbRaSbiJ4rAipmBEdJKNU679qWcABLf5zYmLJwxOVyKkbSTj5bZc5e6AImY7yYgTwmtr7YS edaa1125ff388482 1093
+SEQ RIFNNhnIMSRzLpeAwufRvjRfUttSlWRQO7BxlbnFNCFldQMvDp4ug8oa9xxr2mSBsoH6jG5SvkGDyMG1TpDDY2d1XoAISWYzHRCQ bbab910efa502ed3 2283
+SEQ dgJKRtwWUbuXF5xOtkiEoZIiqFcBZxsA7OMsy03Y5MujiqPc1QMYYyABNQqvAXyFy8z0ZlkYn1qhrH4d31P3V0TwV6tXi23t13nV 68ab9b224a3e5457 1751
+SEQ 43bJtcaZkmkmTZs7mlXtI3bM6gxRFImCgHaPiZzGFOsDwO1y2A5HbT2rb7jFW2xSg91RYBJz9MxWe16iwdogBfZd1a7pbhRRKN79 67bcfc65f95ea571 1297
+BATCH exp_env/abs1 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST maxint
+INST regulate-pause
+INST get-head
+INST get-north-offset
+INST if-equ-0
+INST set-memory
+INST if-less-0
+INST add
+INST get-forage-target
+INST get-faced-org-id
+INST nop-X
+INST sub
+INST rotate-x
+INST one
+INST rotate-away-org-id
+INST h-write
+INST promoter
+INST h-copy
+INST if-n-equ
+INST input
+INST look-around-ex
+INST zero
+INST rotate-org-id
+SEQ agdpkCssdfeDzggzyhEnEsujvsAoCnkoAhstflwtEnBhvtAhwojBqwscyEgcChjbEBgjccikpurksaxlzupyxDDDrEhhkCluosCz 86918bc73156d624 27797
+SEQ nmkmzsCfnzAyhjtvElAffavkwktADshDbxEjAnqBdhcfEgowbyCeBgiBDnlzkdkBDgkCzahnxADpkwaAjhkutjacocdrkdineuAm 45016daca529145c 20307
+SEQ yygjyzwxgbosafuogbEobktensnwAbnxwnBhBtxwoDqojegdzegvlqepcfEmpiAbmpgzksntmugxiEntkDzCCaiwnxirxospgqCf 4f2091c9ff78c8eb 9780235
+SEQ oabaqymAcnjfgoCtCmrDDzmmvfvuwjiDqyzEzmhfEAryAbEgAdfrondgmddhEdCxyECxEBcuCpkoabpyveACiuojubojncbzlfqv e16c6d5afd959bb8 41481
+SEQ sxljpdCrvmuncvuccseBuzawyfAkjknfBorvhBwADhEcCzhoxwwzmecDuCDvlvzsfkqzmxqwEsjAkoByvwxDunjEcgcqnqbEavyk 07b20a23ad4bf458 22619550
+BATCH exp_env/abs1 fixed 7
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-less
+INST shift-r
+INST regulate-resume
+INST rotate-home
+INST promoter
+INST get-head
+INST teach-offspring
+INST set-memory
+INST search-lbl-s
+INST sense-faced-habitat
+INST swap-stk
+INST push-all
+INST shift-l
+INST terminator
+INST get-faced-org-id
+INST jmp-head
+INST rotate-org-id
+INST look-ahead-ex
+INST rotate-away-org-id
+INST nand
+INST div
+INST mov-head
+INST zero
+INST inc
+INST wait-cond-equ
+INST move
+INST sense-nest
+INST rotate-x
+INST input
+INST push
+INST if-equ-0
+INST scramble-registers
+INST divide-memory
+INST sg-rotate-r
+INST h-read
+INST output
+INST wait-cond-less
+INST if-not-0
+INST pop-all
+INST collect-specific
+INST h-copy
+INST maxint
+INST one
+INST mult
+INST label
+INST if-gtr-0
+INST sg-move
+INST wait-cond-gtr
+INST look-around-ex
+INST h-write
+INST get-res-stored
+INST sense-resource-id
+INST get-north-offset
+INST repro
+SEQ yaUB73cojFZS1COqkUAV3q4WZwmT2OxHTQi5TMpUFn3NcLSLcwLUKvlsmkYRJh5okeBPMJZIScC0vPfHaithAt6rKMSe8EHx21ca 8b502bce3a40c6ee 9523451
+SEQ uvjFJIH0EoQnsZcyGT6kVjqBR02nqBLpwXpLsBnPwBcuzDfeWcM6aPXtmCEJyvdsHB8ij3dhx0knttMyscwigxFCL4LBcwIsi9Zd 80a5b30a86a82f95 9206867
+SEQ uk54IVi5a5p63RjfE7xewqZ0ndTpQ07pHY6WCmKzNd1J5dhNi8IWZxIztj9Itqfxd7bkUagHTr3fvZOBkN1RTSs6WchgtzyEyrjY b3660b0f49f722d6 9520174
+SEQ jCtaHbIqrvo7p9282xAk1WZEAqjDL59IDmXyTE1mbK5cE0GligaLitf45FKHU1dnTV6PSBb9IbX3Rjt1NjPdUGB7WqoFbMgpuHGa 37ca566746356494 12679
+SEQ KC5W6vPoMdHSBp6GVagx6j7D0w1iRwUoQsLfqTiiUlMgdIPjNVGbXD4wyK0KFZKGAe72CH8rvyRh6nRuyLeXE7At07YbTCyAEK5V 5d2fb2b3a5ba0618 2792
+BATCH exp_env/abs1 fixed 7
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST did-copy-lbl
+INST regulate-reset
+INST look-again-ex
+INST get-forage-target
+INST search-seq-d
+INST nop-X
+INST pop
+INST swap
+INST sg-rotate-l
+INST eat
+INST sg-sense
+INST regulate-pause
+INST attack-prey
+INST dec
+INST yield
+INST search-lbl-d
+INST learn-parent
+INST add
+INST if-n-equ
+INST sub
+INST if-less-0
+INST rand
+INST mod
+SEQ fqgkExpeCgurdrpElcmjduoojfiazrkBobeqeEgbntfvrByEszwCqAEiociEjyChxwxfvpvxjsCuBcuAiytezDlvtCzpvaAkvuve 7dc17c810cadf10a 3605806
+SEQ ebgEhjvihggjzihsraoakxAmAthkucaylDjoboxCeCkaydytgutrrojoDdyncnbethkdsiyBqmuADExtorwAdplzwqqclxCemDjA 4c1948593b86b5af 4813
+SEQ qvhEAbszDdjrmAbwxEanuiqovhxkgvzCeczqqvxujhCAsCDxlakbBztEudtaAglnbsCxtncpEjDarjkmxpzpBkshzgExwunDecin ff1ba532baeca384 4794464
+SEQ rwEgdattBmmbnyAmaaokobxEanpBxeilhwpekncnhatkDnoCczvhkBorBefqddlCqBprnsCayxzpxwlCpinDmCybkunmeegqnECl 1634712d7b48f2f5 5307467
+SEQ hqufqrafbkkvxeveyhxocxyBnqByztEedBBCoCoxzjakjlzeaqzmroatcujdvjDtxbytvqkoBkCAAunEqflreshvfbuckxzouweA 5751d2c972b3e94c 8327977
+BATCH exp_env/ft1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-not-0
+INST sg-sense
+INST push
+INST h-copy
+INST if-n-equ
+INST sub
+INST move
+INST terminator
+INST h-write
+INST jmp-head
+INST teach-offspring
+INST output
+INST swap
+INST collect-specific
+INST h-read
+INST set-forage-target
+INST maxint
+INST sg-rotate-r
+INST inc
+INST sg-move
+INST if-less
+INST label
+INST wait-cond-gtr
+INST get-faced-org-id
+INST learn-parent
+INST rotate-org-id
+INST sense-resource-id
+INST nand
+INST get-res-stored
+INST regulate-pause
+INST dec
+INST mov-head
+INST look-ahead-ex
+INST input
+INST wait-cond-equ
+INST set-rand-ft-once
+INST shift-l
+INST shift-r
+INST scramble-registers
+INST divide-memory
+INST regulate-reset
+INST promoter
+INST if-equ-0
+INST look-around-ex
+INST wait-cond-less
+INST regulate-resume
+INST push-all
+INST nop-X
+INST sg-rotate-l
+INST search-seq-d
+INST rotate-x
+INST swap-stk
+INST one
+INST set-memory
+SEQ RkIyDtFDBAM0gqEzpC3N8FeKjFTrKCb0Tz8BbwTKx8EqwtHmcOJEZqgygcmtbaLGsH7Zwqhc9jXmaoq3GqlpnMR6vsUW5xcJ6MV8 b79de64921afb1da 1960448
+SEQ YWkGP1mxFyp9yIJX6uF68NcpP7BEXvfqZgimdS7jnqFCiI5ydYgqTxIBAiCofjZUljbQ6oP3Q0w7MQ0JTcKADr9Eu7e3xdRP7PI0 6718b06c18ef4625 9808533
+SEQ g63eB1h3d1P7keaYRtciy4Lja4CDY3FTHbsfrpsRLPGaJYpUa7w5h2hzyCswU7vbqis9KZXTt9nHL15Cb5PeCvKyYMBqRW9AmYby 74e597e361749993 11119719
+SEQ 3TEpy0HhWo0pmq23epYfD3QJdbmRZRMPsXBDo5VeOeTTlTxDSmygMxEnWRwvFI1tdlNODi520rE5tIdjdHbRtFxOsxQ9VliZbnGX 47aefb01dcc43575 4613
+SEQ ei4Lo53t2zLE0MZwlwp23JOwv0HBhact35rktmZYmhG2Vo7ysMChyXhCXMWZeT0I07pdLInIIWLymIfix3OE1hfXV8f3JLoo58gi 2ec39e8525a8e8ff 8588
+BATCH exp_env/ft1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST eat
+INST get-forage-target
+INST look-again-ex
+INST set-ft-once
+INST rotate-away-org-id
+INST if-less-0
+INST search-lbl-d
+INST repro
+INST if-gtr-0
+INST pop-all
+INST add
+INST mod
+INST search-lbl-s
+INST sense-faced-habitat
+INST did-copy-lbl
+INST rotate-home
+INST pop
+INST get-north-offset
+INST yield
+INST rand
+INST div
+INST zero
+INST mult
+INST sense-nest
+INST attack-prey
+INST get-head
+SEQ lhydCGytaAfcBBqtGtnEwrdFwoDrHjuoiGHFHwvetABlstdokwyCqGxqvjydACkabdgkajAwadukHCawuHpvgFixzxpzgCAseegt fc65133602842b4d 18019
+SEQ uketjcxqhHoiwhbmqpwqbtmweDbarhljzbfvCFiiqdBozrcjpAbBjEzqAHqrubyomvalgcabxbFxkrnfyrvizBlkoqdneklxHnwl cc09f3b36711d4c1 9268
+SEQ tEhvGryhwAgCFchGqgvAjhpbcybnygvlcilmwrxdverqxzGgmscBFdaEwvBHpdoysefiBBhkrrHDDzqFnsqxkdiszidrlmeuqjtD 073ca7a373ddedd9 4327
+SEQ qfdBlxwyAkzfvlroeEpnusiHmHEjuexcGjHxywsfmGplDEiCttwewnsgwacHwyfxvpyDojBwbGaDpuGczihDjGirFpeyGGlAuysh 22ce327f781d0915 4082
+SEQ kEBeoudEiAzsomEcsokAxmEljjfsAcivFgGDBnwvinyBdiGkwmEdrAratGckyFEDmAwyfxxyiveledgvErbepqhDvfHuznjxzjdx 5d9bff550aef1012 18261
+BATCH exp_env/ft2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST input
+INST look-around-ex
+INST collect-specific
+INST dec
+INST if-equ-0
+INST get-north-offset
+INST rand
+INST look-ahead-ex
+INST look-again-ex
+INST wait-cond-gtr
+INST mov-head
+INST eat
+INST divide-memory
+INST shift-r
+INST jmp-head
+INST set-rand-ft-once
+INST regulate-pause
+INST push-all
+INST search-lbl-s
+INST set-forage-target
+INST yield
+INST nop-X
+INST push
+INST move
+INST zero
+INST rotate-x
+INST swap-stk
+INST search-seq-d
+INST mod
+INST wait-cond-equ
+INST attack-prey
+INST sense-nest
+INST teach-offspring
+INST shift-l
+INST pop
+INST sg-rotate-l
+INST pop-all
+INST add
+INST if-less-0
+INST set-ft-once
+INST get-forage-target
+INST regulate-reset
+INST mult
+INST h-copy
+INST sub
+INST maxint
+INST sg-move
+INST scramble-registers
+INST div
+INST h-read
+INST if-less
+INST rotate-org-id
+INST get-faced-org-id
+SEQ ttk0Ouy5Ev3CYeW61YrEjhRFyya1q79VfsecC5d8qk0FKE3FcGdE1fK9DoXWLCSUqRfNadvWP1yBwdN7TtMCtJ0bZB535ya5Q6wN f474e48127b55e87 9800203
+SEQ y6HajqpFGvu6pRLuFuaMwSov7d2lP3GU8g1UKzv352ivguvDVNJNEK6hz7YLagY2jTPD1kPmLIJNWuxzoJPHOhHUDLk1TRX6vD3M ded2152aafbe7775 5122
+SEQ KQ9AbrviWrwldD6SLYngePqnVReY4UCIk44oukN34dxAoAV4kxWKjGlEE6DDMkBeBr7CVpQ8bCvz5PkcQLaNRDCbvC4DMYqyDZCz 7e76768c7062b4c1 10592
+SEQ SOGWhkQ9uC6EvTKDHfn2okWJGzQgSzRvu533Cql73r5Aht4SSorkKq7sjCQGp9jE8HhPpYnzBoNs0ASPEPORzVZ83EXouZywvyvQ 601a3fc69ff0bdfc 6553195
+SEQ vgXiFo9RVoKQ0elSHStqnpFqF2l1p1ZF7xk4HPQn87J2IMXOYTvNhZMcqXdocw2zvHsLOL6uuxAPJ7OyWa62E4V1KOoASeQ6kBih 1f7239e21b616dc7 9800203
+BATCH exp_env/ft2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST repro
+INST rotate-away-org-id
+INST sg-sense
+INST get-head
+INST sg-rotate-r
+INST learn-parent
+INST sense-faced-habitat
+INST if-gtr-0
+INST search-lbl-d
+INST did-copy-lbl
+INST one
+INST output
+INST rotate-home
+INST swap
+INST label
+INST get-res-stored
+INST h-write
+INST if-n-equ
+INST wait-cond-less
+INST terminator
+INST nand
+INST if-not-0
+INST regulate-resume
+INST sense-resource-id
+INST promoter
+INST inc
+SEQ ptvaAtycdFaEkczAyDjheehgGfxvptoABbizgisBhlctdgBxEfwaBjcsjDAzrAgjCgvvFmuyohFnosgcqqzgqulsbvuEoiDaqazh 50a37d2495304106 1428
+SEQ awlDhrlninrwmBsBourGhoyncaCmhzHrtsEyFgdocBtznupbFfdftwqlDfeklHwyCsuAiuHCovsFzuduwmbkbhzGFAjhAxywkrau 8773b150093d5ff8 4864817
+SEQ ziDHrdEnEiDeuEDuvjdsoyctyFxdcevvjakEmvwvvarkdurteAgHHxBtqazukpvtmCctfwmyfflvAAqjnelommiCcBfhutskfvwr 180cb1c8074f9ab0 9499
+SEQ BkylkctnDttzvoowsaphjilEBhGoCgEpwruDykmsuDFqfwglvBdAtoicpfrumFCeFzzjaqiwqqokGhqyBuydqHBhGeDxGkcploDa f749842643373b07 29398243
+SEQ fmDsByvqgflrioGxCxDHvcajxsylDukbxtwoEyEtEzgugerypkEHzCuloqgqgjfwlCDjCBymfEyvjBHhhhAjGavhBeCAgdGdirnA 0e3d7f5bbd4e2b07 17849886
+BATCH exp_env/abs2av fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST wait-cond-gtr
+INST div
+INST wait-cond-equ
+INST look-ahead-ex
+INST regulate-pause
+INST sense-faced-habitat
+INST jmp-head
+INST set-memory
+INST attack-prey
+INST teach-offspring
+INST shift-r
+INST search-seq-d
+INST dec
+INST push-all
+INST sense-resource-id
+INST regulate-resume
+INST search-lbl-s
+INST wait-cond-less
+INST mov-head
+INST scramble-registers
+INST eat
+INST terminator
+INST shift-l
+INST input
+INST zero
+INST h-copy
+INST push
+INST look-around-ex
+INST if-not-0
+INST one
+INST get-head
+INST mult
+INST if-gtr-0
+INST regulate-reset
+INST inc
+INST get-faced-org-id
+INST if-less-0
+INST sg-sense
+INST learn-parent
+INST if-n-equ
+INST output
+INST collect-specific
+INST swap
+INST get-res-stored
+INST divide-memory
+INST pop-all
+INST rotate-home
+INST repro
+INST rotate-x
+INST sg-rotate-r
+INST search-lbl-d
+INST move
+INST label
+INST did-copy-lbl
+SEQ SYhD1NfFPb9jTo6z5xcIcQPzMuEGQ80YRP10eougTfIhpazOc61hVRd82Wzj5OSqplLapHp6hgPjryAczD4UDDqcdbTmBQq79Gyg 17e31ecf34596f62 10399789
+SEQ ZnhAOgshDBj1zpi4i4zBGozlxQF0l3AnQB2bFtKsh2eWYtVFpIPEnLCGiFJfWOQgUQudDfZFUWdGvIkgTxzszeomDnTaOaovzMNn e6368cfc051bb4ee 9080185
+SEQ dr5ObyOdjQ9IS8onGY2O2IQ0OUV86rGbNNZZGnELEwiTDVT6lgmbf7xUsP0P9gjcl7NSWShU8WownKBfl7fDf4cKjjRUXkXnAcWw e6368cfc051bb4ee 9080185
+SEQ hR3zAqhNyMmwVCxBbwm0fn8yA4YdLnAXUQJvcHzwbPjAp9ukzdyc3zO2VCP7cj59akV4mQLsNQLA91bdh50H0IaiuMNfLItCjMB8 80ca476fd0b7b979 1070
+SEQ sKNZAIf5SX7jNctqtP9SC6Uue5005Oqyt3P8KYEbhhv4zr83Cs1Ynr9aESaUm3fZAj9Lo7vAKXgV1r41YWaukxALsxWnkPmZUHcI e6368cfc051bb4ee 9080185
+BATCH exp_env/abs2av fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST sense-nest
+INST get-forage-target
+INST pop
+INST h-write
+INST yield
+INST swap-stk
+INST if-equ-0
+INST look-again-ex
+INST if-less
+INST rand
+INST promoter
+INST add
+INST nand
+INST mod
+INST sg-move
+INST nop-X
+INST get-north-offset
+INST sub
+INST sg-rotate-l
+INST maxint
+INST rotate-away-org-id
+INST rotate-org-id
+INST h-read
+SEQ flensgAEcrtcwshkzryvvrzweDawbcwqyytisBjdownlyjhumutvrxprkBCBrddyCbaexubpbmqsakcdCDDgmmpEuvDzEzjocxlx 08942568dfb0969f 12010117
+SEQ kkqlbpskbAfsbjziigisrwgqgwruBmcjaebevixeAxlqnCbmqhpfazEEcyquifnxCcebeCfzAtxADgBfCarhyqdCdsCjyzBDmxkj faaf9f39075a1ba1 18300677
+SEQ vzaggjsciqgjoqwddyvmyhwbBacdenrdBjjmCtgAxkrDgdzdtoBBeEummsdnlDrCnBaorjDpsrhtxdqicuwhijxCcAncBinigxsA eec4fa785297b18c 23261772
+SEQ mnoacdDexhACgCCykyxbEnhudehjpubmCennCxxndlvDmsuhatnmuwByhonbqdjtqADpctbzntqmhjhvylAcywibodgEaAxjxxzA 99521bf9b085eb74 6025191
+SEQ ccABrysuCdfaodytfuwbdtBCsukBoCDuooECxBhpcdchDyurAnBvuoBnelBBBrksywypcAycdloDCEdpkjgAvccriiywmBldByBd d52b152e20412f9d 10969720
+BATCH exp_env/pp fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST look-again-ex
+INST swap-stk
+INST set-memory
+INST get-faced-org-id
+INST search-lbl-d
+INST sense-faced-habitat
+INST maxint
+INST terminator
+INST search-seq-d
+INST get-res-stored
+INST set-ft-once
+INST get-north-offset
+INST if-not-0
+INST input
+INST rotate-home
+INST h-write
+INST wait-cond-equ
+INST rotate-org-id
+INST teach-offspring
+INST sg-sense
+INST nop-X
+INST learn-parent
+INST shift-l
+INST search-lbl-s
+INST sub
+INST mov-head
+INST collect-specific
+INST shift-r
+INST add
+INST mod
+INST if-n-equ
+INST if-less-0
+INST dec
+INST promoter
+INST h-copy
+INST push
+INST push-all
+INST sg-rotate-r
+INST nand
+INST scramble-registers
+INST regulate-reset
+INST inc
+INST if-less
+INST regulate-resume
+INST get-forage-target
+INST sense-nest
+INST wait-cond-less
+INST rotate-x
+INST if-equ-0
+INST get-head
+INST swap
+INST rotate-away-org-id
+INST zero
+INST output
+SEQ vg6KLYrvadWwbDVrEOdUmtqeVT6FbNKHRizFU89L0zlmq9jRh6nd1ItZ46uZudk7AfSXt1qQzEeIfIOpoI9qKkZsdU4FLz0FoJAH 688d148388f6d620 10200114
+SEQ OCe9DWnoEu0mxMb9VKKHBd51v9Lk79JoNuxlWntBwCLfHgHam8K5TJWlCDC2GiIJECasqla05DvWvndrgHQSabhET5tNnXgX601b b252fdd9394d0dfa 3907075
+SEQ DI0W7o3Pb2zYhB9dVIdmIqrww8IL0Az6aHWvfWV1YcOU3suuhviI1p7F0sChqpeRAtRmExinGYKjYsfBCH5yXHMW5jQJjkLI7uFZ 4f30aa2af7ac534a 424
+SEQ 34s97AeNpk5TjXpBJuIWCWGZis8pFqGmxaOhvFeBf4Gypke7sesv6WDuj9jVrty3u6KGOjBg80W4POX5YqpnnI3x1UByr8ftz6Pn 05741a06414eb669 19964603
+SEQ 4uac3KLdwRPFzBNqStC5X8kWAnmn2xV4T8moWO1yeDQmwUGYi8LEVC0Pfip4BXzoRzyFv23SYpu8y7n2lFaEgA3PEg9lFbqEimkq 299eaa668745f2af 9772813
+BATCH exp_env/pp fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST yield
+INST jmp-head
+INST move
+INST did-copy-lbl
+INST sg-move
+INST set-forage-target
+INST look-around-ex
+INST eat
+INST wait-cond-gtr
+INST repro
+INST pop-all
+INST set-rand-ft-once
+INST div
+INST attack-prey
+INST divide-memory
+INST mult
+INST regulate-pause
+INST label
+INST one
+INST look-ahead-ex
+INST if-gtr-0
+INST rand
+INST h-read
+INST pop
+INST sg-rotate-l
+INST sense-resource-id
+SEQ hzozDHvqvGsDqvniqBapiFqigljEsqnkAluqrCAFetvxCciqCogemEgrvEsaHkmHHtCFxbhpAwqloomyelraaftAwqioAnynDjke b348cadbfa3f44d7 2055
+SEQ oipCHrboyftcwDxbElkFsBsDtAeAeavjuzkfkpeufADChGoHozFepbnEdbtmaznivvigGCqtjwnBCGfptomftjfAdlHzezjCBwlk 2b26ec6eb253d785 2110
+SEQ tzdregcqkzvpdsmqHqzeDAgHtasbaogAkptrsxxkuxihhiFzmCisaefDDankvbfExmHmydAEgksCczdBoxkxGpCysEohasdxtppw fd07788877b17e14 1822
+SEQ dBCxEssbskjlgfhmyqEtrkGbkolfmigmycHsuDfayhxsawldDlgroaityfkgaxCAeevHfaGtAGlnhcFjppbqdmvhHEftFgEwCuGi d2f711677406ca0f 9320191
+SEQ kwhxGCkHbzyuCecfBzfgqvlxbhEcjrhsCnpjbxnAjoAiDrsdDsBpqxwvkwhmlEveDlapCpinBBquADhlpvipCnlDiwEDlBlcqHsE 7f3bd4b8fce493bd 3453
+BATCH exp_env/pp_div random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST terminator
+INST sense-faced-habitat
+INST eat
+INST sg-rotate-r
+INST pop
+INST rotate-home
+INST inc
+INST one
+INST look-ahead-ex
+INST move
+INST sub
+INST promoter
+INST add
+INST wait-cond-less
+INST wait-cond-gtr
+INST get-faced-org-id
+INST shift-r
+INST input
+INST output
+INST wait-cond-equ
+INST regulate-reset
+INST if-not-0
+INST pop-all
+INST dec
+INST regulate-resume
+INST teach-offspring
+INST if-n-equ
+INST sg-rotate-l
+INST yield
+INST regulate-pause
+INST rotate-org-id
+INST h-read
+INST divide-memory
+INST search-seq-d
+INST collect-specific
+INST if-gtr-0
+INST zero
+INST push
+INST label
+INST sense-resource-id
+INST if-equ-0
+INST nop-X
+INST search-lbl-d
+INST if-less
+INST get-head
+INST mult
+INST look-around-ex
+INST sg-move
+INST get-forage-target
+INST maxint
+INST look-again-ex
+INST h-write
+INST jmp-head
+INST learn-parent
+SEQ jEjFfpPfIwn76YOzYL0IRWHaiXS24fEz0zlyAirTzRSxjvvU2Nt6iBSI3b5KBjXkNVZP5BaGJJ0DJgaXMXqBVzENJE3A1415Yjol cdb8bc5469f0430f 9320191
+SEQ 2Yl9xUOtFdX0f7wWIVl2Hj7nq8ek1KSYoi7tgLxewvfMr7wUkzSA1GAVHTar7BZVcKqzrfnskxiSRPCfgW1u1RqX1JXDHKfoTe3D 621738411f81ddcd 2288
+SEQ 4X8ukWUfox3I7OFHX6GXy2zRtDWbGP771mQnbfzQWxTeKarnpIiTPub8ioTTCrbHBR7VGkrAi5FNpNrEdHMTYwGdNDsZSsT6NamQ 9348877f13cdc266 6115906
+SEQ O3HK4nbkt1pmAe1J3lbDIOpDfVS1FEnmWCuOqBtimy1OvV7SRJIq5xncQPVeN76jzefF9qw9nEe4e3xjvvaBwmc7sn0p8lNjw0Om e97c1fedef34f3f7 19520136
+SEQ bLciJZ8Yu8jdpQYUkvtSJuXLu2H0Lv3qs8woExAAxZIYhrDjR72nFxoDsZmEjqt4yS8wWq61FtmsKbSyRoWWR9TzcHMg2QwdXXzW 472582b633dbe47f 9766451
+BATCH exp_env/pp_div random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST set-rand-ft-once
+INST repro
+INST sg-sense
+INST mov-head
+INST did-copy-lbl
+INST h-copy
+INST swap
+INST sense-nest
+INST push-all
+INST attack-prey
+INST div
+INST get-res-stored
+INST mod
+INST rotate-x
+INST rand
+INST rotate-away-org-id
+INST scramble-registers
+INST set-ft-once
+INST set-forage-target
+INST shift-l
+INST nand
+INST swap-stk
+INST get-north-offset
+INST search-lbl-s
+INST if-less-0
+SEQ aGFftgtexwigHxzvBxgronFbBerwxGEbcndGHqkqgtnqfpCialdGjvbAvqgxpAphbygtExCycstjmiGlnqcuhakCpebcecAldtsh baadc1fa8f3faa5c 9320191
+SEQ yGzvDFGxvEBzDxkDvlqknnvoeFkqmnzvovczGhtosmBhcbrnfhDchldBmFrwnfcGDAFcnnAEdfEaGFjyFBtqbswDABroujuFGvxk 112f06745ecb5a67 9428512
+SEQ AwDFvttuxlezgrpubrckDibhGfAxyHywhhpeBHpytjblqBlrlvfqdstHGHbwejzDcsbubqlBEqGqopBivmynElChbgwFpckhqudo cbdd8e536b199fa3 9432334
+SEQ DHxwlGublaoAHnnixEymFhvhHAHeGvomboDcuonGrhFFuDHugxrkzbrdugFyxuolDafgCHzzachjdgavGfaAproExgswvdjxvkqd 03e10afd104af78f 9320191
+SEQ voonHpdyAfDufzcwpjutHstcuwCxmFGtDdcgDErzddDlsxBHDtvwdGqvbdvqApaCyFudCmAtrkaaGBDEqaFrBuCecodocCwupakr a5b07107d78f1f65 9394843
+BATCH gene_env/mut1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST scramble-registers
+INST if-gtr-0
+INST one
+INST mov-head
+INST move
+INST rotate-home
+INST terminator
+INST pop
+INST sense-nest
+INST teach-offspring
+INST wait-cond-gtr
+INST push-all
+INST yield
+INST search-lbl-d
+INST h-copy
+INST nop-X
+INST mult
+INST h-read
+INST h-write
+INST learn-parent
+INST if-equ-0
+INST collect-specific
+INST nand
+INST get-north-offset
+INST pop-all
+INST sense-resource-id
+INST regulate-pause
+INST if-less-0
+INST eat
+INST rotate-org-id
+INST output
+INST label
+INST swap-stk
+INST set-memory
+INST div
+INST sg-sense
+INST add
+INST get-faced-org-id
+INST dec
+INST look-again-ex
+INST swap
+INST sg-rotate-r
+INST inc
+INST rotate-x
+INST get-res-stored
+INST shift-r
+INST sub
+INST zero
+INST wait-cond-less
+INST repro
+INST regulate-resume
+INST jmp-head
+INST push
+INST maxint
+SEQ fbDyChRTPq7iEsCzsVkDCttRWcentR9WAgDeDGCQ9blBPrefikBs4D1hmNE4RZeBP8Oja4yNPs8O7cKILw9qnqGudbXrP2nemsHD e6368cfc051bb4ee 9080185
+SEQ WGiuZGZqJ4TUV9tPVRHsPGKB0E7d32ojcD27hGL3gqTDSyRuvxlC31vUgOQQHCANc3xfuBxDLUxcsqrfozckkEQTJgTMGf3cLBcT e1f50a5e6e05a11a 4498
+SEQ RiNupIUI1crmjpshL2CieSCtJzLowVYgRpqiwD7JoJC4tdL2YChmNeFiyHrFw89CdHBbKoQtJpgYzAOiSIojDlTMEfrWzCLeKR9a 2ce7f5bf16d133aa 3136
+SEQ Vp128frpFkVHzq9DBZbiglBZbrNYF7MvptlXeI7tbhedQX8fIDe9cf0ySFtxvr8jh9Mdcx7lhOvFwqTODgIOYKncMkrWKyubnIFZ e6368cfc051bb4ee 9080185
+SEQ ebUYFoQM5llkOykTIeY7mqgkPFH5GAnIeMHBwMmuHjOQL8m6a19cSq2t1SBDlS9S5IeSOzG7b3KNPRCLqH45QKr5XC60yWKugEi2 c8ad8683de23abbb 2443
+BATCH gene_env/mut1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST promoter
+INST if-less
+INST get-forage-target
+INST divide-memory
+INST wait-cond-equ
+INST sg-rotate-l
+INST search-seq-d
+INST rotate-away-org-id
+INST if-not-0
+INST sg-move
+INST attack-prey
+INST get-head
+INST mod
+INST if-n-equ
+INST rand
+INST look-around-ex
+INST input
+INST did-copy-lbl
+INST shift-l
+INST sense-faced-habitat
+INST search-lbl-s
+INST look-ahead-ex
+INST regulate-reset
+SEQ jswwajktfppayilnwjCzmyjysdoaEnylctydbvtloapbeeamnbCdrCuzEyyddsshhugfkotiapagwycknBkmnDqkfvjEgspxzcam 8f0adb6646a9de42 3667
+SEQ ayiwEkcwtyiptDwaehvkqjiABlqpmvnryAxemaonBzDsAeyAfaevrACdhzwscufqBAahEyxnrCCcffjoditxkhqnAyiCvbyvDpsk bb3d8cb11ac1ba26 60555
+SEQ kreAjxiDirDywtCyAsujeldoDuDpBiiwyulvxltsaAAlBqqhbAovttzxriBrfmlbpyqDdkhEdfbamAhfjwjbtcgDbowngwaozBcc a69ffcd664866931 52496148
+SEQ cwpszeAjcpvpfAgibCEpdaxykbxgBqwrukvDpBmCspwBaazdfitfDeBsveiryzpClokCEDvojcbAnvlqxnutsklrraBBylwjpEou c76bfb1915d8603b 31516268
+SEQ yalyDzidthsubosjlnClCusddaxlytjtnxfCptfEzpgolwjsBDpnpygmfuEuDnktbywEuyybzhwfaakcvhwCbDbcgBDgBCDBgxna d172d22a3a490196 9518
+BATCH gene_env/div2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST div
+INST teach-offspring
+INST shift-r
+INST sub
+INST get-res-stored
+INST h-read
+INST sg-sense
+INST nand
+INST divide-memory
+INST eat
+INST mov-head
+INST input
+INST swap-stk
+INST h-write
+INST output
+INST if-less-0
+INST if-gtr-0
+INST did-copy-lbl
+INST one
+INST regulate-resume
+INST wait-cond-gtr
+INST look-again-ex
+INST rand
+INST rotate-home
+INST nop-X
+INST repro
+INST add
+INST pop
+INST zero
+INST get-forage-target
+INST sg-rotate-r
+INST label
+INST search-seq-d
+INST promoter
+INST wait-cond-less
+INST set-memory
+INST push
+INST scramble-registers
+INST if-n-equ
+INST look-ahead-ex
+INST sense-resource-id
+INST h-copy
+INST wait-cond-equ
+INST sense-nest
+INST terminator
+INST search-lbl-s
+INST maxint
+INST rotate-away-org-id
+INST sg-rotate-l
+INST shift-l
+INST mult
+INST attack-prey
+INST rotate-x
+INST regulate-reset
+SEQ 6MdHmBll1fhY4saZPZuRUz8DHWWUd1Qkh8DJvaeKVgfvqPf9QXtQcYbmoGGSakb7QVH5i5t3iArgygnpm2ogtiJy4iPfCFalm0Ot 9372eb7b2e12ac26 3136
+SEQ z82g61snxNtjRUgard4yxVsz15DZgeKEn96aSUHe7WJN9vTalrsM29gacnVnN8zSMfL2xYsCdZPi4Ny52JzzqaZX7DfL3FuoXmsC 4bc90f5e18d21ff2 9175831
+SEQ 4vynNdwifV0xbWhEpIjsXUaiRxwHjboBHCp7zySI1S6sGMPTsNWXfPFrwViDQV2pFiw25u5O5JjOVSURRI6WhVrPcHmxznIGTt0E faa45f7bf00e2c57 202788
+SEQ Ol85iir4bKQ6e4XkvrpXQufjqqgiteFcGcEEzT3GVQgP5i0TtGJA79kDCR5XHE1jlmmshmCzDe2X2XtOIhZnU503nUt3nGsB2Egx 7985066695b9f52e 9217969
+SEQ HpVZlJKx0sjavZyjsG634UiGelM0GHch3r4AK6fImM15RCCA7TcTRl1l0ZgFTMKVOtkp9r9ohgJSILCBvYpIUkGdCfGbsb5qXwq7 072fa2006f04bbb1 91189
+BATCH gene_env/div2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST dec
+INST move
+INST get-faced-org-id
+INST swap
+INST sense-faced-habitat
+INST if-not-0
+INST learn-parent
+INST look-around-ex
+INST inc
+INST get-north-offset
+INST rotate-org-id
+INST pop-all
+INST search-lbl-d
+INST get-head
+INST yield
+INST collect-specific
+INST sg-move
+INST regulate-pause
+INST if-equ-0
+INST push-all
+INST jmp-head
+INST mod
+INST if-less
+SEQ csdgCvnynzzdaeDonagaboAfjuvzhzmfAvCurzqbpxhtkzyoxDforBnswmahppyrgnswfBbavbbEamdBucitncsogCgwhiCgdgba a6628c7ae798c2ee 9080185
+SEQ ucalecAepagyjEsaiCtqfrDaCxckydCCuBijrgkwrfctdhyiihamcpqmmhDoBwjhdBmnfnnoetdoqliDdDqoBuctmjeefAgABiki 2debdfa681f700ae 9080185
+SEQ gElgegswaynjzwviuazAzyukhupmhubbbbukcowkvoCdDkypmdsClepDdbmAyttmCEoAbopDcfueuoByrzvjDxogBlqnpnxDwheB 7a0fae0d40bf9c0e 5719008
+SEQ ajrpnCwgwCsuxniekdpuEmlyAlizlECpqbiikgfpcCybywvcaqakuCphhfpzmgwDlslkxmAsnqxsBnhvAnpsmevelpCxrwzEbCjo 7bc2a13fc9028e2e 9072921
+SEQ mjcjpEoljryvabvaiupqnltzlhielcmxssDspffxDiwxfyevizCdccwAixCcrABmyiDpgsnlblDsvDvykCmkoknghtcewzBsznmo 243ebcdcc3cea9bc 9076780
+BATCH gene_env/thr fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST eat
+INST mod
+INST move
+INST mov-head
+INST search-lbl-d
+INST sg-rotate-r
+INST pop
+INST shift-r
+INST get-head
+INST swap
+INST repro
+INST wait-cond-gtr
+INST if-less
+INST h-read
+INST if-not-0
+INST jmp-head
+INST swap-stk
+INST search-seq-d
+INST regulate-pause
+INST pop-all
+INST if-n-equ
+INST if-gtr-0
+INST wait-cond-equ
+INST output
+INST teach-offspring
+INST look-ahead-ex
+INST one
+INST div
+INST get-faced-org-id
+INST get-forage-target
+INST search-lbl-s
+INST shift-l
+INST learn-parent
+INST set-memory
+INST sub
+INST get-north-offset
+INST push-all
+INST regulate-reset
+INST rotate-x
+INST look-around-ex
+INST look-again-ex
+INST wait-cond-less
+INST mult
+INST zero
+INST scramble-registers
+INST sg-move
+INST add
+INST push
+INST inc
+INST divide-memory
+INST sense-resource-id
+INST collect-specific
+INST terminator
+INST input
+SEQ b1fkTTFaFeJMVHoKMuJNhlQkOw17vwWM7tpgke70lXBxkRcRH5Q9pA6k9VLa4wFGyQp74pkJeCZAXVEd1sd2qQscApkze3vP5jjV 30a15cbadd4ee202 9520108
+SEQ UEdqi9PH6UEb8n51xYj4xMXBFL52EtiILriXUayRi9TbqLuPp29LAqRzW9Z5iijgzglbPCYje3hPsitI8uzF4oNkll2ymTVJWcMT 791d9639e72fe7be 639
+SEQ G3VXdY7ayD3ezWKl2Toq9SMuVcpyjtU5s0GZJF8KgIMdGMVu9HtsSNHWJmeN0umweuQAg3ePeO0ZWCGN8bRPTCEHGy4zeobdQBcp 24dfac8eb2d63cce 1093
+SEQ rTL0zUBDZpzyuFoO69PfcElFxTM4nXCOOWNQU2MS0RqpE6FytNy0H9T6akumt4zTjfJlfHtN8yVVDg9kTBnRvxPLRmqf8buGq829 2e4fe20ad2bd5106 4304
+SEQ j5RGmpMSrTyk8zDzBDNQrQlQyNrgm9ncwZO73TxbeGLczMCSCpa8IjgtmDx5axkiKY60BH1dtmAz4JpoKZ01L7D4YbQLefB51VWQ 513d9f8e1e220218 9080185
+BATCH gene_env/thr fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST sg-sense
+INST label
+INST h-copy
+INST did-copy-lbl
+INST yield
+INST regulate-resume
+INST get-res-stored
+INST rand
+INST rotate-home
+INST h-write
+INST promoter
+INST nop-X
+INST nand
+INST sense-nest
+INST if-less-0
+INST sense-faced-habitat
+INST rotate-org-id
+INST dec
+INST rotate-away-org-id
+INST maxint
+INST attack-prey
+INST sg-rotate-l
+INST if-equ-0
+SEQ kyzBwidCgaCdeguhshzgyBAeeBxcCzvsEpceohEejElcjClAnwqiiquDblkhmDbwqzuDdejyapxEvbmhCDzAsdtonnfzjexdpcqp 5040e27843f2be4e 21796725
+SEQ uCDCdlcoyDgDsxqwvaunmDtfDfABouxrjkDnaksylDdrAqltqyelguBiAcccpfkmCejygvzmpfAnmBAqwjmbAiqEktCzvebycCpw 641f5be2f2adbcea 10766568
+SEQ yBorqEettcnwlwgysEAqrutsrbwewaavEgpabyxuyalttbbcxrvBzopBDbnEafcrkjhhhccwurCDlfpuqutjxqnzaAkralvwEmso 007511a58d64326a 6099448
+SEQ wfsbyfwsrkvoEgizgkpiiBfahfvDavygpenvgAtoExybcEzpnaruagaCqtuiEmcoBsDzccAytEntnmrEDnypzomfqrBBButvoAeB 7e6352c73c9a6a4e 10900725
+SEQ nqbvmzpicuDjiyojbEDwbqEslsfiBasorjwpkgbgzsmgxsevcfwnszuahprtuhvwCgwdAecblmAzmfbjzkwhBBDAidevEDrabmya 3fa9802b50ab0aca 13495108
+BATCH gene_env/misc1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST yield
+INST one
+INST if-n-equ
+INST get-faced-org-id
+INST sg-rotate-l
+INST sg-move
+INST push-all
+INST push
+INST rotate-x
+INST inc
+INST get-north-offset
+INST sense-resource-id
+INST rotate-away-org-id
+INST terminator
+INST mult
+INST promoter
+INST div
+INST wait-cond-gtr
+INST collect-specific
+INST repro
+INST if-gtr-0
+INST mod
+INST mov-head
+INST regulate-pause
+INST rand
+INST get-res-stored
+INST sg-sense
+INST nop-X
+INST h-copy
+INST pop
+INST sg-rotate-r
+INST look-around-ex
+INST input
+INST swap
+INST label
+INST attack-prey
+INST h-write
+INST search-seq-d
+INST if-equ-0
+INST wait-cond-less
+INST teach-offspring
+INST if-less
+INST sub
+INST h-read
+INST look-ahead-ex
+INST get-head
+INST sense-faced-habitat
+INST shift-l
+INST pop-all
+INST search-lbl-s
+INST if-not-0
+INST did-copy-lbl
+INST nand
+INST rotate-org-id
+SEQ 9fecKwI8S4C10hRTNXMZDYOiRl7YmV75JC49if9j4tvyedJJSwDdmrR0ufr7jqDnBhHZ59upgrP4laaOz2NDPKcZvpYrEQmJLIuv 481e94b01a5b4b44 11795
+SEQ b7iswRx5zzOdVoHenjQhjvhxbC3QmRQR0xGQOJniDIJutRtVqp4BnDtWcpdLvV4CCQdrJTn8cX5DN71daA7CQrXN9jFVZ2OdcS3r 5b9ac0b5c387fe88 27671
+SEQ MOhSfNZCvHUejETAgqapwnPYIgoUmPklU6LYQV5mCicm5H8TY6RG4ogLH7av57G5iKQE6ihhcCNKT3NMfrzWiSdhsRHdgtspkU0y 560d3757eacbe73d 11778712
+SEQ PJyjY246TWT7OvScpty5pEpmAjMkFCF7m4rWbW6mvXcotHqcW5yiqL0QUP8RNxXY58DN7q2dDQtflQbxE2c28ycwdoayiFz1g6Ul 8675e237785a937f 33825978
+SEQ ASQYVUCrx0UnRMs2ziWkHQFt6oA42HcdHgTTaWSFsDOxNsix8EpXiXCVeygNWEgId4RDr0w1ykWeJYo3W2TIGX9AVAWl6SdxV1Lg c0f00309aa5b90af 21842898
+BATCH gene_env/misc1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-less-0
+INST zero
+INST divide-memory
+INST look-again-ex
+INST regulate-reset
+INST set-memory
+INST jmp-head
+INST search-lbl-d
+INST regulate-resume
+INST move
+INST swap-stk
+INST scramble-registers
+INST get-forage-target
+INST maxint
+INST add
+INST dec
+INST sense-nest
+INST wait-cond-equ
+INST rotate-home
+INST output
+INST eat
+INST shift-r
+INST learn-parent
+SEQ rdzzEyAsuDfBxjykAmxBBnfxBcvsAawkixsCsqBvpiDuxfCbaDjBwoAkwmlufppqggiovfxDermewADhdyDkeixvkbqqBaeeawox 605f927b2b8c9f9e 1638
+SEQ hDyjxdeqcoAdfdijxppdqohukfuCCDBzsaurjmCbhpjngjxkdumAmxurrbemCsCwABBumqjCCefxluecjhobzvuwexhtwBocatxm 6712af02ccfece73 16800378
+SEQ qlmijtbEzzpqioagpiqjruhrjsotrcsklvkplegfaqtzjAwnBEovmdADoskDfnkDnBpfkoummhDgwlByqlmBDqttzCsvlzvbBord 45d46606e27fc016 3318
+SEQ jvxjuuzldtjffElckwrpeDyvbxCftnxrezcrssaiEshBcCBmDgpdxhongBvrevgEwpkgktqmrEjenttDepgcDvqlrvakyfetztlo 45d46606e27fc016 3318
+SEQ vmnmbhiAEnCscadsnagckueeBtDioDmfADovxcChepxxfhugADqknbhzurwskDzDAvqivxnDDyydwrAailAtfcDqpqlBreljrBxk 6712af02ccfece73 16800378
+BATCH gene_env/misc2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST nop-X
+INST sg-sense
+INST get-forage-target
+INST look-ahead-ex
+INST set-ft-once
+INST promoter
+INST eat
+INST rotate-org-id
+INST one
+INST rotate-home
+INST if-gtr-0
+INST rotate-away-org-id
+INST set-memory
+INST zero
+INST if-less
+INST wait-cond-gtr
+INST sg-move
+INST search-seq-d
+INST swap
+INST get-head
+INST sense-faced-habitat
+INST if-not-0
+INST wait-cond-less
+INST scramble-registers
+INST terminator
+INST wait-cond-equ
+INST rotate-x
+INST get-north-offset
+INST h-write
+INST set-rand-ft-once
+INST push-all
+INST shift-l
+INST collect-specific
+INST dec
+INST look-again-ex
+INST jmp-head
+INST shift-r
+INST teach-offspring
+INST set-forage-target
+INST h-read
+INST search-lbl-s
+INST regulate-resume
+INST swap-stk
+INST nand
+INST pop-all
+INST inc
+INST push
+INST mult
+INST yield
+INST did-copy-lbl
+INST mod
+INST learn-parent
+INST label
+INST sg-rotate-l
+SEQ Hdzh8E83lteX2H46yUqAR48lnuCmQkoHAijMEIoafpyrjhhXjaArurUCAVpBmRt1VRmbDmZY1YDK1nPVoqf8k5YTyQ1W976REiaq 7323e44ff3dedb06 10374000
+SEQ rAolPBS86pTk9eOhEh1krSXkUl3YdSmQ86jiCTMzEV4e9WvIiD6YDRpYiTaqLr5Jj7E9mefWJWm9CbqGEJLMkEqrg5S4WSl9qJ5f 285c36deb818c0c1 4266
+SEQ YSSghW0PQn6jXeSl3zoO4AiYvWErwq9CpnEQnzgcSQvwFISUfMdXSDnb8Cbh19tHUbd7E92TzdCmCUy08OoqulZrV90SR66m2hOm 43fd4ce8f66c67f3 11071
+SEQ sPfh3J2051qsVG7mnfbUlIopRM0r05San0CM6zUNpMLSkUzF0GaZIbB5sGe8HpvAgYz6R9fBYVfFEox92a5SVgsau20FGOOcUlmn 04a6ccab25d88f7a 20680398
+SEQ yp9yvI26jGafGHs0MTX7c7FyxB5c294bVEwWNI7xrsQPg56prwmkXxjy8fyPPwlZ4pAUx5ksxI1zDv2jG1auY46Jxlch57VM3WY8 8170fb39a45e4fb2 3633
+BATCH gene_env/misc2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST div
+INST add
+INST maxint
+INST pop
+INST mov-head
+INST input
+INST regulate-pause
+INST repro
+INST get-faced-org-id
+INST search-lbl-d
+INST sub
+INST move
+INST h-copy
+INST get-res-stored
+INST sense-resource-id
+INST sense-nest
+INST regulate-reset
+INST sg-rotate-r
+INST rand
+INST divide-memory
+INST if-less-0
+INST look-around-ex
+INST if-equ-0
+INST output
+INST attack-prey
+INST if-n-equ
+SEQ kDEHbdHvkqpCrChyidqArpFioAtEshweHmxvkazuGfoyiloFrokumqwGrqBuBeBpwsenyrgbAaetfvhDobkqdCixzrgthftzcGFx 7c951d575dd6bb6c 5340
+SEQ fjAhstCGraHDhGeizCmmxdfoqftDuGpGvAdjGmfqoazkpyDdetzcebluHrxbzEAdmjdelzznwCCqhaqnhHvpEcCufmexnpAoxujz b225a9fc4cccd573 9910204
+SEQ tFwcmiAiuEDBqjijwdqnpAwxDahlrwioykFDDqmBkctpjmGshbtqcxemAkHlDtplgvouHocAnsxxleanlGfoAavknBrzhCurpsDf 526ba4c6b6ee928b 10240181
+SEQ cwhaymtdCGcACBGDuzyBocvqzgxvrBtjmeyymtEehtFeamzzqpCECEExjlEqFynFsFtnxitCwzhwrsgpnGpklnrirygEvwrzsBrn 60ac2f85b0b560c7 9800203
+SEQ awigxjDDjDxAFlbcFdmhfoEArmcbvkrdDEpkkrHljikyAiinoHGFBjwiistystCozsdAGHEFzjjGiEHFsaGimegldjCpqdvEnGul ca7889dafe98694f 10559
+BATCH exp_env/abs1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh fb2bf909236d4913 14456
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 31d911b06b8694a3 32576
+SEQ qaaaaaaaaaaaaaaaaaaaa 659eb38571bcf37d 456
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 35cfe20e7d89d66d 42406
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 1eb23579b42f8dcb 41227
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh 698b013c440be612 1476868
+BATCH exp_env/ft1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 695e5ff0fee4f955 15608
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh d25c911da3469fe1 35168
+SEQ qaaaaaaaaaaaaaaaaaaaa fde1cf79fcc16213 492
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 633616275b2b18df 45358
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 592c1557d330d9e7 44359
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh a4881f685bf6bdf3 1594498
+BATCH exp_env/pp_div fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 2f6bfa10a713c6a6 1392190
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh a4d4de9b973f15a4 3248190
+SEQ qaaaaaaaaaaaaaaaaaaaa 1691a541d94fb661 1948990
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh ddbb9c7027a66cda 4303678
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 55927ed58178e141 3863360
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh fac0570d0d9312cb 1516078
+BATCH gene_env/mut1 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 6f5eedd5bbced677 14456
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 4b4fe31f84fbbb92 32576
+SEQ qaaaaaaaaaaaaaaaaaaaa 2953b65adf8be5bb 456
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 75982710c216ca5a 42406
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 2e92d4c33257c58f 41227
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh 58a2a4b275003388 139375
+BATCH gene_env/div2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 9735a4ab1cbbc216 90618
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 14e62a312cb093ec 108738
+SEQ qaaaaaaaaaaaaaaaaaaaa 1605e138d64f5411 90630
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh a2883b09cca148f3 143954
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 8c28e058c3a12b8f 88153
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh 5798c3ae28a62930 142093
+BATCH gene_env/thr random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 4400db0cb5e2764f 1356184
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 2f0dee279908101d 3164184
+SEQ qaaaaaaaaaaaaaaaaaaaa 4050c9a88930ef50 1898584
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 9c8e223aef06ea5c 4210072
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 6ed39dcd68df1904 3767966
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh f76b0a486a85f3be 1476868
+BATCH gene_env/misc1 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 5f81f5abb5059571 33931
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 864475e4920a14bb 67491
+SEQ qaaaaaaaaaaaaaaaaaaaa c97b241613355910 8803
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh 28bd28ee2a3a0f3e 81742
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh be9b960f84310d22 79539
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh daccfc43ecfa12e3 2738123
+BATCH gene_env/misc2 random -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST repro
+INST input
+INST nand
+INST output
+INST move
+INST rotate-x
+INST eat
+INST rotate-home
+INST h-read
+INST h-write
+SEQ ibjckclmhnopbkh 027ff1598bba5783 19756
+SEQ ibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh da942bc904d65769 39316
+SEQ qaaaaaaaaaaaaaaaaaaaa 10aef352f1909fc4 5128
+SEQ rrstibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh c3845a08b78631a4 50243
+SEQ uvbwxuibjckclmhnopbaaaaaaaaaaaaaaaaaaaakh a8b40697de655a3f 45379
+SEQ ibjckcllyzmhnopbaaaaaaaaaaaaaaaaaaaakh c0dbf4397a998797 1594498
+BATCH exp_env/ft1 fixed -1
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST maxint
+INST inc
+INST set-forage-target
+INST set-memory
+INST search-lbl-s
+INST label
+INST h-copy
+INST did-copy-lbl
+INST if-equ-0
+INST mov-head
+INST divide-memory
+INST set-ft-once
+INST get-forage-target
+INST look-around-ex
+INST rotate-x
+INST move
+INST eat
+INST get-res-stored
+INST collect-specific
+INST rotate-home
+INST input
+INST nand
+INST output
+INST teach-offspring
+INST learn-parent
+INST attack-prey
+SEQ ijklbmcncophqrsbaaaaaaaanh 501189018e2e17a5 27098
+SEQ ijtulbmcncophqrsbaaaaaaaanh ee0e5bd3a3f0c32f 28320
+SEQ igjgvvalbmcncophqrsbaaaaaaaanh 16bb51298f1a92ea 31498
+SEQ ijwwxylbmcncophqrsbaaaaaaaanh b04284c7c5abbf45 32073
+SEQ ijzAlbmcncophqrsbaaaaaaaanh 2909f71b40eb9383 28320
+SEQ xwbyBxCCDEylbmcncophqrsbaaaaaaaanh e36af9c886b99954 41615
+SEQ ijFklbmcncophqrsbaaaaaaaanh b2180927064bed8f 28320
+SEQ GuHxlbmcncophqrsbaaaaaaaanh a01d5fbda6eadbdf 28320

@@ -129,3 +129,25 @@ Ongoing tasks:
 3. **Workstream C: deeper `cPopulation.cc`** — 21 avd_ calls in 9.5K LOC, deme replication/migration dispatch patterns remain
 4. **Workstream C: `cPopulationInterface.cc`** — 0 avd_ calls, 2.4K LOC, last large untouched main file
 5. **Workstream C: `cLandscape.cc`** — 0 avd_ calls, 1K LOC, fitness landscape math
+
+## Native port update (2026-11-12)
+
+The native workspace `rust/avida-native` adds a second track beside Workstreams A to F. Per-subsystem status is in `rust-migration-waves.md`, section "Native port wave (2026-11-12)".
+
+| Workstream | Effect of the native port |
+|---|---|
+| A: Resource runtime (`source/main`) | Complete in the FFI track. Ported again natively in `crates/resources` (`cResourceCount`, spatial and gradient resources, 5,971 src lines). No action needed. |
+| B: CPU execution core (`source/cpu`) | Overtaken if the port is accepted. Native `crates/hardware` (37,235 src lines) holds the heads CPU, TransSMT, experimental, GP8 and BCR hardware and the test CPU. Instruction-level gaps are in progress. The FFI handler queue (146 remaining, 372/518 delegating) is paused pending the maintainer decision. |
+| C: Population and environment core (`source/main`) | Overtaken if accepted. Native `crates/world`, `environment`, `phenotype`, `tasks` and `systematics`. The "Pending cross-file reuse" items above only matter if the FFI track continues. |
+| D: Analyze and action pipeline | Overtaken if accepted. Native `crates/analyze` (19,897 src lines) and the action library in `crates/world`. Active work: analyze-mode set-up. |
+| E: Script, viewer, systematics tail | Native `crates/script`, `systematics`, and a new front-end layer (`session`, `viewmodel`, `gui`, `tui`) that is an alternative to the ncurses viewer and the parked eframe viewer of Issues #73 to #81. |
+| F: ABI and quality infrastructure | Applies to `rust/avida-rust` only. The native workspace has no ABI (no FFI, `unsafe_code = "forbid"`). It needs its own CI lane (open item in `documentation/Tech-Debt-Backlog.md`). |
+
+New workstreams for the native track:
+
+- **Workstream G: Native workspace governance.** Version control (commit strategy), CI (fmt, clippy, tests, consistency suite), and refreshing `docs/ontology.md` and `docs/ontology.json`. Status: not started; entries in the backlog.
+- **Workstream H: Native feature gaps.** Classify and close the remaining `unsupported:` stops (hardware crate and analyze-mode set-up in progress). Slice queue: recount after the in-progress work lands, then classify (undefined behaviour in C++, C++ crash, structural limit, gap).
+- **Workstream I: Front-end review.** Human review of `gui` and `tui` in real windows and terminals; head display for BCR and GP8 in the debuggers.
+- **Workstream J: Retirement decision.** Maintainer decision on superseding the FFI track, then acceptance criteria, then archiving `rust/avida-rust` and the C++. Marked open.
+
+Priority note: until the maintainer decides, no ordering between the FFI queue (Workstreams B and C) and Workstreams G to J is implied. The "Updated Priority Order (Top 5 executable candidates, 2026-03-18)" above remains the last FFI-track ordering.

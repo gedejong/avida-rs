@@ -1,0 +1,3 @@
+base demes_germline
+args -s 100 -set WORLD_Y 20 -set NUM_DEMES 10 -set DEMES_MAX_AGE 20 -set DEMES_USE_GERMLINE 3 -set DEMES_SEED_METHOD 1 -set DEMES_ORGANISM_SELECTION 7
+rc 2

@@ -1,0 +1,14 @@
+#filetype genotype_data
+#format id num_cpus length sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Number of CPUs
+# 3: Genome Length
+# 4: Genome Sequence
+
+10690282 1 0 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsvf 
+10690282 1 0 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsvcqpbpbfcoquttttttycsva 
+10690282 1 0 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfaoquttttttycsva 
+10690282 1 0 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttntycsva 
+10690282 6 0 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva 

@@ -1,0 +1,64 @@
+# Avida instruction execution data
+# Thu Nov 12 06:40:33 2026
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: h-divide
+# 26: IO
+# 27: h-search
+# 28: donate-facing
+# 29: donate-energy-faced
+# 30: donate-energy-faced5
+# 31: donate-energy-faced1
+# 32: if-faced-energy-low
+# 33: if-faced-energy-med
+# 34: if-faced-energy-high
+# 35: if-faced-energy-not-low
+# 36: if-faced-energy-not-high
+# 37: if-faced-energy-less
+# 38: if-faced-energy-more
+# 39: get-faced-energy-level
+# 40: if-faced-request-on
+# 41: if-faced-request-off
+# 42: get-faced-energy-request-status
+# 43: rotate-to-most-needy
+# 44: request-energy
+# 45: request-energy-on
+# 46: request-energy-off
+# 47: donate-energy
+# 48: receive-donated-energy
+# 49: increase-energy-donation
+# 50: update-metabolic-rate
+# 51: get-energy-level
+# 52: send-msg
+# 53: retrieve-msg
+# 54: rotate-r
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+20 0 4 510 0 0 774 774 0 0 0 0 0 22 0 0 0 0 0 0 0 0 774 6 6 0 12 6 4 4 4 4 4 4 0 0 4 4 0 0 0 4 4 6 4 2 0 6 8 4 0 0 0 44 
+40 0 4 937 0 0 1297 1297 0 0 0 0 0 35 0 0 0 0 0 0 0 0 1297 11 11 0 22 11 7 7 7 7 7 7 0 0 7 7 3 3 4 5 7 11 7 4 2 11 14 7 0 2 4 73 
+60 0 3 1016 0 0 1491 1491 0 2 0 0 0 39 0 0 0 0 0 0 0 0 1491 12 12 0 24 12 8 8 8 8 8 8 0 0 8 8 5 5 4 8 8 12 8 4 9 12 16 8 0 4 4 79 
+80 0 0 1003 0 0 1548 1548 0 4 0 0 0 29 0 0 0 2 2 0 0 0 1548 12 12 0 24 12 8 10 8 8 8 8 0 0 8 8 8 8 4 8 8 12 9 4 4 12 16 8 0 4 4 76 
+100 0 0 1001 0 0 1546 1546 0 4 0 0 0 32 0 0 0 2 2 0 0 0 1546 12 12 0 24 12 8 10 8 8 8 8 0 0 8 8 8 8 4 8 8 12 10 4 1 12 16 8 0 4 4 79 
+120 0 0 972 1 2 1528 1528 0 7 0 0 0 25 0 2 2 2 4 0 0 0 1528 12 12 0 24 14 7 13 7 7 7 7 0 0 9 7 7 7 7 7 7 14 7 5 4 12 14 7 0 5 4 71 

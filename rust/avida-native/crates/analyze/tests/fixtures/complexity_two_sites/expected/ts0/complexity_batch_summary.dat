@@ -1,0 +1,15 @@
+# One, Two Site Entropy/Complexity Analysis
+# Wed Nov 11 14:50:10 2026
+#  1: Genotype ID
+#  2: Genotype Fitness
+#  3: Entropy (single-site) MERS
+#  4: Complexity (single-site) MERS
+#  5: Mutual Information MERS
+#  6: Complexity (two-site) MERS
+#  7: Entropy (single-site) BITS
+#  8: Complexity (single-site) BITS
+#  9: Mutual Information BITS
+# 10: Complexity (two-site) BITS
+
+-1 0.244898 0.952345 14.0477 2.23564 16.2833 3.01886 44.53 7.0868 51.6168 
+-1 0 0 0 0 0 0 0 0 0 

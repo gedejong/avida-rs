@@ -1,0 +1,44 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 42
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       
+UD: 1       Gen: 1.000000   Fit: 1.135135   Orgs: 2       
+UD: 2       Gen: 2.000000   Fit: 1.135135   Orgs: 4       
+UD: 3       Gen: 2.000000   Fit: 1.135135   Orgs: 4       
+UD: 4       Gen: 3.000000   Fit: 1.135135   Orgs: 8       
+UD: 5       Gen: 3.769231   Fit: 1.139293   Orgs: 13      
+UD: 6       Gen: 4.000000   Fit: 1.134780   Orgs: 16      
+UD: 7       Gen: 4.892857   Fit: 1.141496   Orgs: 28      
+UD: 8       Gen: 5.560976   Fit: 1.145446   Orgs: 41      
+UD: 9       Gen: 6.416667   Fit: 1.151391   Orgs: 60      
+UD: 10      Gen: 7.133333   Fit: 1.154409   Orgs: 75      
+UD: 11      Gen: 7.970297   Fit: 1.157992   Orgs: 101     
+UD: 12      Gen: 8.773438   Fit: 1.159596   Orgs: 128     
+UD: 13      Gen: 9.474684   Fit: 1.160246   Orgs: 158     
+UD: 14      Gen: 10.37113   Fit: 1.169456   Orgs: 194     
+UD: 15      Gen: 11.20940   Fit: 1.172913   Orgs: 234     
+UD: 16      Gen: 12.13620   Fit: 1.176677   Orgs: 279     
+UD: 17      Gen: 13.05723   Fit: 1.184320   Orgs: 332     
+UD: 18      Gen: 13.97855   Fit: 1.186106   Orgs: 373     
+UD: 19      Gen: 14.93622   Fit: 1.392836   Orgs: 392     
+UD: 20      Gen: 15.94486   Fit: 1.308765   Orgs: 399     
+UD: 21      Gen: 16.95489   Fit: 1.248695   Orgs: 399     

@@ -115,3 +115,33 @@ Only remove C++ implementation when:
 - Run full gates before commit.
 - Commit/push per slice for traceability.
 - Recompute static baseline every major milestone and refresh planning docs.
+
+## Native port update (2026-11-12)
+
+The slice template, the mandatory gates and the retirement policy above govern the FFI track (`rust/avida-rust` plus C++ call sites). Changes confined to the native workspace `rust/avida-native` use the gates below instead. Nothing here changes the FFI gates.
+
+### Gates for the native workspace
+
+Run in `rust/avida-native`:
+
+- `cargo fmt --check`
+- `cargo clippy --workspace --all-targets -- -D warnings`
+- `cargo test --workspace`
+- The consistency suite: run the native `avida` binary and the reference binary `cbuild/work/avida` over `avida-core/tests/*` and compare output byte for byte, ignoring timestamps, the time-based seed and the data-directory path. Acceptable outcomes are same, or a trivial difference of that kind. Any DIFF blocks the change. Last measured 2026-11-12: 121 tests, 85 same, 34 trivial differences, 0 DIFF, 1 unsupported (the reference crashes on `SLICING_METHOD 4`), 1 reference timeout.
+- When a change touches an area covered by them, also the pinned list `crates/avida/tests/consistency_passing.txt` (`crates/avida/tests/consistency.rs`), the action fixtures under `crates/avida/tests/actions/` (`crates/avida/tests/actions.rs`), the stepper test (`crates/avida/tests/stepper.rs`), and the instruction-trace comparisons in `crates/hardware/tests`.
+
+Per-crate gates while working on one crate (from `PORTING.md`): `cargo test -p <crate>`, `cargo clippy -p <crate> --all-targets -- -D warnings`, `cargo fmt -p <crate>`.
+
+These gates are not yet in CI. Until the CI lane exists (open item in `documentation/Tech-Debt-Backlog.md`), they are run by hand and their results quoted with a date, as the suite figures above are.
+
+### Rules specific to the native track
+
+- Behaviour parity with the C++ is the specification: same RNG call order, integer and float arithmetic, iteration order and text formatting. Quirks that affect output are kept and marked `// QUIRK:`.
+- No `unsafe` and no FFI (`unsafe_code = "forbid"` in the workspace). Each ported type and non-trivial function cites the C++ file and symbol.
+- A path that is not ported, or that the C++ reaches only through undefined behaviour, must stop with `Err("unsupported: ... (C++: file:symbol)")`, never run with silently different output.
+- Do not edit `rust/avida-rust` or the C++ from a native-track change, and do not edit the native workspace from an FFI slice.
+
+### Definition of done and retirement for the native track
+
+- A native change is done when the four gates above pass and the affected documents (`rust/avida-native/ARCHITECTURE.md`, `rust/avida-native/docs/ontology.md`, `rust-migration-waves.md`) state the same figures.
+- Retirement of `rust/avida-rust` and the C++ is an open maintainer decision. The "Retirement Policy for Legacy C++" above would need a native-port reading (for example, zero DIFF over a stated period, remaining stops classified, front ends reviewed by a human). It is not met by any claim in this update.

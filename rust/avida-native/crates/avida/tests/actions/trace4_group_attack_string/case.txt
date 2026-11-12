@@ -1,0 +1,2 @@
+base avatars
+args -set TRACK_GROUP_ATTACK_DETAILS 1

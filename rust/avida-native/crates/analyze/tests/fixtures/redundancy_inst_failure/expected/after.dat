@@ -1,0 +1,14 @@
+#filetype genotype_data
+#format id fitness viable gest_time sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Fitness
+# 3: Is Viable (0/1)
+# 4: Gestation Time
+# 5: Genome Sequence
+
+-1 0 0 0 Autysvaaaa 
+-1 0 0 0 rutycasvab 
+-1 0 0 0 AutysvAutysv 
+-1 0 0 0 Aautysvbbbbbbb 

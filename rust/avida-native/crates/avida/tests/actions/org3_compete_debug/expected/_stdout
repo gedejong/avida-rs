@@ -1,0 +1,510 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: VERBOSITY 4
+CmdLine Set: WORLD_X 6
+CmdLine Set: WORLD_Y 6
+CmdLine Set: COPY_MUT_PROB 0.01
+Random Seed: 11
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/actions2/w3/runs/compd2/ref/data/
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 0.000   SWst: 0.000 %  
+UD: 11      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 12      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 29.33   SWst: 0.000 %  
+UD: 13      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 20      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 21      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 22      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 23      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 24      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 28.50   SWst: 0.000 %  
+UD: 25      Gen: 1.666667   Fit: 0.2497858  Orgs: 3       Spec: 29.00   SWst: 0.000 %  
+UD: 26      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 27      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 28      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 29      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 30      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 31      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 32      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 33      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 34      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 35      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 36      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 37      Gen: 2.000000   Fit: 0.2496787  Orgs: 4       Spec: 24.33   SWst: 0.000 %  
+UD: 38      Gen: 2.666667   Fit: 0.2501082  Orgs: 6       Spec: 30.67   SWst: 0.000 %  
+UD: 39      Gen: 2.857143   Fit: 0.2500928  Orgs: 7       Spec: 31.00   SWst: 0.000 %  
+UD: 40      Gen: 3.000000   Fit: 0.2500008  Orgs: 8       Spec: 29.25   SWst: 0.000 %  
+UD: 41      Gen: 3.000000   Fit: 2.801561   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 42      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 43      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 44      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 29.56   SWst: 0.000 %  
+UD: 45      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 46      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 47      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 48      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 49      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+UD: 50      Gen: 3.000000   Fit: 3.287671   Orgs: 8       Spec: 32.00   SWst: 0.000 %  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.08255, Avg fitness = 2.802 Max Fitness = 16.17
+Trial #1 Min Fitness = 2.622, Avg fitness = 3.288 Max Fitness = 3.880
+Trial #2 Min Fitness = 0.3288, Avg fitness = 0.3594 Max Fitness = 0.3880
+Trial fitness in cell 0 = 0.4635
+Trial fitness in cell 4 = 1.129
+Trial fitness in cell 5 = 0.6479
+Trial fitness in cell 6 = 0.4878
+Trial fitness in cell 11 = 0.6711
+Trial fitness in cell 17 = 1.497
+Trial fitness in cell 31 = 2.645
+Trial fitness in cell 34 = 1.137
+Scaling factor = 0.3061
+Scaling factor = 1.039
+Propagating from cell 4 to 0
+Propagating from cell 31 to 1
+Propagating from cell 31 to 2
+Propagating from cell 31 to 3
+Propagating from cell 11 to 4
+Propagating from cell 34 to 5
+Propagating from cell 34 to 6
+Propagating from cell 31 to 7
+Propagating from cell 31 to 8
+Propagating from cell 4 to 9
+Propagating from cell 17 to 10
+Propagating from cell 6 to 11
+Propagating from cell 17 to 12
+Propagating from cell 17 to 13
+Propagating from cell 31 to 14
+Propagating from cell 34 to 15
+Propagating from cell 4 to 16
+Propagating from cell 4 to 17
+Propagating from cell 17 to 18
+Propagating from cell 31 to 19
+Propagating from cell 4 to 20
+Propagating from cell 6 to 21
+Propagating from cell 6 to 22
+Propagating from cell 31 to 23
+Propagating from cell 11 to 24
+Propagating from cell 31 to 25
+Propagating from cell 5 to 26
+Propagating from cell 34 to 27
+Propagating from cell 6 to 28
+Propagating from cell 6 to 29
+Propagating from cell 0 to 30
+Propagating from cell 31 to 31
+Propagating from cell 0 to 32
+Propagating from cell 31 to 33
+Propagating from cell 34 to 34
+Propagating from cell 34 to 35
+Cell 0 has 2 copies in the next generation
+Cell 1 has 0 copies in the next generation
+Cell 2 has 0 copies in the next generation
+Cell 3 has 0 copies in the next generation
+Cell 4 has 5 copies in the next generation
+Cell 5 has 1 copies in the next generation
+Cell 6 has 5 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 0 copies in the next generation
+Cell 9 has 0 copies in the next generation
+Cell 10 has 0 copies in the next generation
+Cell 11 has 2 copies in the next generation
+Cell 12 has 0 copies in the next generation
+Cell 13 has 0 copies in the next generation
+Cell 14 has 0 copies in the next generation
+Cell 15 has 0 copies in the next generation
+Cell 16 has 0 copies in the next generation
+Cell 17 has 4 copies in the next generation
+Cell 18 has 0 copies in the next generation
+Cell 19 has 0 copies in the next generation
+Cell 20 has 0 copies in the next generation
+Cell 21 has 0 copies in the next generation
+Cell 22 has 0 copies in the next generation
+Cell 23 has 0 copies in the next generation
+Cell 24 has 0 copies in the next generation
+Cell 25 has 0 copies in the next generation
+Cell 26 has 0 copies in the next generation
+Cell 27 has 0 copies in the next generation
+Cell 28 has 0 copies in the next generation
+Cell 29 has 0 copies in the next generation
+Cell 30 has 0 copies in the next generation
+Cell 31 has 11 copies in the next generation
+Cell 32 has 0 copies in the next generation
+Cell 33 has 0 copies in the next generation
+Cell 34 has 6 copies in the next generation
+Cell 35 has 0 copies in the next generation
+Injecting Offspring 0 to 1
+Injecting Offspring 4 to 2
+Injecting Offspring 4 to 3
+Injecting Offspring 4 to 7
+Injecting Offspring 4 to 8
+Injecting Offspring 6 to 9
+Injecting Offspring 6 to 10
+Injecting Offspring 6 to 12
+Injecting Offspring 6 to 13
+Injecting Offspring 11 to 14
+Injecting Offspring 17 to 15
+Injecting Offspring 17 to 16
+Injecting Offspring 17 to 18
+Injecting Offspring 31 to 19
+Injecting Offspring 31 to 20
+Injecting Offspring 31 to 21
+Injecting Offspring 31 to 22
+Injecting Offspring 31 to 23
+Injecting Offspring 31 to 24
+Injecting Offspring 31 to 25
+Injecting Offspring 31 to 26
+Injecting Offspring 31 to 27
+Injecting Offspring 31 to 28
+Injecting Offspring 34 to 29
+Injecting Offspring 34 to 30
+Injecting Offspring 34 to 32
+Injecting Offspring 34 to 33
+Injecting Offspring 34 to 35
+Competed: Min fitness = 0.4635, Avg fitness = 1.085 Max fitness = 2.645
+Copied  : Min fitness = 0.4461, Avg fitness = 1.414, Max fitness = 2.546
+Copied  : Different organisms = 8
+UD: 51      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 52      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 53      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 27.71   SWst: 0.000 %  
+UD: 54      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 27.54   SWst: 0.000 %  
+UD: 55      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 26.51   SWst: 0.000 %  
+UD: 56      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 25.63   SWst: 0.000 %  
+UD: 57      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 27.39   SWst: 0.000 %  
+UD: 58      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 25.13   SWst: 0.000 %  
+UD: 59      Gen: 4.000000   Fit: 0.3632618  Orgs: 36      Spec: 26.93   SWst: 0.000 %  
+UD: 60      Gen: 4.055556   Fit: 0.3526128  Orgs: 36      Spec: 30.24   SWst: 1.019 %  
+UD: 61      Gen: 4.055556   Fit: 0.5370809  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 62      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 63      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 31.29   SWst: 0.000 %  
+UD: 64      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 29.25   SWst: 0.000 %  
+UD: 65      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 29.44   SWst: 0.000 %  
+UD: 66      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 28.86   SWst: 0.000 %  
+UD: 67      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 27.54   SWst: 0.000 %  
+UD: 68      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 28.95   SWst: 0.000 %  
+UD: 69      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 28.59   SWst: 0.000 %  
+UD: 70      Gen: 4.055556   Fit: 3.261619   Orgs: 36      Spec: 28.78   SWst: 0.000 %  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.1644, Avg fitness = 0.5371 Max Fitness = 8.167
+Trial #1 Min Fitness = 2.256, Avg fitness = 3.262 Max Fitness = 4.800
+Trial #2 Min Fitness = 0.3060, Avg fitness = 0.3504 Max Fitness = 0.3959
+Trial fitness in cell 0 = 0.8073
+Trial fitness in cell 1 = 0.5762
+Trial fitness in cell 2 = 0.8018
+Trial fitness in cell 3 = 0.7909
+Trial fitness in cell 4 = 0.6918
+Trial fitness in cell 5 = 0.7623
+Trial fitness in cell 6 = 0.7370
+Trial fitness in cell 7 = 0.6852
+Trial fitness in cell 8 = 0.7238
+Trial fitness in cell 9 = 0.6445
+Trial fitness in cell 10 = 0.6722
+Trial fitness in cell 11 = 0.7323
+Trial fitness in cell 12 = 0.6552
+Trial fitness in cell 13 = 0.6964
+Trial fitness in cell 14 = 0.7235
+Trial fitness in cell 15 = 0.7225
+Trial fitness in cell 16 = 0.6576
+Trial fitness in cell 17 = 0.6428
+Trial fitness in cell 18 = 0.6646
+Trial fitness in cell 19 = 0.6556
+Trial fitness in cell 20 = 0.7475
+Trial fitness in cell 21 = 0.7485
+Trial fitness in cell 22 = 0.7159
+Trial fitness in cell 23 = 0.7975
+Trial fitness in cell 24 = 0.6992
+Trial fitness in cell 25 = 0.7447
+Trial fitness in cell 26 = 0.6256
+Trial fitness in cell 27 = 0.7165
+Trial fitness in cell 28 = 0.6525
+Trial fitness in cell 29 = 0.8176
+Trial fitness in cell 30 = 2.193
+Trial fitness in cell 31 = 0.7466
+Trial fitness in cell 32 = 0.7301
+Trial fitness in cell 33 = 0.6712
+Trial fitness in cell 34 = 0.6821
+Trial fitness in cell 35 = 0.6804
+Scaling factor = -10.35
+Scaling factor = 0.7501
+Propagating from cell 6 to 0
+Propagating from cell 6 to 1
+Propagating from cell 11 to 2
+Propagating from cell 16 to 3
+Propagating from cell 30 to 4
+Propagating from cell 35 to 5
+Propagating from cell 23 to 6
+Propagating from cell 20 to 7
+Propagating from cell 19 to 8
+Propagating from cell 28 to 9
+Propagating from cell 15 to 10
+Propagating from cell 5 to 11
+Propagating from cell 12 to 12
+Propagating from cell 5 to 13
+Propagating from cell 10 to 14
+Propagating from cell 25 to 15
+Propagating from cell 29 to 16
+Propagating from cell 15 to 17
+Propagating from cell 8 to 18
+Propagating from cell 20 to 19
+Propagating from cell 14 to 20
+Propagating from cell 29 to 21
+Propagating from cell 27 to 22
+Propagating from cell 19 to 23
+Propagating from cell 13 to 24
+Propagating from cell 29 to 25
+Propagating from cell 30 to 26
+Propagating from cell 30 to 27
+Propagating from cell 14 to 28
+Propagating from cell 30 to 29
+Propagating from cell 13 to 30
+Propagating from cell 17 to 31
+Propagating from cell 0 to 32
+Propagating from cell 26 to 33
+Propagating from cell 30 to 34
+Propagating from cell 30 to 35
+Cell 0 has 1 copies in the next generation
+Cell 1 has 0 copies in the next generation
+Cell 2 has 0 copies in the next generation
+Cell 3 has 0 copies in the next generation
+Cell 4 has 0 copies in the next generation
+Cell 5 has 2 copies in the next generation
+Cell 6 has 2 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 1 copies in the next generation
+Cell 9 has 0 copies in the next generation
+Cell 10 has 1 copies in the next generation
+Cell 11 has 1 copies in the next generation
+Cell 12 has 1 copies in the next generation
+Cell 13 has 2 copies in the next generation
+Cell 14 has 2 copies in the next generation
+Cell 15 has 2 copies in the next generation
+Cell 16 has 1 copies in the next generation
+Cell 17 has 1 copies in the next generation
+Cell 18 has 0 copies in the next generation
+Cell 19 has 2 copies in the next generation
+Cell 20 has 2 copies in the next generation
+Cell 21 has 0 copies in the next generation
+Cell 22 has 0 copies in the next generation
+Cell 23 has 1 copies in the next generation
+Cell 24 has 0 copies in the next generation
+Cell 25 has 1 copies in the next generation
+Cell 26 has 1 copies in the next generation
+Cell 27 has 1 copies in the next generation
+Cell 28 has 1 copies in the next generation
+Cell 29 has 3 copies in the next generation
+Cell 30 has 6 copies in the next generation
+Cell 31 has 0 copies in the next generation
+Cell 32 has 0 copies in the next generation
+Cell 33 has 0 copies in the next generation
+Cell 34 has 0 copies in the next generation
+Cell 35 has 1 copies in the next generation
+Injecting Offspring 5 to 1
+Injecting Offspring 6 to 2
+Injecting Offspring 13 to 3
+Injecting Offspring 14 to 4
+Injecting Offspring 15 to 7
+Injecting Offspring 19 to 9
+Injecting Offspring 20 to 18
+Injecting Offspring 29 to 21
+Injecting Offspring 29 to 22
+Injecting Offspring 30 to 24
+Injecting Offspring 30 to 31
+Injecting Offspring 30 to 32
+Injecting Offspring 30 to 33
+Injecting Offspring 30 to 34
+Competed: Min fitness = 0.5762, Avg fitness = 0.7503 Max fitness = 2.193
+Copied  : Min fitness = 0.8341, Avg fitness = 1.289, Max fitness = 2.924
+Copied  : Different organisms = 22
+UD: 71      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 72      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 30.17   SWst: 0.000 %  
+UD: 73      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 25.28   SWst: 0.000 %  
+UD: 74      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 19.49   SWst: 0.000 %  
+UD: 75      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 18.50   SWst: 0.000 %  
+UD: 76      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 19.49   SWst: 0.000 %  
+UD: 77      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 19.11   SWst: 0.000 %  
+UD: 78      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 19.65   SWst: 0.000 %  
+UD: 79      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 19.92   SWst: 0.000 %  
+UD: 80      Gen: 5.166667   Fit: 0.3520476  Orgs: 36      Spec: 17.50   SWst: 0.000 %  
+UD: 81      Gen: 5.166667   Fit: 0.2981348  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 82      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 83      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 31.24   SWst: 0.000 %  
+UD: 84      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 21.98   SWst: 0.000 %  
+UD: 85      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 18.82   SWst: 0.000 %  
+UD: 86      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 19.57   SWst: 0.000 %  
+UD: 87      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 18.02   SWst: 0.000 %  
+UD: 88      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 20.09   SWst: 0.000 %  
+UD: 89      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 17.25   SWst: 0.000 %  
+UD: 90      Gen: 5.166667   Fit: 3.119723   Orgs: 36      Spec: 18.06   SWst: 0.000 %  
+==Compete Organisms==
+Trial #0 Min Fitness = 0.2740, Avg fitness = 0.2981 Max Fitness = 0.3289
+Trial #1 Min Fitness = 1.940, Avg fitness = 3.120 Max Fitness = 4.455
+Trial #2 Min Fitness = 0.3041, Avg fitness = 0.3294 Max Fitness = 0.3745
+Trial fitness in cell 0 = 0.6265
+Trial fitness in cell 1 = 0.6459
+Trial fitness in cell 2 = 0.5897
+Trial fitness in cell 3 = 0.6642
+Trial fitness in cell 4 = 0.6614
+Trial fitness in cell 5 = 0.5958
+Trial fitness in cell 6 = 0.7136
+Trial fitness in cell 7 = 0.6237
+Trial fitness in cell 8 = 0.6796
+Trial fitness in cell 9 = 0.6316
+Trial fitness in cell 10 = 0.6402
+Trial fitness in cell 11 = 0.6386
+Trial fitness in cell 12 = 0.7384
+Trial fitness in cell 13 = 0.6023
+Trial fitness in cell 14 = 0.6206
+Trial fitness in cell 15 = 0.6601
+Trial fitness in cell 16 = 0.6621
+Trial fitness in cell 17 = 0.7148
+Trial fitness in cell 18 = 0.6825
+Trial fitness in cell 19 = 0.6411
+Trial fitness in cell 20 = 0.7435
+Trial fitness in cell 21 = 0.6700
+Trial fitness in cell 22 = 0.6518
+Trial fitness in cell 23 = 0.6457
+Trial fitness in cell 24 = 0.7382
+Trial fitness in cell 25 = 0.6581
+Trial fitness in cell 26 = 0.6485
+Trial fitness in cell 27 = 0.7783
+Trial fitness in cell 28 = 0.7272
+Trial fitness in cell 29 = 0.7282
+Trial fitness in cell 30 = 0.7385
+Trial fitness in cell 31 = 0.6231
+Trial fitness in cell 32 = 0.5866
+Trial fitness in cell 33 = 0.7339
+Trial fitness in cell 34 = 0.7401
+Trial fitness in cell 35 = 0.6819
+Scaling factor = -13.51
+Scaling factor = 0.6871
+Propagating from cell 33 to 0
+Propagating from cell 33 to 1
+Propagating from cell 6 to 2
+Propagating from cell 10 to 3
+Propagating from cell 12 to 4
+Propagating from cell 26 to 5
+Propagating from cell 16 to 6
+Propagating from cell 32 to 7
+Propagating from cell 22 to 8
+Propagating from cell 24 to 9
+Propagating from cell 33 to 10
+Propagating from cell 4 to 11
+Propagating from cell 10 to 12
+Propagating from cell 24 to 13
+Propagating from cell 3 to 14
+Propagating from cell 26 to 15
+Propagating from cell 19 to 16
+Propagating from cell 17 to 17
+Propagating from cell 13 to 18
+Propagating from cell 25 to 19
+Propagating from cell 19 to 20
+Propagating from cell 16 to 21
+Propagating from cell 11 to 22
+Propagating from cell 19 to 23
+Propagating from cell 27 to 24
+Propagating from cell 22 to 25
+Propagating from cell 31 to 26
+Propagating from cell 0 to 27
+Propagating from cell 21 to 28
+Propagating from cell 11 to 29
+Propagating from cell 32 to 30
+Propagating from cell 25 to 31
+Propagating from cell 11 to 32
+Propagating from cell 32 to 33
+Propagating from cell 31 to 34
+Propagating from cell 22 to 35
+Cell 0 has 1 copies in the next generation
+Cell 1 has 0 copies in the next generation
+Cell 2 has 0 copies in the next generation
+Cell 3 has 1 copies in the next generation
+Cell 4 has 1 copies in the next generation
+Cell 5 has 0 copies in the next generation
+Cell 6 has 1 copies in the next generation
+Cell 7 has 0 copies in the next generation
+Cell 8 has 0 copies in the next generation
+Cell 9 has 0 copies in the next generation
+Cell 10 has 2 copies in the next generation
+Cell 11 has 3 copies in the next generation
+Cell 12 has 1 copies in the next generation
+Cell 13 has 1 copies in the next generation
+Cell 14 has 0 copies in the next generation
+Cell 15 has 0 copies in the next generation
+Cell 16 has 2 copies in the next generation
+Cell 17 has 1 copies in the next generation
+Cell 18 has 0 copies in the next generation
+Cell 19 has 3 copies in the next generation
+Cell 20 has 0 copies in the next generation
+Cell 21 has 1 copies in the next generation
+Cell 22 has 3 copies in the next generation
+Cell 23 has 0 copies in the next generation
+Cell 24 has 2 copies in the next generation
+Cell 25 has 2 copies in the next generation
+Cell 26 has 2 copies in the next generation
+Cell 27 has 1 copies in the next generation
+Cell 28 has 0 copies in the next generation
+Cell 29 has 0 copies in the next generation
+Cell 30 has 0 copies in the next generation
+Cell 31 has 2 copies in the next generation
+Cell 32 has 3 copies in the next generation
+Cell 33 has 3 copies in the next generation
+Cell 34 has 0 copies in the next generation
+Cell 35 has 0 copies in the next generation
+Injecting Offspring 10 to 1
+Injecting Offspring 11 to 2
+Injecting Offspring 11 to 5
+Injecting Offspring 16 to 7
+Injecting Offspring 19 to 8
+Injecting Offspring 19 to 9
+Injecting Offspring 22 to 14
+Injecting Offspring 22 to 15
+Injecting Offspring 24 to 18
+Injecting Offspring 25 to 20
+Injecting Offspring 26 to 23
+Injecting Offspring 31 to 28
+Injecting Offspring 32 to 29
+Injecting Offspring 32 to 30
+Injecting Offspring 33 to 34
+Injecting Offspring 33 to 35
+Competed: Min fitness = 0.5866, Avg fitness = 0.6702 Max fitness = 0.7783
+Copied  : Min fitness = 0.8537, Avg fitness = 0.9648, Max fitness = 1.133
+Copied  : Different organisms = 20
+UD: 91      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 32.00   SWst: 0.000 %  
+UD: 92      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 29.25   SWst: 0.000 %  
+UD: 93      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 19.09   SWst: 0.000 %  
+UD: 94      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 12.79   SWst: 0.000 %  
+UD: 95      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 14.68   SWst: 0.000 %  
+UD: 96      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 13.51   SWst: 0.000 %  
+UD: 97      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 14.69   SWst: 0.000 %  
+UD: 98      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 13.68   SWst: 0.000 %  
+UD: 99      Gen: 6.277778   Fit: 0.3295507  Orgs: 36      Spec: 14.99   SWst: 0.000 %  
+UD: 100     Gen: 6.333333   Fit: 0.3241764  Orgs: 36      Spec: 13.17   SWst: 1.852 %  
+UD: 101     Gen: 6.333333   Fit: 0.5416002  Orgs: 36      Spec: 32.00   SWst: 0.000 %  

@@ -1,0 +1,14 @@
+#filetype genotype_data
+#format id num_cpus 
+
+# Legend:
+# 1: Batch Name
+# 2: Genotype ID
+# 3: Number of CPUs
+
+Batch1 508717 314 
+Batch2 508717 31 
+Batch3 477539 26 
+Batch4 508717 314 
+Batch5 519371 1 
+Batch6 508717 314 

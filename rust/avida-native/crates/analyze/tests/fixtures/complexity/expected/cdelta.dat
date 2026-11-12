@@ -1,0 +1,50 @@
+# An analyze of expected complexity changes between parent and offspring
+# Wed Nov 11 18:19:43 2026
+#  1: Number of mutational differences between original organism and mutant.
+#  2: Complexity difference between original organism and mutant.
+#  3: Total complexity of initial organism.
+#  4: Total complexity of mutant.
+#  5: Num sites with no info at all.
+#  6: Num sites with info, but no change.
+#  7: Num sites with new info (prev. none).
+#  8: Num sites with newly shared info.
+#  9: Num sites with lost info.
+# 10: Num sites with parital lost info.
+# 11: Num sites with shift in info.
+# 12: Num sites with partial shift in info.
+# 13: Start task 0
+# 14: Start task 1
+# 15: Start task 2
+# 16: Start task 3
+# 17: Start task 4
+# 18: Start task 5
+# 19: Start task 6
+# 20: Start task 7
+# 21: Start task 8
+# 22: End task 0
+# 23: End task 1
+# 24: End task 2
+# 25: End task 3
+# 26: End task 4
+# 27: End task 5
+# 28: End task 6
+# 29: End task 7
+# 30: End task 8
+# 31: Fitness of initial organism.
+# 32: Fitness of mutant.
+# 33: Length of initial organism.
+# 34: Length of mutant.
+# 35: Gestation Time of initial organism.
+# 36: Gestation Time of mutant.
+# 37: ID of initial genotype.
+
+1 0 0 0 15 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 15 0 0 6 
+1 -15 15 0 18 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.245902 0 18 18 61 0 2 
+4 -22 22 0 5 0 0 0 17 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.506667 0 22 22 75 0 3 
+1 -15 15 0 18 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.245902 0 18 18 61 0 2 
+3 -22 22 0 5 0 0 0 17 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.506667 0 22 23 75 0 3 
+1 -22 22 0 5 0 0 0 17 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.506667 0 22 22 75 0 3 
+1 0 22 22 5 17 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0.506667 0.506667 22 23 75 75 3 
+1 0 0 0 15 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 16 0 0 5 
+1 0 0 0 15 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 16 0 0 5 
+1 2 15 17 18 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.245902 0.25 18 19 61 64 2 

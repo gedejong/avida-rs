@@ -1,0 +1,144 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+
+In analyze mode!!
+Loading: pop.spop
+Running through test CPUs...
+Analyzing Mate Selection... 
+  ave fraction failed = 0.445
+  ave matches failed = 0.445
+  total mate matches = 200 / 200
+Analyzing Mate Selection... 
+  ave fraction failed = nan
+  ave matches failed = nan
+  total mate matches = 0 / 0
+Analyzing Mate Selection... 
+  ave fraction failed = 0.5
+  ave matches failed = 0.5
+  total mate matches = 30 / 30
+Verbose ON: Using verbose log messages...
+Testing complexity delta.
+...using: filename='cdelta.dat' num_tests=6 copy_mut_prob=0.05 ins_mut_prob=0.1 del_mut_prob=0.1 count_threshold=2
+Testing complexity delta.
+...using: filename='cdelta.dat' num_tests=4 copy_mut_prob=0 ins_mut_prob=0.5 del_mut_prob=0 count_threshold=1
+Testing complexity delta.
+...using: filename='cd0.dat' num_tests=3 copy_mut_prob=0 ins_mut_prob=0 del_mut_prob=0 count_threshold=1
+Setting current batch to 1
+Loading: pop2.spop
+Loading file of type: genotype_data
+Testing complexity delta.
+...using: filename='cd2.dat' num_tests=12 copy_mut_prob=0.02 ins_mut_prob=0.2 del_mut_prob=0.2 count_threshold=1
+Setting current batch to 2
+Loading: com2.spop
+Loading file of type: genotype_data
+Running batch 2 through test CPUs...
+Analyze community complexity of current population about environment with Charles method ...
+Test point mutation for genotype 1
+Test point mutation for genotype 11
+Test point mutation for genotype 12
+Test point mutation for genotype 6
+Test point mutation for genotype 13
+Test point mutation for genotype 14
+11 0.244898
+        New closest genotype 1 0.760595
+12 0.259259
+        New closest genotype 1 0.961037
+6 0
+13 0.227273
+        New closest genotype 1 1.2217
+14 0.196078
+        New closest genotype 1 1.59512
+        New closest genotype 13 1.15754
+Analyze community complexity of current population about environment with Charles method ...
+Test point mutation for genotype 1
+Setting current batch to 3
+Loading: top.pop
+Loading file of type: genotype_data
+Average Modularity calculations
+Found 0 args.
+There are 0 column args.
+Args are loaded.
+  outputing as text files.
+  Format: num_cpus html r_tot ave_prop_nonoverlap sites_inv_x_tasks src_args exe_length total_task_count total_task_performance_count dom_num_cpus update_deactivated cells name phen_min_fitness executed_flags efficiency_ratio depth gest_offset total_cpus num_units fitness num_trials phen_max_fitness dom_depth viable src parents mating_display_a parent_muts sequence ave_tasks_per_site ave_sites_per_task parent_id copy_length comp_merit_ratio mating_display_b num_phen phen_likely_fitness prob_viable dom_sequence parent_dist frac_dead frac_neut task_list hw_type update_dead land_fitness mate_preference inst tasks_done sites_per_task ave_task_position total_units efficiency mate_id insts_tasks parent2_id lineage mating_type task_order comp_merit tasks_prop ancestor_dist gen_born phen_min_freq r_spec merit frac_neg alignment link tag div_type frac_pos gest_time phen_likely_freq env_input phen_entropy task_quality phen_max_fit_freq phen_avg_fitness id length update_born complexity task r_avail inst_set fitness_ratio alignment_executed_flags prob_task update dom_id task_length 
+Average Modularity calculations
+Found 9 args.
+There are 9 column args.
+Args are loaded.
+  outputing as text files.
+  Format: task task task task task task task task task 
+  Mapping org-10690282
+  Mapping org-10641910
+  Mapping org-10713761
+  Mapping org-10598744
+  Mapping org-10689390
+  Mapping org-10677194
+Average Modularity calculations
+Found 5 args.
+There are 4 column args.
+Args are loaded.
+  outputing as boolean text files.
+  Format: task task task fitness 
+  Mapping org-10690282
+  Mapping org-10641910
+  Mapping org-10713761
+  Mapping org-10598744
+  Mapping org-10689390
+  Mapping org-10677194
+Average Modularity calculations
+Found 5 args.
+There are 4 column args.
+Args are loaded.
+  outputing as text files.
+  Format: task task task 
+  Mapping org-10690282
+  Mapping org-10641910
+  Mapping org-10713761
+  Mapping org-10598744
+  Mapping org-10689390
+  Mapping org-10677194
+Setting current batch to 0
+Average Modularity calculations
+Found 3 args.
+There are 3 column args.
+Args are loaded.
+  outputing as text files.
+  Format: task task task 
+  Mapping org-1
+  Mapping org-2
+  Mapping org-3
+  Mapping org-4
+  Mapping org-5
+  Mapping org-6
+  Mapping org-7
+Average Modularity calculations
+Found 2 args.
+There are 2 column args.
+Args are loaded.
+  outputing as text files.
+  Format: task task 
+  Mapping org-1
+  Mapping org-2
+  Mapping org-3
+  Mapping org-4
+  Mapping org-5
+  Mapping org-6
+  Mapping org-7

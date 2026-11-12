@@ -1,0 +1,46 @@
+# Avida deme org tasks data
+# Wed Nov 11 13:20:49 2026
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+# in a particular deme when the deme last divided.
+#  1: Update
+#  2: 0.Not
+#  3: 0.Nand
+#  4: 0.And
+#  5: 0.OrNot
+#  6: 0.Or
+#  7: 0.AndNot
+#  8: 0.Nor
+#  9: 0.Xor
+# 10: 0.Equals
+# 11: 1.Not
+# 12: 1.Nand
+# 13: 1.And
+# 14: 1.OrNot
+# 15: 1.Or
+# 16: 1.AndNot
+# 17: 1.Nor
+# 18: 1.Xor
+# 19: 1.Equals
+# 20: 2.Not
+# 21: 2.Nand
+# 22: 2.And
+# 23: 2.OrNot
+# 24: 2.Or
+# 25: 2.AndNot
+# 26: 2.Nor
+# 27: 2.Xor
+# 28: 2.Equals
+# 29: 3.Not
+# 30: 3.Nand
+# 31: 3.And
+# 32: 3.OrNot
+# 33: 3.Or
+# 34: 3.AndNot
+# 35: 3.Nor
+# 36: 3.Xor
+# 37: 3.Equals
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+20 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+40 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

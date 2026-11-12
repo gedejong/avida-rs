@@ -1,0 +1,2 @@
+base sex
+args -s 3 -set WORLD_X 30 -set WORLD_Y 30 -set NUM_DEMES 3 -set BIRTH_METHOD 6 -set SAME_LENGTH_SEX 1 -set DIVIDE_DEL_PROB 0.01 -set DIV_MUT_PROB 0.01

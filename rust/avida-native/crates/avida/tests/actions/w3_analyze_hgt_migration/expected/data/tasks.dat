@@ -1,0 +1,16 @@
+#filetype genotype_data
+#format id merit fitness gest_time task task task task task task 
+
+# Legend:
+# 1: Genotype ID
+# 2: Merit
+# 3: Fitness
+# 4: Gestation Time
+# 5: Not
+# 6: Nand
+# 7: And
+# 8: OrNot
+# 9: Or
+# 10: AndNot
+
+29963 182 0.52907 344 1 0 0 0 0 0 

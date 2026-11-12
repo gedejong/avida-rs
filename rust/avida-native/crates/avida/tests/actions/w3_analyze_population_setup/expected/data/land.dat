@@ -1,0 +1,27 @@
+#  1: Update
+#  2: Probability Lethal
+#  3: Probability Deleterious
+#  4: Probability Neutral
+#  5: Probability Beneficial
+#  6: Average Beneficial Size
+#  7: Average Deleterious Size
+#  8: Total Mutants
+#  9: Distance
+# 10: Base Fitness
+# 11: Base Merit
+# 12: Base Gestation
+# 13: Peak Fitness
+# 14: Average Fitness
+# 15: Average Square Fitness
+# 16: Total Entropy
+# 17: Total Complexity
+# 18: Probability Lethal Epistasis
+# 19: Probability Synergistic Epistasis
+# 20: Probability Antagonistic Epistasis
+# 21: Probability No Epistasis
+# 22: Average Synergistic Epistasis Size
+# 23: Average Antagonistic Epistasis Size
+# 24: Average Size - No Epistasis
+# 25: Total Epistasis Count
+
+-1 0.246842 0.296842 0.386842 0.0694737 0.531914 0.422505 1900 1 0.52907 182 344 0.533724 0.367038 0.185754 0 0 0 0 0 0 0 0 0 0 

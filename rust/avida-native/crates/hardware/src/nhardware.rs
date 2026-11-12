@@ -1,0 +1,131 @@
+//! Hardware-wide constants: `nHardware` (avida-core/source/cpu/nHardware.h),
+//! the fault enums of the same header, and the parts of
+//! `avida/core/Definitions.h` the hardware layer switches on.
+
+/// `nHardware::FITNESS_NEUTRAL_RANGE`
+pub const FITNESS_NEUTRAL_RANGE: f64 = 0.0;
+/// `nHardware::FITNESS_NEUTRAL_MIN`
+pub const FITNESS_NEUTRAL_MIN: f64 = 1.0 - FITNESS_NEUTRAL_RANGE;
+/// `nHardware::FITNESS_NEUTRAL_MAX`
+pub const FITNESS_NEUTRAL_MAX: f64 = 1.0 + FITNESS_NEUTRAL_RANGE;
+/// `nHardware::TEST_CPU_GENERATIONS`: default generations tested for viability.
+pub const TEST_CPU_GENERATIONS: i32 = 3;
+
+/// `nHardware::HEAD_IP`
+pub const HEAD_IP: usize = 0;
+/// `nHardware::HEAD_READ`
+pub const HEAD_READ: usize = 1;
+/// `nHardware::HEAD_WRITE`
+pub const HEAD_WRITE: usize = 2;
+/// `nHardware::HEAD_FLOW`
+pub const HEAD_FLOW: usize = 3;
+/// `nHardware::NUM_HEADS`
+pub const NUM_HEADS: usize = 4;
+/// `nHardware::STACK_SIZE`
+pub const STACK_SIZE: i32 = 10;
+
+/// `FAULT_TYPE_WARNING` (also `FAULT_TYPE_FORK_TH`, `FAULT_TYPE_KILL_TH`).
+pub const FAULT_TYPE_WARNING: i32 = 0;
+/// `FAULT_TYPE_ERROR`
+pub const FAULT_TYPE_ERROR: i32 = 1;
+
+/// `FAULT_LOC_DEFAULT`
+pub const FAULT_LOC_DEFAULT: i32 = 0;
+/// `FAULT_LOC_INSTRUCTION`
+pub const FAULT_LOC_INSTRUCTION: i32 = 1;
+/// `FAULT_LOC_JUMP`
+pub const FAULT_LOC_JUMP: i32 = 2;
+/// `FAULT_LOC_MATH`
+pub const FAULT_LOC_MATH: i32 = 3;
+/// `FAULT_LOC_INJECT`
+pub const FAULT_LOC_INJECT: i32 = 4;
+/// `FAULT_LOC_THREAD_FORK`
+pub const FAULT_LOC_THREAD_FORK: i32 = 5;
+/// `FAULT_LOC_THREAD_KILL`
+pub const FAULT_LOC_THREAD_KILL: i32 = 6;
+/// `FAULT_LOC_ALLOC`
+pub const FAULT_LOC_ALLOC: i32 = 7;
+/// `FAULT_LOC_DIVIDE`
+pub const FAULT_LOC_DIVIDE: i32 = 8;
+/// `FAULT_LOC_BCOPY`
+pub const FAULT_LOC_BCOPY: i32 = 9;
+
+/// `MIN_GENOME_LENGTH` (Definitions.h)
+pub const MIN_GENOME_LENGTH: i32 = 8;
+/// `MAX_GENOME_LENGTH` (Definitions.h)
+pub const MAX_GENOME_LENGTH: i32 = 2048;
+/// `RECEIVED_MESSAGES_SIZE` (Definitions.h)
+pub const RECEIVED_MESSAGES_SIZE: i32 = 10;
+
+/// `HARDWARE_TYPE_CPU_ORIGINAL`
+pub const HARDWARE_TYPE_CPU_ORIGINAL: i32 = 0;
+/// `HARDWARE_TYPE_CPU_SMT`
+pub const HARDWARE_TYPE_CPU_SMT: i32 = 1;
+/// `HARDWARE_TYPE_CPU_TRANSSMT`
+pub const HARDWARE_TYPE_CPU_TRANSSMT: i32 = 2;
+/// `HARDWARE_TYPE_CPU_EXPERIMENTAL`
+pub const HARDWARE_TYPE_CPU_EXPERIMENTAL: i32 = 3;
+/// `HARDWARE_TYPE_CPU_GP8`
+pub const HARDWARE_TYPE_CPU_GP8: i32 = 4;
+/// `HARDWARE_TYPE_CPU_BCR`
+pub const HARDWARE_TYPE_CPU_BCR: i32 = 5;
+
+/// `DEATH_METHOD_OFF`
+pub const DEATH_METHOD_OFF: i32 = 0;
+/// `DEATH_METHOD_CONST`
+pub const DEATH_METHOD_CONST: i32 = 1;
+/// `DEATH_METHOD_MULTIPLE`
+pub const DEATH_METHOD_MULTIPLE: i32 = 2;
+
+/// `ALLOC_METHOD_DEFAULT`
+pub const ALLOC_METHOD_DEFAULT: i32 = 0;
+/// `ALLOC_METHOD_NECRO`
+pub const ALLOC_METHOD_NECRO: i32 = 1;
+/// `ALLOC_METHOD_RANDOM`
+pub const ALLOC_METHOD_RANDOM: i32 = 2;
+
+/// `DIVIDE_METHOD_OFFSPRING`
+pub const DIVIDE_METHOD_OFFSPRING: i32 = 0;
+/// `DIVIDE_METHOD_SPLIT`
+pub const DIVIDE_METHOD_SPLIT: i32 = 1;
+/// `DIVIDE_METHOD_BIRTH`
+pub const DIVIDE_METHOD_BIRTH: i32 = 2;
+
+/// `EPIGENETIC_METHOD_NONE`
+pub const EPIGENETIC_METHOD_NONE: i32 = 0;
+/// `EPIGENETIC_METHOD_OFFSPRING`
+pub const EPIGENETIC_METHOD_OFFSPRING: i32 = 1;
+/// `EPIGENETIC_METHOD_PARENT`
+pub const EPIGENETIC_METHOD_PARENT: i32 = 2;
+/// `EPIGENETIC_METHOD_BOTH`
+pub const EPIGENETIC_METHOD_BOTH: i32 = 3;
+
+/// `MATING_TYPE_JUVENILE`
+pub const MATING_TYPE_JUVENILE: i32 = -1;
+/// `MATING_TYPE_FEMALE`
+pub const MATING_TYPE_FEMALE: i32 = 0;
+/// `MATING_TYPE_MALE`
+pub const MATING_TYPE_MALE: i32 = 1;
+
+/// `MATE_PREFERENCE_RANDOM`
+pub const MATE_PREFERENCE_RANDOM: i32 = 0;
+/// `MATE_PREFERENCE_HIGHEST_DISPLAY_A`
+pub const MATE_PREFERENCE_HIGHEST_DISPLAY_A: i32 = 1;
+/// `MATE_PREFERENCE_HIGHEST_DISPLAY_B`
+pub const MATE_PREFERENCE_HIGHEST_DISPLAY_B: i32 = 2;
+/// `MATE_PREFERENCE_HIGHEST_MERIT`
+pub const MATE_PREFERENCE_HIGHEST_MERIT: i32 = 3;
+/// `MATE_PREFERENCE_LOWEST_DISPLAY_A`
+pub const MATE_PREFERENCE_LOWEST_DISPLAY_A: i32 = 4;
+/// `MATE_PREFERENCE_LOWEST_DISPLAY_B`
+pub const MATE_PREFERENCE_LOWEST_DISPLAY_B: i32 = 5;
+/// `MATE_PREFERENCE_LOWEST_MERIT`
+pub const MATE_PREFERENCE_LOWEST_MERIT: i32 = 6;
+
+/// `VERBOSE_DETAILS` (Definitions.h `eVerbosity`).
+pub const VERBOSE_DETAILS: i32 = 3;
+
+/// `cHardwareBase::interruptTypes::MSG_INTERRUPT`
+pub const MSG_INTERRUPT: i32 = 0;
+/// `cHardwareBase::interruptTypes::MOVE_INTERRUPT`
+pub const MOVE_INTERRUPT: i32 = 1;

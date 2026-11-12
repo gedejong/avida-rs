@@ -1,0 +1,8 @@
+# Levenstein distance information
+# Wed Nov 11 13:56:25 2026
+#  1: Name of First Batch
+#  2: Name of Second Batch
+#  3: Average Levenstein Distance
+#  4: Total Pairs Test
+
+Batch1 Batch0 13.2793 52635 

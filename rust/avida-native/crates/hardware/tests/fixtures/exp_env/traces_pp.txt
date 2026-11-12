@@ -1,0 +1,170 @@
+# Genomes of the pp-evolved consistency test (detail-2m.spop, a random
+# sample) traced by the C++ reference (cbuild/work/avida -a, analyze
+# LOAD_SEQUENCE... + TRACE trace_out/ 0 0 <random>) with the
+# tests/fixtures/exp_env/pp config and the pp-evolved instruction set
+# (instruction costs, four threads with THREAD_SLICING_METHOD 1).
+# SEQ <sequence> <fnv1a64 of the trace> <trace length in bytes>
+# Each batch was one reference run, so one world RNG and one test CPU carry
+# over from genome to genome as in cAnalyze::CommandTrace.
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-n-equ
+INST if-less
+INST mov-head
+INST jmp-head
+INST get-head
+INST set-flow
+INST search-seq-comp-s
+INST search-seq-direct-s
+INST shift-r
+INST shift-l
+INST inc
+INST dec
+INST push
+INST pop
+INST swap-stk
+INST swap
+INST pop-all
+INST push-all
+INST add
+INST sub
+INST nand
+INST fork-thread
+INST exit-thread
+INST id-thread
+INST IO
+INST repro:cost=30
+INST wait-cond-equ
+INST wait-cond-less
+INST wait-cond-gtr
+INST if-not-0
+INST if-equ-0
+INST if-gtr-0
+INST if-less-0
+INST if-gtr-x
+INST if-equ-x
+INST move:post_cost=30
+INST get-north-offset
+INST rotate-x
+INST rotate-org-id
+INST rotate-away-org-id
+INST set-forage-target
+INST get-forage-target
+INST look-ahead-intercept
+INST attack-prey:post_cost=10
+INST attack-pred:post_cost=10:redundancy=0
+INST teach-offspring
+INST learn-parent
+INST nop-X
+INST scramble-registers
+INST zero
+INST one
+INST rand
+SEQ RSGhRDkp5twc1hRnc7bfSRrRPxaAL3TufGbRJ7uCY2AWHacnCRO3 1e0507404e47f336 3598372
+SEQ RfGhRDkp5thcrPR2AV7bfSRRPxaALZLTuRGbRJ7uCY2RWHacnCnO3 a83b8c9cdc251499 3670733
+SEQ RSGhRDkpttwlc1PR2cV7bfSRrRPxaALUTu6GbRJ7uCY2RBWHacnCRX3 6b35a7bea4b4b883 3824336
+SEQ RGhRDkp5Tewc2gt7fRrGRPeaALUQ7rGbR6u7uCYBAWrz5HRyFzR3wa 18f89058b53956b6 3931709
+SEQ RSGhRzDkpvttwhc1PR2cV7bfSRrRPxaALUTuRGbRJ7uRY2RWHacnCRO3 56b890c5d03cda12 4012069
+SEQ RSGhRDkpttwhc1PR2cV7bfSRrRPxaALUTu6GbRJ7uCY2RBWHacnCROx ae7425fec9f42d25 3969505
+SEQ rSGzRDkp5twhc1PR2cV7bSRrRPxaALrTufGbRJ7uuY2RWHacnERO3 2d45fb16f8309a3e 2422415
+SEQ RSGhRDkpttwlc1PR2cV7bfSRrRPxaALUTu6GbRJ7uCY2RBWHacnCRO3 16b36c3c8c18016b 3823531
+SEQ RSGhRDkpbwohc1PR2cV7bfSRrRPgaALUTu4GbRJ7uCY2RWHacnCROY d91345b52efa6d79 3811800
+SEQ RJGRDkWjDVw5PSotR5RjNaAMCTzGRit1NVYiNxiMGhWpHwmedqBh 299c04ba77707cf2 1146590
+SEQ 2od6PwVaj31ZbexZVXmDnNJNhVYccdcTfP2hOZgUcXAGVBsZUcZNRdGcAZAYcccZP7TgNHZ2X 5043f3d6a8aa73a0 5083336
+SEQ RGhRDkW5twGRVP12ct7fSrRPeaALUTsrebRW6uY2RQWHR7ARgq2 8245e1deb1e3ac2b 3719062
+SEQ RSGhRDkqttwOc1PRcV7bfSRrRxaALUTu6GbRJ7uCY2RWHacnCRO3 74401c06231828e1 3613605
+SEQ RdhRDkW5twGeVP12ct7uSrRPeaALUTsrebR6uYWRQWHR7YRfq2 9e982172204f86e5 3501306
+SEQ RSGhRDkp5whc1P42cV7bSRrRxALUTuRGbRJvuCY2RWHecnCRO3 32bb45b5202839c1 3464496
+SEQ 2oUd6PwVaj31ZbexZVXmDnNJNhVYccdcTfP2hOZQUcXAGVBsZUcZNRdGAZAYcccZP7TgNHZQX 81f749a6ccd4ee3d 5007231
+SEQ 2Ud6VajDGZZ1bxxZhXmDnzNRNhVYccdcTfPh2ohqZgUcXAGVBsNUcZNRdGcAZAYcccZP7mgNHZQX 0e0c8ef9a1666b12 5259256
+SEQ 2Ud6VajDGaZ1bxxZhXmDnhNRNhVYccdcTfPh2hqZgUcXAGVBsNUcZNRdGcAZAYcccZP7TgNHZQh 548fa5698ee65c17 5346666
+SEQ RGhRDkp5TewcRV2gtm7fprGRPXOaAvLUTurGbR63u7SnY2dWcz5HRwFzRUga d98212c1ed9e816b 4484318
+SEQ RGhRDkW5twGRVP22ct7fSrRPeaALUTsrebRW6uY2RQoWHRSQRgq2 1d922843e2cc4554 3802012
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-n-equ
+INST if-less
+INST mov-head
+INST jmp-head
+INST get-head
+INST set-flow
+INST search-seq-comp-s
+INST search-seq-direct-s
+INST shift-r
+INST shift-l
+INST inc
+INST dec
+INST push
+INST pop
+INST swap-stk
+INST swap
+INST pop-all
+INST push-all
+INST add
+INST sub
+INST nand
+INST fork-thread
+INST exit-thread
+INST id-thread
+INST IO
+INST repro:cost=30
+INST wait-cond-equ
+INST wait-cond-less
+INST wait-cond-gtr
+INST if-not-0
+INST if-equ-0
+INST if-gtr-0
+INST if-less-0
+INST if-gtr-x
+INST if-equ-x
+INST move:post_cost=30
+INST get-north-offset
+INST rotate-x
+INST rotate-org-id
+INST rotate-away-org-id
+INST set-forage-target
+INST get-forage-target
+INST look-ahead-intercept
+INST attack-prey:post_cost=10
+INST attack-pred:post_cost=10:redundancy=0
+INST teach-offspring
+INST learn-parent
+INST nop-X
+INST scramble-registers
+INST zero
+INST one
+INST rand
+SEQ RfGhRDkp5thcrPR2AV7bfSRRPxfALZLTuRGbRJ7uCY2RWHacnCnO3 d33516f186c631e0 3670715
+SEQ RGhRDkp5TewcV2gt7fRrGRPeaAiUTurGbRCu2uCY2RWrz5HRwFzROJwa 2e8a254e69ee192f 3979055
+SEQ ROGhRDkpqt6whc1PR2fV7bfSRrRPxaALUTuRGbRJjuCY2RWHacnCRO3 3011af52d9f1617e 3809593
+SEQ 2Ud6VajDGaZ1bxxZhXmDnhNRNhVYccdcTfPh2hhqZgUcXAGVBqNUcZNRdGcAZAYcccZP7TgNHZQX c8ed4e3819488f7b 5422744
+SEQ RSGhBDkpttwhc1PR2cV7bfSRrRPxaALTuRGbRJTCCY2RWHacnCRO3 7d414ff58bc0a41c 3671416
+SEQ RFGhRDkp5ZewcV2gf7fRpGRPaALUTurqR6u7uCY2RWMz5HIwFUzR3wa 2b8b1ceea70430f8 3900013
+SEQ 2fUd6wVaj31ZbWexZVXmDnNJNhVYccdcTfP2hOZgUcXAGVBsNUcZNRdscZAYcccZP7TgNHZQX f35917646b3f3a01 5061111
+SEQ RSGhRDkpvttwhc1PR2V7bfSRrRPxaALUTuRGbRJ7uCY2RWHacnCRO3 90ba612b9a9e722e 3751631
+SEQ R5hRDkWCtwGeVP12Nt7fSrRPeaALUTsrebRW6pY7ZRQWHRSAROaA db671ad7853b257c 3781473
+SEQ RGhRDkp5TUwcVbgt73RpRPaALUTurGbR6D7uCY2RWMz5HRwFzR3wa d1b2421141f68f3c 3674667
+SEQ RGhRDkp55UecwVNgt73RpGRPaALUTurGbR6D7uCY2RWMz5HRwFzR3wa 385b717040687a6a 3823657
+SEQ CRGhRDkp5ewc2gt7fRrGR1PeaALUTurGbR6u7uCY2aWrz5HRwFzR3wa 8b9c017fef665f22 3919460
+SEQ RSGhRzkpbwohc1PR2cV7bfSRrRPgaALUTu4GbRJ7uCY2RWHacnCROY 649f93c4d680e997 937006
+SEQ RGhRDkp5TewcV2gt7fRrGRPeaALUdTrGbR6u7qgY2RWMzCHnwFzR3wa b38f2676250eb7a4 4091799
+SEQ 2Ud6VajDhaZ1bxxZhXmDnzNbNhVYccdcTfPh2hqZgUcXAGVBsNUcZNRdGcAZAYcccZP7TsNHZQX b7508339ed42dd3a 5244668
+SEQ RSGhRzDkpvttwhc1PR2cV7bfSRrwRPxaALUTuRGbRJ7uRY2RWHacnCRO3 74fec38afb49ddf8 4079416
+SEQ RSGsfRDkp5qw4jAPg1ct7SRYPeaALTurGvRJquCBY2RWHRNROw3 3f977fd3d8c62cd0 953816
+SEQ 2oUd6wVajD1ZYexZVXmDnNJNhVYccdcTfPghOZgUcXAGVBsNUcZNRdGcAZAYcccWP7TgNHZoX fd63c6740fc2cc6a 5268593
+SEQ 2Ud6VajDGZW1bxxZhXmDnzNRNhVYccdcTfPh2hqZgUcXAGVBsNUcZNRdGcAZAYcccZP7mgNHZQX 4517972be9cd6a3d 5414805
+SEQ RSGhRDkp5twhc1PRHcV7bfSRrRPxaALUTufGbRJ7uCY2RWHacnbRO3 6edfd9d6bd5520cc 3749707

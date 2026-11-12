@@ -1,0 +1,13 @@
+# Analysis of knockouts in genomes
+# Wed Nov 11 13:53:02 2026
+#  1: Genotype ID
+#  2: Count of lethal knockouts
+#  3: Count of detrimental knockouts
+#  4: Count of neutral knockouts
+#  5: Count of beneficial knockouts
+#  6: Count of lethal knockouts after paired knockout tests.
+#  7: Count of detrimental knockouts after paired knockout tests.
+#  8: Count of neutral knockouts after paired knockout tests.
+#  9: Count of beneficial knockouts after paired knockout tests.
+
+10690282 7 51 8 0 7 51 8 0 

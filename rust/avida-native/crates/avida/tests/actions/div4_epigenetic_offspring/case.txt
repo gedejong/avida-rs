@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 3 -set WORLD_X 15 -set WORLD_Y 15 -set EPIGENETIC_METHOD 1

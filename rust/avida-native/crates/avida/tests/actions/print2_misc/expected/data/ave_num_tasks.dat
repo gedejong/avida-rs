@@ -1,0 +1,10 @@
+# Avida num tasks data
+# Wed Nov 11 13:17:56 2026
+# First column gives the current update, 2nd column gives the average number of tasks performed
+# by each organism in the current population that performs at least one task 
+#  1: Update
+#  2: Ave num tasks done by single org that is doing at least one task
+
+0 -1 
+30 -1 
+60 -1 

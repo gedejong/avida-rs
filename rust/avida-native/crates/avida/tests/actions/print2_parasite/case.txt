@@ -1,0 +1,2 @@
+base parasites_limited_resources
+args -s 3 -set WORLD_X 10 -set WORLD_Y 10

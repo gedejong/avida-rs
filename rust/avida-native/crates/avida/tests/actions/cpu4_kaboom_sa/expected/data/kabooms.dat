@@ -1,0 +1,41 @@
+# The number of kabooms.
+# Wed Nov 11 19:36:30 2026
+#  1: Update [update]
+#  2: number of kabooms
+#  3: number of orgs killed by kabooms
+#  4: Number of organisms with suicidal altruism inst considered kin
+#  5: Number of organisms with suicidal altruism inst considered non-kin
+#  6: Number of organisms without suicidal altruism inst considered kin
+#  7: Number of organisms without suicidal altruism inst considered non-kin
+
+0 0 0 0 0 0 0 
+10 0 0 0 0 0 0 
+20 0 0 0 0 0 0 
+30 1 9 4 0 5 0 
+40 0 0 0 0 0 0 
+50 0 0 0 0 0 0 
+60 1 10 2 0 0 10 
+70 0 0 0 0 0 0 
+80 0 0 0 0 0 0 
+90 0 0 0 0 0 0 
+100 0 0 0 0 0 0 
+110 1 22 2 0 0 22 
+120 2 16 4 0 2 32 
+130 0 0 0 0 0 0 
+140 0 0 0 0 0 0 
+150 0 0 0 0 0 0 
+160 0 0 0 0 0 0 
+170 0 0 0 0 0 0 
+180 3 21 6 2 2 30 
+190 1 22 2 0 0 22 
+200 0 0 0 0 0 0 
+210 1 4 4 0 0 20 
+220 2 19 6 4 2 31 
+230 2 7 4 3 3 31 
+240 1 4 2 0 2 8 
+250 1 19 5 0 0 19 
+260 3 46 10 5 2 41 
+270 3 49 6 4 0 45 
+280 3 10 6 3 4 35 
+290 0 0 0 0 0 0 
+300 1 22 2 0 0 22 

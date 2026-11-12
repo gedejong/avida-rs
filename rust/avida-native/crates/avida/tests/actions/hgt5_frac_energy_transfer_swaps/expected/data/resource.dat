@@ -1,0 +1,18 @@
+# Avida resource data
+# Thu Nov 12 00:14:09 2026
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: global
+
+0 11 
+10 60 
+20 160 
+30 329 
+40 929 
+50 2626 
+60 6293 
+70 10633 
+80 14859 
+90 18908 
+100 22674 

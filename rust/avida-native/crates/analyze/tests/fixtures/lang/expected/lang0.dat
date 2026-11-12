@@ -1,0 +1,12 @@
+#filetype genotype_data
+#format id name length sequence num_cpus 
+
+# Legend:
+# 1: Genotype ID
+# 2: Genotype Name
+# 3: Genome Length
+# 4: Genome Sequence
+# 5: Number of CPUs
+
+10 org-10 0 rucavcc 1 
+11 org-11 0 rucavccc 1 

@@ -1,0 +1,860 @@
+# Random genomes traced by the C++ reference (cbuild/work/avida -a,
+# analyze LOAD_SEQUENCE... + TRACE trace_out/ 0 -1 <random>) with the
+# heads_default_100u config and the instruction set given per batch.
+# SEQ <sequence> <fnv1a64 of the trace> <trace length in bytes>
+# Batches hold nop-A/B/C plus 59 ported instructions each, 80-instruction
+# genomes drawn uniformly. Left out because the reference binary exits or
+# crashes on them in a test CPU: throw/goto families (exit without marker),
+# sleep, interrupts, else and the if-*-end family (the avd_* port looks up
+# "endif" with cInstSet::GetInst, which exits), and rotate-uphill, die,
+# get-res-stored, h-copy-res (segfault).
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-X
+INST nop-Y
+INST if-equ-0
+INST if-not-0
+INST if-equ-0-defaultAX
+INST if-not-0-defaultAX
+INST if-n-equ
+INST if-equ
+INST if-grt-0
+INST if-grt
+INST if->=-0
+INST if->=
+INST if-les-0
+INST if-less
+INST if-<=-0
+INST if-<=
+INST if-A!=B
+INST if-B!=C
+INST if-A!=C
+INST if-bit-1
+INST if-grt-X
+INST if-equ-X
+INST if-germ
+INST if-soma
+INST if-p-0.125
+INST if-p-0.25
+INST if-p-0.50
+INST if-p-0.75
+INST end-if
+INST jump-f
+INST jump-b
+INST call
+INST return
+INST catch
+INST label
+INST pop
+INST push
+INST swap-stk
+INST flip-stk
+INST swap
+INST swap-AB
+INST swap-BC
+INST swap-AC
+INST copy-reg
+INST set_A=B
+INST set_A=C
+INST set_B=A
+INST set_B=C
+INST set_C=A
+INST set_C=B
+INST reset
+INST pop-A
+INST pop-B
+INST pop-C
+INST push-A
+INST push-B
+INST push-C
+INST shift-r
+INST shift-l
+SEQ aEhWzjRci8hIoTWijVcQdioIUCHAnLfhbX84zvmnvzxM9pnUnALQJd9d1lwinj1YybfVH3CPZnnYBUxm 4d819ec5690f021b 1055055
+SEQ vP0oEcqvsvKzEPP1u9nVgYXt5lJN7I1Rsflmb6YMxS9gQzs6tP14mhDmZvCzYdJThrg3Oh9mmvkT2jEd 88d84fc27d2ebbd1 1049241
+SEQ FNYGr3xNFOLc2hFiZUMSF1XbqFWYEwpagyLsClcihK3Nd7N4nYm803tSlJDJSGHT3GzoHmTNDtT0Duix c5ec07ea0e562447 1049990
+SEQ hHYwVm8sSyLXkc2QhUBnjpy4tnB4TtILp6XrV80ccEN05rqImB0Sxnzc0CyTmpnuwtS9xhXnep4NSE4F 998747ce7211e9f5 1050466
+SEQ C7PrQlAceEjtZE1aaryrWst46pLtz5XopMj2OIXu2gQKTmbx6IF8tREH82qtYyzRnJ4oXAd0Kp9Tpd29 7495f071bbe7289b 1050820
+SEQ AR6urgYJdupUFWBjXdtuZc7AoI3CIjebFZECrEWEQRa5R0UPvpkfD2wd7Kz63uNymAo8dR31Cc4UACWz e8a48a86083f5d09 1048358
+SEQ i09VY69VH6uBpJqYfDdi3Lt3T3miPyDorvv96AXu1rMC0QAvelPo5q059khW2gTYtrQXCBmfGgvZ5I3F de7808963704e665 1050915
+SEQ EwjSBEjdqMuu22tJdXuhST2N02S4oJGLLXlqiItYyMCIu2MRqVePNkjSjE9IU0T3VjBD9llDGiR4LwZy 2cc6ef287e0fb69b 1048988
+SEQ F5m0EvaFxQWmUiE2tknTgVDLFw82iY6eW56OMs0kegbZd2wKlpexAAtHd9tz0gegzkGskPcweIjzs3XT 1484fb0507d9a503 1049919
+SEQ U5gupp239ME7XwHABT4PkqTaOJp7nKbjUSMPQg56rQmFowDksDSx8orPwQ99r94DvTPymBAKIUcbDIvH b73ce3d0cb09ffd6 1049252
+SEQ ZL81EAfGMSL8R2XXDFJHXJbapGSdz83sWzrfCpkCMpzlRF9oiMQVMIrvcq8rSO3gb5zzcDQJgCh9GDOR 816a32d1d28fb36d 1048579
+SEQ yXt7Zkevx8kMsxr4ihjqKeeQnFctJCnqgTdWKyH3dccKmjqhCJffee1iuyX1suh0Xx0N6d3k4B14I4Fo 541b5c93922e351f 1049394
+SEQ PEYR4oKHP0b0dSK1w7MHpNojdD6jKKM33hSIzOLxfWqEvHYsQJM6zGwgyJdjxa6j0WphFiVXmRw1LZmT 928e60bb56fffcfa 1049059
+SEQ 6vb04qQrzysZ3HTxn4umfSORBKu3TPqIj8YQ4XZpJDTe3TcHt2wSUGvMWqqw8GBLLaOM0ZK9nC7KueH1 4aca40c27dd77b65 1049620
+SEQ Pt46uxz8aU2zcSOafMLVtnABT6EBNuVV1lgM10VdoNf5myfBKHTFRrIkRgIPpB6wARdGrq1l4bU03uKU 5bd096cf7cccd83f 1049527
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST bit-1
+INST set-num
+INST val-grey
+INST val-dir
+INST val-add-p
+INST val-fib
+INST val-poly-c
+INST inc
+INST dec
+INST zero
+INST one
+INST all1s
+INST neg
+INST square
+INST sqrt
+INST not
+INST add
+INST sub
+INST mult
+INST div
+INST mod
+INST nand
+INST or
+INST nor
+INST and
+INST order
+INST xor
+INST setbit
+INST clearbit
+INST nand-treatable
+INST copy
+INST read
+INST write
+INST stk-read
+INST stk-writ
+INST compare
+INST if-n-cpy
+INST allocate
+INST divide
+INST divideRS
+INST c-alloc
+INST c-divide
+INST transposon
+INST search-f
+INST search-b
+INST mem-size
+INST get
+INST get-2
+INST stk-get
+INST stk-load
+INST put
+INST put-reset
+INST IO
+INST IO-Feedback
+INST IO-bc-0.001
+INST match-strings
+INST send
+INST receive
+INST IObuf-add1
+SEQ ThCVGlHWBvOmD9HAJ8hU3IuwBkbVQhT09AQrfXa2DWIafp6FJOsWpgJy09MONOJEt7uXxN3HytxhFkzw 6c33345db291f4cb 1094894
+SEQ CDQlNHMWqjzPMsMcW2vjxIqzduxO0GTB86UeXNIhhw4oLhSKAnN5CrmvfQDZFex4qRJGUu9dBpE35s2U a5c826fee91c54e2 1221092
+SEQ nsyKqKnacL7Q9uybBGdPuutnh1CfdO45Z93ZntB6EYpJwhS4UeadjsExOs3dZ5TVKV6YLr6NbPiNtf1N 08c5201598cc0a94 1135027
+SEQ 2xv0tCle5YU2X2e8MJtZ40HNfpOZGMLRGQFAHxMi9hibtuqhSRCPG9TpCvkFMKkpaGvcMvUlJ5CsalU0 c42a9fefe42bed37 1272003
+SEQ NWcTj5oJz3nwGQVYuCpFvp5COXWKueyqKfidcmCoihAChdtWpv61ilEp3sr7G51Fw66PC9RNrGAeXmg7 327e389fc384ca94 1282329
+SEQ WKEpGnHgXgmGIyfseUzlXuVOCrHumCxVWpWjiHo3dm4zz1MJO0iNOQ5PROK8AJoMzLFTsDXNU1TitUhr 25e38fa50bd8ec2b 1259432
+SEQ XbnLDoMWaZf6g5lFfYqtEwd4IEvsOTKsqLkYkgg3r6RG155OocMl5DpDi34nygKDABumexMQqPwi3rvc 75dbfa462bb7e803 1279351
+SEQ UKDaFi6IewMguHt1OcYHYXHoVW5Ug8Ubli2FNnDROG1JNt1RDDej1tjrkZJY8MJuVx28dYrB0Mq5cfuS 0b02011df0f16aa2 1291776
+SEQ fxEXUeyDyDa8KcsE8xsTdcm1upGDLRR44Bpdel1l4al1ouFyeXIZlXPCIWe4u7XZBNXFmVscbjyZh6wk 73747878134ca6e2 1279761
+SEQ 8qsjgMFwABE29gr3qlrVpse2FW5m7JyTx1e78gMRw3AyxFB6yGidVyyP0DLrMxLZ79O0LN4lyFpYDwUm dbcadee553e11c36 1239974
+SEQ UX1V5uSWRTzf6SBr7BsHpldAQcAUztzWfJXPEQVBEP4WgFEbVjf4UysnRmZOR7aFhpvVS8IBwZQkW9Kn bf044d9c11e28c3e 1265345
+SEQ YbsaRTfnH9hz1YsrHuoaE4cCaD55EjYqXe78DLfT95OGE0iYxO7nY69XdCZSqvaq9ZOH17hvl3qP0kb1 e5608ce7b573d37b 1314947
+SEQ 2m4incJi99mPuqaGy55Y46zc5whnGVlZDGamqqwEPRyVmsxD0yKgrb6ug8AO40WwxGnzxxXe4bzzLyh0 031c1716abb13889 1279355
+SEQ UdXukEOKFbLKethfuzEJGeuDDydlmzPQyV9EjkpT0gYk328XwnsGX8DQ7ruJGfQXfUNBwFKZCwlxBmf8 22c0abb54c87367f 1142769
+SEQ 1JnmV68wmYSt5wQRURAOfWcGt54R6HPFUmNQvXvrb2bSRM8QXDNHo1o0u4PzEaSzKwmUpEjOV9flemhI ca34681be829de53 1254402
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST IObuf-add0
+INST rotate-l
+INST rotate-r
+INST rotate-left-one
+INST rotate-right-one
+INST rotate-label
+INST rotate-to-unoccupied-cell
+INST rotate-to-next-unoccupied-cell
+INST rotate-to-occupied-cell
+INST rotate-to-next-occupied-cell
+INST rotate-to-event-cell
+INST rotate-home
+INST set-cmut
+INST mod-cmut
+INST get-cell-xy
+INST get-cell-x
+INST get-cell-y
+INST get-north-offset
+INST get-northerly
+INST get-easterly
+INST zero-easterly
+INST zero-northerly
+INST fork-th
+INST forkl
+INST forkl!=0
+INST forkl=0
+INST kill-th
+INST id-th
+INST h-alloc
+INST h-alloc-mw
+INST h-divide
+INST h-divide1RS
+INST h-divide2RS
+INST h-divideRS
+INST h-read
+INST h-write
+INST h-copy
+INST h-search
+INST h-search-direct
+INST h-push
+INST h-pop
+INST set-head
+INST adv-head
+INST mov-head
+INST jmp-head
+INST get-head
+INST if-label
+INST if-label-direct
+INST if-label2
+INST set-flow
+INST h-copy2
+INST h-copy3
+INST h-copy4
+INST h-copy5
+INST h-copy6
+INST h-copy7
+INST h-copy8
+INST h-copy9
+INST h-copy10
+SEQ HYBlHuH5gVMZkJDdzjMtECvJuBX1y9HrR6YMt19qIv8mYG7Z3QbnFyfv9kSMsMMEGLLP734MEVrY0IG3 7ad58203e2496cd1 1084609
+SEQ 2ccSdxKMiotVNzyNEj6BsfvvXGx6GeykjFZT306IEPbgKS4PUmN4f81c40sOo2aFgY8Pf9mAQayFExL0 94bbd6aead7f5119 1329120
+SEQ ckqXWP5rYstZv8rkrzvRyOZsiRKugzkNAzbKU2GBOp8HrdLaJapVOMPuTxEp4GRlDCxJnyld6KBdFYUZ 617016bb27243f8a 1061567
+SEQ PAK08kv39tPrViUqQJJT2fu4NKsz0dd6eSeFXfyYJuL446pITaD4ENZhW6vDeNiNqVULoVE0wtoTiShu 62694f6326df85c9 1056278
+SEQ h0Ld2H3IbDUkniTvL5cUymdlZPA7C2LaJaiGbptUXuPlbRYHNqFCVYyVdYyCYLYBJo8X0CaSsZtP5xe4 f50cd059e938d07c 1328718
+SEQ nczUINIFXeeKjEZIRppIG19qHI24zZtWSxeIAX50Qp0s8ZeflHc7MhUORW8HC0sTDXFctTNOJM6eD1PK e7cccc641b377b63 1321617
+SEQ i4bebYktwkOJ0ZhzaYOlm92nq6FArlo2EeLabMULLYfIf4uID1junJ0TgNaym76IKxaKmYPPqoajIut3 0b1d9d684850785c 1326303
+SEQ F5pCS6XMzERnequUq7Zi2mtkrVkjVNRjYMxMlI11YX9MBVFtIJnpkS1K3koxwIUJGxmguA5O37wPr6GY b6ff38000d0ede11 1329993
+SEQ aworvKwQg7gL2iCt2qx9PAIRiaQkVJUgw3ieA39J0FM9chJrjMjOgj7pe9dzLgGgWjCkGtX3YKacCxr7 f0df4be7183f9aa8 1053477
+SEQ 6qXK5VYroE0PyxUU1DNAdrGPjo1EPfDuwnVpsSwVFNxcoPsTu0HjZ07IEFFRCXkQIeknNPjiErt8pVfh 9d377934909f6e16 1059297
+SEQ FwfkOO5PIkW1m1QxccpoqN4ZxjWa4J7pJWxTFRXiLiXMinU8Jg0px6xdv1oxbJOCjk9icUyH0ljKwHep 87a5c84d669977d2 1337884
+SEQ 4vnwWgvmQZB8Ntjlojdv8N0axIysQ4IkwneMqNJGJ535jOqkDIWdPhE6wNwZf7KHpd2sy414fl0hTzI6 ad3c7b6e3e9541a7 1061853
+SEQ 4aoEmRDtaH9IEeqXiWE7CVNhiVjEt9cmEJC70dsfTjqhvJsCBWVRhl47ozy9HIPxPD9gFJ41EAvJymDg 83f189cd56b69980 1054759
+SEQ 6WGbNhmlQg1zTnEei5FmjDM4on9ZG7BMCrtsvFt0zZr70HmG9qCsHqMYKNAtVDM8CFXFoJhIjUr9DAyY 5433929c85f14f31 1325026
+SEQ FCro4lzrY4Zdts157JpoFYDteIS5V4Vr73uCXtjucPrCiC7BALSWwWAkGm79ljlFcd7tx7k7PUrdDQR6 806f63fec4e453cd 1336426
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST divide-sex
+INST divide-asex
+INST div-sex
+INST div-asex
+INST div-asex-w
+INST div-sex-MS
+INST h-divide1
+INST h-divide2
+INST h-divide3
+INST h-divide4
+INST h-divide5
+INST h-divide6
+INST h-divide7
+INST h-divide8
+INST h-divide9
+INST h-divide10
+INST h-divide16
+INST h-divide32
+INST h-divide50
+INST h-divide100
+INST h-divide500
+INST h-divide1000
+INST h-divide5000
+INST h-divide10000
+INST h-divide50000
+INST h-divide0.5
+INST h-divide0.1
+INST h-divide0.05
+INST h-divide0.01
+INST h-divide0.001
+INST set-mating-type-male
+INST set-mating-type-female
+INST set-mating-type-juvenile
+INST div-sex-mating-type
+INST if-mating-type-male
+INST if-mating-type-female
+INST if-mating-type-juvenile
+INST increment-mating-display-a
+INST increment-mating-display-b
+INST set-mating-display-a
+INST set-mating-display-b
+INST set-mate-preference-random
+INST set-mate-preference-highest-display-a
+INST set-mate-preference-highest-display-b
+INST set-mate-preference-highest-merit
+INST set-mate-preference-lowest-display-a
+INST set-mate-preference-lowest-display-b
+INST set-mate-preference-lowest-merit
+INST repro
+INST repro-sex
+INST repro-germ-flag
+INST repro-A
+INST repro-B
+INST repro-C
+INST repro-D
+INST repro-E
+INST repro-F
+INST repro-G
+INST repro-H
+SEQ GIWzQlo3YLkOyJocSWrBlCTIRjdeSZIt7QYU86UwgXaSWMZYeVWq4v0vI6d30djaG5Jtyca6d7ZnzcyP 8535725ab858b3d6 30963
+SEQ f6jbwH6rF5eVaT6eBkp7s3TQQUmmY2D9Ar2j4ePt6MOUz3FIOsPaAvcOiqiOloePNNSsETfxaVWG4uoB 517356946b03895c 27438
+SEQ DZpuvnDFdACjWUiTS1g7NOFlguURrXlRCtVJqxqRFbhSzu64V4oQn1g7yvD37iypvqD3Ct3OVA2d02iC e7145d7681ea265f 31509
+SEQ LYYs9k83dikeb9i01YKmWOKQB7FsVfbxhvrQeeqootHckVLuYl7H34hH3K2AkGDF42qlox36ajI6Sa8I 5268981eb7934850 33418
+SEQ yplfMYLLZBsDH9rawLGo1whFhXXnpy9AZ1cElPp7QXEU97dzyGCfarD0cV99n6upIJb8XAB3EQd6ntme 684d6fedf65b2fe6 28784
+SEQ gJVLvxNDft36jGw7RaPXAQCO8yNLQYjWlRjd99WKqFLGW7IwPBRSryuBZrcy5Vj9LjVLYGfq4cjshjBX 84d46456ee12d109 28236
+SEQ Jgpt4QSRPKJgsdgeU2Bbtp5G0W7Xocdug3CJsqxrpbGU7F0sfHof93X03gSlvEngrQdVoVZYzRRFhm8V 63425374e465e905 30112
+SEQ hPKusUDd8fYdOlaI2wSfJ0ugOWt58MzXHsLQR6ZTjMCuyDYXwnEc9SEZCeDCCTHA3ek8C4OCozZqAL9N 15056618c48f1e09 34186
+SEQ SqU1eH4u6BgFH97q88mJ2RMIOA8XIpk6PKu4JbF7W6WsQjEeZL2f8bkwnrj2KgLaamMxXXBfYauxfpGy 20c0890a2fafd3df 27492
+SEQ Nrmp9t7aK3Gj45Fo4Xgr2N7t2XV5m3uZXYANgRD5kIwBstgOYB7aJEnc9slm4XDD6ALW7yfOqz5mj8aL d63c9b8bef25e19e 26782
+SEQ U6Ub8IoqLEFAxCNyhmuhUgJV7xzhkXgLBilGyqT3GPVVcDBCSPSMW5GGGXPULTGvx0cZhtIYW3gmB1ke 36583955414e541e 33553
+SEQ JnvlqE5STohMawEuvOV6LaNAaR4OYLdCkjsW94I1opPdy8oOWs3Kjj52D045W0d5ptoSdlSWG8NhaLlh b3781c4d1963e848 28848
+SEQ aCBj4rUBGMT7XAzfb7lG2ErM68fUHfaBTDRqJN16PL0BydspFo6KXRxwp9rFch4ezxZVLmjH9BE3505n 8972b3c20a9e7dd3 32098
+SEQ 98sr49LP0QhR8n4pszfk1MY7NmAyYqAG8vzxqPYIqn6vQClszM6un3dPcMJI6hz1rAa4F6QUIOfbIcYF b297f9906de0583b 27414
+SEQ FdJVaD96xga4icppVtsfIEizOfmec57qhdQ81zv8PByjWx4RQmlkbJpnf7MUPPjxNCzTJsNGHpqz3E2o fb498c586413a460 26057
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST repro-I
+INST repro-J
+INST repro-K
+INST repro-L
+INST repro-M
+INST repro-N
+INST repro-O
+INST repro-P
+INST repro-Q
+INST repro-R
+INST repro-S
+INST repro-T
+INST repro-U
+INST repro-V
+INST repro-W
+INST repro-X
+INST repro-Y
+INST repro-Z
+INST cond-repro
+INST put-repro
+INST metabolize
+INST sterilize
+INST nop-pre
+INST nop-post
+INST prob-die
+INST poison
+INST time
+INST bit-cons
+INST bit-cons-24
+INST if-cons
+INST if-cons-24
+INST if-less-cons
+INST if-less-cons-24
+INST mask-signbit
+INST maskoff-lower16bits
+INST maskoff-lower16bits-defaultAX
+INST maskoff-lower15bits
+INST maskoff-lower15bits-defaultAX
+INST maskoff-lower14bits
+INST maskoff-lower14bits-defaultAX
+INST maskoff-lower13bits
+INST maskoff-lower13bits-defaultAX
+INST maskoff-lower12bits
+INST maskoff-lower12bits-defaultAX
+INST maskoff-lower8bits
+INST maskoff-lower8bits-defaultAX
+INST maskoff-lower4bits
+INST maskoff-lower4bits-defaultAX
+INST double-energy-usage
+INST halve-energy-usage
+INST default-energy-usage
+INST skip
+INST set-opinion
+INST get-opinion
+INST get-opinionOnly
+INST clear-opinion
+INST if-opinion-set
+INST if-opinion-notset
+INST if-cell-data-changed
+SEQ WxT5QL55JnUxYosKIcQgyOjJ2pt1Wh9oNC2jSbQ2pjPWqBkHo0yc0DXOhoxVhu57bOb732koAs10YeRJ 1729ce8a6c05f76d 1093511
+SEQ jGVbB5IAr9ZMi36HZqvShGGqpMO63O5ukLiotBWcnVTmD8JwOS8A06RLPxVbYEjmG23Ws2GsFIWVDr4N f464056d57c76194 34195
+SEQ LYjtooOZ4mPfAKhCXhjH3vPRGRu6sIZ3P1id7iWisIAIEM47v6yXuQGrc0Evql0iNgjZdixYHHEawLKx 0d64abbbef19cb24 1088984
+SEQ 1wLXjdN0TlhAjmH3RvoD3A8JJrO8RfVPcrZ2nGLLN8K5zun5ls8LBzrznNktJU8FVfWmRhxbIwAo8rZK f3b161424905bbf1 28742
+SEQ rtyLHkIhfawPv3pUJYXJHqFTt4WpIDNaLCKuXPbj4eJQHsuiGxfrLjkqhWAr1mFutjN3TLdrHjzxI6IT 90f48476fd21a74f 1088324
+SEQ QlDwPfGAGrNlAOGhUkQRdCtW8lWUu4W2zhnHy0KGtbgGO5lEz6UE3qaOBbrAbp0IWukgRIgyiAPPgmhW 0131aec6ddf0a87f 28349
+SEQ YW8EKuBYZ21VS1nO5A3eV3neHoLgtr1ZExDmGOAfGQzrRK2t8XcuMCYaQwwjmBb3WXPr4QxS8G8JxSeA b0a55dbb2f136ad4 28292
+SEQ iV7EsPdN96gOnwhAzd9dDNgQiUpOm8TEJWOR2H7E41aswuhn4fIp6Sa8tuLORmw5lYReFtf4L5iiOjEf 5fcd90d92466eefd 27221
+SEQ 4oyJ4PbKq3Js0qVsO7EQzu5sbAtPWZ9jxFBilkzREox4QZCg1NpqcpqvdlCBVtQkgME5tP8rbg5SXec7 b2f823dbb53eb53b 1089264
+SEQ 5fuKki8Tl0aivPeSzrFh1O8NjpEESEVadNHBvqzzJkrKZjDuhT7sktazbuK8xmK2ID2Ov7L1kWvwJAlT 13e9db9e7728d4ac 26733
+SEQ qVsGS1SVBVFWmykwZ19pWVlL1FgAe2riBDmv1cqBJb3JouN9lPT5zHNUdikhrwGYv8nXj204Vgh5Jqt6 64a325dc2acdadb7 1081758
+SEQ o9fjIzsQXAmfC7IO4QN9mEaXihGRO0xecAkNp81rlt3fSDnmUU8TUP8p5Yi6LJO3aLJwuyUPiFCCgI6b e0bddb2653f47d13 27696
+SEQ ezPVzMg0VflhyptCgxlMH08IKHA8Lj55c79UvfGkv1vzMaheR5OoroGvYoVzmQmZg4wZLbgpUsq3M2lD 5af93a27ec5e7d61 1094579
+SEQ XaWBUDucvoMNfDrNb5yfUCFOnw7lCBm9Ue3U0KAQBsv44EbRDxF15BAkOZA3ecqbdHj1regiPZUfacUq 910d621bed035236 1091988
+SEQ wK7aNTLhqUomaRRDC15SaB6Ro594Z8n99wyO52LILt4hU54jACxUFC2ySuSlq4nPHqfDDrEe0zYotfYh 0f188fe84566db15 1091600
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST collect-cell-data
+INST read-cell-data
+INST read-faced-cell-org-id
+INST read-faced-cell-freshness
+INST mark-cell-with-id
+INST get-id
+INST get-faced-org-id
+INST hard-reset
+INST get-cycles
+INST get-age
+INST point-mut
+INST varying-point-mut
+INST join-germline
+INST exit-germline
+INST repair-on
+INST repair-off
+SEQ daifqqcekaqqleflpbdqplnpdbqhmjkofobanmakbjafhkfqnllnfgaaqrakibcmlgblgepnjqenapmn f641e4575cf39ad8 1076677
+SEQ hrbdeqfnmgodpqflmphqrmdalgsrlcqirfaogopbidigparlgaifoopgqpceqrpdoakroagcfhoriali 43e217530637dbcf 1070140
+SEQ lpeqqoidhdffsjhnmrfisqknslodkoabqjcrskfbneecrcarjcmlfkbbbsirgdamnphdgqnlqkbgnjjb d428da00e0c5a402 1068332
+SEQ eqqrodglcshsdqklfifmnrrnbgqopanjeahmmhoajseoadpmnblmmhcgillesfecsogomopbhsmgmdig 96ee0d05b1249fbf 1067646
+SEQ psgmrqaapkdfnmmjemmkdldofggjdmelklsknjbnolesblfksmslpmbcsshrslqshcbercaorrdskcor cba4349e2f33870a 1059043
+SEQ glegbdejdmlaqlgnqjcerdfeecoplmkbjerlnfpchacoabhoqkgqhakagnmimmocormpqriqbbrndckj 80091d2bdde68e30 1070191
+SEQ psfpmhllbbmclknjerkpsnbnllgmmigakfkbmmkhbkljpsikgopjbqmcaqcdfbhpffrfeciadpfiqdnj 933f1d301a75f6bf 1060098
+SEQ solfokachqmjqdrakjqhbjdmfscbbqkmhlbhqkscojimfbllmriibskeafsrbbgchmeccmobiknlkhfq 157d1653ff0be905 1064668
+SEQ hgcolhnelfegojllpesrqjnncfffokpfjsdpfelnlelgkoimealkfjnmmefajbsrdhnlsohqccojqlok 9224c1859643080c 1068583
+SEQ dliclpafrdhjgdjrrmphommlplgsbggsejbjeejrdkghnjgrqmpcjgijqidgipcifjbmdojbsggpcbre 0e9dfee430df5d1c 1067094
+SEQ sqleajcabcqaibspddbgebndajjpisfsrpqkillcjmnlsocmagqfdjhpqcednrijfrgiobpcpoproago 09dd9d06f7683a47 1074002
+SEQ jdgkeijsgigrflqphapenjpajsmndbmldrispmlgcjlphcqbjlsrcrjgiplgdkofocmdrbsnofsrnogm 7ac712dc3d79e5bc 1067877
+SEQ gjpbnrbjnkklrhqlfpjkbhrqqriqohqdbmrglnmkamdrkpkbpokbmorqgcloboqcdspaqqmhglicsnha 185e9621beff53e0 1056197
+SEQ rqdrkrblhdabbdcaobjjgmqbdqgdgdahmrcjnoqehlciifhfdooafcesdnqserariobqjllpibohqsaa 91af389551fa5d5a 1061157
+SEQ orsmodkcfmolfjknncbhbphemlajdcfbpbdgiskkqedbehomfpbpkabnfqcoaqjkbphebsmqjaphjkba 102f5e8343093ad6 1061068
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-X
+INST nop-Y
+INST if-equ-0
+INST if-not-0
+INST if-equ-0-defaultAX
+INST if-not-0-defaultAX
+INST if-n-equ
+INST if-equ
+INST if-grt-0
+INST if-grt
+INST if->=-0
+INST if->=
+INST if-les-0
+INST if-less
+INST if-<=-0
+INST if-<=
+INST if-A!=B
+INST if-B!=C
+INST if-A!=C
+INST if-bit-1
+INST if-grt-X
+INST if-equ-X
+INST if-germ
+INST if-soma
+INST if-p-0.125
+INST if-p-0.25
+INST if-p-0.50
+INST if-p-0.75
+INST end-if
+INST jump-f
+INST jump-b
+INST call
+INST return
+INST catch
+INST label
+INST pop
+INST push
+INST swap-stk
+INST flip-stk
+INST swap
+INST swap-AB
+INST swap-BC
+INST swap-AC
+INST copy-reg
+INST set_A=B
+INST set_A=C
+INST set_B=A
+INST set_B=C
+INST set_C=A
+INST set_C=B
+INST reset
+INST pop-A
+INST pop-B
+INST pop-C
+INST push-A
+INST push-B
+INST push-C
+INST shift-r
+INST shift-l
+SEQ weBJDKvqGyzNcYAQb9gaq89YEUIa605uKBopHGwC9pcJxTSwMvJKWmpY1U67civgxLyGI0qgP34o7S2v 37ba0e3a6244b7de 1049900
+SEQ nEVhXAMwR3s4XZpZJ7qwIKcEtKXzq8UHZoMhO1nyFq9M7JjCakJOZWferG0NIEYZBx6WcMq5PMH8R6E6 c43f278152368976 1049847
+SEQ TOZ8u1bKpnwB93SllE6migiUYKwHzgrCaPhAexbqcilVG1FmYXZFHDKKaSel1j6IvO3c4NpTdyhbftd4 946c5f194b25ebe7 1051182
+SEQ JtpN5UIjJLWrN2KfKFvJd9hAAw6tK2WFMieGh5DPYD0bBZKHW9eYYsYTFGhWpwYvkDbLgQD8DrOIRSS6 0b8fbed4371423b0 1050445
+SEQ b9Jm0RscXqIEyeUYg4HTLMEIVYxLtAXR55nUOf8gGZtz9vI1x2g07f2NVBxdwL3d7zOZrqnsnD2Q009t 31b36d8ce3abf6dc 1047876
+SEQ C7XCu3RdjLEabB3DHCN03qsgth7kBvFB9pGKGquJb6MR3y296MLSMSN6DNJlRSy0clN7lNeFAdoDl7Mz cde041611c287691 1050572
+SEQ aNiVeJyayFVDOxUhGzgfYAA84Jg2Nl5QFECM1fzHGuBV6muz2ei8TFvPPgqFYfwbzNfMoHPnGqT2WtGM 8ffd3ebd9f933ac4 1050676
+SEQ h6JdsUlFSpzNEaL3zMpO9JxZYgvekLgp23lfjGkUkefiLz3wh9AsJOoR6wXfPugcmZJi9v7f1uXTQ886 18ee83c3d18d27d9 1047089
+SEQ BGIKWXR5wZHHBOCBRAUFbm9udM8B5gCXLhg2vBV6dvYWl60QAEV67HESHh77omObIFu6jRkXsedV15Mt 97857c66408c9302 1049769
+SEQ cPN2Qaqw5mJnx5xim9CNcYV0tMQtAhB1AwWF9qcUKUS6Forzd3bzmXAxHfwU93N4OvC31e4eErekno7B a7f97c69466ae55b 1049534
+SEQ EYmsahMK0aqInIxE69nvz6cRPLAuZZIw5agbtYdMn002H3Nac3JLdy5WDmf9r8R7O4zGwc4etMTtdN6C e7cb52f4460d37f4 1055097
+SEQ DAUUvUfq258Ax8gTyylsbbKRKZ4miJofaBBATBLUijXUV8V2yIP6DqO0PjecLp0ULie6bihHXiN278sK 5dab1fe275199df0 1049337
+SEQ M4AJV9FN2L3bkYZMIL0OUj7o2hj56sNE5ZPFD02MtAW79CMlaBZY73FFUAvxJtZ5tz10ycNWHrjDzg14 91c26d0b23a95d48 1047074
+SEQ XQgLcx8O05vQRKWjaqwkN2cZZAETujr8qvAQhn59Q7lN4o6sQpDSXHv7j8Hxh5j6lK7oI2KYH1XuOYOI b725525260a88f48 1049594
+SEQ nYOp8cx8y5WlFM7U5Uk73mzZUQdEuJ6Ieqgi2Q0GVLQ8nrMy3hqJwhyxPIosq9MRSPuKcWNnsCX73uWh ef17a716904e2ce5 1050994
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST bit-1
+INST set-num
+INST val-grey
+INST val-dir
+INST val-add-p
+INST val-fib
+INST val-poly-c
+INST inc
+INST dec
+INST zero
+INST one
+INST all1s
+INST neg
+INST square
+INST sqrt
+INST not
+INST add
+INST sub
+INST mult
+INST div
+INST mod
+INST nand
+INST or
+INST nor
+INST and
+INST order
+INST xor
+INST setbit
+INST clearbit
+INST nand-treatable
+INST copy
+INST read
+INST write
+INST stk-read
+INST stk-writ
+INST compare
+INST if-n-cpy
+INST allocate
+INST divide
+INST divideRS
+INST c-alloc
+INST c-divide
+INST transposon
+INST search-f
+INST search-b
+INST mem-size
+INST get
+INST get-2
+INST stk-get
+INST stk-load
+INST put
+INST put-reset
+INST IO
+INST IO-Feedback
+INST IO-bc-0.001
+INST match-strings
+INST send
+INST receive
+INST IObuf-add1
+SEQ Hxqe8iIQ34fpMtxDU3OkPGCMBgkTVJcjEY5MtZ1N8RADGAQHGAG636oG3rlBM7hhUXWuym9ozS0YZcje 2c00eabd5ce0a2aa 1275968
+SEQ 1XMl86x2wPBs2TMdCB3Tb4TUXJcbSdMhcgI4h43I5paI8jt39GEaf1GMINZ9Kq728XEl6nnZ5v2SXf3Q 871b4bc732971131 1157424
+SEQ 9MLFhbDRCbcFDnVXhLzuBxZ6V3Xk3sAXQEKps6DvZyH7t0BNWvCajUp4Nwo2htYfWSEuguazmXHrIpiV bebb5da3683eee61 1285245
+SEQ YOcdtiMFYHtgFBmUAhxOzDZlrXscLLRspc4svbFKyS7QrPAMlQhLay94PIWJxUfJQSmKCGIXH2TVQjp8 2cbf16c547915afe 1240954
+SEQ MwZIEOXzxB85szklnF8wINqA2Ww80yq0kzZdMWc9yICucr4TQXyyoyoxbhshINThT1AOPzqxyxd8vZX7 efb4afd117d78e66 1262742
+SEQ 8RBkPGkATTXbq9qwSdTKUFp2Ng3tQJWeBFJH7ywG0mOKDn9yEv5pyrJTzygxaTaorcZhCvDUpBZ5211K e861c155629995c1 1222294
+SEQ a99rCyu4k988xu1x0W7wov5UTqAcZUmsVY0JdM86lzfrEhddjsLZkEHR2yGQRfp5FUuBHKoost7hjFRe caf783637a61a01f 1232868
+SEQ mH576zEHBRn4qq59cyMysZPHHR9QYT33kaAZuelWqA2kjSiCmnXY57JyB1rh4ssPDFdb0maBbgIAWPkC 4c67d3323894f2fe 1271863
+SEQ sD5UuAZDCWhMF4JoqdWaK7zdPQGYbQGgWiMcKD9puDxVCxeQW54ACIrhSuaFKHHRuJDhQ0mC118e8pmK 3963c7442773ab88 1273547
+SEQ OrlXFSCn245DurNUGl70SCxodHaslE1lFsGjPUIPOSC7STxFOWmVYfSPpAHgTpuQad6H64Gugd4MdCvH 02e1f5ce24c3a62f 1146310
+SEQ FU8xi1hpidep9q8Niiphxu9zAMzzmpzAqSXKiAOlRTFoZ7lCTXbYiTPRbcPOd5mu3PSZVlwSzvZnhBwk 23130873f926347d 1263074
+SEQ fuyg03T3WGUm8gVtJrIkNwPtrSyaraMtAjr0fvBCEHWviRwghlVSVvs8zOe2VQNhMUbMEHExIjkzKU73 2f8b1cdfada1145b 1239770
+SEQ XUMvl5zYInpaCnJ6fY4Iue8L617aeoGgEyXJOiMwTtaHuBEj7WbMhsYVqIHedyN73ehdL51OIg9thCYE 1fd2ab7d4b721e72 1166810
+SEQ LOunDvVpkwdhkafq6KDpE5tHYB2Rjs2KuWBOqZe8KDx30lW4xdxP2GndbaoGtLRrRVWgR1Yb3mHDXPpp df736808cce60bc9 1294594
+SEQ yAPYwwHrCqtqKQlPt9oILHWcT6r8ZjWJG4uYcC0U8Vfa6Ke9spQVRnohTfZvlGHQr3k5rAfz2AV9sgeb 9f214917dcbea956 1262489
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST IObuf-add0
+INST rotate-l
+INST rotate-r
+INST rotate-left-one
+INST rotate-right-one
+INST rotate-label
+INST rotate-to-unoccupied-cell
+INST rotate-to-next-unoccupied-cell
+INST rotate-to-occupied-cell
+INST rotate-to-next-occupied-cell
+INST rotate-to-event-cell
+INST rotate-home
+INST set-cmut
+INST mod-cmut
+INST get-cell-xy
+INST get-cell-x
+INST get-cell-y
+INST get-north-offset
+INST get-northerly
+INST get-easterly
+INST zero-easterly
+INST zero-northerly
+INST fork-th
+INST forkl
+INST forkl!=0
+INST forkl=0
+INST kill-th
+INST id-th
+INST h-alloc
+INST h-alloc-mw
+INST h-divide
+INST h-divide1RS
+INST h-divide2RS
+INST h-divideRS
+INST h-read
+INST h-write
+INST h-copy
+INST h-search
+INST h-search-direct
+INST h-push
+INST h-pop
+INST set-head
+INST adv-head
+INST mov-head
+INST jmp-head
+INST get-head
+INST if-label
+INST if-label-direct
+INST if-label2
+INST set-flow
+INST h-copy2
+INST h-copy3
+INST h-copy4
+INST h-copy5
+INST h-copy6
+INST h-copy7
+INST h-copy8
+INST h-copy9
+INST h-copy10
+SEQ qJVHs8xh9jy22Gf961JRPHkkYtNtmuJNOx89NvKr91z9RuQzNvB5obuOTzYXGPsW2OoPx8waBH1VuDuY e4457a0fcc4467a7 2119857
+SEQ cuU2WNmqVf3hgUppyogL7Mn0IkJbcz4LnbT1oH2pse37WmFLzO0nZKHzaWP946Hm6GM7LohBEWtp2fKy 10b6cb12d27c0192 1052939
+SEQ zklrwmzEdKSnRMBfrZES8cN6E6CeQE1jZAmH4DsRtWGbrPHjJ4q0XjaTRKMiN44OIeKoVvVJYLOGjPtN 2514f367ab7bc6ca 1081320
+SEQ KG6IHcCDZHqt9tdprCH2QXHpRHD7c07dHapzwmrd5KuHH6w3AZnsoPO6hpqO38bcuocjCTPPGL4rjdXM 3a2cc75066e5321c 1337128
+SEQ X5qFKkcT1JDPjrBI572m6lKjYblhu4cVzOvpUHe3fZnLG9tOCwDOYxdf8oyps5eFlaEU7y7Mq5asyVBu eccf9e013d084db1 1317795
+SEQ hXJgIvFfnlfYMmeykQfp75p3UCV2FPXBcTqt2E9L9ZYorGZe6di7KtJXKZMqUu52ZLwCnCzBjTJKIe3h 014a6b306873e33c 1313359
+SEQ onB5jXRq69nGVoRB2nritWVAGiWMtzcJeSDHajzbxnSGIZps5d1R4VCAmUd6lvMBy6ABFDIjG4OhHjIt 6f9e1bcb7f193a72 1290741
+SEQ A4ceW0mACfCmRisQMPNDBJJtvO4vc603VgZlbi45388HWvr3xnteaFIsiy9x5oHH0hkDmFlZGJfaJV0m 905c21f1ec60f8b6 1057591
+SEQ eRhUET7rKanT0bOqfYqHL8zAuUsyrNLfgg2E6gWwwBjMrKPNFDOROTEEpt7EylQU06uClwkKKk385EGE 3f0bda2468bc579d 1045480
+SEQ v45dBpHBcGTRhxouHNmeLsw17WmJJs36gUhS8B1ou3IbAzoBaVzcySpfkR7L5xYxKU0ZlZywtwhYyXRa e38af2245923d282 2435147
+SEQ PureSt5bflcFaAWDtXzWzholJihcn7owMlaZKDyv2oYb4nzu5GhPhdQwnq8E3ydcVR9nDo7FCqRBWrYm fedd2993010c8bb6 1333795
+SEQ iJNasKytEFSZn40Mt1SgPXAxqKpzvQNDkqHUbg05ENURYfdV6PgUC2QwslMbDmrzV2dYbdTfL1lfje0O 4a3d9093c60f996b 1317533
+SEQ H7SjscXAPsramhyGHSiIEkeaAO3tKRccoDYJ1Uhn6Xc8Bp3cAj6sSdMhZnaGPzqKe7QDT5y6AUp6QkMK 27e55a8e954885af 1322540
+SEQ 6IRbT72iyNMxzRy0UsKiPDGWj2MOuQv5aztleWKIv7zDrOrldBdg1iSmutSFP0JlplsOJgPXdzoXd6p8 97926e98badf30ed 1313237
+SEQ sUcNTzl0zgT8FxklMcjd6vEwCgPHNtPTMwioaB7O6Xk2XhyemmxH74XAx5GyfCvlVB7ymbhr27Bkdv2P 4f953f9b3b141a79 1333465
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST divide-sex
+INST divide-asex
+INST div-sex
+INST div-asex
+INST div-asex-w
+INST div-sex-MS
+INST h-divide1
+INST h-divide2
+INST h-divide3
+INST h-divide4
+INST h-divide5
+INST h-divide6
+INST h-divide7
+INST h-divide8
+INST h-divide9
+INST h-divide10
+INST h-divide16
+INST h-divide32
+INST h-divide50
+INST h-divide100
+INST h-divide500
+INST h-divide1000
+INST h-divide5000
+INST h-divide10000
+INST h-divide50000
+INST h-divide0.5
+INST h-divide0.1
+INST h-divide0.05
+INST h-divide0.01
+INST h-divide0.001
+INST set-mating-type-male
+INST set-mating-type-female
+INST set-mating-type-juvenile
+INST div-sex-mating-type
+INST if-mating-type-male
+INST if-mating-type-female
+INST if-mating-type-juvenile
+INST increment-mating-display-a
+INST increment-mating-display-b
+INST set-mating-display-a
+INST set-mating-display-b
+INST set-mate-preference-random
+INST set-mate-preference-highest-display-a
+INST set-mate-preference-highest-display-b
+INST set-mate-preference-highest-merit
+INST set-mate-preference-lowest-display-a
+INST set-mate-preference-lowest-display-b
+INST set-mate-preference-lowest-merit
+INST repro
+INST repro-sex
+INST repro-germ-flag
+INST repro-A
+INST repro-B
+INST repro-C
+INST repro-D
+INST repro-E
+INST repro-F
+INST repro-G
+INST repro-H
+SEQ MGxurOxFvqFVctQ3qYwtQkFvgKiQJcdloYP6OMqHMM98kLTmN8GqiZzZ3VkuHhPAXeAZ2xcXlkaQankI b58326db3148268d 26843
+SEQ bnFiwByFektCGM3WvAoLYMrUTv8KaeZi2rd8K5GCIh9CfdURSZJeZ6XOz0L2MYfTtCaofNwActghj2k4 ee9b5af658ac9798 26779
+SEQ D6Q58caRDMrFRUwID5OQdldGqeNaG9H14CR8fMzRp7juVluiyLHrzZbh0Oc1qJXSM0bXwzo5559T7IRS 6a614cadfa24da9f 26790
+SEQ tYW8cLNfIQvy753Wmv8GKOEvPMLeRm3AufSJl0P8tTxHxsyGZZQJIMHANjyg3nLiODca9WIZZxx4QF3Y 0857d2760262dc62 31491
+SEQ PgAzQ9sK4ookk2DULOff002jfmAsXVN3gNPX6wUuziHls2JJSXRiZJHiGReHkdecjNsigRbNqenP9iTz 6e4aad643840a79a 30133
+SEQ w8eOmScfLRJDXGgG4AHsnrWGMx7En9pgv2EARWT58QCdcFSPT7jngG3oAD7VM0lRGu9XOzmhMINDqYsy 95f88b4c98b3e19c 32153
+SEQ 1ybFnZOVwluj2K1ewWmLyc4AKZJh2ItjtGq13nGsV8RWccYtq6WOCD3FY0Z5T2NwchvysiwLZzcw6BJv e5fe8b97aa42c42c 27437
+SEQ KHdrzBGI1FjKCXDvh7b0tqHGQsbRyPgWS1VaOQ638MFBRRLBf97aaYpvj1FR9M4mRBSxKL6RDBwrjbRo 8e86f22360db6898 26849
+SEQ Ix5JD2UAWEaJWjkSYbr9MTpIrZsEP6dPvJ7FtERFZhwQ6hNOZ2OwWYRzzVDWcNLK6LziUGfUBKLU6Oep 47793c7c8d79c562 26860
+SEQ INEjpj2E2mWTOdmoPb5lnZNEQqRU6LXbAYWzMpNrsFarzoo6kpbMXwi9ipKz0FrWuO8UV2yxRiI0TyyQ 19259b2bcc351bd1 29496
+SEQ 3OVbkvYciF04ST3UriFMb9vevkS2RQg3pWowvHjK8OcANmP1tM3jqZ8SG0WnqS2oyGjoB0YnVklVkIo2 f3dbc4a76b34a401 26838
+SEQ XUIMfsJg2UvgSmRFLqHmhG5wnadxYqeZ3zamRLjMCTDqBzKUmSXNND6ulGkgpfTgNRpQOOhGFjWomO7k 9e96baafc0104d6c 34852
+SEQ G7CQwWe3Ip9667smp94fFBbxzEc1RmL1XGcLWhitfOQLcYJEeK3IX5qrvpyw6mRMiRNYunh4Im1TjnPB bf875929539ea275 32070
+SEQ qzjyROuyQElGXebPy8Tu8NaKfrtjSE5dRpcDPpJWxBTEEC800VAfrIzadDtqXO5sf9L3uGqvuFVHmKGI 8ca0bd76acc4ac4e 31480
+SEQ CcJwwhXjir4pXii8uL7Ce0AKQMjVk3sxG4cnbcpXOQYtGH7IH5lDH5wuwsGbC6Zur94HnTf06Bw1CJOu f22700925885d9da 30124
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST repro-I
+INST repro-J
+INST repro-K
+INST repro-L
+INST repro-M
+INST repro-N
+INST repro-O
+INST repro-P
+INST repro-Q
+INST repro-R
+INST repro-S
+INST repro-T
+INST repro-U
+INST repro-V
+INST repro-W
+INST repro-X
+INST repro-Y
+INST repro-Z
+INST cond-repro
+INST put-repro
+INST metabolize
+INST sterilize
+INST nop-pre
+INST nop-post
+INST prob-die
+INST poison
+INST time
+INST bit-cons
+INST bit-cons-24
+INST if-cons
+INST if-cons-24
+INST if-less-cons
+INST if-less-cons-24
+INST mask-signbit
+INST maskoff-lower16bits
+INST maskoff-lower16bits-defaultAX
+INST maskoff-lower15bits
+INST maskoff-lower15bits-defaultAX
+INST maskoff-lower14bits
+INST maskoff-lower14bits-defaultAX
+INST maskoff-lower13bits
+INST maskoff-lower13bits-defaultAX
+INST maskoff-lower12bits
+INST maskoff-lower12bits-defaultAX
+INST maskoff-lower8bits
+INST maskoff-lower8bits-defaultAX
+INST maskoff-lower4bits
+INST maskoff-lower4bits-defaultAX
+INST double-energy-usage
+INST halve-energy-usage
+INST default-energy-usage
+INST skip
+INST set-opinion
+INST get-opinion
+INST get-opinionOnly
+INST clear-opinion
+INST if-opinion-set
+INST if-opinion-notset
+INST if-cell-data-changed
+SEQ lB2bpPauhyG49gKqBEDir1JvxW3WMmusMuKbR0lRzV3qnKkSNgsXHdF5GYeB83Hg2Fw30FvGBNrM1g3p fd46ee36b5ac5fd5 1079328
+SEQ OxSL77CTl5peOo2Z36b10k8r65jaTFgfKrAhprlOwd7dSNEDy6zROOLhGoBMJg4JBT2XATYyK2pjmmHX b1f5691472296e32 27254
+SEQ 2HwsdTU1D4QU6R4LcDjqKtD238SHSDeYMgDctFdoeXYi89mwh05GqsCF9WHyey0Wh85Kgcti6OmWTXM5 8887c4407c29b5b9 27496
+SEQ r54NwjI179QlRs2shWPoA2hvPFymTn6oY25wKAGJbsyAllrO5gdLCSLcXxJBxNKKiFDn9ZqLBA67K60M 3f7d14458a919793 1092204
+SEQ Dw36wHlGHc28wRKWViOelDf7euNKBv1RGtT4tyPKlDcdfOse4SaLTWYeD7Shw4bavHj2G07RjsV25oN0 7fbaa80bafa958fe 1110019
+SEQ QQs2etNB3B30MiYnKez3wJEbglkuRbiDdgtdtsSGtmtEN90VV3DKlKsyZks8tiweHtDMdvnGXtmqxNWu fe5612a9f1be54cc 26329
+SEQ dXfFPoVT7u1u71sDvnqfLoMULAM4h2mpV2TtNL48XKF7sU8LDrnnQSteAx6F8Oe5TPmcvVtK8IZR9v2f c0bf03634f57a052 30380
+SEQ MVTiRFrFVpQHNmCdxyG6tM90D7wSJ2Bq5RrztjgK4N4Im3fH7L8U0txlDm261wrqP5jPT7iMky7mmHWk 1d79351b701a7331 1092432
+SEQ vNXo2gC1v2l6IUU4ZfMRl2hvWYjTbykkLOWoF5PRcqRCtRA1SIXbUF1do90C1jIrTC411n3iT7WrfwJB 50b8d5ad52fe1db5 1091267
+SEQ 8FjPijYxjeiQpw6yyvFgObil4QZkDreaHr5f1Rt32BfyfNDqs7UyS2bV1VuI5fNHo7nFu8GC5WovKVv0 db1cdc0a2706a8c0 1082769
+SEQ FlJbwISHSkkkbPuPx1o7JpL70lUdFC5OT3gGh4t42zsbzQq0CbK1lc2Re2QltC0rqqYbBboBnRJSacOl 1520f88ec3f6c20c 26389
+SEQ 3MZbIkrshuEVRwC9SmKnM9OfqBuveLibUusLX2IITh1I9qsj9w9HV8654DBUZSmHLUake67DmcCnbQgE d4ddfbb4564bea78 27103
+SEQ f2XCnMK9lZybpS4T42uHpKMo0hPIb38k9jgFgcvnsY0ELpYDETLkBJZJVKb4fcuzS31LJ3OeIuZB5PMl 56338d15bd5729d4 1073567
+SEQ Hok61kmbkWQsGVZ4z6Ne7QOkjK4D6Kka0ftoanIZv0Ao1zaM0J0vid0xb0PnLD9lHTmFbisJbLcG3N6i b0556c849d3f3f0b 26924
+SEQ C4h75pP3Y3JwEd3GJgGJsz4UiC6SYNkpWv5RHM13mk71yC5Nuk6Aa1nwderNX51IkKOYcBEZ7Ku25D5p 0b4e70a91269c430 1089686
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST collect-cell-data
+INST read-cell-data
+INST read-faced-cell-org-id
+INST read-faced-cell-freshness
+INST mark-cell-with-id
+INST get-id
+INST get-faced-org-id
+INST hard-reset
+INST get-cycles
+INST get-age
+INST point-mut
+INST varying-point-mut
+INST join-germline
+INST exit-germline
+INST repair-on
+INST repair-off
+SEQ olhggrdiiojridrhckdcespriogfgmopjjldqrfnskegihssighigakbcjchkrgabpqmbnnmmbdkgnle c20e8c5f8b348d42 1062898
+SEQ ammlbrnkgdsmhgnjhmjmpabimlhbijpeaidhbeidfnaqfgdijjkpbolklhfqesrbsblsppjeefbfipfl cbc501648b1485de 1052397
+SEQ mhsfmgblheabnmbrcbrqfcmmdalsrfmncpcssgcdnoeleadmkiqmionffesifdeqaemssnrarbjmsnjl 52424cb701bcb791 1077900
+SEQ hsmqnhaidgkaasmrpodsrljkocoaoqanjjsgamsbnrogjosihqnapoepsdfohbeiariiesebclqrrpgm ccff7bf287dbc05f 1061563
+SEQ dsqacgqbijofinhebljrcckihslslhnhpbndjcbgffgodoegarrjbmcebmrgngbbmdekmljdodsqcnbn 22420a98f778ff27 1060987
+SEQ ncljhnknpcqhqbehldjnbnegocfepmfpglaskgglopspckiekbmakfssrsjjsrokhmnmdjsdqmdcbpmp 42deceee8ffb7141 1054845
+SEQ cmsmhmnpbaiglbialnojjgrbpsfaobnbebhcboangqsfkjhpcssrgoqkndscenmijghganmfgrcpgcos 620e5488a134410f 1066009
+SEQ arslqlkdggcpsrbemirpcjqqbilaipoilianfhaakdcigleoffabjpgcloldjcrkrqnqjsbdkqqrcshc 2b99191fa51fb343 1052787
+SEQ bjofklopdlagfoiopkifmgionojmqngckonljamohdldirhebpbnilelslikqlsifcjglgqckbrjifij d7c7a3cbb0d6a574 1062437
+SEQ aqrgdcbnjsrolnpgjqqnrrgnikorikbeapbhkfjdbldsfqgjjqqisbdjkdfgeknahorsdfnknmcdmaib a88a0cbd28d6a9f8 1068645
+SEQ fhjahskmoibcbffomrrcfjcnhqhsdiajjeoprcsiicqalpndbnesdcdcgohehfsqqefnqjsbgmcdmkkq 71813c435d1eb0e1 1070621
+SEQ kcpihblhqgasqhajoqcfsjssgnjncbpoisaaaphdbenaipermpqkrqceenfemqcienbebscqakedqdsr 131937ecc9715692 1053477
+SEQ fqfiqjsoldijiseanainccledrecailnkmrlfpjhcndjidlbdolpolmoeenqqijcppnogokgsrbqqidr 41932d2d02694d58 1068479
+SEQ smrrihecccfbjkdjrejobsndafaqhbldsqnrekegspehndoifkserbgagalrblcrehprpeionfeqhhnh 3be8a9d1754f98b1 1064300
+SEQ qrmplicknaaqdglieafrpoarhbmmiaqmbsanolmmkandsrnrafbbldgnihaekfcpdpgcnhqmlolonmms dc8766ad8065dcf8 1054914

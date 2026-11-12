@@ -1,0 +1,552 @@
+---------------------------
+U:-1
+1 IP:0 (inc)
+AX:0 [0x0]  BX:0 [0x0]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+2 IP:1 (shift-l)
+AX:0 [0x0]  BX:1 [0x1]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+3 IP:2 (shift-l)
+AX:0 [0x0]  BX:2 [0x2]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+4 IP:3 (shift-l)
+AX:0 [0x0]  BX:4 [0x4]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+5 IP:4 (shift-l)
+AX:0 [0x0]  BX:8 [0x8]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+6 IP:5 (shift-l)
+AX:0 [0x0]  BX:16 [0x10]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+7 IP:6 (shift-l)
+AX:0 [0x0]  BX:32 [0x20]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+8 IP:7 (shift-l)
+AX:0 [0x0]  BX:64 [0x40]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+9 IP:8 (shift-l)
+AX:0 [0x0]  BX:128 [0x80]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+10 IP:9 (shift-l)
+AX:0 [0x0]  BX:256 [0x100]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+11 IP:10 (shift-l)
+AX:0 [0x0]  BX:512 [0x200]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+12 IP:11 (shift-l)
+AX:0 [0x0]  BX:1024 [0x400]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+13 IP:12 (shift-l)
+AX:0 [0x0]  BX:2048 [0x800]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+14 IP:13 (shift-l)
+AX:0 [0x0]  BX:4096 [0x1000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+15 IP:14 (shift-l)
+AX:0 [0x0]  BX:8192 [0x2000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+16 IP:15 (shift-l)
+AX:0 [0x0]  BX:16384 [0x4000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+17 IP:16 (shift-l)
+AX:0 [0x0]  BX:32768 [0x8000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+18 IP:17 (shift-l)
+AX:0 [0x0]  BX:65536 [0x10000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+19 IP:18 (shift-l)
+AX:0 [0x0]  BX:131072 [0x20000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+20 IP:19 (shift-l)
+AX:0 [0x0]  BX:262144 [0x40000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+21 IP:20 (shift-l)
+AX:0 [0x0]  BX:524288 [0x80000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+22 IP:21 (shift-l)
+AX:0 [0x0]  BX:1048576 [0x100000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+23 IP:22 (shift-l)
+AX:0 [0x0]  BX:2097152 [0x200000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+24 IP:23 (shift-l)
+AX:0 [0x0]  BX:4194304 [0x400000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+25 IP:24 (shift-l)
+AX:0 [0x0]  BX:8388608 [0x800000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+26 IP:25 (shift-l)
+AX:0 [0x0]  BX:16777216 [0x1000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+27 IP:26 (shift-l)
+AX:0 [0x0]  BX:33554432 [0x2000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+28 IP:27 (shift-l)
+AX:0 [0x0]  BX:67108864 [0x4000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+29 IP:28 (shift-l)
+AX:0 [0x0]  BX:134217728 [0x8000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+30 IP:29 (shift-l)
+AX:0 [0x0]  BX:268435456 [0x10000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+31 IP:30 (shift-l)
+AX:0 [0x0]  BX:536870912 [0x20000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+32 IP:31 (shift-l)
+AX:0 [0x0]  BX:1073741824 [0x40000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+33 IP:32 (inc)
+AX:0 [0x0]  BX:-2147483648 [0x80000000]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+34 IP:33 (dec)
+AX:0 [0x0]  BX:-2147483647 [0x80000001]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+35 IP:35 (div)
+AX:0 [0x0]  BX:-2147483647 [0x80000001]  CX:-1 [0xffffffff]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+36 IP:36 (if-less)
+AX:0 [0x0]  BX:-2147483647 [0x80000001]  CX:-1 [0xffffffff]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:1 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+37 IP:37 (inc)
+AX:0 [0x0]  BX:-2147483647 [0x80000001]  CX:-1 [0xffffffff]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:1 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+38 IP:38 (inc)
+AX:0 [0x0]  BX:-2147483646 [0x80000002]  CX:-1 [0xffffffff]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:1 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+U:-1
+39 IP:0 (inc)
+AX:0 [0x0]  BX:-2147483645 [0x80000003]  CX:-1 [0xffffffff]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (39):  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedfcghdd
+  MeritBase:39 Bonus:1 Errors:1 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0f13149f 0x3308e53e 0x556241eb
+Input (buf):
+Output:     
+---------------------------
+  MeritBase:39 Bonus:1 Errors:1 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+
+# TIMEOUT: No offspring produced.

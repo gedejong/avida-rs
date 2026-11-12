@@ -1,0 +1,385 @@
+# Random genomes over the experimental hardware (hw_type 3) instruction
+# library, traced by the C++ reference (cbuild/work/avida -a, analyze
+# LOAD_SEQUENCE... + TRACE trace_out/ 0 0 <random>, resources at their
+# update-0 levels) with the tests/fixtures/exp_env/ft2 config (MULTI_ABSORB_TYPE 1, PRED_PREY_SWITCH -2, JUV_PERIOD 3, forage targets 0, 1, 3)
+# and the instruction set given per batch (INSTSET diff:hw_type=3).
+# SEQ <sequence> <fnv1a64 of the trace> <trace length in bytes>
+# Each batch was one reference run, so one world RNG and one test CPU carry
+# over from genome to genome as in cAnalyze::CommandTrace. Random batches
+# hold nop-A..nop-H (nop-A..nop-P in the 16-nop batches) plus up to 54 other
+# instructions, 100-instruction genomes drawn uniformly. Left out of them:
+# die (the reference segfaults in a test CPU) and deposit-resource /
+# nop-deposit-resource (a negative register indexes GetRBins() out of
+# bounds, undefined in C++, Err in Rust); the last batch runs those two on
+# hand-written genomes that keep the index in range.
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST set-guard-once
+INST pop
+INST rotate-left-one
+INST rotate-to-unoccupied-cell
+INST output
+INST attack-prey
+INST look-ahead
+INST h-alloc
+INST teach-offspring
+INST goto-if-less
+INST IO-expire
+INST set-flow
+INST output-zero
+INST deposit-all-as-specific
+INST rotate-home
+INST attack-prey-group-share
+INST get-pred-tolerance
+INST get-cell-xy
+INST sg-rotate-l
+INST search-lbl-direct-b
+INST h-copy
+INST nop-X
+INST bcast1
+INST if-less-0
+INST get-num-guards
+INST search-seq-direct-s
+INST modify-display
+INST look-around-intercept
+INST show-ft
+INST attack-prey-share
+INST bit-cons
+INST sg-move
+INST search-lbl-direct-s
+INST term-cons
+INST attack-prey-fake-group-share
+INST if-less-cons-24
+INST dec
+INST shift-r
+INST exit-thread
+INST read-cell-data
+INST one
+INST rotate-neuron-AV-right-one
+INST search-seq-comp-s
+INST look-ahead-intercept
+INST zero-easterly
+INST adopt-pred-group
+INST if-neuron-input-has-output-AV
+INST deposit-specific
+INST rotate-org-id
+INST promoter
+INST get-specific-stored
+INST set-opinion
+INST read-faced-cell
+INST get-easterly
+SEQ 30SaSyMOgl2Z95NJPxr22GqmqrHkw1YGFSF0iImFzv34WeyQPHmTkfd6yvpdHH2jmJx38MaHuXXbh8GRdZO0egKe6lqGt8u66AKN 7f0b37ec3dbf19e0 1777658
+SEQ HVJvuR8YUd5oZGP8uRsappdh7ut4b7uhg6C0v6lkEsAzwi0ztpIo4N96x5cD8rGInfi0pWtJiCdqp0jhJEuZkGyeRvnyi6QL5DBO b20801b0dc7b7544 1786165
+SEQ IdzRDZ2QCxnsSa7fhj1DWXfnKEYOrOibW6kLYtIpLSm7YvVzCJTlXzQ6CJZ0BqX3nYpoPHrRsKcM7pNJpwDZZxhLVowAxi9VicJM f654b25ed7462648 2259060
+SEQ GtPXgiZRGT6ozigxGPVqaakCZvkE8kGMkTgqxhEklTfSGQqRCICuSYKuo2lV2OdNhxea0HI97AO9v8BXUgo2ZAqcKvNJrjU5u7zG 5a105c2a18eb5993 1745312
+SEQ g5bSwIekC806aCQyBexNb2EynshNJY5k7sPhcD0muz1lDpkebhmqAWPYFOrtMQwUrxtfJEojmByjeZ5XrW5xV6aZ56ZDHN4GEmbn 74e30abfd9009938 2295116
+SEQ jUtc2b1FhJwohOo9w9AkjqQ6pY4NERBhX3wiqihXsp6VRwwTrNeQtRzJ6omOnijuqi9e7Ro6dLF1LshhAfX5aVTbROYNFWDAHRiW b465e8406053dfa3 2249334
+SEQ GWpluqcukfdWICpZJGGxoirMuRScGeLRbbt8ZHyygwAG1Ggxh8FM3wynpMXigsdMU203yu0r1xUh9rvX4xr0erVw9uYsAJVlWZVg b94ca8b77ef39be8 2322475
+SEQ FkpXlpTBPf0xD0PFCHXCfZw9EhFtRr7jZ5IMRCItCM2M9zzApWExF5hUE9tT4Kgx9bUQwWWU2W5cER8rYya3pzwDndylnwndHqdx 13f1b8e50c3326af 2161026
+SEQ fbfWUAMWVGRiKYZiGeLGh3Itc3zvm9fVc3fT0YmIHlIGUSogKksslrCvZdJAwyoswNzRrpt7odssReOjO77LQ4izwHOVtHGfMEiP fa785f633fcc893b 2308693
+SEQ 9YIC7nsckG4VbhKH7MVJLoqfWbzt85rAgk0WLrCtJK1evUjY5qOcytzcg4KHY4FUSfVZvWOOtTHlOQiPmXMSP6WMn7E5cFAgLB2N c4bc8d5c6b676370 1880460
+SEQ SB5kuGho4F7TztICpOtIHZU5o9AkUEXhSSBzo2FEYZMb7NqAL1IgpfPSpuHB1zj2NB1I1n2vCdsSGR5p47Em61WvckOUYkcoyGPJ 083624e2362ab2f9 2202982
+SEQ GfH7fyqb3BwVExLzscA3GT3k1Ol8GqWX5GHuOxPiQP5CahCTPyrFgm635WH8FGnd77WikKKkbq7xbxbxRhTOdpURZDn1MVz2ej0Y f5cab88ee54ced01 2295864
+SEQ qXgsHaRg7X39Hepp6zJeQPP261lN67YZjV2u7E4gWI0fIKabRbFtjair4Y5RdwbNSqsC3ODTKcXcmbBTFNuwp5COdRkYiW25te05 2f5f2e0871e80c30 2272205
+SEQ wk823C4EPRHFGqvUnoky7bcurZoidmazGtMa1dFmyYhXjZQS36qaTqCx9WCnUgXb9RWduBP7Yr8jpiUeUSkHh4JwMsvRNrjTKHIW c2853d9b394f4203 1840139
+SEQ 1HU4fcJbivH5RkTSafIeleGYFKFiWItrE5pMm0OFkFZZxShXYjbfshPsbnSJjCuk1CjFXeBvc0EaJOpHAVCxd7PhKAtzJinyOCd7 595eb2847ac38fc9 2251548
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST if-cons
+INST input
+INST read-last-seen-display
+INST IO
+INST send-msg
+INST attack-spec-prey
+INST nop-collect-edible
+INST fight-bonus-org
+INST if-gtr-x
+INST get-res-stored
+INST get-faced-edit-dist
+INST rand
+INST shift-l
+INST attack-pred
+INST numberate-24
+INST get-cell-x
+INST if-gtr-0
+INST get-pred-group-tolerance
+INST rotate-neuron-AV-by-X
+INST add
+INST search-seq-comp-f
+INST pop-all
+INST get-north-offset
+INST if-neuron-input-faced-has-output-AV
+INST move-neuron-AV
+INST mult
+INST get-opinion
+INST set-rand-ft-once
+INST thread-create
+INST read-simp-display
+INST mult100
+INST if-copied-lbl-direct
+INST get-faced-org-density
+INST rotate-away-org-id
+INST nop2-collect-edible
+INST rotate-up-ft-hill
+INST fight-pred
+INST mov-head
+INST donate-res-to-deme
+INST kill-display
+INST h-reqd
+INST rotate-neuron-AV-left-one
+INST fight-merit-org
+INST s-regulate
+INST goto
+INST if-cell-data-changed
+INST get-num-juvs
+INST search-seq-direct-f
+INST h-write
+INST if-nest
+INST attack-poison-ft-mixed-prey
+INST search-lbl-direct-f
+INST rotate-x
+INST get-merit-fight-odds
+SEQ abXsyjJTeXRbmYA4GDJMNYD7RoxTlfux16BOdIeCnDPbJy8ghPciNL0UBmf8P7Q9oP0RIfYupZxBQJQP2u8sURaHDzQXCuZdALWm 3a33de42155160aa 1781121
+SEQ CH5oB41b8Jr4BPBjTJ40mOg5r0xyRhmSqE50oC6UljpWh3wZFXlQrk8vrlsfLhxgQb5t9aWNpLKBXVs4OpbOkkYCawz0R6c3YHBT b38fd442a51b0995 1822743
+SEQ FPcIiQrq9FMOhCwiigiPy5shbzFo7LDMzByrrRu8meBk6OxG4DFlOIE2zv4cLTmAtgzVKLyZqqtVCVr3T5qjOIJUEFfHwOWOTlVd 0768436acef35a32 1799089
+SEQ OrGcbt7cvg3Q2mFTTAU1hJM3hBAq7QRhBA3SUsPRbb4xgBbHvVm2pQFYGARL3sS23gB5jLTv4klN5ysycNEqw4x3VyaJrK9xD6ak 2110cb48efac7102 1773578
+SEQ NjQN7o4U8OqgupSGwbyrcDmRiyxaS8mosxfKAUL9MPPWINSWZ01bad7IEWGWYDhcOgEX2aodDSxMSRne893VTa3Kku9ooNA0cCZc 47aa985b58b26652 1791024
+SEQ 7Cfl5eaduMbHlvkyJvB69hW4e7eGrO08Zl1b3vUJj1v030J45IDfPNtS88kV4596BuQ7DKVBfCFEAZUIqrBjPIBUOJuxHQe7RbFy 85044279e6ebc600 1892184
+SEQ rshXEQfa45EASivggeApnf2TcigB5QcCRsNDxD7LrLsu1Rr2e9JNXswazBuPFTQmymVjJBl8AnO0WJAruD4dMO854uCysSwVStns 42352a144123d21b 1884227
+SEQ ctFpFAkFlXhemAjsPs4sMXodJV91wEU2a7Xq2tIV5sMEYzFRyUr4J4XZcVQWccP0Tc6PdPlRqRdSlRn2Uw08RmzcwdHJd2Ohh4DF f88964f7e709c690 1889988
+SEQ uQkjLDbpLNkcxP21uhXqXromSNP07DhSB670Ay57lv0LfJuDgOK8hAMikoR0FQtDiNWemAvB6Q4HUiOX1i1a10WRAVWMzGKLb3k0 c3396261a2375dc9 1883731
+SEQ R9fGgG3c5cUY6t2MyHKfdkJNLBLK37beDkiIhLxNJKrjy1klZlo0UrDLGfr4Oam3MbPypC5NqqrLwyoDVaQZMj9V4Ktg5V56dJGR 36a08c346ae70ea5 1896591
+SEQ 3xzsv4FR2faeQaT9WPUruPKUIiDXUMfLkPnNUjdjkaFuSnlMHgZiZHmYXEsdC7WJh6eWb5q0MVQ3HRLU6gkSEh8oR3NNAGfpBZaI 8786e87d3c8e1120 1734850
+SEQ k1DDCmOtLbWHKCYcHDM8yVg16hkUFb4FutHkm4eD6nVVXp58Jx1gXRDXD9nYCs1LcS8LmnGUticsNslAX1HC0wjivb1ZWFRt1WOH 967a943d9603f8c4 1886195
+SEQ Qot93ApvaNATDr1P9qkd1eij8VGxnIXsvcgTQSoOGdo003xo62I9nlm6OcLVjAjACLbqIndyFemPm8QApTj4s3ydRFL2L8S6rjRc 636aab30a7671749 1766483
+SEQ eIgOKlPjrlgh4ZzIOMrBxdoCGRVM04tG2hNBrABYVgSdcNFY3e6RbjP2wO6n8y5138UcWBrhs9M88A42FqN11lTtNHVXEagLcHkH 683e02c61e84317d 1897263
+SEQ sQPEmI6UPwtJKP2xqkQ0OP0sQJd331nmNfh0YP0JZfSZ6IE2lrhiwoHzeXXtRXb5OzcSfsLzZnruvfQyIYolLnY5VwIpEkCcq4qU 558edc1c377e83b1 1846620
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST join-group
+INST activate-display
+INST attack-poison-ft-prey
+INST look-around-ft
+INST bit-cons-24
+INST wait-cond-less
+INST sg-rotate-r
+INST nop2-deposit-all-as-specific
+INST if-stk-gtr
+INST set-guard
+INST leave-pred-group
+INST id-thread
+INST search-seq-comp-b
+INST sense-res-quant
+INST repro
+INST kill-pred
+INST rotate-right-one
+INST output-expire
+INST set-rand-p-ft-once
+INST regulate-sp
+INST execurate-24
+INST if-not-0
+INST deme-IO
+INST search-lbl-comp-f
+INST rotate-uphill
+INST swap-stk-top
+INST fork-thread
+INST juv-move
+INST mov-head-if-n-equ
+INST inc-pred-tolerance
+INST search-lbl-comp-b
+INST if-cons-24
+INST range-move
+INST nop-deposit-all-as-specific
+INST swap
+INST numberate
+INST zero-northerly
+INST swap-stk
+INST push-all
+INST get-position-offset
+INST attack-prey-no-share
+INST change-pred-group
+INST sense-nest
+INST look-around
+INST set-forage-target
+INST collect-edible
+INST mark-group-cell
+INST if-copied-lbl-comp
+INST donate-specific
+INST attack-prey-fake-share
+INST collect-cell-data
+INST execurate
+INST attack-prey-group
+INST if-copied-seq-comp
+SEQ J9D4fNK81q0UlZwjq6pdnakBgDmHv3ZMocozRcZaacYgRAt5DfdNC5anVvHll6nOLPsEWCLsXKhinE8rUvBCUdLMaivtnCzrd0lG 5361f096ae8bb221 81638
+SEQ RVk7FF6XBgPVyL9I9Z9hxT0Ln2Jm4YMwv4XLg53ZoCOwWiE4MifFtWiEoZSQuT28yy3i0jqpKRRzlYcB3MaMmsiM1sPuGzFR9MnN 007649602dd898f7 104863
+SEQ 1Ks9qxSrAwL7S1dSy5zV0hXHCkzlX8V3cyZs3Ls4Q1EiqLeTI7U0AFPclR1MVMFmgnajz3pjcOuJ7VHyRuBhtKk2KESHDDnLRm27 6d769f35a0cb6441 87608
+SEQ q3ikW3pTfcXX0Ft4m4Enc3jFS7yMzv6MZCsIdWcJQWJelICNlZLGOFiwwFzTPFKVtyoNXAvJ2XEhxctn8oqjvKnDMCSXbhC7yYpq 4eec054a38092b89 45092
+SEQ 3W32OaiwVTtvzkasJsHUEGZwTJvMJQ5rwBVyLNqHZIDJrmEkNJdoKDbcvwMk8F15ikLnuvTsFf5fARO2vaFWqYvVxWzgUsv2HZXu 27e3ef357198350d 47005
+SEQ qM25hkWUsddxpB5S0wrkC5uc8bclvFwLM0FA7JuWwMpuiFepZ5HF3zRnARdmwLFiy8Czp2oN6fYDxX0cf4P6rtsiGOKnsVpKzE0y a3e2c2438650835f 50253
+SEQ 6P4rUF9pcN4oxYcKnA3cQEf3uA7AZ9Y5s74zD8q4IUcgJrrOnoBzQ7EYhURoULl1TRTCk44g2I4i7Grtj1DDlblpi0FQ3D68Wtfm e3ddbe1b527fc8e5 1771150
+SEQ Ojqpi6gwXyee3ruBxu5slFBY2iOWpAgJ0oNk8blFsPSMusMtnhfFYfSyu7NPSBnQa0Kdd9C5vAfnyTnJphmMSGfM7beIECc3MTKT 0a1d6f1f3420aa3d 79306
+SEQ BKYoy1RqT92HhAozCEVG8khAwcpJuh6ohbxG2cWENQehavYtdCouDxf3WbW6B60OOWFUtBMkkhsMbReTazsDM4rb36eLMe3jp5JA b0636260f7b6edc9 1822628
+SEQ 1Htg5KwY0l6EKOVgW56K0uOMUGLwq2bc7lhxBJl6ojlZIdh431MCism8VA90A4bTqsK2xxUQdDJf1PsGg3yB8xzw6nR8wUADxYgv 52da3720549a441a 1760353
+SEQ 9d2m9xHBdEfmojEvtL9v5JCguDxOBQB1g41FTRFslBYYfAy4rVnsoU9Ch7nouplu7fmh22LIjY3WLOnzt35uE5de5NE9HHYxAEmB 451355653b07db88 1823053
+SEQ BkIBpmvFYI2KrSObzexweNW3Tzn8IVrVwTPgF3fndtLW2ONdImHvGHWXIzAeqcy0EOIrdazD7cBJWpOR95JUgEKq9uCPNxEP6fTY d77c3075feee6a00 1770290
+SEQ vYhumXB694e2QSFEIcDztnEmfIDESKsW4k5i76KR3xgjkJhZxWa2wV4kGVgIIRNxRQj3qty6Hc0XFSRMIKy6gx7n4CUaLAZcnkd8 086a873cad24a106 1764144
+SEQ GiwBjDskuW3dNq9XJQyqCKm5oaY8StunJEuEWiDpGTKr1e6CHHp2qPDPd4qNCKVNfBxW7Cv8lMB6ejtUQn3HgxPbZZmLot3Lb35h 95eb2d77da97210c 80567
+SEQ Es816k3CuSrhkPgGlaFcRcaCnEZ9XnrwxnQmvyRFT9Xot3MU62A7fO0PvEDxTQ2i5nS5BXCiNXvDp8Ugy94KHMwexwPuf26kNR0b 8f15db805526b1ec 1784545
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST fight-org
+INST move
+INST range-pred-move
+INST sense-resource-id
+INST h-divide-sex
+INST if-not-neuron-input-has-output-AV
+INST goto-if-n-equ
+INST attack-spec-prey-chance
+INST if-equ-0
+INST sense-faced-habitat
+INST term-cons-24
+INST mark-pred-cell
+INST read-faced-pred-cell
+INST get-faced-org-id
+INST retrieve-msg
+INST get-head
+INST h-divide
+INST nand
+INST if-not-neuron-input-faced-has-output-AV
+INST update-display
+INST attack-prey-area
+INST sg-sense
+INST modify-simp-display
+INST goto-if-cons
+INST terminate
+INST scramble-registers
+INST wait-cond-gtr
+INST get-group-id
+INST if-less-cons
+INST set-ft-once
+INST attack-ft-prey
+INST sense-res-diff
+INST show-ft-genetic
+INST inc
+INST mod
+INST search-lbl-comp-s
+INST get-cell-y
+INST if-copied-seq-direct
+INST goto-if-cons-24
+INST get-loc-org-density
+INST if-n-equ
+INST get-forage-target
+INST learn-parent
+INST dec-pred-tolerance
+INST get-northerly
+INST attack-poison-prey
+INST make-pred-group
+INST look-ft
+INST div
+INST collect-specific
+INST wait-cond-equ
+INST if-equ-x
+INST jmp-head
+INST search-seq-direct-b
+SEQ LUlHTDC39So78GWQBZYjBnxQVQ0nAUTKjU28CbzbUsSbkdgyQMLScL98Jm89PgK0cpFW5zj8rIbXij73qspWTp2emjtEIaFpzdcn 16a82729a025e8af 1809823
+SEQ 4FAkyQcrwyPEyM9D4e1QTGWkILgaKNtt1QZfhNvBYaSHg921tpmaAzOWHPT2Ps2Navf7CDQsMaMT9Moi68jcLqL1BOySOuHZvfwb f39450496e9db9c5 1755447
+SEQ G1BDvs45QUvm7YXNnuHGBYDIHp9sXZ0gpieRROd2QCyvu3t3TfkA8EzGZcf1499Ub0E6K2uBjgOyPdBGC6X4Uo0PkrSZ6mwgNJf9 5cb145380bea0c37 1732876
+SEQ 9CiGd2UL3UNJRxED9HViqIjcQaD8M7ycUPX0fhd41Goj5vHr7crKULndmUGdyEM6kcW3TWxuCNskXSZvSbwbKxQP5D520cNYVoOZ 95ca1cc7979996d8 1741372
+SEQ iMZMyYkxRZhgeHXcq0avwCUSDUDccMZxtuN3IR1UFqeyKHQG7E22vm8hGJK11VsSTlYC7uEkTpXyjnrnVdtQ6kwZcClz2LKf7jBk fad7128e46257d4c 1820755
+SEQ vBAWDGVv9KTKZ8vRDka45N6mTEvlwmLXvZEjmL007OSf5K78FKcrSZCwkqK3sucLnC41YGu9EeU9JuXXjBpsw49MAkiN9HsGOM8R e913791550b76273 1749276
+SEQ Ea8DQ8SHDqLpHuuDRskHBkOfGeSzTlyrPmqydRUbetD25cc8Sh3vB71XOqLCQvJKWcwWlC92ahPkd0wRgyQDdPp7k29O5A62Ofis e65c9c0022ef6a02 1721104
+SEQ ZtU4k0dYeSTQHbZtYwU2IstNLQTBSyZulBCGBlg01qAzmcot2QHMp0DPOvscZmUR6XYIDCfDEAmmkmUFDVBzVVroYavjljKYyBrP 0fdf2f7b1e8d9b36 1811722
+SEQ fcP1GXuLPl6rueQoVghvUHUfZwbJ8oJAEyHr1QoOiFdSwka3OMoAPqrboBw5fvEnlvGajWllL3YyMhjEeUCR2JVW7AnkCYHObAcY ec7c4d9a71114544 1741855
+SEQ m3tBZVoeM8EL1Ph5jJissGu2tMychhcqlNZ3NsPy0qQbifHQDxY80JVPHzGLu0DNc9ILuq668dgCMWuET7798Wr3u2IkVGeMC8JT d8ad9fa5f497db6a 1721143
+SEQ YO2zPWO7BCViCKy1SW07QNoNfK8DdYZdcsK1yVZddTIsMvVvU3M4EU3RKF6QC0ueHbT8MEussmWmbFpcanF9D4h5pqetX3GZDsM0 b59bb21af1e051d2 1790554
+SEQ dkIyROx72QQAXfSVcx3cmhn7h81710vV0iM7PDAZEsA3cauGC3XOJ82HYuwUN4UMY7hDBv90c2KRMGEYmTwJF7mTQdOJfI98C9G2 9ace2be9fa759a34 1790796
+SEQ 34sUX2A5h0BrvMtdtFUE9ZCx8k3pU7IV0OrhAR4umVN0e0hFzbq5JoZNzgNR5qXoiGbD1YM8bzspx4rGpJsrBaILXHD7TwJ8DgIm c5d501e3ac074157 1733200
+SEQ 7QjuaauuXON8ohPf6D5guu70lsb7LaYqv1fugLp516wEcgpC4PoE3tLb8ToICs53YkahI720RoUAAEJdKp8OIVmwnoveeFbmkPnx 71d4bf7baf784c7a 1788481
+SEQ OsicI760eFfFQg9toIsNFd5hv0GBh1uF2kzsJcZf3yZmOMEUSHLsMY7cxMBhY1IiVFH7jdUtLVTVrqpUmnHpiixV1w9FceUaDIZt 65c176af0e200721 1741876
+BATCH random
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST push
+INST mark-cell
+INST regulate
+INST read-group-cell
+INST attack-poison-ft-prey-genetic
+INST zero
+INST get-pred-group-id
+INST label
+INST zero-position-offset
+INST nop-deposit-specific
+INST if-less
+INST mov-head-if-less
+INST sub
+SEQ sspahalgjdtrptiujijmnjfmufopfgpqodtnjcnhleafmhghspnrqhtubnodiurihenoekibughrdtbfpopkdriucaqadrkucfmh efd9c44937b2a4aa 1760289
+SEQ omfokcsmngqjgnlafuugnfaoqolhkqolfocffucgdrpisshsaeeodquromlotqhsmcpaqnanecgsiorbusbudkmsefgrnbukegdh 9274064e3fac0231 1772162
+SEQ hrdqhcmguprbqratudgnkrrahcofgriqumteatrshasfseiknmhlgmbuddoqnorcueadqtmhsskbbdiqmenqebprnqrnlgfkoqlg 7081bca45b6a33e9 1749576
+SEQ isftaaktrfjunddlhsparrsumktpdsrsskimqslgoftlnlrmkjdticcngksjfqlqplntcqbhfbtjegnmmefleislneckgpujanrj ca55b58fc8beeb9a 1764442
+SEQ dthqgahkfcngkdhskfohtiihuaoegphdddheqmhsmfrneooqekofossbgtokoetieliiebmehonohojbudcarkhhdeouneaehiai e9af474af20c18d5 1760269
+SEQ krahqkhsithhcbejojqhqashjskoglnrfssppfbiiborbpqjrmgfaorggdjkdfsrjdtrpsugbfjheiopqnqbcocrugoggldjibne 671955f1f8b42ab5 1751602
+SEQ spseuqpdmtcdrlehpbfpropjjsqasncpgmpfrfpgetamdhjstsjlcrcgdqbmjlorirahikimbkiqiacsqhjjdduqakhlgqccrilj 9973ab0f7cc6ad25 1733762
+SEQ kpunljrldrkufdjlaqhffsjuiherrffdrhjirnaumeahbagfqichgchlgpcfghfuarafitjlbueajhgjssshpnatdjbjhemempik e8447e4bc8304564 1749284
+SEQ tlllujhtuqcabkduchsagsmugrhrktcdrherogngjimmfugnuptrsjcodtpoiuukaharikrfnkchdgicpfcskiedhilphlffhuhc c387a6d3e457e55d 1747349
+SEQ lfafmpgqfifmkokobjjpburgiummidjbqlkbqjcdtutjoitmegaoahajgalqhheugackirhmdebpsmdcjthjigocoucfjspotsbs a7255f3c0a96e719 1742663
+SEQ pjnpbsbtkjcsossouhsnrccklecmarklcdojmhmpmscprhiibpioascapjkuroalmckgaccrtqsbqgkjtbrdgfcdptfqmacfoapa b0a983818cd45dcc 1740305
+SEQ doitotdsmboshfpgglhugiplshfnhsoudgbtdhjqljpcebphhcrforucoakhfoolulqbpgjfriucnifqdirjrensckjhpcoatbap 5b807c4b6842a8ff 1750718
+SEQ qtmtkchkdjuprfarcemtajslelbntbdujgirlrdopndkmmmbkjlctaqkeenecmpmjscfdufuahqkboenpqdhguikjathmhkhffbt 25e9c7f69627a89e 1763885
+SEQ shrnitnobhpcigfgeitccnsrerkbamgidhimcimluohdefiarueurcddnikucegnfusrflrhsrjfferjmocpbaiprbflbmmblfcp 6f238908312dc78e 1751666
+SEQ mhdaarmokkonepkamqmdjlefbchckfemltujceinadqqbjegtsomruoqlcnbofhddioaotmponhdiepdjucjnkeseccafmkhgbnt 284d64fb15f43330 1770149
+BATCH fixed
+INST nop-A
+INST nop-B
+INST nop-C
+INST nop-D
+INST nop-E
+INST nop-F
+INST nop-G
+INST nop-H
+INST deposit-resource
+INST nop-deposit-resource
+INST collect-specific
+INST one
+INST inc
+INST get-res-stored
+INST get-specific-stored
+SEQ ij f2beea3f5351ad20 30872
+SEQ kij be4bf09931c8a899 46432
+SEQ klimj fbd25aa5f473f720 76909
+SEQ kmmmmmin d46ad06c6c4dde77 123079
+SEQ kicjao 79f4580c05ecbcef 93211
+SEQ kkbljbic 9adfd364a5244403 124157

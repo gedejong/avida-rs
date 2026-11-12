@@ -1,0 +1,26 @@
+# Avida deme resource data
+# Wed Nov 11 13:27:09 2026
+#  1: update
+#  2: Deme 0 Resource dResNOT
+#  3: Deme 0 Resource dResNAND
+#  4: Deme 0 Resource dResAND
+#  5: Deme 0 Resource dResORN
+#  6: Deme 0 Resource dResOR
+#  7: Deme 0 Resource dResANDN
+#  8: Deme 0 Resource dResNOR
+#  9: Deme 0 Resource dResXOR
+# 10: Deme 0 Resource dResEQU
+# 11: Deme 1 Resource dResNOT
+# 12: Deme 1 Resource dResNAND
+# 13: Deme 1 Resource dResAND
+# 14: Deme 1 Resource dResORN
+# 15: Deme 1 Resource dResOR
+# 16: Deme 1 Resource dResANDN
+# 17: Deme 1 Resource dResNOR
+# 18: Deme 1 Resource dResXOR
+# 19: Deme 1 Resource dResEQU
+
+0 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 9.49127 
+20 79.2526 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 79.2526 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 84.5275 
+40 93.0088 93.6501 51.9633 93.6501 93.6501 93.6501 93.6501 93.6501 93.6501 93.0088 93.6501 14.541 93.6501 93.6501 93.6501 93.6501 93.6501 93.6501 
+60 94.6812 94.7592 48.0043 94.7592 94.7592 94.7592 94.7592 94.7592 94.7592 94.6812 94.7592 14.4694 94.7592 94.7592 94.7592 94.7592 94.7592 94.7592 

@@ -1,0 +1,18 @@
+# Org That Reproduced the Fastest (fewest cycles) Among Orgs with the Highest Reaction ID
+# Wed Nov 11 19:26:26 2026
+# GenotypeID
+# OrgID
+# Cycle at First Reproduction (parallel multithread execs = 1 cycle)
+# Exec Count at Trace Start
+# Exec Count at First Reproduction
+# Reaction Counts at First Reproduction
+# CPU Cycle at First Trigger of Each Reaction
+# Exec Count at First Trigger (== index into execution trace and nav traces)
+# 
+# Updates for each entry in each following trace (to match with res data)
+# CellIDs to First Reproduction
+# OrgFacings to First Reproduction
+# Execution Trace to First Reproduction
+
+
+6 14 63 42 62 1 4 3 11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11 390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390 6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6 xgvAxgvAxgvAxgvAxgvA

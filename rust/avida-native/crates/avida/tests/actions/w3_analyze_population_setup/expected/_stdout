@@ -1,0 +1,57 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: WORLD_X 12
+CmdLine Set: WORLD_Y 10
+CmdLine Set: WORLD_GEOMETRY 8
+CmdLine Set: NUM_DEMES 2
+Setting up resource resA(GLOBAL) with initial quantity=100, decay=0.99, inflow=1
+Setting up resource resD(GRID) with initial quantity=100, decay=0.99, inflow=1
+  Inflow rectangle (1,1) to (3,2)
+  Outflow rectangle (-99,-99) to (-99,-99)
+  xdiffuse=1, xgravity=0, ydiffuse=1, ygravity=0
+Setting up resource resD(GRID) with initial quantity=100, decay=0.99, inflow=1
+  Inflow rectangle (1,1) to (3,2)
+  Outflow rectangle (-99,-99) to (-99,-99)
+  xdiffuse=1, xgravity=0, ydiffuse=1, ygravity=0
+Setting up resource resB(TORUS) with initial quantity=50, decay=0.9, inflow=2
+  Inflow rectangle (0,-99) to (0,-99)
+  Outflow rectangle (-99,-99) to (-99,-99)
+  xdiffuse=0.5, xgravity=0, ydiffuse=1, ygravity=0
+Setting up resource food0(GRID) with initial quantity=0, decay=0, inflow=0
+  Inflow rectangle (0,-99) to (-99,-99)
+  Outflow rectangle (-99,-99) to (-99,-99)
+  xdiffuse=0, xgravity=0, ydiffuse=0, ygravity=0
+Setting up resource food1(GRID) with initial quantity=0, decay=0, inflow=0
+  Inflow rectangle (0,-99) to (-99,-99)
+  Outflow rectangle (-99,-99) to (-99,-99)
+  xdiffuse=0, xgravity=0, ydiffuse=0, ygravity=0
+Random Seed: 100
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/an7/fix.F3iMKR/data/
+
+In analyze mode!!
+Loading: data/detail-10000.spop
+Loading file of type: genotype_data
+Reducing batch 0 to genotypes: num_cpus 
+Duplicating from batch 0 to batch 1.
+Setting current batch to 1
+Detailing batch 1
+Setting current batch to 0
+Sample Landscaping batch 0

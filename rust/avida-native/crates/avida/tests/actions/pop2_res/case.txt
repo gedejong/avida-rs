@@ -1,0 +1,2 @@
+base spatial_res_100u
+args -s 7

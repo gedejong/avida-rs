@@ -1,0 +1,11 @@
+#filetype genotype_data
+#format length sequence 
+
+# Legend:
+# 1: Genome Length
+# 2: Genome Sequence
+
+66 qcAocqpqArqcocAzaqckAqqApncAqAlcoqgcAvcAqcqpbpbfcoquttttttycsva 
+22 rucavcqqcpqgcutycasvab 
+21 rucavcAgcAqcutycasvab 
+20 rucavcqcAqcutycasvab 

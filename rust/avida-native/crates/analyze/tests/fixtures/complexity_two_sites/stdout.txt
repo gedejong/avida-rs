@@ -1,0 +1,287 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+
+In analyze mode!!
+Loading: dgcahcgficaehab
+Loading: dgcahcccgficaehab
+Loading: dgcahcgficaehaa
+Verbose ON: Using verbose log messages...
+Analyzing genome complexity (one and two sites)...
+  Number of arguments passed: 5
+  - Mutation rate passed, using mu = 0.01
+  - Analysis results to directory: ts/
+  - Use resorces set to: 0 (0=false, true other int)
+  - Batch frequency set to: 1
+  - Convergence accuracy: 1e-06
+  Analyzing complexity for org-Seq1
+  Analyzing complexity for org-Seq2
+  Analyzing complexity for org-Seq3
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Analyzing genome complexity (one and two sites)...
+  Number of arguments passed: 5
+  - Mutation rate passed, using mu = 0
+  - Analysis results to directory: ts0/
+  - Use resorces set to: 1 (0=false, true other int)
+  - Batch frequency set to: 2
+  - Convergence accuracy: 1e-08
+  Analyzing complexity for org-Seq1
+Skipping: org-Seq2
+  Analyzing complexity for org-Seq3
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.
+Fitness of this genotype is ZERO--no information.

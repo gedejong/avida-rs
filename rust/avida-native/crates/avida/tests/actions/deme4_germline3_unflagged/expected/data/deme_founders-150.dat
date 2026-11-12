@@ -1,0 +1,9 @@
+#filetype deme_founders
+#format deme_id num_founders genotype_ids
+
+#  1: Deme ID
+#  2: Number of founders
+#  3+: founder genotype ids
+
+2 1 1
+4 1 1

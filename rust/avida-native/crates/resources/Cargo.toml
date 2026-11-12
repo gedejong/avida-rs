@@ -1,0 +1,10 @@
+[package]
+name = "avida-resources"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+
+[lints]
+workspace = true

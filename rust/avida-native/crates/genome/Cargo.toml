@@ -1,0 +1,11 @@
+[package]
+name = "avida-genome"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }

@@ -1,0 +1,2 @@
+base migrationmatrix_load_reset_write
+args -s 5 -set DEMES_MIGRATION_RATE 0.01

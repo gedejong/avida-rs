@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 5 -set WORLD_X 100 -set WORLD_Y 100 -set MERIT_INC_APPLY_IMMEDIATE 1 -set DEATH_METHOD 0

@@ -1,0 +1,20 @@
+# Group Attack Circumstances
+# Wed Nov 11 19:18:37 2026
+# Update
+# Size: potential group size, not including self
+# Success: 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure
+# SharedKill: 0 == no, 1 == yes, 2 == fake
+# Inst: 0 == solo attack inst, 1 == group attack inst
+
+584,0,1,0,0
+589,0,1,0,0
+593,0,1,0,0
+597,0,1,0,0
+602,0,1,0,0
+605,0,1,0,0
+610,0,1,0,0
+614,0,1,0,0
+615,0,1,0,0
+619,0,1,0,0
+621,0,1,0,0
+623,0,1,0,0

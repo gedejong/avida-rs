@@ -1,0 +1,44 @@
+# Avida instruction execution data
+# Thu Nov 12 06:40:33 2026
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: h-divide
+# 26: IO
+# 27: h-search
+# 28: rotate-l
+# 29: rotate-r
+# 30: send
+# 31: receive
+# 32: get-neighborhood
+# 33: if-neighborhood-changed
+# 34: rotate-left-one
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+20 0 0 170 0 0 222 222 0 0 0 0 0 0 2 0 0 0 0 0 0 0 222 2 2 0 4 2 2 4 4 0 0 2 
+40 0 0 255 0 0 333 333 0 0 0 0 0 0 3 0 0 0 0 0 0 0 333 3 3 0 6 3 3 6 6 0 0 3 
+60 0 0 255 0 0 333 333 0 0 0 0 0 0 3 0 0 0 0 0 0 0 333 3 3 0 6 3 3 6 6 0 0 3 
+80 0 0 417 0 0 555 555 0 0 0 0 0 0 5 0 0 0 0 4 0 0 555 5 5 0 10 5 5 10 10 0 0 5 
+100 0 0 568 0 0 775 775 0 0 2 0 0 0 7 0 0 0 0 5 0 0 775 7 7 0 15 7 7 14 14 0 0 7 
+120 42 0 734 0 3 939 939 0 0 0 0 0 0 9 0 0 0 0 5 0 0 939 9 9 0 19 9 9 18 18 0 13 9 

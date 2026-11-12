@@ -1,0 +1,5 @@
+warning: config file version number mismatch -- Avida: '2.14.0'  File: '2.12.0'
+using default instruction set: instset-heads.cfg
+warning: Batch may not be a lineage; parent and ancestor distances may not be correct
+warning: ANALYZE_REDUNDANCY_BY_INST_FAILURE: End log value greater than 0 set to 0.
+warning: Batch may not be a lineage; parent and ancestor distances may not be correct

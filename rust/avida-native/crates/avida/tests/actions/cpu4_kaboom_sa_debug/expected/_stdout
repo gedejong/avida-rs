@@ -1,0 +1,557 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+CmdLine Set: VERBOSITY 4
+Random Seed: 101
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/cpu4/cases/cpu4_kaboom_sa_debug/data/
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 3       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 4       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 5       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 6       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 7       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 8       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 9       Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 10      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 0.000   SWst: 0.000 %  
+UD: 11      Gen: 0.000000   Fit: 0.000000   Orgs: 1       Spec: 32.00   SWst: 0.000 %  
+UD: 12      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 28.00   SWst: 0.000 %  
+UD: 13      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 14      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 25.67   SWst: 0.000 %  
+UD: 15      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 16      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 17      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 18      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 19      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 20      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 21      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 22      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 23      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 32.00   SWst: 0.000 %  
+UD: 24      Gen: 1.000000   Fit: 0.2493573  Orgs: 2       Spec: 28.50   SWst: 0.000 %  
+UD: 25      Gen: 1.666667   Fit: 0.2493573  Orgs: 3       Spec: 24.67   SWst: 0.000 %  
+UD: 26      Gen: 2.000000   Fit: 0.2493573  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 27      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 26.00   SWst: 0.000 %  
+UD: 28      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 13.00   SWst: 0.000 %  
+UD: 29      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 7.462   SWst: 0.000 %  
+UD: 30      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 8.273   SWst: 0.000 %  
+UD: 31      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 5.636   SWst: 0.000 %  
+UD: 32      Gen: 2.000000   Fit: 0.2493573  Orgs: 3       Spec: 8.273   SWst: 0.000 %  
+UD: 33      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       Spec: 11.70   SWst: 0.000 %  
+UD: 34      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 35      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       Spec: 32.00   SWst: 0.000 %  
+UD: 36      Gen: 2.500000   Fit: 0.2097481  Orgs: 4       Spec: 29.67   SWst: 0.000 %  
+UD: 37      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 27.60   SWst: 0.000 %  
+UD: 38      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 22.33   SWst: 0.000 %  
+UD: 39      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 21.12   SWst: 0.000 %  
+UD: 40      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 17.50   SWst: 0.000 %  
+UD: 41      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 24.75   SWst: 0.000 %  
+UD: 42      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 13.88   SWst: 0.000 %  
+UD: 43      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 17.50   SWst: 0.000 %  
+UD: 44      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 19.57   SWst: 0.000 %  
+UD: 45      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 23.71   SWst: 0.000 %  
+UD: 46      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 26.20   SWst: 0.000 %  
+UD: 47      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 22.33   SWst: 0.000 %  
+UD: 48      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 17.50   SWst: 0.000 %  
+UD: 49      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 19.57   SWst: 0.000 %  
+UD: 50      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 24.75   SWst: 0.000 %  
+UD: 51      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 20.40   SWst: 0.000 %  
+UD: 52      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 21.12   SWst: 0.000 %  
+UD: 53      Gen: 2.800000   Fit: 0.2176700  Orgs: 5       Spec: 15.88   SWst: 0.000 %  
+UD: 54      Gen: 3.166667   Fit: 0.2229512  Orgs: 6       Spec: 20.38   SWst: 0.000 %  
+UD: 55      Gen: 3.166667   Fit: 0.2229512  Orgs: 6       Spec: 11.36   SWst: 0.000 %  
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+UD: 56      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 8.600   SWst: 0.000 %  
+UD: 57      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 2.722   SWst: 0.000 %  
+UD: 58      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 3.735   SWst: 0.000 %  
+UD: 59      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 3.583   SWst: 0.000 %  
+UD: 60      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 3.735   SWst: 0.000 %  
+UD: 61      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 2.771   SWst: 0.000 %  
+UD: 62      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 2.771   SWst: 0.000 %  
+UD: 63      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 3.657   SWst: 0.000 %  
+UD: 64      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 2.879   SWst: 0.000 %  
+UD: 65      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 4.263   SWst: 0.000 %  
+UD: 66      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 2.632   SWst: 0.000 %  
+UD: 67      Gen: 3.600000   Fit: 0.2181854  Orgs: 5       Spec: 1.537   SWst: 0.000 %  
+UD: 68      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 5.844   SWst: 0.000 %  
+UD: 69      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 5.960   SWst: 0.000 %  
+UD: 70      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 6.905   SWst: 0.000 %  
+UD: 71      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 8.045   SWst: 0.000 %  
+UD: 72      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 9.611   SWst: 0.000 %  
+UD: 73      Gen: 4.000000   Fit: 0.2235955  Orgs: 6       Spec: 7.200   SWst: 0.000 %  
+UD: 74      Gen: 4.428571   Fit: 0.2274599  Orgs: 7       Spec: 8.158   SWst: 0.000 %  
+UD: 75      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 14.56   SWst: 0.000 %  
+UD: 76      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 11.33   SWst: 0.000 %  
+UD: 77      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 12.62   SWst: 0.000 %  
+UD: 78      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 10.79   SWst: 0.000 %  
+UD: 79      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 13.40   SWst: 0.000 %  
+UD: 80      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 12.81   SWst: 0.000 %  
+UD: 81      Gen: 4.750000   Fit: 0.2303581  Orgs: 8       Spec: 12.62   SWst: 0.000 %  
+UD: 82      Gen: 5.111111   Fit: 0.2326123  Orgs: 9       Spec: 10.95   SWst: 0.000 %  
+UD: 83      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 14.52   SWst: 2.000 %  
+UD: 84      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 13.76   SWst: 0.000 %  
+UD: 85      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 15.76   SWst: 0.000 %  
+UD: 86      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 12.05   SWst: 0.000 %  
+UD: 87      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 15.09   SWst: 0.000 %  
+UD: 88      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 16.50   SWst: 0.000 %  
+UD: 89      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 12.27   SWst: 0.000 %  
+UD: 90      Gen: 5.500000   Fit: 0.2345456  Orgs: 10      Spec: 15.21   SWst: 0.000 %  
+UD: 91      Gen: 5.727273   Fit: 0.2358921  Orgs: 11      Spec: 14.19   SWst: 2.424 %  
+UD: 92      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 17.67   SWst: 3.056 %  
+UD: 93      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 19.94   SWst: 0.000 %  
+UD: 94      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 18.95   SWst: 0.000 %  
+UD: 95      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 21.06   SWst: 0.000 %  
+UD: 96      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 16.50   SWst: 0.000 %  
+UD: 97      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 19.05   SWst: 0.000 %  
+UD: 98      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 15.76   SWst: 0.000 %  
+UD: 99      Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 15.83   SWst: 0.000 %  
+UD: 100     Gen: 6.166667   Fit: 0.2374480  Orgs: 12      Spec: 17.80   SWst: 0.000 %  
+UD: 101     Gen: 6.769231   Fit: 0.2386141  Orgs: 13      Spec: 15.58   SWst: 6.923 %  
+UD: 102     Gen: 6.846154   Fit: 0.2386141  Orgs: 13      Spec: 15.25   SWst: 0.000 %  
+UD: 103     Gen: 6.928571   Fit: 0.2402642  Orgs: 14      Spec: 21.95   SWst: 6.667 %  
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 98.00
+effect is 0.5000
+new shoudl be 49.00
+after 49.00
+before 98.00
+effect is 0.5000
+new shoudl be 49.00
+after 49.00
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 96.00
+effect is 0.5000
+new shoudl be 48.00
+after 48.00
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 12.25
+effect is 0.5000
+new shoudl be 6.125
+after 6.125
+before 98.00
+effect is 0.5000
+new shoudl be 49.00
+after 49.00
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.00
+effect is 0.5000
+new shoudl be 24.00
+after 24.00
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 6.125
+effect is 0.5000
+new shoudl be 3.062
+after 3.062
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+before 12.25
+effect is 0.5000
+new shoudl be 6.125
+after 6.125
+UD: 104     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      Spec: 22.63   SWst: 0.000 %  
+UD: 105     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      Spec: 29.18   SWst: 0.000 %  
+UD: 106     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      Spec: 27.23   SWst: 0.000 %  
+UD: 107     Gen: 6.769231   Fit: 0.2391146  Orgs: 13      Spec: 25.06   SWst: 0.000 %  
+UD: 108     Gen: 7.071429   Fit: 0.2373017  Orgs: 14      Spec: 29.64   SWst: 0.000 %  
+UD: 109     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 30.28   SWst: 0.000 %  
+UD: 110     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 26.53   SWst: 0.000 %  
+UD: 111     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 26.19   SWst: 0.000 %  
+UD: 112     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 28.12   SWst: 0.000 %  
+UD: 113     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 28.12   SWst: 0.000 %  
+UD: 114     Gen: 7.562500   Fit: 0.2392970  Orgs: 16      Spec: 27.56   SWst: 0.000 %  
+UD: 115     Gen: 8.000000   Fit: 0.2413194  Orgs: 17      Spec: 26.95   SWst: 6.863 %  
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 88.00
+effect is 0.5000
+new shoudl be 44.00
+after 44.00
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 44.00
+effect is 0.5000
+new shoudl be 22.00
+after 22.00
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+UD: 116     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      Spec: 27.18   SWst: 4.889 %  
+UD: 117     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      Spec: 24.25   SWst: 0.000 %  
+UD: 118     Gen: 8.066667   Fit: 0.2399453  Orgs: 15      Spec: 27.57   SWst: 0.000 %  
+UD: 119     Gen: 8.133333   Fit: 0.2401226  Orgs: 15      Spec: 22.24   SWst: 0.000 %  
+UD: 120     Gen: 8.133333   Fit: 0.2401226  Orgs: 15      Spec: 30.18   SWst: 0.000 %  
+UD: 121     Gen: 8.611111   Fit: 0.2425670  Orgs: 18      Spec: 24.62   SWst: 0.000 %  
+UD: 122     Gen: 8.611111   Fit: 0.2425670  Orgs: 18      Spec: 27.57   SWst: 0.000 %  
+UD: 123     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      Spec: 27.80   SWst: 3.148 %  
+UD: 124     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      Spec: 28.90   SWst: 0.000 %  
+UD: 125     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      Spec: 29.62   SWst: 0.000 %  
+UD: 126     Gen: 8.388889   Fit: 0.2421300  Orgs: 18      Spec: 26.67   SWst: 0.000 %  
+UD: 127     Gen: 8.944444   Fit: 0.2425005  Orgs: 18      Spec: 28.20   SWst: 3.704 %  
+UD: 128     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      Spec: 28.14   SWst: 1.404 %  
+UD: 129     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      Spec: 28.24   SWst: 0.000 %  
+UD: 130     Gen: 9.052632   Fit: 0.2429967  Orgs: 19      Spec: 28.12   SWst: 0.000 %  
+UD: 131     Gen: 9.210526   Fit: 0.2429967  Orgs: 19      Spec: 25.82   SWst: 0.8772%  
+UD: 132     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      Spec: 31.71   SWst: 1.053 %  
+UD: 133     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      Spec: 28.50   SWst: 0.000 %  
+UD: 134     Gen: 9.157895   Fit: 0.2417112  Orgs: 19      Spec: 28.43   SWst: 0.000 %  
+UD: 135     Gen: 9.500000   Fit: 0.2424197  Orgs: 20      Spec: 29.75   SWst: 2.333 %  
+UD: 136     Gen: 9.550000   Fit: 0.2424197  Orgs: 20      Spec: 28.00   SWst: 3.167 %  
+UD: 137     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      Spec: 28.30   SWst: 0.3175%  
+UD: 138     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      Spec: 28.41   SWst: 0.000 %  
+UD: 139     Gen: 9.619048   Fit: 0.2371711  Orgs: 21      Spec: 30.67   SWst: 0.000 %  
+UD: 140     Gen: 9.476190   Fit: 0.2370458  Orgs: 21      Spec: 27.76   SWst: 0.4762%  
+UD: 141     Gen: 9.681818   Fit: 0.2378126  Orgs: 22      Spec: 25.00   SWst: 0.000 %  
+UD: 142     Gen: 9.772727   Fit: 0.2378518  Orgs: 22      Spec: 30.27   SWst: 0.6061%  
+UD: 143     Gen: 9.772727   Fit: 0.2378518  Orgs: 22      Spec: 31.39   SWst: 0.000 %  
+UD: 144     Gen: 9.956522   Fit: 0.2385725  Orgs: 23      Spec: 29.30   SWst: 0.000 %  
+UD: 145     Gen: 10.45455   Fit: 0.2418021  Orgs: 22      Spec: 29.32   SWst: 1.061 %  
+UD: 146     Gen: 10.50000   Fit: 0.2415654  Orgs: 22      Spec: 29.52   SWst: 0.6061%  
+UD: 147     Gen: 10.52174   Fit: 0.2420159  Orgs: 23      Spec: 32.00   SWst: 0.000 %  
+UD: 148     Gen: 10.52174   Fit: 0.2420159  Orgs: 23      Spec: 31.11   SWst: 0.000 %  
+UD: 149     Gen: 10.52174   Fit: 0.2419037  Orgs: 23      Spec: 30.65   SWst: 5.942 %  
+UD: 150     Gen: 10.39130   Fit: 0.2418461  Orgs: 23      Spec: 31.48   SWst: 4.638 %  
+UD: 151     Gen: 10.54167   Fit: 0.2424326  Orgs: 24      Spec: 29.73   SWst: 0.000 %  
+UD: 152     Gen: 10.62500   Fit: 0.2417820  Orgs: 24      Spec: 30.52   SWst: 1.111 %  
+UD: 153     Gen: 10.66667   Fit: 0.2424326  Orgs: 24      Spec: 31.04   SWst: 6.667 %  
+UD: 154     Gen: 10.66667   Fit: 0.2424326  Orgs: 24      Spec: 31.71   SWst: 0.000 %  
+UD: 155     Gen: 10.75000   Fit: 0.2424326  Orgs: 24      Spec: 31.95   SWst: 2.917 %  
+UD: 156     Gen: 10.75000   Fit: 0.2424326  Orgs: 24      Spec: 31.28   SWst: 0.000 %  
+UD: 157     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      Spec: 32.00   SWst: 0.9722%  
+UD: 158     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      Spec: 32.00   SWst: 0.000 %  
+UD: 159     Gen: 10.83333   Fit: 0.2424326  Orgs: 24      Spec: 32.00   SWst: 0.000 %  
+UD: 160     Gen: 10.91667   Fit: 0.2408247  Orgs: 24      Spec: 30.33   SWst: 3.750 %  
+UD: 161     Gen: 10.75000   Fit: 0.2406563  Orgs: 24      Spec: 30.12   SWst: 2.361 %  
+UD: 162     Gen: 11.07692   Fit: 0.2417321  Orgs: 26      Spec: 29.52   SWst: 0.000 %  
+UD: 163     Gen: 11.23077   Fit: 0.2417321  Orgs: 26      Spec: 30.52   SWst: 2.564 %  
+UD: 164     Gen: 11.26923   Fit: 0.2417321  Orgs: 26      Spec: 24.00   SWst: 0.8974%  
+UD: 165     Gen: 11.38462   Fit: 0.2410344  Orgs: 26      Spec: 22.54   SWst: 5.128 %  
+UD: 166     Gen: 11.42308   Fit: 0.2410344  Orgs: 26      Spec: 22.97   SWst: 0.000 %  
+UD: 167     Gen: 11.65385   Fit: 0.2410582  Orgs: 26      Spec: 23.11   SWst: 1.410 %  
+UD: 168     Gen: 11.65385   Fit: 0.2410582  Orgs: 26      Spec: 22.64   SWst: 0.000 %  
+UD: 169     Gen: 11.59259   Fit: 0.2400279  Orgs: 27      Spec: 24.19   SWst: 0.000 %  
+UD: 170     Gen: 11.74074   Fit: 0.2311668  Orgs: 27      Spec: 21.71   SWst: 2.222 %  
+UD: 171     Gen: 11.74074   Fit: 0.2311668  Orgs: 27      Spec: 22.73   SWst: 0.000 %  
+UD: 172     Gen: 11.81481   Fit: 0.2312154  Orgs: 27      Spec: 21.67   SWst: 0.3704%  
+before 101.0
+effect is 0.5000
+new shoudl be 50.50
+after 50.50
+before 98.00
+effect is 0.5000
+new shoudl be 49.00
+after 49.00
+before 101.0
+effect is 0.5000
+new shoudl be 50.50
+after 50.50
+before 98.00
+effect is 0.5000
+new shoudl be 49.00
+after 49.00
+before 195.0
+effect is 0.5000
+new shoudl be 97.50
+after 97.50
+before 50.50
+effect is 0.5000
+new shoudl be 25.25
+after 25.25
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 50.50
+effect is 0.5000
+new shoudl be 25.25
+after 25.25
+before 49.00
+effect is 0.5000
+new shoudl be 24.50
+after 24.50
+before 97.50
+effect is 0.5000
+new shoudl be 48.75
+after 48.75
+before 25.25
+effect is 0.5000
+new shoudl be 12.62
+after 12.62
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+UD: 173     Gen: 12.11111   Fit: 0.2342997  Orgs: 27      Spec: 20.08   SWst: 0.000 %  
+UD: 174     Gen: 12.14815   Fit: 0.2386713  Orgs: 27      Spec: 18.74   SWst: 4.321 %  
+UD: 175     Gen: 12.38462   Fit: 0.2382113  Orgs: 26      Spec: 15.88   SWst: 5.128 %  
+UD: 176     Gen: 12.53846   Fit: 0.2382367  Orgs: 26      Spec: 16.47   SWst: 2.949 %  
+before 24.50
+effect is 0.5000
+new shoudl be 12.25
+after 12.25
+before 12.25
+effect is 0.5000
+new shoudl be 6.125
+after 6.125
+before 12.25
+effect is 0.5000
+new shoudl be 6.125
+after 6.125
+before 6.125
+effect is 0.5000
+new shoudl be 3.062
+after 3.062
+before 6.125
+effect is 0.5000
+new shoudl be 3.062
+after 3.062
+UD: 177     Gen: 12.69231   Fit: 0.2404791  Orgs: 26      Spec: 14.86   SWst: 2.564 %  
+UD: 178     Gen: 12.76923   Fit: 0.2397332  Orgs: 26      Spec: 11.03   SWst: 2.692 %  
+UD: 179     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      Spec: 12.61   SWst: 0.5128%  
+UD: 180     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      Spec: 12.49   SWst: 0.000 %  
+UD: 181     Gen: 12.84615   Fit: 0.2404956  Orgs: 26      Spec: 13.10   SWst: 0.000 %  
+UD: 182     Gen: 12.88462   Fit: 0.2404956  Orgs: 26      Spec: 9.292   SWst: 0.000 %  
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 101.0
+effect is 0.5000
+new shoudl be 50.50
+after 50.50
+before 81.00
+effect is 0.5000
+new shoudl be 40.50
+after 40.50
+before 87.00
+effect is 0.5000
+new shoudl be 43.50
+after 43.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 97.00
+effect is 0.5000
+new shoudl be 48.50
+after 48.50
+before 87.00
+effect is 0.5000
+new shoudl be 43.50
+after 43.50
+before 81.00
+effect is 0.5000
+new shoudl be 40.50
+after 40.50
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 50.50
+effect is 0.5000
+new shoudl be 25.25
+after 25.25
+before 40.50
+effect is 0.5000
+new shoudl be 20.25
+after 20.25
+before 43.50
+effect is 0.5000
+new shoudl be 21.75
+after 21.75
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 48.50
+effect is 0.5000
+new shoudl be 24.25
+after 24.25
+before 43.50
+effect is 0.5000
+new shoudl be 21.75
+after 21.75
+before 40.50
+effect is 0.5000
+new shoudl be 20.25
+after 20.25
+before 24.25
+effect is 0.5000
+new shoudl be 12.12
+after 12.12
+before 25.25
+effect is 0.5000
+new shoudl be 12.62
+after 12.62
+before 20.25
+effect is 0.5000
+new shoudl be 10.12
+after 10.12
+before 21.75
+effect is 0.5000
+new shoudl be 10.88
+after 10.88
+UD: 183     Gen: 12.76000   Fit: 0.2399646  Orgs: 25      Spec: 9.556   SWst: 0.000 %  
+UD: 184     Gen: 13.44444   Fit: 0.2441814  Orgs: 27      Spec: 12.58   SWst: 1.605 %  
+UD: 185     Gen: 13.51852   Fit: 0.2383403  Orgs: 27      Spec: 12.00   SWst: 5.185 %  
+UD: 186     Gen: 13.66667   Fit: 0.2382688  Orgs: 27      Spec: 11.15   SWst: 1.235 %  
+UD: 187     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      Spec: 12.52   SWst: 0.000 %  
+UD: 188     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      Spec: 11.56   SWst: 0.000 %  
+UD: 189     Gen: 13.70370   Fit: 0.2382688  Orgs: 27      Spec: 13.83   SWst: 0.000 %  
+UD: 190     Gen: 13.82143   Fit: 0.2388044  Orgs: 28      Spec: 10.48   SWst: 0.000 %  
+UD: 191     Gen: 14.00000   Fit: 0.2388303  Orgs: 28      Spec: 15.58   SWst: 3.571 %  
+UD: 192     Gen: 14.13793   Fit: 0.2393989  Orgs: 29      Spec: 17.29   SWst: 0.000 %  
+UD: 193     Gen: 14.13793   Fit: 0.2394431  Orgs: 29      Spec: 16.02   SWst: 1.149 %  
+UD: 194     Gen: 14.20690   Fit: 0.2421893  Orgs: 29      Spec: 15.92   SWst: 2.184 %  
+UD: 195     Gen: 14.30000   Fit: 0.2424281  Orgs: 30      Spec: 16.96   SWst: 1.222 %  
+UD: 196     Gen: 14.33333   Fit: 0.2430745  Orgs: 30      Spec: 17.60   SWst: 2.333 %  
+UD: 197     Gen: 14.36667   Fit: 0.2431177  Orgs: 30      Spec: 17.43   SWst: 0.000 %  
+UD: 198     Gen: 14.43333   Fit: 0.2377962  Orgs: 30      Spec: 19.35   SWst: 2.667 %  
+UD: 199     Gen: 14.43333   Fit: 0.2377962  Orgs: 30      Spec: 20.00   SWst: 0.000 %  
+UD: 200     Gen: 14.53333   Fit: 0.2404005  Orgs: 30      Spec: 20.33   SWst: 5.111 %  

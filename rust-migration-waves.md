@@ -134,4 +134,84 @@ Focus:
 - `cHardwareFFI.cc` created with 25 read-only FFI functions (heads, stacks, memory, registers, FindModifiedRegister/Head). Public `FFI_*` forwarding methods on cHardwareCPU.h bridge protected members. Removed `inline` from FindModifiedRegister/NextRegister/Head/PreviousRegister/NextRegister to emit standalone symbols for cross-TU linking.
 - Circular linker dependency (Rust↔C++) resolved via `-force_load` (macOS) / `--whole-archive` (Linux) on the Rust static library. CMakeLists.txt updated for all targets (cmdline, viewer, text-viewer, unit-tests). Unit-tests target now also links avida-core.
 - CPU instruction handler delegation expanded to 61/513 (11.9%): 32 register ops, 8 conditional evaluators (IfNEqu, IfLess, IfGr, IfGr0, IfGrEqu0, IfLess0, IfLsEqu0, IfLsEqu), 11 stack ops (Push, Pop, PushA/B/C, PopA/B/C, SwitchStack, FlipStack, HeadPop), 4 flow control (MoveHead, JumpHead, GetHead, SetFlow), plus existing swap/copy variants.
-- Next candidate: Deeper `cHardwareCPU.cc` instruction handler porting (head/memory ops: h-copy, h-read, h-write, h-alloc, h-search), or `cPopulationInterface.cc` as a fresh target.
+- CPU memory/control-flow handler slice (completed 2026-11-09): 78 more `cHardwareCPU` instruction handlers delegate to Rust, taking the count from 294/518 (56.8%) to 372/518 (71.8%) — counted as `Inst_*` definitions in `cHardwareCPU.cc` whose body calls an `avd_*` function. New module `rust/avida-rust/src/cpu_memory_instructions.rs` (39 tests, 78.5% line coverage) holds the logic for: copy/compare (`Inst_Copy`, `WriteInst`, `StackWriteInst`, `Compare`, `IfNCpy`), head read/write/copy with all five copy-mutation kinds (`HeadRead`, `HeadWrite`, `HeadCopy`, `HeadCopy2`..`10`, `HeadCopy_ifResource`), label jumps (`JumpF`, `JumpB`, `Call`), searches (`Throw`, `Goto` and their `=0`/`!=0` variants), structured if/else (`IfLessEnd`, `IfNotEqualEnd`, `IfGrtEquEnd`, `Else`, including a faithful port of `Find`/`Else_TopHalf`), `IfGrX`/`IfEquX`, threads (`ForkThread`, `ForkThreadLabel` + conditional variants, `KillThread`), allocation (`Allocate`, `CAlloc`, `MaxAlloc`, `MaxAllocMoveWriteHead`), and division entry points (`Divide`, `DivideRS`, `CDivide`, and the whole `HeadDivide*` family: 24 mutation-multiplier variants, 3 resampling variants, Sex/Asex/AsexWait/MateSelect). `Allocate_Main` and `Divide_Main*` themselves stay in C++ (genome ownership, Wave 14).
+- Handler logic in that module is written against a `Machine` trait instead of raw FFI calls. `FfiMachine` forwards to `cHardwareFFI.cc`; tests use an in-memory mock, so head adjustment, RNG draw order, and search quirks are unit-tested in Rust rather than only through the consistency suite. The older `cpu_instructions.rs` handlers call FFI directly and sit at 20% line coverage; migrating them onto the trait is a candidate cleanup.
+- New FFI this slice (29 C++-side shims in `cHardwareFFI.cc`): memory flags/insert/remove, nop/instruction-set queries, `avd_hw_get_random_inst`, `avd_hw_check_no_mut_list`, `avd_org_test_copy` / `avd_org_get_copy_prob` (the mutation-testing FFI the March priorities called for), uniform/slip mutation forwarding, thread fork/kill, `avd_hw_fault`, `avd_hw_allocate_main`, `avd_hw_divide_main`, head adjust, and phenotype reproduction flags. 24 new `avd_cpu_inst_*` exports from Rust.
+- Validation: 755 Rust tests, fmt, clippy `-D warnings`, coverage 82.4% (gate 75), ABI guard, C++ unit tests, and 77/77 runnable consistency tests all pass. A 4000-update default run (seed 42) produces byte-identical `average.dat`, `count.dat`, `tasks.dat`, `time.dat` and `dominant.dat` against the pre-slice build.
+- Performance note: `h-copy` is the hottest instruction and now crosses the FFI boundary about 15 times per execution. Paired 4000-update timings against the pre-slice build ranged from -1% to +14% user time with most pairs near +5%; run-to-run noise on the test machine was of the same order, so the cost is small but not established as zero. Cross-language LTO, or handing Rust a direct view of memory and head state, would remove it.
+- Behavior note: `Inst_HeadCopy_ifResource` no longer wraps its body in a `try`/`catch (std::bad_alloc)`; a C++ exception cannot unwind through the Rust frame, so an allocation failure there now aborts instead of returning false.
+- Remaining 146 non-delegating handlers, by family: sensing/pheromone/explore/exploit (~35), donation incl. green-beard variants (~22), groups/tolerance (~15), movement/rotation (~14), mating type and mate preference (~11), reproduction via `Inst_Repro` (~7), resource collection (~8), network/links (~7), promoter/regulation/terminate (~7), resource-level ifs and resource-gated head moves (~6), point-mutation application (~4), misc (~10).
+- Next candidate: mating-type/mate-preference and `Inst_Repro`-family handlers (small bodies, phenotype-flag FFI mostly exists after this slice), then the resource-collection family (`Inst_Collect*`, `DoActualCollect`).
+
+## Native port wave (2026-11-12): standalone Rust workspace `rust/avida-native`
+
+This wave is a different kind of work from Waves 1 to 13. The earlier waves keep the C++ binary and replace code behind `avd_*` C ABI seams in `rust/avida-rust`. The native port is a from-scratch Rust implementation of the whole program in the untracked workspace `rust/avida-native` (17 crates, `unsafe_code = "forbid"`, no FFI, no C++ dependency). The C++/FFI hybrid binary `cbuild/work/avida` stays in the repository as the behavioural reference. The workspace rules are in `rust/avida-native/PORTING.md`, the layering and ownership model in `rust/avida-native/ARCHITECTURE.md`, and the class-by-class port status in `rust/avida-native/docs/ontology.md`. None of the workspace is committed yet (`git status` shows `rust/avida-native/` as untracked).
+
+### Scope and size (measured 2026-11-12)
+
+- 17 crates: `apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `systematics`, `resources`, `hardware`, `world`, `analyze`, `script`, `avida` (binary), `session`, `viewmodel`, `gui` (binary `avida-gui`, egui), `tui` (binary `avida-tui`, ratatui).
+- 189,119 lines of Rust in 306 files under `crates/*/src`, plus 12,990 lines in 42 files under `crates/*/tests` (counted with `find ... -name '*.rs' | xargs cat | wc -l`). The largest crates are `world` (48,931 src lines in 59 files) and `hardware` (37,235 in 35 files).
+- 853 `#[test]` attributes (638 under `src`, 215 under `tests`; `grep -rE '#\[test\]' --include='*.rs'`). These were counted, not run, for this update.
+- For comparison: `avida-core/source` holds 167,492 lines in 387 `.cc`/`.cpp`/`.h` files (132,569 of them in `.cc`/`.cpp`), and `rust/avida-rust/src` holds 28,179 lines in 45 files. The native workspace is therefore about 1.1 times the size of the C++ source it replaces, because it also contains the session layer and both front ends (`gui` 15,197 and `tui` 10,085 src lines).
+
+| Crate | src lines | test lines | `#[test]` | `unsupported:` in src |
+|---|---:|---:|---:|---:|
+| `apto` | 3,459 | 0 | 23 | 0 |
+| `config` | 9,637 | 181 | 47 | 0 |
+| `genome` | 5,771 | 0 | 43 | 0 |
+| `tasks` | 6,210 | 1,250 | 70 | 0 |
+| `environment` | 5,446 | 1,832 | 48 | 0 |
+| `phenotype` | 2,504 | 0 | 8 | 0 |
+| `systematics` | 5,890 | 1,009 | 34 | 0 |
+| `resources` | 5,971 | 0 | 45 | 0 |
+| `hardware` | 37,235 | 1,118 | 45 | 59 |
+| `world` | 48,931 | 0 | 164 | 109 |
+| `analyze` | 19,897 | 1,557 | 62 | 3 |
+| `script` | 7,927 | 120 | 5 | 0 |
+| `avida` | 109 | 636 | 7 | 0 |
+| `session` | 1,635 | 1,218 | 15 | 0 |
+| `viewmodel` | 3,215 | 1,155 | 28 | 0 |
+| `gui` | 15,197 | 1,723 | 104 | 4 |
+| `tui` | 10,085 | 1,191 | 105 | 0 |
+
+The `#[test]` column counts attributes in `src` and `tests` together, so it can exceed what a given crate runs if tests are feature-gated; this was not checked. The `unsupported:` column counts source lines containing the literal (`grep -rn 'unsupported:' --include='*.rs' crates/*/src`), 175 in total. Several messages span lines and several lines are helper formats shared by many call sites, so the figure bounds the number of stop conditions only loosely.
+
+### What is complete, per subsystem
+
+- **Leaf layer** (`apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `resources`): ported and gated. This includes the bit-exact Knuth subtractive RNG, the schedulers, `%g` formatting, the data-file writer, the `cTaskLib` evaluators (13 modules in `crates/tasks/src`; whether it covers the five tasks that Issue #50 left blocked in the FFI effort was not checked), the environment parser, and the spatial and gradient resources.
+- **`systematics`**: genotype arbiter, clades, groups and the `.spop` writer, used by population runs. Includes ports of `Apto::Map` iteration order where output ordering depends on it.
+- **`hardware`**: the complete heads CPU (hardware type 0), TransSMT (2), experimental (3), GP8 (4) and BCR (5), plus the test CPU, organism, `OrgInterface`, sensors and tracer. Instruction-level gaps are still being closed (see the next section).
+- **`world`**: world set-up, activation and death, offspring placement, the birth chamber (sexual birth, mating types, every selection handler), scheduling, a resumable `Stepper`, events, the action library, `Stats` printers, `SavePopulation`/`LoadPopulation`, demes, groups, parasites, avatars, predator/prey, HGT and LGT, energy models, habitat (predatory and damaging gradients), messaging and mini traces. `ARCHITECTURE.md` states that all C++ action names are known and implemented (423 there; see the count note below).
+- **`analyze`**: the command loop, batches, landscapes, mutational neighbourhoods and the test-CPU commands on the real test CPU. Analyze-mode set-up from a population run (`world/src/analyze_setup.rs`) is in progress.
+- **`script`**: the ASL interpreter. The 28 `_asl_*` tests match a scratch-built C++ oracle, because no `avida-s` reference binary exists. The `Config`, `World` and `Driver` native objects are signature-only stubs that error when called.
+- **`avida` binary**: population runs and analyze mode as a single standalone executable, 109 lines over the library crates.
+- **`session`, `viewmodel`, `gui`, `tui`**: a simulation thread that owns the `!Send` world and exposes frames and per-update rows (`session`), toolkit-free read-only snapshots, palettes, legends and histograms (`viewmodel`), a desktop application with map layers, charts, inspector, genotype and environment views, config editor, command palette and debugger (`gui`), and a terminal application with the same views (`tui`). These have unit and snapshot tests but have not been reviewed by a human in a real window or terminal; that review is an open item in `documentation/Tech-Debt-Backlog.md`.
+
+### Validation evidence
+
+All comparisons are against the reference binary `cbuild/work/avida`, byte for byte, ignoring timestamps, the time-based seed and the data-directory path.
+
+- **Consistency suite over `avida-core/tests/*`** (last measured 2026-11-12, 121 tests): 85 same, 34 trivial differences (timestamps, paths), 0 DIFF, 1 unsupported because the reference itself crashes (`SLICING_METHOD 4`), 1 reference timeout (`_mutn_rate`). `avida-core/tests` contains 123 entries, so two directories are outside the 121; which two was not determined here.
+- **`crates/avida/tests/consistency_passing.txt`**: 76 test names that `crates/avida/tests/consistency.rs` pins (those with checked-in `expected/` output). `crates/avida/tests/stepper.rs` pins that pausing a run at arbitrary slice boundaries does not change its output.
+- **Action fixtures**: 188 case directories under `crates/avida/tests/actions/`, driven by `crates/avida/tests/actions.rs`.
+- **Instruction traces and hardware runs**: `crates/hardware/tests` compares instruction traces with the C++ binary. `ARCHITECTURE.md` reports 480 heads-CPU traces, and for GP8 and BCR 2,700 random and hand-written test-CPU traces plus mini traces of 500 injected organisms and population runs of up to 600 updates, all identical. These trace counts were taken from `ARCHITECTURE.md` and were not re-run.
+- **Static gates** for the native workspace are listed in `rust-migration-execution-playbook.md`. They were not run for this documentation update.
+
+### Known remaining stops, by class
+
+A stop is an `unsupported: ...` error at start-up or during a run, so that unported or ill-defined behaviour never produces silently different output. Classes below come from reading the message texts; they were not audited one by one.
+
+1. **Guards on undefined behaviour in the C++** (the large majority): out-of-bounds or uninitialised reads and writes (for example `cDemeCellEvent::m_use_gradient` and `m_eventID`, `FindAV` indexing outside the avatars, `facings[dir]` out of range, state-grid positions off the grid, `sleep_log`), NULL dereferences (`Inst_DonateTrueGreenBeard`, `ComputeReputation`, missing `pheromone` resource, string map before it exists), use after free (`cGenomeUtil::FindSubstringMatch` under HGT fragment selection 0 and 1), signed overflow and unbounded recursion (`Inst_Terminate` with large `PROMOTER_EXE_LENGTH`, path and den resources next to a habitat), and dangling pointers (prey avatar without a living organism). The port stops because any output it chose would be invention.
+2. **C++ crashes or hangs on the same input**: `SLICING_METHOD 4`, `UOPS_PER_CYCLE` above 255 on GP8 and BCR, a gradient habitat kill under HGT with competence, `PrintDemeEnergySharingStats`, and the navigation traces that read before an empty array.
+3. **Structural limits of the running-organism model**: the running organism is taken out of its cell during its step, so a few operations that the C++ performs through the population on it stop (re-injecting, seeding from or transferring the running organism, deme energy over it, `KillOrganism` without its state). These are the stops most likely to turn into ports.
+4. **Feature gaps still being closed**: instruction handlers of the GP8, BCR and experimental hardware that are rejected when an instruction set names them (`check_gp8_inst_set_ported`, `check_bcr_inst_set_ported`, `check_exp_inst_set_ported`) and some heads-CPU instructions; a small set of actions and printers (`PrintSuccessfulMates` with recorded mates, `PrintInterruptData` for message triggers, `DEMES_USE_GERMLINE 2`, a few `cStats` actions); and analyze-mode set-up (`AnalyzePopulation` variants). Two agents are working on the hardware crate and on analyze-mode set-up at the time of writing; no results from that work are claimed here, and the counts in the table above will change.
+
+Action count note: `ARCHITECTURE.md` gives 423 C++ action names, `ontology.md` gives 432 registered actions, and `grep -rhoE 'Register<[A-Za-z0-9_]+>\("[A-Za-z0-9_]+"' avida-core/source/actions` yields 427 distinct names. The three figures were not reconciled, so this document does not state one as authoritative.
+
+### Performance
+
+Default 3000-update run, seed 42, same machine, identical output: the reference binary takes about 57 to 64 s user time depending on machine load, the native port about 45 to 47 s. These are single-machine timings under varying load and are not a controlled benchmark.
+
+### Effect on the FFI waves
+
+Waves 5 to 8 and the CPU handler delegation of Issue #57 (372/518 handlers, 71.8%) are not extended by this wave. Whether the native port supersedes them is an open maintainer decision recorded in `documentation/Tech-Debt-Backlog.md`. Until that decision is made, the "Next candidate" lines above (mating-type and `Inst_Repro` handlers, then `Inst_Collect*`) remain the last documented FFI-track candidates, and the native track has its own next candidates in the backlog.

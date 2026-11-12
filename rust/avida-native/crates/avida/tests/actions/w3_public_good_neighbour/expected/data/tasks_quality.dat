@@ -1,0 +1,17 @@
+# Avida tasks quality data
+# Thu Nov 12 04:54:44 2026
+# First column gives the current update, rest give average and max task quality
+#  1: Update
+#  2: Public good consumed Average
+#  3: Public good consumed Max
+#  4: Public good produced Average
+#  5: Public good produced Max
+#  6: Not Average
+#  7: Not Max
+
+0 0 0 0 0 0 0 
+1 0 0 0 0 0 0 
+2 0 0 0 0 0 0 
+3 0 0 0 0 0 0 
+4 0 0 0 0 0 0 
+5 0 0 0 0 0 0 

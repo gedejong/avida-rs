@@ -1,0 +1,12 @@
+Verbose ON: Using verbose log messages...
+Loading: data/detail-5000.pop
+Loading file of type: genotype_data
+Loading: data/historic-50000.pop
+Loading file of type: genotype_data
+Detailing batch 0
+Detailing batch 0
+Reducing batch 0 to num_cpus lineage 
+  Lineage has 54 genotypes; 1740 were removed.
+Detailing batch 0
+Aligning sequences...
+Detailing batch 0

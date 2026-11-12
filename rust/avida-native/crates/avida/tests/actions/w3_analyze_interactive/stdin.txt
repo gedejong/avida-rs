@@ -1,0 +1,17 @@
+FIND_GENOTYPE
+PRINT x/
+FOO
+FOREACH i 1 2
+ECHO $i
+FORRANGE j 1 2
+ECHO $i $j
+END
+END
+
+SET_BATCH 1
+LOAD data/detail-10000.spop
+DETAIL d.dat id num_cpus
+INTERACTIVE
+ECHO nested
+END
+QUIT

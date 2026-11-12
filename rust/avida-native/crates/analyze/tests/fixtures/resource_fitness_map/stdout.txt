@@ -1,0 +1,39 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+
+In analyze mode!!
+creating resource fitness map...
+f1 size: 2  f2 size: 2
+error: did not find the desired update in resource history
+Loading Resources from: res.dat
+creating resource fitness map...
+f1 size: 2  f2 size: 2
+creating map using resources at update: 10000
+creating resource fitness map...
+f1 size: 2  f2 size: 2
+creating map using resources at update: 0
+creating resource fitness map...
+f1 size: 2  f2 size: 2
+creating map using resources at update: 0
+creating resource fitness map...
+f1 size: 2  f2 size: 2
+error: did not find the desired update in resource history

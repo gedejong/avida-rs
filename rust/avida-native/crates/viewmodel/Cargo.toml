@@ -1,0 +1,19 @@
+[package]
+name = "avida-viewmodel"
+version.workspace = true
+edition.workspace = true
+description = "UI-toolkit-free snapshot layer between the Avida world and its desktop/terminal front ends"
+
+[lints]
+workspace = true
+
+[dependencies]
+avida-apto = { path = "../apto" }
+avida-genome = { path = "../genome" }
+avida-hardware = { path = "../hardware" }
+avida-systematics = { path = "../systematics" }
+avida-tasks = { path = "../tasks" }
+avida-world = { path = "../world" }
+
+[dev-dependencies]
+avida-config = { path = "../config" }

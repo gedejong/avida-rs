@@ -1,0 +1,8 @@
+# Each line is formatted as follows:
+#   update number_cclades ccladeID0 ccladeID0_count ccladeID1
+
+0 1 -1 1 
+50 1 -1 7 
+100 1 -1 48 
+150 1 -1 167 
+200 1 -1 351 

@@ -1,0 +1,2 @@
+base analyze_print_withargs
+args -i

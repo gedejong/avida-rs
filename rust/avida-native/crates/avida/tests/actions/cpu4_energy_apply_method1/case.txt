@@ -1,0 +1,2 @@
+base energy_asex_1000u
+args -set APPLY_ENERGY_METHOD 1 -set COPY_MUT_PROB 0.02 -set ENERGY_CAP 50000

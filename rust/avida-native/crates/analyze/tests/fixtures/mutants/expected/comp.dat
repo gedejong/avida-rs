@@ -1,0 +1,15 @@
+#filetype genotype_data
+#format id parent_id update_born sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Parent ID
+# 3: Update Born
+# 4: Genome Sequence
+
+100 10690282 5 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva 
+101 10690282 5 qpepocqpqzprqcocpizaqckaqqgpcsqglcoqgcyvcslcqpbpbfcoquttttttycsva 
+102 10690282 5 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoqutttttycsva 
+103 10690282 5 qcepocqpqzprqcocpizaqckaqqgpncsqglckoqgcyvcsqcqpbpbfcoquttttttycsva 
+104 10690282 5 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqguyvcsqcqpbpbfcoquttttttycsva 
+105 10690282 5 qcepocqpqzprqcocpizaqcgaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva 

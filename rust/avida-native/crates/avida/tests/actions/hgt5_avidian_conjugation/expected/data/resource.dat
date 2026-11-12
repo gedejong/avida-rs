@@ -1,0 +1,38 @@
+# Avida resource data
+# Wed Nov 11 23:44:00 2026
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: frag
+
+0 0 
+10 0 
+20 0 
+30 0 
+40 0 
+50 0 
+60 0 
+70 89 
+80 463 
+90 919 
+100 3060 
+110 4578 
+120 6561 
+130 7714 
+140 8859 
+150 9958 
+160 11140 
+170 11437 
+180 13304 
+190 13291 
+200 14647 
+210 15312 
+220 16288 
+230 16661 
+240 18061 
+250 19312 
+260 19919 
+270 22773 
+280 24158 
+290 25900 
+300 27259 

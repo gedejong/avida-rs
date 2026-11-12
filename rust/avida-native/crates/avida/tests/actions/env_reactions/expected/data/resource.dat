@@ -1,0 +1,16 @@
+# Avida resource data
+# Wed Nov 11 13:27:09 2026
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: ResA
+#  3: ResB
+#  4: ResGlobal
+
+0 120 60 98.5913 
+10 106.974 151.185 96.1954 
+20 102.432 182.979 95.3599 
+30 100.848 194.065 95.0687 
+40 100.296 197.931 94.9671 
+50 141.944 220.199 39.4077 
+60 114.625 207.043 75.5593 

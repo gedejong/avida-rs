@@ -1,0 +1,2 @@
+base avatars
+args -set MAX_PREY 2 -set PRECALC_PHENOTYPE 1

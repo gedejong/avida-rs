@@ -138,3 +138,22 @@ Additionally, prior-wave FFI integration continues in:
 - **2026-03-16 population-action follow-on addendum**: `PopulationActions` cell-range normalization expansion completed (`avd_popaction_normalize_cell_end`) by routing repeated constructor range normalization policy across injection/parasite actions, with full gate validation and preserved C++ ownership/flow semantics.
 - **2026-03-17 debt-tranche refresh**: ABI symbol baseline refreshed to 268 symbols (was 159). FFI coverage now spans 18 actively-routed C++ implementation files with ~260 call-sites. All prior "untouched" targets (`cStats`, `cEnvironment`, `cHardwareExperimental`, `cHardwareBCR`, `cHardwareGP8`) now have Rust seams. Newly touched files: `cResource.cc`, `cGradientCount.cc`, `cOrgSensor.cc`, `cHardwareTransSMT.cc`. Remaining untouched high-LOC files updated.
 - **2026-03-17 comprehensive refresh**: FFI footprint recharacterized — 71 unique `avd_*` exports, 179 C++ call-sites across 7 actively-routed files. `PopulationActions` (45 calls), `cResourceCount` (42), and `cTaskLib` (39) approaching policy-extraction saturation. Identified `cStats.cc` and `cEnvironment.cc` as fresh high-value untouched targets (0 `avd_*` calls each). Reprioritization triggered: pivot from near-saturated action/analyze follow-ons to untouched `cEnvironment`/`cStats` targets and deeper `cHardwareCPU`/`cPopulation` extraction.
+
+## Native port addendum (2026-11-12)
+
+The baseline above counts the remaining C++ that has not been routed through Rust FFI seams. A complete native port in `rust/avida-native` makes a second measurement relevant: how much of the C++ has a native Rust counterpart, regardless of FFI routing. The figures below were re-measured on 2026-11-12 with `find ... | xargs cat | wc -l`; the baseline figures above were not re-measured and are left as recorded on 2026-03-16 and 2026-03-17.
+
+| Item | Files | Lines |
+|---|---:|---:|
+| C++ in `avida-core/source` (`.cc`, `.cpp`, `.h`), 2026-11-12 | 387 | 167,492 |
+| of which `.cc`/`.cpp` | not counted | 132,569 |
+| FFI crate `rust/avida-rust/src` | 45 | 28,179 |
+| Native workspace `rust/avida-native/crates/*/src` | 306 | 189,119 |
+| Native workspace `rust/avida-native/crates/*/tests` | 42 | 12,990 |
+
+The C++ line count here covers `avida-core/source` only, and the baseline's 173,750 lines covered all of `avida-core` including `include/`, so the two are not comparable and no trend is claimed.
+
+- **Planning consequence.** The "Remaining C++" definition (files not touched by FFI) no longer predicts the work left, because the native port replaces files whether or not they have FFI seams. The class-by-class native status is in `rust/avida-native/docs/ontology.md` (generated from a 2026-11-10 snapshot; it predates the `session`, `viewmodel`, `gui` and `tui` crates and its counts should be regenerated).
+- **Hotspots.** The hotspot files listed above (`cAnalyze.cc`, `cPopulation.cc`, `cHardwareCPU.cc`, `cHardwareExperimental.cc`, `PopulationActions.cc`, `PrintActions.cc`, `cTaskLib.cc`, `cStats.cc`, `cHardwareBCR.cc`, `cHardwareGP8.cc`) each have a native counterpart in `crates/analyze`, `crates/world`, `crates/hardware`, `crates/tasks`. What remains unported is tracked as `unsupported:` stops (175 source lines in total: `world` 109, `hardware` 59, `gui` 4, `analyze` 3; most guard undefined behaviour in the C++) and not as remaining LOC.
+- **Refresh rule.** If the native port is accepted, replace the metrics of this document by: suite DIFF count, number of stops that are gaps, and C++ lines still needed as the reference oracle. If the FFI track continues instead, keep refreshing the baseline as before.
+- **Not verified here.** No static analysis tool was run for this addendum; line counts are raw `wc -l`, not code-only counts.

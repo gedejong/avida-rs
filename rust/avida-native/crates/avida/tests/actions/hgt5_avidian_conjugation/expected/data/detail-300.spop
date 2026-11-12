@@ -1,0 +1,241 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 23:44:00 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+414 div:int (none) 412 1 1 99 0 0 0 87 223 -1 25 0 heads_default fcpqgcccqgfcpqqeccgfcpqpcgcfcocccclcccgqcgfcpqdckcqcrucavcjgfcccccccchclcczmccbqgfcpccccccutycasvab 45 57 0 
+460 div:int (none) 407 1 1 91 85 334 0.254491 102 237 -1 23 0 heads_default qgfcpqcccutycasvakcfcocccclcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 59 0 0 
+667 div:int (none) 660 1 1 119 0 0 0 128 288 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgfccqccoqchcccyycccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 150 112 0 
+552 div:int (none) 549 1 1 129 0 0 0 118 262 -1 32 0 heads_default qgfcpqgcccqpfcpqqbqgafpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccctyccbmcfbqgicpclcccmccbrgfcpccccccutycasvab 179 0 0 
+184 div:int (none) 153 1 1 90 0 0 0 46 145 -1 14 0 heads_default qgfcpqgcccqgfcpqqcccdccccccccccccccccccccgfcpqgckcccrucavcqcccccccccccclcccccccccutycasvab 200 311 0 
+46 div:int (none) 45 1 1 100 0 0 0 10 91 -1 4 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccuccccccccccccccccccccccccccccclcccccccccjqcccucccnccutycasvab 205 40 0 
+668 div:int (none) 662 1 1 112 0 0 0 127 288 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehcccccnlccrucavcjgfcoccgcutycasvaqcvccclcccucpcccgfhcpqgcutycasvab 13 68 0 
+622 div:int (none) 586 1 1 91 0 0 0 86 277 -1 24 0 heads_default gfcpqgcccqgfcpqpccccgcutccccccccgfcpqdckcccrucavcqccqccfcccccclcccdpckcfcccccpdcccutycasvab 21 0 0 
+576 div:int (none) 573 1 1 108 4.27819e+08 396 1.08035e+06 114 268 -1 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgnpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcutycasvab 46 4 0 
+530 div:int (none) 514 1 1 107 6.5536e+06 392 16718.4 109 255 -1 29 0 heads_default sgfcpqgcccqgfcpqqbqgfcpqgsccmckbqgycpcpqgcccqchcccccclclrucavcjgfccccctycccpqqbqgfcmccbqgfcpccccccutycasvab 170 0 0 
+623 div:int (none) 541 1 1 98 0 0 0 86 278 -1 23 0 heads_default qgfepqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdpckcfcccccpdcccutycasvab 6 0 0 
+2 div:int (none) 1 1 12 100 35636.3 387 92.0835 1 12 -1 1 0 heads_default rucavcqgfcpqxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 163 73 0 
+669 div:int (none) 664 1 1 110 0 0 0 127 288 -1 34 0 heads_default qgfcpqgcccqgfcpqqbegfcpqgsccdckcccccgcpogcccqehcccccnccrucavcjgfccccgcutycasvaqcvccclcccacpccgfhcpqgcutycasvab 193 18 0 
+646 div:int (none) 645 1 2 118 2.75251e+07 430 64011.9 124 284 -1 37 0 heads_default qgfcpqgccccccccckbqgnccdccqdhccccccccgfcpqgccoqchccccccrucavcjcugfcpqpckjgicpclccccctycccccccccccccgfcpclccccutycasvab 211 0 0 
+647 div:int (none) 643 1 2 131 9.50906e+12 483 1.96875e+10 124 284 -1 36 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccoqchccccccccgbgpagclrucavcugfcpqpckjgicpclccccctycccccscccccccgfcpcfccccutycasvab 2 196 0 
+693 div:int (none) 682 1 1 145 8.26414e+22 700.5 9.56498e+19 135 294 -1 40 0 heads_default qgfcpqgcccqgfcpqqbrucavcqccccfcpqgnhcdccqdhccccccccgwfcpqgcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcohcctycpqxckcccccccgfcpcfccccutycasvab 32 4 0 
+49 div:int (none) 2 1 1 100 0 0 0 7 92 -1 2 0 heads_default rueavcqgfcpqxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 178 41 0 
+555 div:int (none) 535 1 1 129 0 0 0 119 263 -1 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccctycccmcfbqgicpclcqcmccbqgfcpccccccutycasvab 194 18 0 
+670 div:int (none) 636 1 1 123 1.21333e+11 449 2.70229e+08 127 288 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmckbqccccclcjcccgfcpqgccgfhcpqgcutycasvab 195 4 0 
+464 div:int (none) 423 1 1 97 188 360 0.522222 76 238 -1 19 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfccbccccccyfcpqdckcccrucavcqcccccfcccccclcccdccbqgfcpccccccutycasvab 36 0 0 
+625 div:int (none) 407 1 1 97 94 360 0.261111 106 278 -1 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcgckcccccccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 90 0 0 
+533 div:int (none) 530 1 1 106 0 0 0 110 256 -1 30 0 heads_default sgfcpqgcccqgfcpqqbqgfcpqsccmrkbqgycpcpqgcccqchcccccclclrucavcjgfccccctycccpqqbqgfcmccbqgfchccccccutycasvab 186 0 0 
+465 div:int (none) 434 1 1 104 0 0 0 94 239 -1 24 0 heads_default qgfcpfcocccqlqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccrcccutycasvab 57 63 0 
+350 div:int (none) 328 1 3 113 3.18344e+13 420 7.57961e+10 83 200 -1 23 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjcvccccccccccccmccbqgycpclcccmccbqgfcpccccgcutycasvab 78 0 0 
+626 div:int (none) 407 1 1 100 0 0 0 107 278 -1 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpsdakcccrucavcjgfcccccchchclcccmccbqgfcpccccccuycasvab 88 358 0 
+488 div:int (none) 386 1 1 120 0 0 0 98 244 -1 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcscccgfcpqgcccqchcccccclccrucavcjgfccccctyccccccccccmckbqgycpclcccmccbqgfcpcccccautycasvdb 153 0 0 
+672 div:int (none) 598 1 1 111 0 0 0 129 288 -1 32 0 heads_default qgfcpqgccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjcctycccmcqccccclcccccpcccgfhcpqgcutycasvab 165 4 0 
+351 div:int (none) 350 1 1 106 103 393 0.262087 84 201 -1 24 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccvcgfcpqdchcccrucavcjcvccccccccccccdpclcccmccbqgfcpccccgcutycasvab 77 0 0 
+489 div:int (none) 386 2 2 119 105 431 0.243619 99 245 -1 28 0 heads_default qgfcpqgcccqgfcqqbqgfcpqgccdcfcscccgfcpqgcccqchcccccclccrucavcjgfccccctyccccccccccmckbqgycpclcccmccbqgfcpcccccautycasvab 140,154 0,0 0,0 
+604 div:int (none) 598 2 3 119 8.00539e+13 438 1.82771e+11 124 273 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfcccccsycccmckbqccccclcccccpcccgfhcpqgcutycasvab 151,166 0,144 0,0 
+398 div:int (none) 302 1 2 101 1.12242e+13 375 2.99312e+10 81 216 -1 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcvcocccclccccccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 25 0 0 
+467 div:int (none) 423 1 1 97 0 0 0 78 239 -1 19 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqcccccfcccccclcrcdccbqgfcpccccccutycasvab 35 0 0 
+697 div:int (none) 684 1 1 149 0 0 0 135 296 -1 41 0 heads_default qcgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnhcdccqdhccccccccggfcpqgcpqgccobchccccccccgbgpagclruqavcugfcpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 48 655 0 
+674 div:int (none) 630 1 1 119 5.85189e+10 436 1.34218e+08 127 289 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsrcdcfcccccgcpqlcccqccoqchcccyccccnlccrucavcjgfccccctycccmcklqccccclcccccpcccgfhcpqgcutycasvab 152 4 0 
+675 div:int (none) 653 4 8 143 7.93527e+16 531 1.4944e+14 130 289 -1 38 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 17,196,198,212 12,517,121,121 0,0,0,0 
+468 div:int (none) 466 1 2 103 97 382 0.253927 78 239 -1 20 0 heads_default qglcccmccbqqgccchgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdccbqgfcpccccccutycasvab 23 0 0 
+583 div:int (none) 582 1 1 106 0 0 0 118 270 -1 33 0 heads_default crucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcuttcasvabfcpqtcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcclccclc 29 15 0 
+698 div:int (none) 691 1 1 143 0 0 0 135 296 -1 42 0 heads_default qcgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqucavcqcccccccggtcpqgcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchccpqqcccgfccccqcgfcpcfccccutycasvab 75 8 0 
+629 div:int (none) 625 1 1 97 0 0 0 107 279 -1 24 0 heads_default qgfcpqgdccqgfcpqqcccgfcpqpckcgckcccccccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfkpccccccbtycasvab 106 0 0 
+491 div:int (none) 386 2 2 120 106 434 0.24424 100 245 -1 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcscccgfcpqgcccqchcccccclccrucavcjgfccccctyccccccccccmckbqgycpclcccmcgbqgfcpcccccautycasvab 139,155 0,0 0,0 
+31 div:int (none) 5 2 4 100 22557.3 376 59.9929 6 77 -1 2 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccuccccccccccccccccccccccccccccccccccccccccqccccccccccutycasvab 190,206 65,65 0,0 
+606 div:int (none) 593 1 1 107 2.62144e+07 393 66703.3 122 273 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcuqgsccdcfcccccgcpqgcccqchcccccnlccrucavcjgfccccctycccmckbqccccclciccpqdchcccutycasvab 209 0 0 
+699 div:int (none) 675 1 1 143 9.55201e+12 532 1.79549e+10 135 296 -1 39 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhcaccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpslcchcctycpqxckcccccccgfcpcfccccutycasvab 18 74 0 
+469 div:int (none) 464 1 1 98 0 0 0 77 239 -1 20 0 heads_default qgfcpqgcccqgfcpkqcccgfcpqgckcfccbccccccyfcpqdckcccrucavcqcccrccfcccccclcccdccbqgfcpccccccutycasvab 22 0 0 
+446 div:int (none) 407 1 1 101 1.18112e+10 367 3.2183e+07 98 234 -1 23 0 heads_default qgfcpqgccuqgfcpqqcccgfcpqpckcfcocccclcccgcwgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 26 35 0 
+630 div:int (none) 598 2 3 119 1.5919e+13 436 3.65114e+10 125 280 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmcklqccccclcccccpcccgfhcpqgcutycasvab 138,167 0,0 0,0 
+676 div:int (none) 630 1 1 119 0 0 0 128 289 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfccpccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmcklqccccclcccccpcccgfhcpqgcutycasvab 181 4 0 
+538 div:int (none) 515 1 1 121 7.71752e+09 446 1.73039e+07 112 259 -1 30 0 heads_default lgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgccoqchccccccccgbupqgclrucavcjgfccccctycccmcfbqgicpclcccmccbqgfcpccccccutycasvab 199 12 0 
+631 div:int (none) 604 1 1 119 0 0 0 126 280 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfcccccsycccmckbqccccclcccccpcccgfhcpqgcufycasvab 136 0 0 
+677 div:int (none) 674 1 1 119 0 0 0 128 289 -1 34 0 heads_default qgfcoqgcccqgfcpqqbqgfcpqgsrcdcfcccccgcpqlcccqccoqchcccyccccnlccrucavcjgfccccctycccmcklqccccclcccccpcccgfhcpqgcutycasvab 137 4 0 
+493 div:int (none) 386 1 1 120 0 0 0 102 246 -1 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcscccffcpqgcccqchcccccclccrucavcjgfccccctyccccccccccmckbqgycpclcccmccbqgfcpcccccautycasvab 156 0 0 
+447 div:int (none) 337 1 1 111 432 417 1.03597 84 235 -1 24 0 heads_default aaaaqgfcpqgcccqgfcpqqcccgfcpqpkccccccccccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 201 4 0 
+654 div:int (none) 639 1 1 108 3.389e+09 396 8.55807e+06 122 286 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgfccccccutpqgpccqehcccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 224 0 0 
+678 div:int (none) 658 2 2 123 3.84829e+12 454 8.47641e+09 127 289 -1 34 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccvcpqgcccqehccccinlccrucavcjgfccccctycccmckbqccccclcccccppccgfhcmccbqgfcpccpqgcutycasvab 12,28 151,151 0,0 
+586 div:int (none) 541 1 1 92 2.30687e+07 339 68049.2 85 270 -1 23 0 heads_default qgfcpqgcccqgfcpqpccccccutccccccccgfcpqdckcccrucavcqccqccfcccccclcccdpckcfcccccpdcccutycasvab 20 0 0 
+701 div:int (none) 700 1 1 140 7.47668e+13 527 1.41872e+11 136 297 -1 40 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgffcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbghagclrucavcugfcpqpckjgiceclcchcccccccccccccgfcpcfccccutycasvab 34 208 0 
+402 div:int (none) 398 1 1 101 98 375 0.261333 83 217 -1 22 0 heads_default qgfcpqgccbqgfcpqqcccgfcpqpckcvcocccclccccccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 40 0 0 
+563 div:int (none) 544 1 1 138 0 0 0 117 265 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfjpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccgccccccccctycccmcfbqoicpclcccmccbqgfcpccccccutycasvab 148 0 0 
+34 div:int (none) 19 1 1 101 0 0 0 6 79 -1 4 0 heads_default rucavcqgfcpqgccccccccccccccccccccccceccccccccccccccncccccccccccccccccccccccccccccqccccccccccutycazvab 191 391 0 
+448 div:int (none) 447 1 1 113 0 0 0 85 235 -1 25 0 heads_default aaaaaaqgfcpqgcccqgfcpqqcccgfcpqpkccccccccccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 202 0 0 
+541 div:int (none) 527 1 1 98 8.18169e+11 362 2.26014e+09 83 260 -1 22 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdpckcfcccccpdcccutycasvab 5 4 0 
+702 div:int (none) 675 1 1 148 6.1418e+11 552 1.11265e+09 136 297 -1 39 0 heads_default qgfcpqgcccqgfcpqqnlccccccgfcpqqgfcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbgcccgfcpqglrucavcugfcpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 49 4 0 
+403 div:int (none) 402 1 1 101 0 0 0 84 218 -1 23 0 heads_default qgfcpqgccbqhfcpqqccngfcpqpckcvcocccclccccccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcgccccccutycasvab 56 0 0 
+587 div:int (none) 547 1 1 121 0 0 0 119 270 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqcycasvabqgfbcpqgclrucavcugfcpqpckcffccccctypccccccccccccgfcpccccccutycasvab 182 1137 0 
+633 div:int (none) 603 1 1 116 0 0 0 129 281 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpwgsccdcffccccgcpsgcccqchcccccnlccrucavbqgfcpqgccccctycccmckbqcccczlcccccpcccgfhcpqgcutycasvab 197 57 0 
+703 div:int (none) 675 1 1 137 0 0 0 136 297 -1 39 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgfcpqgccobchcccccccccqgfcpqqbqccpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 1 12 0 
+450 div:int (none) 433 1 1 101 0 0 0 90 236 -1 24 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccsccgfcpqdckcccrucavcqgfccqgfcpqgcccccmccbqgfcpfcccccutycasvab 71 30 0 
+634 div:int (none) 407 1 1 101 0 0 0 108 281 -1 23 0 heads_default chchclccccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvcc 87 0 0 
+358 div:int (none) 351 1 1 106 0 0 0 85 202 -1 25 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccvcgfcpqdchcccrucavcjcvccccccccccccdpclcccmccyqgfcpccccgcutycasvab 93 0 0 
+542 div:int (none) 538 1 1 121 0 0 0 113 260 -1 31 0 heads_default lgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgccoqchccccccccgbupqgclrucavcjgfccccctycccmcfbquicpclcccmccbqgfcpccccccutycasvab 183 8 0 
+13 div:int (none) 5 1 1 100 0 0 0 5 64 -1 2 0 heads_default rucavcqgfcpqgcccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccccqccccchccccatycasvab 192 838 0 
+680 div:int (none) 670 1 1 125 0 0 0 128 290 -1 34 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgavsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmckbqccccclcjcccgfcpqgccgfhcpqgcutycasvab 210 4 0 
+611 div:int (none) 603 1 3 110 9.6631e+13 405 2.38595e+11 125 275 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcffccccgcpqgcccqchcccccnlclrucavcjccccctycccmckbqcccczlcccccpcccgfhcpqgcutycasvab 214 207 0 
+473 div:int (none) 470 1 1 117 0 0 0 89 240 -1 26 0 heads_default aaaaaaaaqgfcpqgcccqgfcpqqcccgfcpqpckcqcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 218 0 0 
+704 div:int (none) 699 1 1 142 0 0 0 136 297 -1 40 0 heads_default qgfcpqgcccqgfcpqqbgpagcmccbpqqgfcpqgnccdccqdhcaccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpslcchcctycpqxckcccccccgfcbcfccccutycasvab 3 79 0 
+60 div:int (none) 33 2 5 103 55440 394 140.711 7 95 -1 2 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrucavcqccbccclcccccccccutycasvab 10,221 135,135 0,0 
+451 div:int (none) 446 1 1 93 0 0 0 99 236 -1 24 0 heads_default qgfcpqgccuqgfcpqqccccutycasvlcccgcwgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 27 46 0 
+198 div:int (none) 196 1 1 110 0 0 0 54 149 -1 18 0 heads_default qgfcpqgcccqgfcpqqccqcccccccgccccccccqcccdccccccccccccgfcpqgckcccccckccccrusavcqcccccfcccjcclcccmcccccutycasvab 65 0 0 
+359 div:int (none) 350 1 1 114 0 0 0 86 202 -1 24 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjcvcccccccbcccccmccbqgycpclcccmccbqgfcpccccgcutycasvab 79 0 0 
+635 div:int (none) 407 1 1 102 0 0 0 108 281 -1 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqcdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutyjasvab 104 0 0 
+267 div:int (none) 263 1 1 106 6.91221e+10 399 1.73238e+08 75 171 -1 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpccccgfcpqcccclccccccgfcpqdchcccrucavcjgfcccccccccclcccccccccqgffpccccccutycasvab 208 70 0 
+452 div:int (none) 449 1 1 113 0 0 0 86 236 -1 25 0 heads_default aaaaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfpqgfkcccrqgfcpccccccutycasvab 7 0 0 
+544 div:int (none) 535 1 2 138 1.1081e+12 509 2.17702e+09 115 261 -1 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccgccccccccctycccmcfbqoicpclcccmccbqgfcpccccccutycasvab 164 0 0 
+636 div:int (none) 598 1 2 119 1.12356e+13 434 2.58886e+10 126 282 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmckbqccccclcjcccpcccgfhcpqgcutycasvab 180 176 0 
+407 div:int (none) 340 6 10 101 1.01471e+14 374 2.71314e+11 83 219 -1 22 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 41,42,58,74,89,103 0,0,0,325,0,0 0,0,0,0,0,0 
+706 div:int (none) 675 2 2 140 1.20094e+15 521 2.30507e+12 138 297 -1 39 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgjcpqgccobchcchcccccpaghlrucavcugfcpqpckhgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 47,63 73,73 0,0 
+154 div:int (none) 114 2 13 101 1.44801e+11 383 3.7807e+08 41 132 -1 12 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcccccccccccccccccccgfcpqgckcccrucavcqccccccccccccccccccccccccccutycasvab 161,177 185,218 0,0 
+476 div:int (none) 455 1 1 113 0 0 0 87 241 -1 25 0 heads_default aaaaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrbcavcjgwccccccccmccbqgfcpclccccmcccclccruccutycasvab 185 133 0 
+592 div:int (none) 579 1 2 118 1.09135e+13 435 2.50885e+10 119 271 -1 31 0 heads_default qqgfcpcgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 0 8 0 
+546 div:int (none) 541 1 1 102 0 0 0 84 261 -1 23 0 heads_default qgfcpqgcccqgfcpqqgsccdcfcccpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdpckcfcccccpdcccutycasvtb 4 906 0 
+431 div:int (none) 429 1 1 96 0 0 0 86 228 -1 24 0 heads_default cpqdckcccpqqcccgfcpqpckcfcocccjlcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycascgf 11 90 0 
+707 div:int (none) 702 1 1 144 0 0 0 137 297 -1 40 0 heads_default qgfcpqgcccqgfcpqqnlccccccgfcpqqgfcpqgnccdccqdcccccccccqgccobchccccccccgbgcccgfcpqglrucavcagfcpqpckjgicpclcchcctyapqxckcccccccgfcpcfccccutycasvab 33 4 0 
+523 div:int (none) 521 1 1 136 0 0 0 110 252 -1 30 0 heads_default gfcpqgcpqgclruccqgfcpqqbqgfcpqgsccdcfccccgfcpqgcccccptycascoqchccccccccgfcpqgclrucavcjgfccccctycccmckbqgmcpclcccmccbqgfcpccccccutycasvab 215 349 0 
+477 div:int (none) 455 1 1 115 0 0 0 90 241 -1 25 0 heads_default aaaaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjtwcjccccccmccbqgfcpclcccmccbqgfcpccccccutbcasvab 216 6 0 
+708 div:int (none) 706 1 1 142 7.49128e+13 525 1.42691e+11 139 298 -1 40 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgjcpqgccrucavcugfccccpaghlrucavcugfycpqpckhgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 62 4 0 
+18 div:int (none) 8 1 4 98 85 368 0.230978 5 65 -1 3 0 heads_default rucavcqgfcpqxccccccccccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccutycasvab 168 3 0 
+662 div:int (none) 639 1 1 112 4.21079e+13 392 1.07418e+11 125 287 -1 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehcccccnlccrucavcjgfccccgcutycasvaqcvccclcccccpcccgfhcpqgcutycasvab 222 31 0 
+594 div:int (none) 591 1 1 119 0 0 0 119 271 -1 33 0 heads_default fcpqgcccqgfcpqqbqgfkcpqgiccdcfccccsgcpqgpccqchcjcccnlccrcycrucavcjcavcjgfccccctycccmckbqccecclccrucavcgfhcpqgcutycasvab 44 0 0 
+709 div:int (none) 708 1 1 148 3.02795e+11 547 5.53556e+08 140 299 -1 41 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgjcpqgccrucavcugfccccpaghlrucavcbqgycfcpqycpqpckhgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 61 4 0 
+410 div:int (none) 406 1 1 90 0 0 0 84 220 -1 24 0 heads_default qgfcpqgcccqgfcpqqeccgfcpqpckccccchclcccmkqccrucavcjgfcccccccchclcccccbqgfcpccccccutycasvab 72 18 0 
+111 div:int (none) 93 1 1 92 0 0 0 26 115 -1 10 0 heads_default qgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutygfcpqgcccccrucavcqccccaccccccclcccccccciutycasvab 73 0 0 
+710 div:int (none) 708 1 1 149 0 0 0 141 300 -1 41 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgjcpqgccrgccobchcccvcugfccccpaghlrucavcugfycpqpckhgicpclcchcctycpqxckcccccccgfcpcfccjcutycasvab 76 0 0 
+664 div:int (none) 662 1 1 111 3.26418e+11 389 8.3912e+08 126 288 -1 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdckcccccgcpogcccqehcccccnlccrucavcjgfccccgcutycasvaqcvccclcccacpccgfhcpqgcutycasvab 207 20 0 
+641 div:int (none) 638 1 1 121 0 0 0 121 283 -1 35 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcclccgfcpdgccoqchccccxcccgbgpqgclrucavcugfcpqpckcffccccctycccccccccccccgjcpcfccccutycasvab 213 0 0 
+43 div:int (none) 31 1 1 100 0 0 0 8 90 -1 3 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccuccccccccccccccccccccccccccccxcccccccccccqccccccccccutycasvab 220 64 0 
+665 div:int (none) 639 1 1 110 0 0 0 126 288 -1 32 0 heads_default qgfcpqgcccqgfcpqqcgfhcpqgcucfcccccgcpqgcccqehcccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 14 240 0 
+504 div:int (none) 503 2 10 107 6.38314e+13 393 1.62421e+11 102 248 -1 29 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccgfhcpqgcutycasvab 16,43 171,171 0,0 
+711 div:int (none) 701 1 1 136 0 0 0 137 300 -1 41 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgffcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbghagclccdccbqgifcjgiceclcchcccccccccccccgfcpcfccccutycasvab 19 205 0 
+205 div:int (none) 196 1 1 120 0 0 0 56 151 -1 18 0 heads_default qgfcpqgcccqgfcpqqccqcccccccgccccccccqccrdccccccccccccgfcpqgckcccccccccccrucavcqccccccccccnccccfcccjcclcccmcccccutycasvab 50 48 0 
+688 div:int (none) 681 1 1 130 0 0 0 132 293 -1 39 0 heads_default qgfcpqgcccqigfcpgqbqgfcpqgnccdccqdhccccccccgfcpvcqgfcpxcccmeccgbgpagclrucavcugfcpqpckjgicpclbhcctycpqdckcccccccgfcpcfccccutycasvab 64 140 0 
+527 div:int (none) 524 1 2 103 5.72676e+12 381 1.50309e+10 81 254 -1 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdccbqgfcpccbqgfcpdcccutycasvab 217 0 0 
+620 div:int (none) 584 1 1 114 0 0 0 119 277 -1 33 0 heads_default fcpqtcccqgfcpqqbqgfcpqgscccccrucavdcfcacccgcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpccccqgfcpcgcutycasvab 30 52 0 
+528 div:int (none) 527 1 2 105 1.36902e+10 390 3.51031e+07 82 254 -1 22 0 heads_default qgfcpqgcccqgfcpqqcccgfcqgfcpcccccccccccccgfcpqdckcccrucavcqccqccfcccccclcccdccbqgfcpccbqgfcpdcccutycasvab 37 18 0 
+712 div:int (none) 709 1 1 146 0 0 0 141 300 -1 42 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpccccccccggccqdhccccccccgjcpqgccrucavcugfccccpaghlrucavcbqgycfcpqycpqpckhgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 60 4 0 
+666 div:int (none) 657 1 1 117 0 0 0 125 288 -1 33 0 heads_default gfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehcccccgfcpccccccutcccccmccbccctycccmckbqccccclccdccpcccgfhcpdgcutycasvab 223 430 0 
+691 div:int (none) 684 0 1 148 1.24554e+12 555 2.24422e+09 134 294 299 41 0 heads_default qcgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnhcdccqdhccccccccggfcpqgcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchccpqqcccgfccccccgfcpcfccccutycasvab 
+684 div:int (none) 682 0 2 149 2.69037e+14 554 4.85626e+11 132 291 298 40 0 heads_default qcgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnhcdccqdhccccccccggfcpqgcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 
+700 div:int (none) 675 0 1 139 1.49534e+14 522 2.86463e+11 135 297 297 39 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcccccccccccccgfcpcfccccutycasvab 
+682 div:int (none) 675 0 1 148 5.18419e+17 551 9.4087e+14 131 291 294 39 0 heads_default qgfcpqgcccqgfcpqqblccccccgfcpqqgfcpqgnhcdccqdhccccccccggfcpqgcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcctycpqxckcccccccgfcpcfccccutycasvab 
+681 div:int (none) 653 0 1 132 1.74547e+13 486 3.59151e+10 131 291 294 38 0 heads_default qgfcpqgcccqigfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccobccczcccmeccgbgpagclrucavcugfcpqpckjgicpclbhcctycpqdckcccccccgfcpcfccccutycasvab 
+653 div:int (none) 650 0 1 131 7.56372e+13 485 1.55953e+11 128 285 292 37 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcctycpqdckcccccccgfcpcfccccutycasvab 
+584 div:int (none) 581 0 1 107 1.08448e+11 389 2.78786e+08 118 270 291 32 0 heads_default gfcpqtcccqgfcpqqbqgfcpqgsccdcfcacccgcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcutycasvab 
+658 div:int (none) 656 0 2 112 1.37714e+14 413.5 3.33064e+11 124 286 290 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehccccinlccrucavcjgfccccctycccmckbqccccclcccccppccgfhcpqgcutycasvab 
+598 div:int (none) 579 0 2 119 2.15398e+13 435 4.95169e+10 123 272 289 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqccoqchcccyccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 
+650 div:int (none) 643 0 1 131 8.6157e+12 478 1.80245e+10 127 285 289 36 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccobchccccccccgbgpagclrucavcugfcpqpckjgicpclcchcctycccccccccccccgfcpcfccccutycasvab 
+660 div:int (none) 598 0 1 119 1.87261e+12 435 4.30484e+09 127 287 288 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgfccqccoqchcccyccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 
+328 div:int (none) 271 0 3 109 7.1955e+13 405 1.77667e+11 80 191 288 22 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfccccccccmccbqgycpclcccmccbqgfcpccccgcutycasvab 
+639 div:int (none) 579 0 1 112 1.91714e+14 413.6 4.63887e+11 121 283 288 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehcccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 
+657 div:int (none) 639 0 1 122 7.69658e+12 449 1.71416e+10 124 286 288 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehcccccgfcpccccccutccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpdgcutycasvab 
+656 div:int (none) 639 0 1 112 2.88622e+13 413 6.98842e+10 123 286 287 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqehccccinlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 
+643 div:int (none) 640 0 1 131 7.64553e+13 478 1.59948e+11 122 283 287 35 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccoqchccccccccgbgpagclrucavcugfcpqpckjgicpclccccctycccccccccccccgfcpcfccccutycasvab 
+591 div:int (none) 590 0 1 120 56320 436 129.174 118 270 286 32 0 heads_default gfcpqgcccqgfcpqqbqgfxcpqgsccdcfccccsgcpqgpccqchcjcccnlccrcycrucavcjcavcjgfccccctycccmckbqccecclccrucavcgfhcpqgcutycasvab 
+579 div:int (none) 504 0 5 112 1.05906e+14 413 2.56432e+11 115 268 286 30 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccnlccrucavcjgfccccctycccmckbqccccclcccccpcccgfhcpqgcutycasvab 
+232 div:int (none) 218 0 8 101 6.67574e+13 375 1.7802e+11 63 158 285 17 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccclccccccgfcpqdckcccrucavcqcccccfcccccclcccmccbqgfcpccccccutycasvab 
+640 div:int (none) 550 0 1 127 6.46307e+13 463 1.39591e+11 121 283 284 34 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqchccccccccgfcpqgccoqchccccccccgbgpagclrucavcugfcpqpckjffccccctycccccccccccccgfcpcfccccutycasvab 
+638 div:int (none) 550 0 1 121 7.24776e+09 439 1.65097e+07 120 282 284 34 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpdgccoqchccccccccgbgpqgclrucavcugfcpqpckcffccccctycccccccccccccgfcpcfccccutycasvab 
+645 div:int (none) 643 0 1 123 1.93514e+15 448 4.31951e+12 123 283 284 36 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdccqdhccccccccgfcpqgccoqchccccccrucavcjcugfcpqpckjgicpclccccctycccccccccccccgfcpcfccccutycasvab 
+550 div:int (none) 548 0 1 121 8.25665e+13 439 1.88078e+11 118 262 283 33 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbgpqgclrucavcugfcpqpckcffccccctycccccccccccccgfcpcfccccutycasvab 
+603 div:int (none) 579 0 2 112 5.37784e+13 413 1.30214e+11 124 273 281 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcffccccgcpqgcccqchcccccnlccrucavcjgfccccctycccmckbqcccczlcccccpcccgfhcpqgcutycasvab 
+535 div:int (none) 515 0 3 129 4.74786e+13 474 1.00166e+11 112 258 278 30 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccctycccmcfbqgicpclcccmccbqgfcpccccccutycasvab 
+581 div:int (none) 573 0 1 108 8.98078e+14 393 2.28518e+12 116 269 277 31 0 heads_default qgfcpqtcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcutycasvab 
+515 div:int (none) 508 0 5 121 1.24406e+14 446 2.78938e+11 107 251 275 29 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcjgfccccctycccmcfbqgicpclcccmccbqgfcpccccccutycasvab 
+593 div:int (none) 579 0 2 112 4.8446e+14 412 1.17587e+12 119 271 273 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccnlccrucavcjgfccccctycccmckbqccccclcicccpcccgfhcpqgcutycasvab 
+547 div:int (none) 535 0 2 121 4.05101e+13 440 9.20685e+10 116 261 272 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcugfcpqpckcffccccctycccccccccccccgfcpccccccutycasvab 
+590 div:int (none) 579 0 1 111 5.66248e+13 404 1.40161e+11 117 270 271 31 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgpccqchcjcccnlccrucavcjgfccccctycccmckbqccecclccrucavcgfhcpqgcutycasvab 
+582 div:int (none) 581 0 1 107 9.0597e+08 228 3.97355e+06 117 269 270 32 0 heads_default gfcpqtcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcclccclccrucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcuttcasvab 
+423 div:int (none) 232 0 2 97 6.67361e+14 360 1.85378e+12 73 226 270 18 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqcccccfcccccclcccdccbqgfcpccccccutycasvab 
+573 div:int (none) 504 0 1 108 3.0374e+13 395 7.68962e+10 113 267 269 30 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccbqgfcpcgcutycasvab 
+434 div:int (none) 407 0 3 101 4.27966e+13 374 1.14429e+11 89 230 267 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccrcccutycasvab 
+412 div:int (none) 408 0 1 100 1.28849e+10 366 3.52046e+07 86 220 267 24 0 heads_default gfcpqgcccqgfcpqqeccgfcpqpckcfcocccclcccgtcgfcpqdckcqcrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+549 div:int (none) 535 0 1 130 6.50117e+07 477 136293 117 262 263 31 0 heads_default qgfcpqgcccqpfcpqqbqgafcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcgfcpqpckcffccccctycccmcfbqgicpclcccmccbrgfcpccccccutycasvab 
+521 div:int (none) 508 0 1 131 2.59846e+11 480 5.41345e+08 109 252 263 29 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccccutycascoqchccccccccgfcpqgclrucavcjgfccccctycccmckbqgmcpclcccmccbqgfcpccccccutycasvab 
+548 div:int (none) 547 0 1 121 4.63856e+11 439 1.05662e+09 117 261 262 32 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgnccdcfcccccgfcpqgccoqchccccccccgbcpqgclrucavcugfcpqpckcffccccctycccccccccccccgfcpcfccccutycasvab 
+470 div:int (none) 455 0 1 115 112 430 0.260465 88 240 261 25 0 heads_default aaaaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+514 div:int (none) 499 0 2 108 6.0748e+13 397 1.53018e+11 107 251 256 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccqchcccccclclrucavcjgfccccctycccpqqbqgfcmccbqgfcpccccccutycasvab 
+386 div:int (none) 383 0 5 120 1.69966e+13 435 3.90727e+10 96 212 255 27 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcscccgfcpqgcccqchcccccclccrucavcjgfccccctyccccccccccmckbqgycpclcccmccbqgfcpcccccautycasvab 
+524 div:int (none) 466 0 1 102 5.33263e+13 377 1.41449e+11 80 253 254 20 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdccbqgfcpccbqgfcpcccutycasvab 
+455 div:int (none) 337 0 2 113 6.80471e+13 422 1.61249e+11 86 236 254 24 0 heads_default aaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+466 div:int (none) 423 0 2 97 2.16667e+13 359 6.03529e+10 77 239 253 19 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckcfcccccccccgfcpqdckcccrucavcqccqccfcccccclcccdccbqgfcpccccccutycasvab 
+337 div:int (none) 280 0 1 111 1.20417e+14 414 2.90863e+11 83 193 252 23 0 heads_default aaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+508 div:int (none) 499 0 1 121 9.40082e+13 446 2.10781e+11 106 249 252 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgccoqchccccccccgfcpqgclrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+384 div:int (none) 374 0 7 114 1.83736e+14 419 4.38511e+11 95 211 252 26 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+153 div:int (none) 141 0 2 97 4.20549e+09 364 1.15535e+07 44 131 251 13 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcciccccccccfcccccccgfcpqgckcccrucavcqcccccccccccclcccccccccutycasvab 
+499 div:int (none) 384 0 1 114 1.25241e+14 419 2.98905e+11 103 247 251 27 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccqchcccccclclrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+503 div:int (none) 495 0 1 108 7.00939e+12 397 1.76559e+10 101 248 249 28 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpcccgfhcpqgcutycasvab 
+495 div:int (none) 384 0 2 106 4.76455e+14 389 1.22482e+12 99 246 248 27 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgsccdcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpccpqgcccqgccutycasvab 
+383 div:int (none) 374 0 1 122 3.08465e+13 444 6.9474e+10 94 210 242 26 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctyccccacgfcpccmckbqgycpclcccmccbqgfcpccccccutycasvab 
+374 div:int (none) 364 0 1 113 9.01028e+13 414 2.1764e+11 91 206 242 25 0 heads_default qgfcpqgcccqgfcpqqbqgfcpqgccdcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+449 div:int (none) 337 0 1 111 108 416 0.259615 85 235 240 24 0 heads_default aaaaqgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfpqgckcccrqgfcpccccccutycasvab 
+433 div:int (none) 407 0 2 101 8.4839e+11 374 2.26842e+09 88 229 238 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcqgfcccccchchclcccmccbqgfcpfcccccutycasvab 
+340 div:int (none) 302 0 4 101 3.64505e+13 374 9.74613e+10 78 195 238 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+406 div:int (none) 405 0 1 91 2.91924e+09 338 8.63679e+06 83 219 231 23 0 heads_default qgfcpqgcccqgfcpqqeccgfcpqpckccccchclcccmkqccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+429 div:int (none) 407 0 1 101 2.63067e+10 374 7.03387e+07 85 228 230 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccjlcccgccgfcpqdckcccrucavcjgfcccccchchclcccmccbqgfcpccccccutycasvab 
+93 div:int (none) 92 0 1 93 89 347 0.256484 25 111 230 9 0 heads_default cqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutygfcpqgcccccrucavcqccccaccccccclcccccccciutycasvab 
+408 div:int (none) 405 0 1 101 1.07694e+14 371 2.90281e+11 84 220 227 23 0 heads_default qgfcpqgcccqgfcpqqeccgfcpqpckcfcocccclcccgtcgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+141 div:int (none) 114 0 2 97 3.15552e+10 365 8.64527e+07 41 127 224 12 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcciccccccccccccccccgfcpqgckcccrucavcqcccccccccccclcccccccccutycasvab 
+405 div:int (none) 340 0 1 101 3.41955e+15 373 9.16769e+12 82 219 220 22 0 heads_default qgfcpqgcccqgfcpqqeccgfcpqpckcfcocccclcccgccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+1 div:ext (none) (none) 0 7 100 97 387 0.250646 0 -1 219 0 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+302 div:int (none) 252 0 3 101 4.31009e+13 375 1.14936e+11 73 181 217 20 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclccccccgfcpqdckcccrucavcjgfcccccccchclcccmccbqgfcpccccccutycasvab 
+364 div:int (none) 360 0 2 113 4.0901e+13 414 9.87946e+10 86 203 209 24 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccgfcpqgcccqchcccccclccrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+280 div:int (none) 276 0 1 109 8.76673e+13 406 2.15929e+11 79 174 207 22 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgwccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+360 div:int (none) 291 0 1 107 1.71203e+14 391 4.3786e+11 84 203 205 23 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccgfcpqgcccqchcccrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+264 div:int (none) 251 0 7 109 3.70683e+14 406 9.13012e+11 74 171 204 20 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+291 div:int (none) 279 0 1 111 5.96974e+13 407 1.46677e+11 81 177 204 22 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfccccctycccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+276 div:int (none) 264 0 3 109 7.07624e+13 406 1.74292e+11 77 173 202 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqvchcccrucavcjgfccccccccmccbqgfcpclcccmccbqgfcpccccccutycasvab 
+252 div:int (none) 239 0 3 101 3.79872e+14 375 1.01299e+12 70 165 195 19 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcocccclccccccgfcpqdckcccrucavcjgfcccccccccclcccmccbqgfcpccccccutycasvab 
+271 div:int (none) 264 0 2 109 1.37263e+14 405 3.38921e+11 75 172 193 21 0 heads_default qgfcpqgccqqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfccccccccmccbqgfcpclcccmccbqgfcpccccgcutycasvab 
+95 div:int (none) 90 0 2 94 4.37344e+07 351 124599 26 112 184 8 0 heads_default vcqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutygfcpqgcccccrucavcqcccccccccccclcccccccccutycasvab 
+218 div:int (none) 211 0 9 104 8.43998e+13 389 2.16966e+11 58 154 183 16 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckccccccccccccccccccgfcpqdckcccrucavcqcccccfcccccclcccmccbqgfcpccccccutycasvab 
+279 div:int (none) 264 0 1 109 2.09787e+14 405 5.17992e+11 78 174 182 21 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfccccccccmckbqgicpclcccmccbqgfcpccccccutycasvab 
+251 div:int (none) 239 0 3 101 5.48381e+13 377 1.45459e+11 70 165 172 19 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfcccccccccclcccmccbqgfcpccccccutycasvab 
+263 div:int (none) 251 0 1 103 1.46029e+13 386 3.78313e+10 73 170 172 20 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdchcccrucavcjgfcccccccccclcccccccccqgfcpccccccutycasvab 
+239 div:int (none) 232 0 2 101 3.54572e+14 376 9.4301e+11 67 160 168 18 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqpckcfcccccclccccccgfcpqdckcccrucavcjgfcccccccccclcccmccbqgfcpccccccutycasvab 
+68 div:int (none) 60 0 3 96 1.44735e+08 363 398719 11 99 166 3 0 heads_default rucavcqgfcpqgcccqgfcpqgccccccccccccccccccccnccccccccccccccccccccrucavcqccbccclcccccccccutycasvab 
+196 div:int (none) 194 0 3 110 2.26487e+11 413 5.48394e+08 52 148 163 17 0 heads_default qgfcpqgcccqgfcpqqccqcccccccgccccccccqcccdccccccccccccgfcpqgckcccccccccccrucavcqcccccfcccjcclcccmcccccutycasvab 
+19 div:int (none) 9 0 2 101 97 387 0.250646 5 66 156 3 0 heads_default rucavcqgfcpqgccccccccccccccccccccccceccccccccccccccncccccccccccccccccccccccccccccqccccccccccutycasvab 
+90 div:int (none) 87 0 1 95 7.10683e+07 354 200758 22 110 154 7 0 heads_default avcqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutygfcpqgcccccrucavcqcccccccccccclcccccccccutycasvab 
+168 div:int (none) 155 0 5 97 1.06609e+11 364 2.92882e+08 44 138 154 13 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcccccccccccccccccccgfcpqgckcccrucavcqcccccfcccccclcccmcccccutycasvab 
+211 div:int (none) 195 0 1 95 1.81763e+13 355 5.12008e+10 55 153 154 15 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckccccccccccccccccccgfcpqdckcccrucavcqcccccfcccccclcccmcccccutycasvab 
+195 div:int (none) 168 0 1 95 4.1193e+14 355 1.16037e+12 51 148 153 14 0 heads_default qgfcpqgcccqgfcpqqcccgfcpqgckccccccccccccccccccgfcpqgckcccrucavcqcccccfcccccclcccmcccccutycasvab 
+194 div:int (none) 192 0 1 102 5.33578e+10 381 1.40047e+08 51 147 152 16 0 heads_default qgfcpqgcccqgfcpqqccqcccccccgccccccccqcccdccccccccccccgfcpqgckcccrucavcqcccccfcccjcclcccmcccccutycasvab 
+185 div:int (none) 168 0 1 102 1.56263e+11 384 4.06936e+08 48 145 150 14 0 heads_default qgfcpqgcccqgfcpqqccfdcccccccgccccccccccccccccccccccccgfcpqgckcccrucavcqcccccfcccccclcccmcccccutycasvab 
+192 div:int (none) 185 0 1 107 1.36902e+10 402 3.40552e+07 50 147 148 15 0 heads_default qgfcpqgcccqgfcpqqccfdcccccccgccccccccccccqcccdccccccccccccgfcpqgckcccrucavcqcccccfcccccclcccmcccccutycasvab 
+114 div:int (none) 110 0 9 97 1.16102e+11 366 3.17217e+08 32 115 147 11 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcccccccccccccccccccgfcpqgckcccrucavcqcccccccccccclcccccccccutycasvab 
+155 div:int (none) 114 0 2 97 8.83276e+10 365 2.41993e+08 42 132 139 12 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcccccccccccccccccccgfcpqgckcccrucavcqcccccccccccclcccmcccccutycasvab 
+9 div:int (none) 5 0 1 101 98 389 0.251928 4 52 136 2 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccqccccccccccutycasvab 
+110 div:int (none) 99 0 4 97 1.4883e+12 367 4.05533e+09 31 115 119 10 0 heads_default qgfcpqgcccqgfcpqqcccdcccccccgcccccccccccccccccccgfcpqgcccccrucavcqcccccccccccclcccccccccutycasvab 
+99 div:int (none) 95 0 1 97 1.21897e+08 363 335804 28 113 115 9 0 heads_default cqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccccccctygfcpqgcccccrucavcqcccccccccccclcccccccccutycasvab 
+92 div:int (none) 90 0 1 94 5.96378e+06 351 16990.8 24 111 113 8 0 heads_default vcqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutygfcpqgcccccrucavcqccccaccccccclcccccccccutycasvab 
+78 div:int (none) 72 0 1 96 3.25124e+07 348 93426.5 17 104 110 5 0 heads_default ucavcqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutyccccccccccccccccrucavcqccbccclcccccccccutycasvab 
+87 div:int (none) 78 0 1 101 4.61373e+07 370 124696 21 108 110 6 0 heads_default cavcqgfcpqgcccqgfcpqgcccdcccccccgcccccccccccutyccccccccccccccccrucavcqcccccccccccclcccccccccutycasvab 
+72 div:int (none) 68 0 1 97 9.5531e+07 354 269862 13 101 104 4 0 heads_default rucavcqgfcpqgcccqgfcpqgcccccccccccccccccccccccutyccccccccccccccccrucavcqccbccclcccccccccutycasvab 
+33 div:int (none) 1 0 1 100 37636 387 97.2506 6 78 101 1 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccutycasvab 
+45 div:int (none) 31 0 1 100 88 374 0.235294 9 90 98 3 0 heads_default rucavcqgfcpqgccccccccccccccccccccccccccuccccccccccccccccccccccccccccclcccccccccjqcccccccnccutycasvab 
+8 div:int (none) 2 0 1 98 95 379 0.25066 4 52 94 2 0 heads_default rucavcqgfcpqxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+5 div:int (none) 1 0 1 100 97 386 0.251295 3 39 93 1 0 heads_default rucavcqgfcpqgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqccccccccccutycasvab 

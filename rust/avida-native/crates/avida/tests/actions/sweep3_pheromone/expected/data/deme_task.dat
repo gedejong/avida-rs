@@ -1,0 +1,28 @@
+# Num orgs doing each task for each deme in population
+# Wed Nov 11 19:10:01 2026
+#  1: update
+#  2: Deme 0, Task 0
+#  3: Deme 0, Task 1
+#  4: Deme 0, Task 2
+#  5: Deme 0, Task 3
+#  6: Deme 0, Task 4
+#  7: Deme 1, Task 0
+#  8: Deme 1, Task 1
+#  9: Deme 1, Task 2
+# 10: Deme 1, Task 3
+# 11: Deme 1, Task 4
+# 12: Deme 2, Task 0
+# 13: Deme 2, Task 1
+# 14: Deme 2, Task 2
+# 15: Deme 2, Task 3
+# 16: Deme 2, Task 4
+# 17: Deme 3, Task 0
+# 18: Deme 3, Task 1
+# 19: Deme 3, Task 2
+# 20: Deme 3, Task 3
+# 21: Deme 3, Task 4
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+50 0 0 0 2 0 0 0 0 2 0 0 0 0 2 0 0 0 0 2 0 
+100 0 0 2 2 0 0 0 2 2 0 0 0 2 2 0 0 0 2 2 0 
+150 0 2 2 4 3 2 1 2 5 2 0 2 0 4 2 2 0 1 5 2 

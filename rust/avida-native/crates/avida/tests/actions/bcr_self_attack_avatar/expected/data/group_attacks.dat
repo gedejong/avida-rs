@@ -1,0 +1,44 @@
+# Attack Instruction Execution Circumstances
+# Gives count of attacks with given number of neighbors present.
+# Thu Nov 12 06:40:34 2026
+# Instruction
+# Update
+# 0Neighbors
+# 1Neighbors
+# 2Neighbors
+# 3Neighbors
+# 4Neighbors
+# 5Neighbors
+# 6Neighbors
+# 7Neighbors
+# 8Neighbors
+# 8+Neighbors
+# 0InGroupNeighbors
+# 1InGroupNeighbors
+# 2InGroupNeighbors
+# 3InGroupNeighbors
+# 4InGroupNeighbors
+# 5InGroupNeighbors
+# 6InGroupNeighbors
+# 7InGroupNeighbors
+# 8InGroupNeighbors
+# 8+InGroupNeighbors
+
+0,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+20,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+20,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+25,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+25,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+30,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+35,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+35,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+40,attack-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+40,attack-ft-prey,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

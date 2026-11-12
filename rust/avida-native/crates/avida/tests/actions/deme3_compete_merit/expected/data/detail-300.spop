@@ -1,0 +1,58 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 11 18:13:33 2026
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+184 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrysasevab 19,44,94 0,0,0 0,0,0 
+161 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDFAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCsczyappceejfitDczqGIuggocmtrycasevab 55 0 0 
+1 div:ext (none) (none) 12 80 104 26.8864 993.864 0.0270495 0 -1 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 9,34,52,53,54,58,68,69,70,72,74,84 0,0,0,0,0,0,0,0,0,0,0,0 0,0,0,0,0,0,0,0,0,0,0,0 
+185 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkuCfczyappcCejfitDczqGIuggocmtrycasevab 20,45,95 0,0,0 0,0,0 
+162 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFszsijylihDqDrdEcsAagJkqCfczyappceejfitDczqGIumgocmtrycasevab 57 0 0 
+186 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyefptqpDfBgAddlgoFJzsijylihDqDrdEcsAagJkqCfcmyappcCejfitDczqGIuugocmtrycasevab 23,48,98 0,0,0 0,0,0 
+163 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyafpcCejfitDczqGIuggocmtrycasevab 59 0 0 
+187 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg hDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrysasevabbkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijyli 24,49,99 0,0,0 0,0,0 
+164 dup:int (none) (none) 2 2 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsejylihDqDrdEcsAagJkqCfczyappceejfitDczqGIuggocmtrycasevab 60,65 0,0 0,0 
+165 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDcztGIuggocmtrycasevab 61 0 0 
+166 dup:int (none) (none) 2 2 105 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyEappceejfiJDczqGIuggocmtrycasevab 62,66 0,0 0,0 
+167 dup:int (none) (none) 2 2 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfcGyhppcCejfitDczqGIuggocmtrycasevab 63,67 0,0 0,0 
+168 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsejylihDqDrdEcsAagJkECfczyappceejfitDczqGIuggocmtrycasevab 64 0 0 
+169 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcfDzJsuEDrBBuaGvcFGIDDcAyetpmqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 71 0 0 
+170 dup:int (none) (none) 1 1 96 0 0 0 0 301 -1 0 0 instset.cfg uEirBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJvqCfczyappceljfitDczqGIuggocmtrycasevab 73 0 0 
+171 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdpcsAagJkqCfczyappcuejfitDczqGIuggocmtrycasevab 0,25,75 0,0,0 0,0,0 
+34 dup:int (none) (none) 6 36 104 25.48 992.75 0.0256556 0 151 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 1,21,26,46,76,96 0,0,0,0,0,0 0,0,0,0,0,0 
+172 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAddlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrncasevab 2,27,77 0,0,0 0,0,0 
+173 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsJEDrBBuaGvcFGIDDcAyefptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuugocmtrycasevab 4,29,79 0,0,0 0,0,0 
+35 dup:int (none) (none) 6 30 104 27.3 894.125 0.0305327 0 151 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyefptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuugocmtrycasevab 10,15,35,40,85,90 0,0,0,0,0,0 0,0,0,0,0,0 
+36 dup:int (none) (none) 9 38 104 27.3 994.588 0.0274486 0 151 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 3,6,22,28,31,47,78,81,97 0,0,0,0,0,0,0,0,0 0,0,0,0,0,0,0,0,0 
+174 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetutqpBfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczEGIuggocmtrycasevab 5,30,80 0,0,0 0,0,0 
+175 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg hDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrysasevabbkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAddlgoFJzsijyli 7,32,82 0,0,0 0,0,0 
+176 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAddlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 8,33,83 0,0,0 0,0,0 
+177 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAGdlgoCJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 11,36,86 0,0,0 0,0,0 
+178 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevaB 12,37,87 0,0,0 0,0,0 
+179 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcaGIDDcAyetptqpDfBgAddlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrysasevab 13,38,88 0,0,0 0,0,0 
+180 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqADfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 14,39,89 0,0,0 0,0,0 
+181 dup:int (none) (none) 3 4 105 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggojcmtrycasevab 16,41,91 0,0,0 0,0,0 
+182 dup:int (none) (none) 3 4 105 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijyliIDqDrdEcsAagJkqCfcByappcCejfitDczqGIuggojcmtrycasevab 17,42,92 0,0,0 0,0,0 
+159 dup:int (none) (none) 1 1 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqprfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 50 0 0 
+183 dup:int (none) (none) 3 4 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJEuEDrBBuaGvcFGIDDcAHetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappcCejfitDczqGIuggocmtrycasevab 18,43,93 0,0,0 0,0,0 
+160 dup:int (none) (none) 2 2 104 0 0 0 0 301 -1 0 0 instset.cfg bkcIDzJsuEDrBBuaGvcFGIDDcAyetptqpDfBgAGdlgoFJzsijylihDqDrdEcsAagJkqCfczyappceejfitDczqGIuggocmtrycasevab 51,56 0,0 0,0 

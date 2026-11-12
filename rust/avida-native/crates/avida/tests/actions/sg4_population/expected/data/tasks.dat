@@ -1,0 +1,26 @@
+# Avida tasks data
+# Wed Nov 11 19:15:24 2026
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: State Grid Path Traversal
+#  5: State Grid Path Traversal
+
+0 0 0 0 0 
+10 0 0 0 0 
+20 0 0 2 0 
+30 0 0 2 0 
+40 0 0 4 0 
+50 0 0 5 0 
+60 0 0 10 0 
+70 0 0 12 0 
+80 0 0 11 10 
+90 0 0 5 20 
+100 0 0 13 30 
+110 0 0 19 43 
+120 0 0 31 54 
+130 0 0 15 76 
+140 0 0 36 91 
+150 0 0 48 109 

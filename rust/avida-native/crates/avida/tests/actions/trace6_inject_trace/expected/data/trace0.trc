@@ -1,0 +1,924 @@
+---------------------------
+U:0
+1 IP:0 (h-alloc)
+AX:0 [0x0]  BX:0 [0x0]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (100):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+2 IP:1 (h-search)
+AX:100 [0x64]  BX:0 [0x0]  CX:0 [0x0]  
+  R-Head:0 W-Head:0 F-Head:0  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+3 IP:4 (mov-head)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:0 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+4 IP:6 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+5 IP:7 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+6 IP:8 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+7 IP:9 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+8 IP:10 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+9 IP:11 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+10 IP:12 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+11 IP:13 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+12 IP:14 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+13 IP:15 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+14 IP:16 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+15 IP:17 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+16 IP:18 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+17 IP:19 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+18 IP:20 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+19 IP:21 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+20 IP:22 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+21 IP:23 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+22 IP:24 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+23 IP:25 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+24 IP:26 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+25 IP:27 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+26 IP:28 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+27 IP:29 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+28 IP:30 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+29 IP:31 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+30 IP:32 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+31 IP:33 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+32 IP:34 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:0
+33 IP:35 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+34 IP:36 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+35 IP:37 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+36 IP:38 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+37 IP:39 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+38 IP:40 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+39 IP:41 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+40 IP:42 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+41 IP:43 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+42 IP:44 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+43 IP:45 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+44 IP:46 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+45 IP:47 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+46 IP:48 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+47 IP:49 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+48 IP:50 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+49 IP:51 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+50 IP:52 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+51 IP:53 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+52 IP:54 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+53 IP:55 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+54 IP:56 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+55 IP:57 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+56 IP:58 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+57 IP:59 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+58 IP:60 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+59 IP:61 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+60 IP:62 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+61 IP:63 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+62 IP:64 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+63 IP:65 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+64 IP:66 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+65 IP:67 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     
+---------------------------
+U:1
+66 IP:68 (nop-C)
+AX:100 [0x64]  BX:96 [0x60]  CX:2 [0x2]  
+  R-Head:0 W-Head:100 F-Head:100  RL:   
+* Stack 0: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Stack 1: Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000 Ox00000000
+  Mem (300):  rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  MeritBase:97 Bonus:1 Errors:0 Donates:0
+  Task Count (Quality): 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0)
+
+Input (env): 0x0fe41a87 0x3341eea5 0x55ee7fa3
+Input (buf):
+Output:     

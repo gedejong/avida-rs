@@ -1,0 +1,13 @@
+#filetype genotype_data
+#format id name length sequence tag 
+
+# Legend:
+# 1: Genotype ID
+# 2: Genotype Name
+# 3: Genome Length
+# 4: Genome Sequence
+# 5: Genotype Tag
+
+-1 org-Seq3 0 rucav some tag 
+-1 org-Seq1 0 rucavcc some tag 
+-1 myname 0 rucavccc some tag 

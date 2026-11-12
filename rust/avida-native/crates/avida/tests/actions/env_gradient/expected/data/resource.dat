@@ -1,0 +1,14 @@
+# Avida resource data
+# Wed Nov 11 13:27:20 2026
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: food0
+
+0 7053.82 
+5 7051.86 
+10 7050.82 
+15 7049.82 
+20 7051.77 
+25 35.2377 
+30 41.283 

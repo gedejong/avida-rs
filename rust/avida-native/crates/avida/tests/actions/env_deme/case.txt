@@ -1,0 +1,2 @@
+base merge_deme_resources
+args -s 100 -set WORLD_X 20 -set WORLD_Y 40 -set WORLD_GEOMETRY 1 -set ENVIRONMENT_FILE environment-9demeglobal.cfg -set NUM_DEMES 2 -set BIRTH_METHOD 6
