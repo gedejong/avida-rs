@@ -111,7 +111,12 @@ pub fn show(ui: &mut Ui, state: &mut AppState, settings: &mut Settings) {
             }
             divider(ui, &t);
             let run_state = state.run_state();
-            let label = run_state.map_or("No run", format::run_state);
+            let label = match (run_state, state.is_playback()) {
+                (None, _) => "No run",
+                (Some(RunState::Running), true) => "Playing",
+                (Some(RunState::Paused), true) => "Paused",
+                (Some(s), _) => format::run_state(s),
+            };
             widgets::badge(ui, label, run_state_color(&t, run_state)).on_hover_text(
                 match run_state {
                     Some(RunState::Running) => "The simulation is advancing.",
@@ -324,25 +329,36 @@ fn menu_item(
 fn transport(ui: &mut Ui, state: &mut AppState) {
     let running = state.run_state() == Some(RunState::Running);
     let can = state.can_advance();
+    let playback = state.is_playback();
     ui.add_enabled_ui(can, |ui| {
-        let (icon, text) = if running {
-            (icons::ICON_PAUSE, "Pause")
-        } else {
-            (icons::ICON_PLAY_ARROW, "Run")
+        let (icon, text) = match (running, playback) {
+            (true, _) => (icons::ICON_PAUSE, "Pause"),
+            (false, true) => (icons::ICON_PLAY_ARROW, "Play"),
+            (false, false) => (icons::ICON_PLAY_ARROW, "Run"),
         };
-        let r = widgets::primary_button(ui, Some(icon), text, 92.0).on_hover_text(if running {
-            "Pause (Space)"
-        } else {
-            "Run (Space)"
-        });
+        let r = widgets::primary_button(ui, Some(icon), text, 92.0).on_hover_text(
+            match (running, playback) {
+                (true, _) => "Pause (Space)",
+                (false, true) => "Play the recording from here; at the end it starts again (Space)",
+                (false, false) => "Run (Space)",
+            },
+        );
         if r.clicked() {
             state.toggle_run();
         }
         if widgets::icon_button(
             ui,
             icons::ICON_SKIP_NEXT,
-            "Step update",
-            "Step update (.): finish the update in progress, or run the next one whole",
+            if playback {
+                "Next frame"
+            } else {
+                "Step update"
+            },
+            if playback {
+                "Next frame (.)"
+            } else {
+                "Step update (.): finish the update in progress, or run the next one whole"
+            },
         )
         .clicked()
         {
@@ -351,8 +367,16 @@ fn transport(ui: &mut Ui, state: &mut AppState) {
         if widgets::icon_button(
             ui,
             icons::ICON_STEP,
-            "Step slice",
-            "Step slice (,): run one time slice of the update",
+            if playback {
+                "Previous frame"
+            } else {
+                "Step slice"
+            },
+            if playback {
+                "Previous frame (,)"
+            } else {
+                "Step slice (,): run one time slice of the update"
+            },
         )
         .clicked()
         {
@@ -367,6 +391,7 @@ fn run_to(ui: &mut Ui, state: &mut AppState, width: f32) {
         let target = state.status.as_ref().and_then(|s| s.run_to);
         let hint = match target {
             Some(n) => format!("→ {}", format::count(i64::from(n))),
+            None if state.is_playback() => "Seek to…".to_string(),
             None => "Run to…".to_string(),
         };
         let edit = egui::TextEdit::singleline(&mut state.run_to_input)
@@ -377,9 +402,11 @@ fn run_to(ui: &mut Ui, state: &mut AppState, width: f32) {
             r.request_focus();
             state.focus_run_to = false;
         }
-        let r = r.on_hover_text(
-            "Type an update number and press Enter: the run goes on until that update has ended, then pauses.",
-        );
+        let r = r.on_hover_text(if state.is_playback() {
+            "Type an update number and press Enter: the playback shows the recorded frame at or before it."
+        } else {
+            "Type an update number and press Enter: the run goes on until that update has ended, then pauses."
+        });
         let submitted = r.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
         let go = widgets::icon_button(
             ui,

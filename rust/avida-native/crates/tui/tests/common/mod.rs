@@ -238,12 +238,17 @@ pub struct Run {
 /// Runs `steps` through the real loop on a `w` x `h` test terminal. Ends
 /// with a `Q` press if the script does not quit itself.
 pub fn run_script(dir: &Path, args: &[&str], w: u16, h: u16, steps: Vec<Step>, snaps: &str) -> Run {
-    let mut driver = Driver::start(
+    let driver = Driver::start(
         dir.to_path_buf(),
         args.iter().map(|s| s.to_string()).collect(),
         ColorMode::TrueColor,
     )
     .unwrap_or_else(|e| panic!("start: {e}"));
+    run_driver(driver, w, h, steps, snaps)
+}
+
+/// [`run_script`] for a driver that is already built (a playback).
+pub fn run_driver(mut driver: Driver, w: u16, h: u16, steps: Vec<Step>, snaps: &str) -> Run {
     // Toasts must not expire while a loaded machine runs the script.
     driver.freeze_clock(0.0);
     let mut terminal = Terminal::new(TestBackend::new(w, h)).unwrap();

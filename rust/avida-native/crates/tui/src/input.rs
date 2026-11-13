@@ -18,6 +18,24 @@ use crate::actions::{lookup, Action, Key, PaletteState};
 use crate::app::{App, EnvTab, GenoView, Request, Screen, ToastKind};
 use crate::metrics::Metric;
 
+/// Records the playback keys `{` and `}` move by.
+pub const SEEK_JUMP: i64 = 10;
+
+/// Why an action cannot work on a recording, if it cannot.
+fn playback_refusal(action: Action) -> Option<&'static str> {
+    Some(match action {
+        Action::SavePopulation => "there is no population to save",
+        Action::ExtractGenome => "organisms are not recorded",
+        Action::Restart => "there is no simulation to restart",
+        Action::DebugStep | Action::DebugRun | Action::DebugFollowOffspring => {
+            "there is no simulation to debug"
+        }
+        Action::GenoLineage => "lineages are not recorded",
+        Action::ConfigEdit | Action::ConfigRevert => "settings cannot change",
+        _ => return None,
+    })
+}
+
 impl App {
     pub fn on_key(&mut self, key: KeyEvent) {
         if key.kind == KeyEventKind::Release {
@@ -68,6 +86,12 @@ impl App {
     /// Carries out an action, whether it came from a key, the palette or a
     /// test.
     pub fn perform(&mut self, action: Action, shift: bool) {
+        if self.playback.is_some() {
+            if let Some(why) = playback_refusal(action) {
+                self.toast(ToastKind::Info, format!("Not in a playback: {why}."));
+                return;
+            }
+        }
         match action {
             Action::RunPause => self.toggle_run(),
             Action::StepUpdate => self.step_update(),
@@ -131,6 +155,10 @@ impl App {
             Action::Quit => self.confirm_quit = true,
             Action::QuitNow => self.quit = true,
             Action::Redraw => self.request(Request::Redraw),
+            Action::SeekBack => self.seek_by(Some(-SEEK_JUMP), false),
+            Action::SeekForward => self.seek_by(Some(SEEK_JUMP), false),
+            Action::SeekFirst => self.seek_by(None, false),
+            Action::SeekLast => self.seek_by(None, true),
         }
     }
 

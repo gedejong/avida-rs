@@ -31,8 +31,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use avida_session::{
-    Command, ExperimentSetup, Frame, LayerId, RunState, SessionEvent, Speed, Status, Subscription,
-    UntilOutcome, UpdateRow,
+    Command, ExperimentSetup, Frame, LayerId, PlaybackInfo, RecordingStatus, RunState,
+    SessionEvent, Speed, Status, Subscription, UntilOutcome, UpdateRow,
 };
 
 use self::abundance::AbundanceHistory;
@@ -418,6 +418,12 @@ pub struct AppState {
     /// Where the charts were drawn in the last frame (screen points), for
     /// saving them as an image; `None` when they were not on screen.
     pub chart_area: Option<egui::Rect>,
+    /// Set while the session plays a recording (`--play FILE`).
+    pub playback: Option<PlaybackInfo>,
+    /// The record a seek asked for that the session has not shown yet.
+    pub seek_target: Option<usize>,
+    /// How the recording of the live run is going (`--record FILE`).
+    pub recording: Option<RecordingStatus>,
     /// The experiment of a `Restart` sent and not yet answered. Until the
     /// session answers, commands are not sent and rows and frames (which
     /// may belong to either run) are not shown.
@@ -471,6 +477,9 @@ impl Default for AppState {
             config_view: ConfigView::default(),
             focus_run_to: false,
             chart_area: None,
+            playback: None,
+            seek_target: None,
+            recording: None,
             restarting: None,
             now: 0.0,
             commands: Vec::new(),
@@ -607,6 +616,70 @@ impl AppState {
         self.map_dirty = true;
     }
 
+    /// Where the playback stands; `None` for a simulation.
+    pub fn apply_playback(&mut self, info: Option<PlaybackInfo>) {
+        if let (Some(target), Some(i)) = (self.seek_target, &info) {
+            if i.index == target {
+                self.seek_target = None;
+            }
+        }
+        self.playback = info;
+    }
+
+    /// How the recording of the live run is going.
+    pub fn apply_recording(&mut self, status: Option<RecordingStatus>) {
+        self.recording = status;
+    }
+
+    /// A playback went back in time: the rows that follow are the whole
+    /// history up to the frame now shown, so what was built from the rows
+    /// before is stale.
+    pub fn rows_reset(&mut self) {
+        self.history.clear();
+        self.abundance.clear();
+        self.rate.clear();
+        self.run_reset = true;
+    }
+
+    pub fn is_playback(&self) -> bool {
+        self.playback.is_some()
+    }
+
+    /// Why `what` does nothing on a recording: a toast, and true.
+    fn refuse_in_playback(&mut self, what: &str) -> bool {
+        if self.playback.is_none() {
+            return false;
+        }
+        self.toast(
+            ToastKind::Info,
+            format!("{what} needs a simulation; a playback only shows what was recorded."),
+        );
+        true
+    }
+
+    /// Shows record `index` of a playback (clamped by the session).
+    pub fn seek_frame(&mut self, index: usize) {
+        if self.playback.is_none() {
+            return;
+        }
+        if self.seek_target == Some(index) {
+            return;
+        }
+        self.seek_target = Some(index);
+        self.send(Command::SeekFrame(index));
+    }
+
+    /// Moves a playback by `delta` records from where the last seek (or the
+    /// frame on show) is.
+    pub fn seek_frames_by(&mut self, delta: i64) {
+        let Some(info) = &self.playback else {
+            return;
+        };
+        let here = self.seek_target.unwrap_or(info.index) as i64;
+        let last = info.frames.saturating_sub(1) as i64;
+        self.seek_frame((here + delta).clamp(0, last) as usize);
+    }
+
     pub fn apply_rows(&mut self, rows: Vec<UpdateRow>) {
         if self.restarting.is_some() {
             return;
@@ -741,6 +814,17 @@ impl AppState {
                 self.restarting = None;
                 self.notify(ToastKind::Error, format!("Restart failed: {e}"));
             }
+            SessionEvent::RecordingStarted(path) => {
+                self.notify(ToastKind::Info, format!("Recording to {}.", path.display()));
+            }
+            SessionEvent::RecordingStopped { frames, bytes } => self.log.push(
+                LogKind::Info,
+                format!(
+                    "The recording is complete: {} frames, {}.",
+                    format::count(i64::try_from(frames).unwrap_or(i64::MAX)),
+                    format::bytes(bytes)
+                ),
+            ),
         }
     }
 
@@ -1025,6 +1109,9 @@ impl AppState {
     }
 
     pub fn save_population(&mut self) {
+        if self.refuse_in_playback("Saving the population") {
+            return;
+        }
         match self.run_state() {
             None => {}
             Some(RunState::Failed) => self.toast(
@@ -1054,6 +1141,9 @@ impl AppState {
     /// starts a new debugging session: breakpoints are cleared.
     pub fn select_cell(&mut self, cell: Option<i32>) {
         if self.selection == cell {
+            return;
+        }
+        if cell.is_some() && self.refuse_in_playback("Inspecting an organism") {
             return;
         }
         self.selection = cell;
@@ -1166,6 +1256,9 @@ impl AppState {
     /// Builds the world again: with the same arguments (`None`) or another
     /// set.
     pub fn restart(&mut self, with: Option<Experiment>) {
+        if self.refuse_in_playback("Restarting") {
+            return;
+        }
         let Some(exp) = with.or_else(|| self.experiment.clone()) else {
             return;
         };
@@ -1241,6 +1334,92 @@ mod tests {
         });
         s.opened();
         s
+    }
+
+    fn playing() -> AppState {
+        let mut s = ready();
+        s.apply_status(status(RunState::Paused, 100));
+        s.apply_frame(Arc::new(frame_with_map()));
+        s.apply_playback(Some(PlaybackInfo {
+            path: PathBuf::from("/x/run.avrec"),
+            frames: 6,
+            index: 2,
+            update: 100,
+            first_update: 0,
+            last_update: 500,
+            cut_tail_bytes: 0,
+            layers: vec![LayerId::Genotype, LayerId::Fitness],
+        }));
+        s.take_commands();
+        s
+    }
+
+    #[test]
+    fn a_playback_seeks_by_frames_and_clamps() {
+        let mut s = playing();
+        assert!(s.is_playback());
+        s.seek_frames_by(2);
+        // A second key before the session answers adds to the first.
+        s.seek_frames_by(10);
+        s.seek_frames_by(-100);
+        s.seek_frames_by(3);
+        assert_eq!(
+            s.take_commands(),
+            vec![
+                Command::SeekFrame(4),
+                Command::SeekFrame(5),
+                Command::SeekFrame(0),
+                Command::SeekFrame(3)
+            ]
+        );
+        // The session shows the record asked for: the pending seek ends.
+        let mut info = s.playback.clone().unwrap();
+        info.index = 3;
+        s.apply_playback(Some(info));
+        assert_eq!(s.seek_target, None);
+        // The same target twice is one command.
+        s.seek_frame(1);
+        s.seek_frame(1);
+        assert_eq!(s.take_commands(), vec![Command::SeekFrame(1)]);
+    }
+
+    #[test]
+    fn what_needs_a_simulation_is_refused_in_a_playback() {
+        let mut s = playing();
+        s.save_population();
+        s.select_cell(Some(0));
+        s.restart(None);
+        assert!(s.take_commands().is_empty());
+        assert!(s.take_requests().is_empty());
+        assert_eq!(s.selection, None);
+        assert_eq!(s.toasts.len(), 3);
+        // A simulation does all three.
+        let mut live = ready();
+        live.apply_status(status(RunState::Paused, 3));
+        live.take_commands();
+        live.save_population();
+        assert_eq!(live.take_commands(), vec![Command::SavePopulation]);
+    }
+
+    #[test]
+    fn going_back_in_a_playback_restarts_the_history() {
+        let mut s = playing();
+        s.apply_rows(vec![UpdateRow::default(), UpdateRow::default()]);
+        assert_eq!(s.history.len(), 2);
+        s.rows_reset();
+        assert_eq!(s.history.len(), 0);
+        assert!(s.take_run_reset());
+        s.apply_rows(vec![UpdateRow::default()]);
+        assert_eq!(s.history.len(), 1);
+    }
+
+    #[test]
+    fn the_layers_of_a_playback_are_the_recorded_ones() {
+        let mut f = frame_with_map();
+        f.layers = vec![LayerId::Genotype, LayerId::Fitness];
+        let mut s = playing();
+        s.apply_frame(Arc::new(f));
+        assert_eq!(s.layers(), vec![LayerId::Genotype, LayerId::Fitness]);
     }
 
     #[test]

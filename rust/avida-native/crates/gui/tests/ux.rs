@@ -25,6 +25,7 @@ fn open(dir: PathBuf, size: egui::Vec2) -> H {
         StartupArgs {
             dir: Some(dir),
             avida_args: Vec::new(),
+            ..Default::default()
         },
         size,
     );
@@ -101,6 +102,7 @@ fn a_missing_folder_offers_a_new_experiment() {
         StartupArgs {
             dir: Some(missing.clone()),
             avida_args: Vec::new(),
+            ..Default::default()
         },
         vec2(1000.0, 650.0),
     );

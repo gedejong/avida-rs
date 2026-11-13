@@ -12,3 +12,11 @@ avida-apto = { path = "../apto" }
 avida-config = { path = "../config" }
 avida-viewmodel = { path = "../viewmodel" }
 avida-world = { path = "../world" }
+# Pure Rust DEFLATE for the recordings (see `recording`); already in the build.
+miniz_oxide = "0.9"
+# SIGINT and SIGTERM for the headless recorder.
+signal-hook = { version = "0.3", default-features = false }
+
+[[bin]]
+name = "avida-rec"
+path = "src/bin/avida-rec.rs"

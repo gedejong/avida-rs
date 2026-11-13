@@ -19,6 +19,10 @@ fn main() -> ExitCode {
             println!("{USAGE}");
             return ExitCode::SUCCESS;
         }
+        Parsed::Error(e) => {
+            eprintln!("avida-gui: {e}\nTry avida-gui --help.");
+            return ExitCode::from(2);
+        }
         Parsed::Run(s) => s,
     };
     launch::install_logger();

@@ -12,6 +12,10 @@ pub struct StartupArgs {
     /// (`-s 7`, `-set WORLD_X 30`, ...). They apply to every experiment
     /// opened in this run of the program.
     pub avida_args: Vec<String>,
+    /// `--play FILE`: a recording to play back instead of an experiment.
+    pub play: Option<PathBuf>,
+    /// `--record FILE [--record-every N]`: record the run that is opened.
+    pub record: Option<avida_session::RecordSpec>,
 }
 
 /// The outcome of reading the command line.
@@ -20,14 +24,23 @@ pub enum Parsed {
     Run(StartupArgs),
     /// `-h` / `--help`: print [`USAGE`] and exit.
     Help,
+    /// A bad option: print the reason and exit with status 2.
+    Error(String),
 }
 
 pub const USAGE: &str = "\
 usage: avida-gui [CONFIG_DIR] [AVIDA_ARGS...]
+       avida-gui --play FILE
 
 Opens the Avida experiment in CONFIG_DIR (the folder holding avida.cfg,
 events.cfg and environment.cfg) in the desktop viewer. Without a folder
 the start screen offers a folder picker and the recently opened ones.
+
+--play FILE opens a recording made with --record or avida-rec and plays it
+back: the map with every recorded layer, the charts and the genotype table,
+with a slider to move through it. A .avrec file dropped on the window opens
+too. --record FILE [--record-every N] [--record-layers LIST] [--record-top N]
+records the experiment as it runs.
 
 AVIDA_ARGS are passed to the world as the avida binary takes them, for
 example `-s 7 -set WORLD_X 30`.
@@ -51,6 +64,16 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
     if args.iter().any(|a| a == "-h" || a == "--help") {
         return Parsed::Help;
     }
+    let (play, record) = match (
+        avida_session::cli::take_option(&mut args, "--play"),
+        avida_session::cli::take_record_options(&mut args),
+    ) {
+        (Ok(p), Ok(r)) => (p.map(PathBuf::from), r),
+        (Err(e), _) | (_, Err(e)) => return Parsed::Error(e),
+    };
+    if play.is_some() && record.is_some() {
+        return Parsed::Error("--play and --record cannot be combined".to_string());
+    }
     let dir = match args.first() {
         Some(first) if !first.starts_with('-') => Some(PathBuf::from(args.remove(0))),
         _ => None,
@@ -58,6 +81,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
     Parsed::Run(StartupArgs {
         dir,
         avida_args: args,
+        play,
+        record,
     })
 }
 
@@ -76,6 +101,7 @@ mod tests {
             Parsed::Run(StartupArgs {
                 dir: Some(PathBuf::from("cfg")),
                 avida_args: strings(&["-s", "7"]),
+                ..Default::default()
             })
         );
     }
@@ -87,9 +113,37 @@ mod tests {
             Parsed::Run(StartupArgs {
                 dir: None,
                 avida_args: strings(&["-set", "WORLD_X", "30"]),
+                ..Default::default()
             })
         );
         assert_eq!(parse(Vec::new()), Parsed::Run(StartupArgs::default()));
+    }
+
+    #[test]
+    fn play_and_record_options_are_taken_out_of_the_avida_arguments() {
+        let Parsed::Run(a) = parse(strings(&["--play", "r.avrec"])) else {
+            panic!()
+        };
+        assert_eq!(a.play, Some(PathBuf::from("r.avrec")));
+        assert_eq!(a.dir, None);
+        let Parsed::Run(a) = parse(strings(&[
+            "cfg",
+            "--record",
+            "x",
+            "--record-every",
+            "10",
+            "-s",
+            "3",
+        ])) else {
+            panic!()
+        };
+        assert_eq!(a.dir, Some(PathBuf::from("cfg")));
+        assert_eq!(a.avida_args, strings(&["-s", "3"]));
+        assert_eq!(a.record.map(|r| r.every), Some(10));
+        assert!(matches!(
+            parse(strings(&["--play", "a", "--record", "b"])),
+            Parsed::Error(_)
+        ));
     }
 
     #[test]

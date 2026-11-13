@@ -72,6 +72,31 @@ impl Driver {
         )?;
         let mut app = App::new(work_dir, args, color_mode);
         app.set_setup(session.setup());
+        Ok(Driver::with(session, app, wake))
+    }
+
+    /// Opens a recording for playback instead of building a world. Fails
+    /// with the reason the file cannot be played.
+    pub fn start_playback(path: &std::path::Path, color_mode: ColorMode) -> Result<Driver, String> {
+        let wake = Arc::new(AtomicBool::new(true));
+        let w = Arc::clone(&wake);
+        let session =
+            Session::play_with_wake(path, Box::new(move || w.store(true, Ordering::Release)))?;
+        let dir = std::path::absolute(path)
+            .ok()
+            .and_then(|p| p.parent().map(std::path::Path::to_path_buf))
+            .unwrap_or_else(|| std::path::PathBuf::from("."));
+        let mut app = App::new(dir, Vec::new(), color_mode);
+        app.name = path.file_name().map_or_else(
+            || path.display().to_string(),
+            |n| n.to_string_lossy().into_owned(),
+        );
+        app.set_setup(session.setup());
+        app.playback = session.playback_info();
+        Ok(Driver::with(session, app, wake))
+    }
+
+    fn with(session: Session, app: App, wake: Arc<AtomicBool>) -> Driver {
         let mut d = Driver {
             app,
             session,
@@ -83,7 +108,7 @@ impl Driver {
             exit_clear: None,
         };
         d.pump();
-        Ok(d)
+        d
     }
 
     /// Makes SIGTERM, SIGHUP and SIGINT end the loop like a quit, so the
@@ -174,10 +199,24 @@ impl Driver {
             out.changed = true;
             self.app.apply_events(events);
         }
-        let rows = self.session.drain_rows();
-        if !rows.is_empty() {
+        let (reset, rows) = self.session.drain_rows_reset();
+        if reset {
+            self.app.reset_rows();
+        }
+        if reset || !rows.is_empty() {
             out.changed = true;
             self.app.apply_rows(rows);
+        }
+        if let Some(info) = self.session.playback_info() {
+            if self.app.playback.as_ref() != Some(&info) {
+                out.changed = true;
+                self.app.apply_playback(Some(info));
+            }
+        }
+        let recording = self.session.recording_status();
+        if self.app.recording != recording {
+            out.changed = true;
+            self.app.apply_recording(recording);
         }
         let status = self.session.status();
         if self.app.status.as_ref() != Some(&status) {
@@ -247,6 +286,11 @@ impl Driver {
             self.app
                 .notify(ToastKind::Error, "The simulation thread is gone.".into());
         }
+    }
+
+    /// Starts recording the run (`--record FILE`).
+    pub fn record(&mut self, spec: avida_session::RecordSpec) {
+        self.session.send(Command::Record(spec));
     }
 
     pub fn session(&self) -> &Session {

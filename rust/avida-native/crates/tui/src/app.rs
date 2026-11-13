@@ -12,8 +12,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use avida_session::{
-    Command, ExperimentSetup, Frame, LayerId, RunState, SessionEvent, Speed, Status, Subscription,
-    UntilOutcome, UpdateRow,
+    Command, ExperimentSetup, Frame, LayerId, PlaybackInfo, RecordingStatus, RunState,
+    SessionEvent, Speed, Status, Subscription, UntilOutcome, UpdateRow,
 };
 use avida_viewmodel::{EnvView, Legend, Palette, Scale};
 use ratatui::layout::Rect;
@@ -347,6 +347,14 @@ pub struct App {
     /// hook that lets the real-terminal tests check the panic path).
     pub test_panic: bool,
 
+    /// Set when the session plays a recording (`avida-tui --play FILE`).
+    pub playback: Option<PlaybackInfo>,
+    /// The record a seek asked for and the session has not shown yet, so
+    /// that keys pressed in quick succession add up.
+    pub seek_target: Option<usize>,
+    /// How the recording of the live run is going (`--record FILE`).
+    pub recording: Option<RecordingStatus>,
+
     commands: Vec<Command>,
     requests: Vec<Request>,
 }
@@ -421,6 +429,9 @@ impl App {
             confirm_quit: false,
             quit: false,
             test_panic: false,
+            playback: None,
+            seek_target: None,
+            recording: None,
             commands: Vec::new(),
             requests: Vec::new(),
         };
@@ -470,6 +481,55 @@ impl App {
     /// What the session was built from, for the configuration screen.
     pub fn set_setup(&mut self, setup: Arc<ExperimentSetup>) {
         self.setup = Some(setup);
+    }
+
+    /// Where the playback stands (every pump of a playback session).
+    pub fn apply_playback(&mut self, info: Option<PlaybackInfo>) {
+        if let (Some(target), Some(i)) = (self.seek_target, &info) {
+            if i.index == target {
+                self.seek_target = None;
+            }
+        }
+        self.playback = info;
+    }
+
+    /// How the recording of a live run is going.
+    pub fn apply_recording(&mut self, status: Option<RecordingStatus>) {
+        self.recording = status;
+    }
+
+    /// A playback seeked backwards: the rows that follow are the whole
+    /// history up to the frame shown.
+    pub fn reset_rows(&mut self) {
+        self.history = RowHistory::default();
+        self.rate = RateMeter::default();
+        self.abundance.clear();
+    }
+
+    /// Seeks a playback to record `index` (clamped by the session).
+    fn seek_to(&mut self, index: usize) {
+        self.seek_target = Some(index);
+        self.send(Command::SeekFrame(index));
+    }
+
+    /// Moves a playback by `delta` records from where the last seek (or the
+    /// frame on show) is; `None` for the first (`Home`) or last (`End`).
+    pub fn seek_by(&mut self, delta: Option<i64>, end: bool) {
+        let Some(info) = &self.playback else {
+            self.toast(
+                ToastKind::Info,
+                "Only in a playback: start with avida-tui --play FILE.".to_string(),
+            );
+            return;
+        };
+        let last = info.frames.saturating_sub(1);
+        let here = self.seek_target.unwrap_or(info.index);
+        let target = match delta {
+            Some(d) => (here as i64 + d).clamp(0, last as i64) as usize,
+            None if end => last,
+            None => 0,
+        };
+        self.seek_to(target);
     }
 
     pub fn apply_rows(&mut self, rows: Vec<UpdateRow>) {
@@ -581,6 +641,15 @@ impl App {
                 self.restarting = None;
                 self.notify(ToastKind::Error, format!("Restart failed: {e}"));
             }
+            SessionEvent::RecordingStarted(path) => {
+                self.log
+                    .push(LogKind::Info, format!("Recording to {}", path.display()));
+                self.toast(ToastKind::Info, format!("Recording to {}", path.display()));
+            }
+            SessionEvent::RecordingStopped { frames, bytes } => self.log.push(
+                LogKind::Info,
+                format!("The recording is complete: {frames} frames, {bytes} bytes."),
+            ),
         }
     }
 
@@ -625,8 +694,13 @@ impl App {
         self.frame.as_ref().map(|f| &f.env)
     }
 
-    /// The layers of the current world.
+    /// The layers of the current world (of a playback: those recorded).
     pub fn layers(&self) -> Vec<LayerId> {
+        if let Some(p) = &self.playback {
+            if !p.layers.is_empty() {
+                return p.layers.clone();
+            }
+        }
         match self.env() {
             Some(env) => available_layers(env),
             None => LayerId::FIXED.to_vec(),

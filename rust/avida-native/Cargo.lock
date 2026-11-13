@@ -531,6 +531,8 @@ dependencies = [
  "avida-config",
  "avida-viewmodel",
  "avida-world",
+ "miniz_oxide 0.9.1",
+ "signal-hook",
 ]
 
 [[package]]

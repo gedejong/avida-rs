@@ -6,7 +6,7 @@ use egui::{vec2, Role, Sense, Stroke, Ui};
 use crate::model::metrics::SeriesCache;
 use crate::model::{AppState, SideTab};
 use crate::ui::theme::{semibold, Tokens};
-use crate::ui::widgets::name_widget;
+use crate::ui::widgets::{self, name_widget};
 use crate::ui::{charts, config, environment, genotypes, inspector, stats};
 
 pub fn show(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
@@ -40,6 +40,20 @@ fn content(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
                 .show(ui, |ui| charts::show(ui, state, cache));
         }
         // These fill the panel and scroll their own long lists.
+        SideTab::Organism if state.is_playback() => widgets::empty_state(
+            ui,
+            egui_material_icons::icons::ICON_BIOTECH,
+            "Organisms are not recorded",
+            "A playback shows the map, the charts and the genotype table. \
+             Open the experiment itself to inspect an organism or step its CPU.",
+        ),
+        SideTab::Config if state.is_playback() => widgets::empty_state(
+            ui,
+            egui_material_icons::icons::ICON_TUNE,
+            "A playback has no settings",
+            "The recorded run's settings are not part of the recording, and nothing \
+             here can change them.",
+        ),
         SideTab::Organism => inspector::show(ui, state),
         SideTab::Config => config::show(ui, state),
         tab => {

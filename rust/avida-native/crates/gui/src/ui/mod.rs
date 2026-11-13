@@ -11,6 +11,7 @@ pub mod legend;
 pub mod log_panel;
 pub mod map;
 pub mod overlays;
+pub mod playback;
 pub mod side;
 pub mod start;
 pub mod stats;

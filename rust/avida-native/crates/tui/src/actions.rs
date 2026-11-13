@@ -135,6 +135,11 @@ pub enum Action {
     Quit,
     QuitNow,
     Redraw,
+    /// Playback: ten records back, ten forward, the first, the last.
+    SeekBack,
+    SeekForward,
+    SeekFirst,
+    SeekLast,
 }
 
 /// One row of the table.
@@ -230,6 +235,42 @@ pub static BINDINGS: &[Binding] = &[
         G,
         true,
         "",
+    ),
+    row(
+        Action::SeekBack,
+        "Playback",
+        "Back ten frames (a playback: , is one frame back)",
+        &[c('{')],
+        G,
+        true,
+        "seek rewind recording replay",
+    ),
+    row(
+        Action::SeekForward,
+        "Playback",
+        "Forward ten frames (a playback: . is one frame forward)",
+        &[c('}')],
+        G,
+        true,
+        "seek forward recording replay",
+    ),
+    row(
+        Action::SeekFirst,
+        "Playback",
+        "First frame of the recording",
+        &[c('<')],
+        G,
+        true,
+        "seek start beginning recording replay",
+    ),
+    row(
+        Action::SeekLast,
+        "Playback",
+        "Last frame of the recording",
+        &[c('>')],
+        G,
+        true,
+        "seek end recording replay",
     ),
     row(
         Action::Faster,

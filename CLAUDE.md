@@ -75,7 +75,8 @@ The `rust-migration-*.md` files at the repository root record the FFI migration 
 
 ## Current state (2026-11-12)
 
-- 17 crates, about 189K lines of Rust: `apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `systematics`, `resources`, `hardware`, `script`, `analyze`, `world`, `avida` (binary), `viewmodel`, `session`, `gui`, `tui`.
+- 17 crates, about 200K lines of Rust: `apto`, `config`, `genome`, `tasks`, `environment`, `phenotype`, `systematics`, `resources`, `hardware`, `script`, `analyze`, `world`, `avida` (binary), `viewmodel`, `session`, `gui`, `tui`.
+- Arena recording and playback: `avida-rec` (headless), `--record` and `--play` on the GUI and TUI (`ARCHITECTURE.md`, "Recording and playback").
 - All five hardware types, all 423 distinct actions, analyze mode (batch, interactive, multi-core), demes, parasites, predator/prey, gene transfer, the energy model.
 - Suite: 85 byte-identical, 34 fail the same way the C++ does, none differs.
 - Default run (3000 updates, seed 42): about 47 s in exact mode against 57–64 s for the C++; 18 s in parallel mode on four threads. With gene transfer on: 35 s against 42 s.

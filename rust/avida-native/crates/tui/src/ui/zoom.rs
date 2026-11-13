@@ -20,6 +20,9 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     };
     let Some(org) = frame.inspect.as_ref() else {
         let text = match (app.selection, app.world_size()) {
+            _ if app.playback.is_some() => {
+                " Organisms are not recorded: a playback shows the map, the charts and the genotype table, but no CPU. Run the experiment itself to inspect one.".to_string()
+            }
             (Some(c), Some((w, _))) => format!(
                 " Cell ({},{}) is empty. Move the cursor (arrows, hjkl) or press C for the next organism.",
                 c as usize % w,

@@ -36,9 +36,9 @@ leaf layer has to share.
 | `analyze` | command loop, batches, landscapes and the test-CPU commands on the real test CPU; `run_analyze` is the entry point |
 | `avida` binary | population runs and analyze mode |
 | `viewmodel` | read-only, toolkit-free snapshots of a `World` for front ends (`capture`), palettes, legends, histograms |
-| `session` | owns a `World` on a simulation thread for the front ends: commands in, snapshots out, speed control, the debugger (breakpoints, `StopWhen`), bounded `shutdown` (`Drop` waits at most 2 s, then detaches the thread) |
-| `gui` (`avida-gui`) | the egui/eframe desktop application: map, charts, organism and debugger views, New experiment, CSV/PNG export |
-| `tui` (`avida-tui`) | the ratatui terminal interface on the same `session` and `viewmodel` layers; pty-tested for signals, hang-up and terminal restoration |
+| `session` | owns a `World` on a simulation thread for the front ends: commands in, snapshots out, speed control, the debugger (breakpoints, `StopWhen`), bounded `shutdown` (`Drop` waits at most 2 s, then detaches the thread). Also records the arena to a file (`recording`, `Command::Record`), plays a recording back through the same `Session` handle (`Session::play`), and ships the headless recorder `avida-rec` (see "Recording and playback") |
+| `gui` (`avida-gui`) | the egui/eframe desktop application: map, charts, organism and debugger views, New experiment, CSV/PNG export; `--play FILE` plays a recording, `--record FILE` records the run |
+| `tui` (`avida-tui`) | the ratatui terminal interface on the same `session` and `viewmodel` layers; pty-tested for signals, hang-up and terminal restoration; `--play FILE` and `--record FILE` as in the GUI |
 
 Whole-suite comparison against the C++ binary (`avida-core/tests`: 122 test directories, of which the 121 with a `test_list` are run, `string_producing_and_donating` has none; 84 run to a zero exit in C++): 85 are byte-identical (those 84 and `analyze_resize_max_batches`, whose exit code 1 the port reproduces; ignoring timestamps, the time-based seed and the data-directory path), 34 more fail the same way the C++ does, none differs (`collect_specification_analyze` prints -1 for the collect-specification counts as the FFI-migrated reference binary does, whose `last_collect_spec_counts` stays empty), 1 stops on a named unported feature (`SLICING_METHOD 4`, on which the C++ crashes), and for 1 (`_mutn_rate`) the reference binary times out. `crates/avida/tests/consistency.rs` pins the matching ones that have checked-in `expected/` output; `crates/avida/tests/stepper.rs` pins that pausing at arbitrary slice boundaries does not change a run.
 
@@ -436,6 +436,100 @@ parallel gather for `update_organism_stats`, output written off the main
 thread, fewer rounds per update (after the first, a round advances only a
 few dozen organisms past one world instruction each), and the main thread taking
 part in the pool instead of waiting on it.
+
+## Recording and playback (2026-11-13)
+
+A run can be recorded to a file of `Frame` snapshots and played back in
+`avida-gui` and `avida-tui`. The user page is `docs/guides/how-to-record-and-replay.md`;
+the format is documented in `crates/session/src/recording.rs`.
+
+### Layering
+
+- `viewmodel` is unchanged: a recorded frame is the `Frame` that `capture`
+  makes for a subscription of every layer (or the layers asked for).
+- `session` holds all of it: `recording` (format, `RecordingWriter`,
+  `Recording` reader), `playback` (the player thread), `cli` (the
+  `--record*` options shared by the programs) and the `avida-rec` binary.
+  The `avida` binary does not depend on any of it.
+- Recording is a command of the simulation thread: `Command::Record(RecordSpec)`,
+  `StopRecording`, `RecordNow`. Frames are appended in `Sim::end` (an update
+  that ends at a multiple of the interval) and when the run finishes, always
+  between updates, always through the read-only `capture`. The determinism
+  test `tests/recording.rs` pins that a recorded run writes the data files
+  of an unrecorded one. `Session::recording_status` reports frames, bytes and
+  the time spent capturing and writing.
+- Playback is a `Session` whose thread is the player (`Session::play`,
+  `play_with_wake`) instead of a world. The front ends keep one handle:
+  `latest_frame`, `drain_rows` (with `drain_rows_reset`, which says that a seek
+  backwards restarts the chart's rows), `status`, `setup`, `drain_events` and
+  `send`. `Run`, `Pause`, `StepUpdate` (next frame), `StepSlice` (previous
+  frame), `RunToUpdate` (seek to the frame at or before the update),
+  `SeekFrame` and `SetSpeed` (updates of the recorded run per second) work;
+  a `Subscribe` is ignored (the frames have the recorded layers); the commands
+  that need a world answer with an `Error` event. `Session::playback_info`
+  says where the playback stands and is `None` for a simulation.
+- The front ends add a playback bar (GUI) or header, footer and keys (TUI),
+  and refuse what needs a world with a message. `--play FILE` opens a
+  recording; `--record FILE [--record-every N] [--record-layers LIST]
+  [--record-top N]` records the run.
+
+### Format (version 1)
+
+All integers little-endian. `"AVIDAREC" version:u32 header_len:u32 header`
+then records, each `body_len:u32 update:i32 row_len:u32 row frame_raw_len:u32 frame`
+where `row` is the zlib-compressed `UpdateRow` and `frame` the zlib-compressed
+rest of the frame: world-level flags, the map (genotype ids, every recorded
+layer, task bits, top genotypes and their counts, the ancestry families), the
+dominant genotype, the genotype table and the environment. The header holds
+what does not change: world size, seed, instruction names, the recorded layer
+list, the interval, the `avida` arguments. Every record is independently
+decodable, so a killed run leaves a readable file; the reader indexes the
+records with one scan that reads eight bytes per record, no trailer, and
+`Recording::refresh` picks up records appended later. Unknown versions are
+rejected with their number; truncated or damaged data is an error value, never
+a panic (a cut file opens up to its last complete record, `Recording::tail`
+says what follows).
+
+Not recorded: the inspected organism, the lineage list, and
+`MapFrame::genotype_cells` (derived from the genotype ids when a record is read,
+which saved a fifth of the file). Per-cell arrays are stored plane by plane
+(all first bytes, then all second bytes, ...) before compression, which turns
+`f32` and `i32` arrays into long runs. The compressor is zlib from the pure Rust
+`miniz_oxide` (level 6): no `unsafe`, no C toolchain, an Adler-32 per record, and
+already in the build through the PNG code. Raising the level from 3 to 6 to 9
+took a 60 x 60 frame from 43.6 to 42.7 to 42.4 KB of layers; `lz4_flex` (no
+entropy coding) and `ruzstd` (a compressor that is weaker than DEFLATE at its
+highest levels) were not measured, since compression is 3 to 20 ms of a frame
+that takes 10 to 35 ms to capture and write.
+
+### Size and cost (stock configuration, seed 42, every layer, a frame every 50 updates)
+
+| World | Updates | Frames | File | Per frame |
+|---|---|---|---|---|
+| 60 x 60, exact | 3000 | 61 | 2.9 MiB | 49 KB (13.5 bytes per cell) |
+| 120 x 120, parallel (4 threads) | 1500 | 31 | 3.3 MiB | 109 KB |
+| 160 x 160, parallel (4 threads) | 1500 | 31 | 4.3 MiB | 142 KB |
+
+The per-cell cost rises as the world fills and diversifies; the full 60 x 60
+world is the better guide. Four layers (genotype, ancestry, fitness, age) take
+about 70 % of the all-layer size and genotype with ancestry 40 % (60 x 60, 1500
+updates), so `--record-every` is the lever that matters: 6000 frames of a full 160 x 160 world (every 50 updates for 300,000)
+come to about 2 GB with every layer. Capturing, compressing and writing a frame
+took 10 ms (60 x 60) to 35 ms (160 x 160), 1 to 3 % of the run.
+
+### Limits
+
+- A playback cannot inspect an organism, debug, restart, save the population
+  or change settings; only the recorded layers are on offer; charts have one
+  point per recorded frame.
+- A frame is built in memory before it is compressed (a few MB at 160 x 160),
+  and a playback decodes one frame at a time; the index is 16 bytes per record.
+- A recording is not appended to by a later run and is not cut or merged by any
+  tool here. A restart inside a recording session ends the recording.
+- There is no live follow mode: a playback sees records appended since it opened
+  when it is next asked to run or step past its last frame.
+- Nobody has looked at the playback screens in a real window or terminal; they
+  were checked in the offscreen GUI harness and the TUI's test terminal.
 
 ## Config flags not yet ported
 

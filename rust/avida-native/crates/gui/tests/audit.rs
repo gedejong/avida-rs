@@ -186,6 +186,7 @@ fn a_failed_run_in_both_themes_and_sizes() {
         StartupArgs {
             dir: Some(dir),
             avida_args: Vec::new(),
+            ..Default::default()
         },
         SIZES[0].1,
     );

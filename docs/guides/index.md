@@ -10,6 +10,7 @@ Two kinds of pages live here: short how-to pages for common jobs, and nine tutor
 - [Things that surprise people (quirks)](quirks.md)
 - [Hand-written programs for the nine logic tasks](hand-written-logic-programs.md)
 - [Draw a flame graph of genetic diversity](how-to-flame-graph.md), with a note on profiling the program itself
+- [Record an experiment and play it back](how-to-record-and-replay.md) in the desktop or terminal viewer
 
 ## Tutorials
 

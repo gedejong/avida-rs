@@ -20,9 +20,16 @@ OPTIONS (before CONFIG_DIR):
     --theme NAME    auto (default), dark or light: the terminal background
                     the colours are chosen for. auto reads AVIDA_TUI_THEME,
                     then COLORFGBG, and assumes dark
+    --play FILE     play back a recording made with --record or avida-rec,
+                    instead of running a simulation
+    --record FILE   record the run to FILE
+    --record-every N, --record-layers LIST, --record-top N
+                    what and how often to record (default: every layer, every
+                    100 updates)
     --help          show this text
     --version       show the version
 
+In a playback , and . step one frame, { and } ten, < and > go to the ends.
 Press ? inside for the key list and : (or Ctrl-P) for the command palette.
 Space runs and pauses, . steps one update, M S G T Z U E H D F O switch
 screens (U is the organism debugger, F the configuration), q quits.
@@ -35,6 +42,10 @@ pub struct Cli {
     pub args: Vec<String>,
     pub colors: Option<ColorMode>,
     pub theme: Option<Background>,
+    /// `--play FILE`: show this recording instead of running a world.
+    pub play: Option<PathBuf>,
+    /// `--record FILE ...`: record the run.
+    pub record: Option<avida_session::RecordSpec>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -47,6 +58,19 @@ pub enum Parsed {
 
 /// Parses the arguments after the program name.
 pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
+    let mut args: Vec<String> = args.into_iter().collect();
+    // The recording options may stand anywhere before CONFIG_DIR; they are
+    // taken out first so that the rest reads as before.
+    let (play, record) = match (
+        avida_session::cli::take_option(&mut args, "--play"),
+        avida_session::cli::take_record_options(&mut args),
+    ) {
+        (Ok(p), Ok(r)) => (p.map(PathBuf::from), r),
+        (Err(e), _) | (_, Err(e)) => return Parsed::Error(e),
+    };
+    if play.is_some() && record.is_some() {
+        return Parsed::Error("--play and --record cannot be combined".into());
+    }
     let mut it = args.into_iter().peekable();
     let mut colors = None;
     let mut theme = None;
@@ -103,6 +127,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
         args: it.collect(),
         colors,
         theme,
+        play,
+        record,
     })
 }
 
@@ -195,6 +221,27 @@ mod tests {
         assert_eq!(c.theme, Some(Background::Dark));
         assert_eq!(c.colors, Some(ColorMode::Ansi16));
         assert!(matches!(p(&["--theme=blue"]), Parsed::Error(_)));
+    }
+
+    #[test]
+    fn play_and_record_options() {
+        let Parsed::Run(c) = p(&["--play", "run.rec", "--colors", "16"]) else {
+            panic!()
+        };
+        assert_eq!(c.play, Some(PathBuf::from("run.rec")));
+        assert!(c.record.is_none());
+        let Parsed::Run(c) = p(&["--record", "x.rec", "--record-every", "25", "/", "-s", "7"])
+        else {
+            panic!()
+        };
+        assert_eq!(c.record.as_ref().map(|r| r.every), Some(25));
+        assert_eq!(c.work_dir, PathBuf::from("/"));
+        assert_eq!(c.args, ["-s", "7"]);
+        assert!(matches!(
+            p(&["--play", "a", "--record", "b"]),
+            Parsed::Error(_)
+        ));
+        assert!(matches!(p(&["--play"]), Parsed::Error(_)));
     }
 
     #[test]

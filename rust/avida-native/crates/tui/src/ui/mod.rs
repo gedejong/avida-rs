@@ -149,6 +149,12 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
     // has not started.
     let (text, fg, bg) = if app.status.is_none() && app.frame.is_none() && app.fatal.is_none() {
         (" STARTING ", Color::Black, Color::Gray)
+    } else if app.playback.is_some() {
+        if app.run_state() == RunState::Running {
+            (" PLAYING ", Color::Black, Color::Green)
+        } else {
+            (" PLAYBACK ", Color::Black, Color::Cyan)
+        }
     } else {
         badge(app.run_state())
     };
@@ -158,7 +164,10 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
     // narrow the highest number goes first, and the update never does.
     let mut items: Vec<(u8, Span)> = Vec::new();
     if let Some(u) = app.current_update() {
-        let s = format!("update {}", u.max(0));
+        let s = match &app.playback {
+            Some(p) => format!("update {}/{}", u.max(0), p.last_update.max(0)),
+            None => format!("update {}", u.max(0)),
+        };
         items.push((
             0,
             Span::styled(s, Style::new().add_modifier(Modifier::BOLD)),
@@ -167,6 +176,26 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
             items.push((
                 5,
                 Span::styled(format!(" (slice {done}/{total})"), Style::new()),
+            ));
+        }
+    }
+    if let Some(p) = &app.playback {
+        items.push((
+            1,
+            Span::styled(
+                format!("  frame {}/{}", p.index + 1, p.frames),
+                Style::new(),
+            ),
+        ));
+    }
+    if let Some(r) = &app.recording {
+        if r.active {
+            items.push((
+                1,
+                Span::styled(
+                    format!("  REC {} frames", r.frames),
+                    Style::new().fg(hue(Hue::Red)),
+                ),
             ));
         }
     }
@@ -435,10 +464,34 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
         );
         return;
     }
+    if let Some(p) = &app.playback {
+        f.render_widget(Paragraph::new(scrub_line(p, w)), area);
+        return;
+    }
     f.render_widget(
         Paragraph::new(Line::from(hint_spans(app.screen, app.can_advance(), w))),
         area,
     );
+}
+
+/// The footer of a playback: where the frame on show sits in the
+/// recording, and the keys that move it.
+pub fn scrub_line(p: &avida_session::PlaybackInfo, width: usize) -> String {
+    let keys = " , . step  { } 10  < > ends  Space play  ? help";
+    let label = format!(" frame {}/{} ", p.index + 1, p.frames);
+    let bar_w = width
+        .saturating_sub(label.chars().count() + keys.chars().count() + 2)
+        .clamp(8, 40);
+    let last = p.frames.saturating_sub(1).max(1);
+    let at = (p.index * (bar_w - 1)) / last;
+    let bar: String = (0..bar_w)
+        .map(|i| match i.cmp(&at) {
+            std::cmp::Ordering::Less => '=',
+            std::cmp::Ordering::Equal => '#',
+            std::cmp::Ordering::Greater => '-',
+        })
+        .collect();
+    trunc(&format!("[{bar}]{label}{keys}"), width)
 }
 
 /// What a screen says before the simulation has published its first view.

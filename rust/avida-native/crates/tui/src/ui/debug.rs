@@ -29,6 +29,9 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     }
     if app.debugger.current.is_none() {
         let text = match (app.selection, app.world_size()) {
+            _ if app.playback.is_some() => {
+                " The debugger needs a simulation: a playback has no organisms to step. Run the experiment itself to debug one.".to_string()
+            }
             (Some(c), Some((w, _))) => format!(
                 " Cell ({},{}) is empty. Press Esc, move the cursor to an organism and press Enter (or C for the next one).",
                 c as usize % w,

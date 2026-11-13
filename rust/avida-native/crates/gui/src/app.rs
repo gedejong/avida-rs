@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::sync::{Arc, Mutex};
 
-use avida_session::{Command, Session, SessionConfig};
+use avida_session::{Command, RecordSpec, Session, SessionConfig};
 use egui::{
     ColorImage, Frame, Key, Margin, Modifiers, Panel, TextureHandle, TextureOptions,
     ViewportCommand,
@@ -40,6 +40,8 @@ pub struct AvidaApp {
     opening: Option<Receiver<Result<Session, String>>>,
     /// Arguments from the command line, passed to every world opened.
     avida_args: Vec<String>,
+    /// `--record FILE`: recording to start in the next session opened.
+    pending_record: Option<RecordSpec>,
     /// The start screen's path field.
     path_input: String,
     map_texture: Option<TextureHandle>,
@@ -107,6 +109,7 @@ impl AvidaApp {
             session: None,
             opening: None,
             avida_args: startup.avida_args,
+            pending_record: startup.record,
             path_input: String::new(),
             map_texture: None,
             map_image: None,
@@ -120,7 +123,10 @@ impl AvidaApp {
             exports: Vec::new(),
             chart_shot: None,
         };
-        if let Some(dir) = startup.dir {
+        if let Some(file) = startup.play {
+            app.pending_record = None;
+            app.open_playback(file);
+        } else if let Some(dir) = startup.dir {
             app.open(dir);
         }
         app
@@ -205,18 +211,44 @@ impl AvidaApp {
         self.series.clear();
         self.last_generation = 0;
 
-        let (tx, rx) = mpsc::channel();
-        let ctx = self.ctx.clone();
         let config = SessionConfig {
             work_dir: dir,
             args,
         };
+        self.spawn_opening(move |wake| Session::spawn_with_wake(config, wake));
+    }
+
+    /// Opens a recording (`--play FILE`, or a `.avrec` file dropped on the
+    /// window) instead of a world.
+    pub fn open_playback(&mut self, file: PathBuf) {
+        self.session = None;
+        self.opening = None;
+        let file = std::path::absolute(&file).unwrap_or(file);
+        self.state.begin_opening(Experiment {
+            dir: file.clone(),
+            args: Vec::new(),
+            update_limit: None,
+        });
+        self.map_texture = None;
+        self.map_image = None;
+        self.series.clear();
+        self.last_generation = 0;
+        self.spawn_opening(move |wake| Session::play_with_wake(&file, wake));
+    }
+
+    /// Builds a session on a helper thread (the UI thread never waits for
+    /// it) and waits for it in [`AvidaApp::pump`].
+    fn spawn_opening(
+        &mut self,
+        open: impl FnOnce(avida_session::WakeFn) -> Result<Session, String> + Send + 'static,
+    ) {
+        let (tx, rx) = mpsc::channel();
+        let ctx = self.ctx.clone();
         let spawned = std::thread::Builder::new()
             .name("avida-open".into())
             .spawn(move || {
                 let wake_ctx = ctx.clone();
-                let result =
-                    Session::spawn_with_wake(config, Box::new(move || wake_ctx.request_repaint()));
+                let result = open(Box::new(move || wake_ctx.request_repaint()));
                 let _ = tx.send(result);
                 ctx.request_repaint();
             });
@@ -285,9 +317,16 @@ impl AvidaApp {
             match rx.try_recv() {
                 Ok(Ok(session)) => {
                     let setup = session.setup();
+                    if let Some(spec) = self.pending_record.take() {
+                        session.send(Command::Record(spec));
+                    }
                     self.session = Some(session);
                     self.opening = None;
-                    if let Some(e) = &self.state.experiment {
+                    // The recent list holds experiment folders, not recordings.
+                    if let (Some(e), None) = (
+                        &self.state.experiment,
+                        self.session.as_ref().and_then(Session::playback_info),
+                    ) {
                         let dir = e.dir.clone();
                         self.settings.remember(&dir);
                     }
@@ -308,7 +347,7 @@ impl AvidaApp {
         }
         if let Some(session) = &self.session {
             let events = session.drain_events();
-            let mut rows = session.drain_rows();
+            let (rows_reset, mut rows) = session.drain_rows_reset();
             // The rows of the updates before a failure come first, so the
             // failure's context starts after the last finished update.
             if events
@@ -318,6 +357,9 @@ impl AvidaApp {
                 self.state.apply_rows(std::mem::take(&mut rows));
             }
             self.state.apply_events(events);
+            if rows_reset {
+                self.state.rows_reset();
+            }
             if self.state.take_run_reset() {
                 // The session restarted: charts and the map belong to the
                 // old run.
@@ -334,6 +376,8 @@ impl AvidaApp {
                 self.last_generation = generation;
             }
             self.state.apply_status(session.status());
+            self.state.apply_playback(session.playback_info());
+            self.state.apply_recording(session.recording_status());
             self.state.exit_code = session.exit_code();
         }
         self.exports.retain(|job| match job.done.try_recv() {
@@ -804,7 +848,12 @@ impl AvidaApp {
                     .collect::<Vec<_>>(),
             )
         });
-        if let Some(path) = dropped.first() {
+        if let Some(path) = dropped
+            .first()
+            .filter(|p| p.is_file() && p.extension().is_some_and(|e| e == "avrec"))
+        {
+            self.open_playback(path.clone());
+        } else if let Some(path) = dropped.first() {
             match dropped_folder(path) {
                 Some(dir) => self.state.request(Request::Open(dir)),
                 None => self.state.toast(
@@ -842,6 +891,16 @@ impl AvidaApp {
             .show(ui, |ui| {
                 top_bar::show(ui, &mut self.state, &mut self.settings)
             });
+        if self.state.is_playback() {
+            Panel::top("playback-bar")
+                .exact_size(crate::ui::playback::HEIGHT)
+                .frame(
+                    Frame::new()
+                        .fill(t.surface)
+                        .inner_margin(Margin::symmetric(14, 0)),
+                )
+                .show(ui, |ui| crate::ui::playback::show(ui, &mut self.state));
+        }
         Panel::bottom("status-bar")
             .exact_size(28.0)
             .frame(

@@ -19,6 +19,27 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         );
         return;
     };
+    if app.playback.is_some() {
+        let mut lines = vec![
+            " A playback has no settings to show or change.".to_string(),
+            String::new(),
+            " The recorded run was started with these avida arguments:".to_string(),
+            format!(
+                "   {}",
+                if setup.args.is_empty() {
+                    "(none)".to_string()
+                } else {
+                    setup.args.join(" ")
+                }
+            ),
+        ];
+        if let Some(p) = &app.playback {
+            lines.push(String::new());
+            lines.push(format!(" Recording: {}", p.path.display()));
+        }
+        f.render_widget(Paragraph::new(lines.join("\n")).style(DIM), area);
+        return;
+    }
     let vis = app.config.visible(&setup);
     let n = vis.len();
     if n > 0 {

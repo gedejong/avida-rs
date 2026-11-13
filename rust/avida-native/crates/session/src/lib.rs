@@ -54,6 +54,27 @@
 //! reads), and, on [`Command::SavePopulation`] only, through
 //! [`World::save_population`], which writes a file but changes no state.
 //!
+//! # Recording and playback
+//!
+//! [`Command::Record`] makes the simulation thread append a [`Frame`] to a
+//! file whenever an update ends at a multiple of the chosen interval (and
+//! when the run finishes), captured between updates with a subscription of
+//! its own (every layer unless the [`RecordSpec`] lists some). Capturing is
+//! read-only, so a recorded run writes the data files an unrecorded one
+//! does (`tests/recording.rs` pins it). The file format, its size and its
+//! behaviour on truncated and corrupt files are in [`recording`]; the
+//! headless recorder is the `avida-rec` binary of this crate.
+//!
+//! [`Session::play`] opens such a file and returns a `Session` whose frames
+//! come from the file instead of a world, so a front end uses the handle it
+//! already has: `Run`, `Pause`, `StepUpdate` (next frame), `StepSlice`
+//! (previous frame), `RunToUpdate` and [`Command::SeekFrame`] (seek),
+//! `SetSpeed` (updates of the recorded run per second), frames, rows (those
+//! of the records up to the frame shown; [`Session::drain_rows_reset`] says
+//! when a seek backwards makes them start again), [`Session::playback_info`]
+//! and an [`ExperimentSetup`] with the recorded arguments and no settings.
+//! Commands that need a world are answered with an error event.
+//!
 //! # Diagnostics
 //!
 //! What the simulation crates print on their own (`error:` and `warning:`
@@ -76,6 +97,9 @@
 //! [`World::save_population`]: avida_world::world::World::save_population
 //! [`Stepper`]: avida_world::run::Stepper
 
+pub mod cli;
+mod playback;
+pub mod recording;
 mod sim;
 
 use std::path::PathBuf;
@@ -86,6 +110,7 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 
 pub use avida_viewmodel::{Frame, LayerId, Subscription, UpdateProgress, UpdateRow};
+pub use recording::{MapFrameCompare, Recording, RecordingError, RecordingWriter};
 
 /// Time slices run between two looks at the command channel.
 pub const SLICE_BATCH: usize = 1024;
@@ -181,8 +206,99 @@ pub enum Command {
     /// list carry over; the inspected cell, the lineage, following and any
     /// [`Command::RunUntil`] do not.
     Restart { args: Vec<String> },
+    /// Start recording the run to a file (see [`RecordSpec`] and the
+    /// [`recording`] module). Answered with [`SessionEvent::RecordingStarted`]
+    /// or an `Error`; a recording already under way is replaced.
+    Record(RecordSpec),
+    /// Stop recording; the file stays as written. Answered with
+    /// [`SessionEvent::RecordingStopped`].
+    StopRecording,
+    /// Append a frame to the recording now, if the run stands between
+    /// updates and the current update is not recorded yet. (Frames are
+    /// otherwise appended when an update ends at a multiple of the
+    /// interval, and when the run finishes.)
+    RecordNow,
+    /// Playback only: show record number `n` (0 is the first). Out of
+    /// range numbers are clamped. A simulation answers with an `Error`.
+    SeekFrame(usize),
     /// Stop the thread. [`Session`]'s `Drop` sends it.
     Shutdown,
+}
+
+/// What to record and how often ([`Command::Record`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordSpec {
+    /// The file to create (an existing one is replaced).
+    pub path: PathBuf,
+    /// Capture a frame whenever an update ends at a multiple of this many
+    /// updates (at least 1; [`DEFAULT_RECORD_EVERY`] by default).
+    pub every: u32,
+    /// The map layers to record; `None` for every layer the world has.
+    /// Layers the world does not have (a task or resource out of range)
+    /// are dropped; [`LayerId::Genotype`] is always recorded.
+    pub layers: Option<Vec<LayerId>>,
+    /// Genotypes in the table of each frame, most abundant first.
+    pub genotypes_top_n: usize,
+}
+
+/// The default capture interval of a recording, in updates.
+pub const DEFAULT_RECORD_EVERY: u32 = 100;
+
+/// The default length of the genotype table of a recorded frame (what the
+/// desktop front end lists).
+pub const DEFAULT_RECORD_TOP_N: usize = 100;
+
+impl RecordSpec {
+    /// Every layer, every [`DEFAULT_RECORD_EVERY`] updates.
+    pub fn new(path: impl Into<PathBuf>) -> RecordSpec {
+        RecordSpec {
+            path: path.into(),
+            every: DEFAULT_RECORD_EVERY,
+            layers: None,
+            genotypes_top_n: DEFAULT_RECORD_TOP_N,
+        }
+    }
+}
+
+/// How a recording is going ([`Session::recording_status`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordingStatus {
+    pub path: PathBuf,
+    pub every: u32,
+    /// Frames written.
+    pub frames: u64,
+    /// The file's size.
+    pub bytes: u64,
+    /// The update of the last frame written.
+    pub last_update: Option<i32>,
+    /// Wall-clock time the simulation thread has spent capturing,
+    /// compressing and writing frames: what recording costs the run.
+    pub time_spent: Duration,
+    /// Why the recording stopped on its own (a write failed).
+    pub error: Option<String>,
+    /// Whether frames are still being appended.
+    pub active: bool,
+}
+
+/// Where a playback session stands ([`Session::playback_info`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PlaybackInfo {
+    /// The recording being played.
+    pub path: PathBuf,
+    /// Complete records in it so far.
+    pub frames: usize,
+    /// The record on show (0-based).
+    pub index: usize,
+    /// The update of the record on show.
+    pub update: i32,
+    /// The updates of the first and the last record.
+    pub first_update: i32,
+    pub last_update: i32,
+    /// Bytes at the end of the file that are not a complete record (the
+    /// run was killed, or is still writing).
+    pub cut_tail_bytes: u64,
+    /// The recorded layers, for front ends that want to say what is there.
+    pub layers: Vec<LayerId>,
 }
 
 /// What a [`Command::RunUntil`] waits for.
@@ -330,6 +446,11 @@ pub enum SessionEvent {
     /// [`Command::Restart`] could not build a new world (the text `avida`
     /// would print); the old run goes on.
     RestartFailed(String),
+    /// A recording to this file has begun ([`Command::Record`]).
+    RecordingStarted(PathBuf),
+    /// The recording ended (asked for, replaced, or by a restart) with
+    /// this many frames and bytes; its file is complete.
+    RecordingStopped { frames: u64, bytes: u64 },
 }
 
 /// One setting of the effective configuration.
@@ -411,6 +532,10 @@ struct Shared {
     frame: Mutex<Option<Arc<Frame>>>,
     frame_generation: AtomicU64,
     rows: Mutex<Vec<UpdateRow>>,
+    /// Playback: the rows delivered before are void and `rows` holds the
+    /// whole history up to the frame shown. Set and cleared with the
+    /// `rows` lock held, so a reader sees the flag and the rows together.
+    rows_reset: AtomicBool,
     events: Mutex<Vec<SessionEvent>>,
     status: Mutex<Status>,
     /// Set once the world is built, replaced by a restart.
@@ -421,6 +546,10 @@ struct Shared {
     /// Set by the handle before it queues `Shutdown`: the thread then
     /// skips whatever commands are still queued ahead of it.
     stop: AtomicBool,
+    /// How the recording of this session is going, once one was started.
+    recording: Mutex<Option<RecordingStatus>>,
+    /// Set for a playback session.
+    playback: Mutex<Option<PlaybackInfo>>,
 }
 
 impl Shared {
@@ -429,6 +558,7 @@ impl Shared {
             frame: Mutex::new(None),
             frame_generation: AtomicU64::new(0),
             rows: Mutex::new(Vec::new()),
+            rows_reset: AtomicBool::new(false),
             events: Mutex::new(Vec::new()),
             status: Mutex::new(Status {
                 state: RunState::Paused,
@@ -443,6 +573,8 @@ impl Shared {
             setup: Mutex::new(None),
             exit_code: Mutex::new(None),
             stop: AtomicBool::new(false),
+            recording: Mutex::new(None),
+            playback: Mutex::new(None),
         }
     }
 }
@@ -516,6 +648,72 @@ impl Session {
         }
     }
 
+    /// Opens a recording for playback ([`Session::play_with_wake`]).
+    pub fn play(path: &std::path::Path) -> Result<Session, String> {
+        Session::start_player(path, None)
+    }
+
+    /// A session that plays back a recording instead of running a world.
+    /// It has the same handle: frames, rows, status and events, and the
+    /// commands `Run`, `Pause`, `StepUpdate` (next frame), `StepSlice`
+    /// (previous frame), `RunToUpdate` (seek), `SeekFrame` and `SetSpeed`;
+    /// the others are answered with an `Error` or, for a subscription,
+    /// ignored (a frame has the layers that were recorded). See
+    /// [`Session::playback_info`]. Returns once the file is open and its
+    /// first frame is published, or with the reason it cannot be played.
+    pub fn play_with_wake(path: &std::path::Path, wake: WakeFn) -> Result<Session, String> {
+        Session::start_player(path, Some(wake))
+    }
+
+    fn start_player(path: &std::path::Path, wake: Option<WakeFn>) -> Result<Session, String> {
+        let recording = Recording::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        if recording.is_empty() {
+            return Err(format!(
+                "{}: the recording holds no complete frame yet",
+                path.display()
+            ));
+        }
+        let (tx, rx) = mpsc::channel();
+        let (done_tx, done) = mpsc::channel::<()>();
+        let shared = Arc::new(Shared::new());
+        let thread_shared = Arc::clone(&shared);
+        let (ready_tx, ready_rx) = mpsc::sync_channel::<Result<(), String>>(1);
+        let thread = std::thread::Builder::new()
+            .name("avida-playback".to_string())
+            .spawn(move || {
+                let _done = done_tx;
+                playback::thread_main(recording, rx, thread_shared, wake, ready_tx);
+            })
+            .map_err(|e| format!("cannot start the playback thread: {e}"))?;
+        match ready_rx.recv() {
+            Ok(Ok(())) => Ok(Session {
+                tx,
+                shared,
+                thread: Some(thread),
+                done: Mutex::new(done),
+            }),
+            Ok(Err(e)) => {
+                let _ = thread.join();
+                Err(e)
+            }
+            Err(_) => {
+                let _ = thread.join();
+                Err("the playback thread stopped while opening the recording".to_string())
+            }
+        }
+    }
+
+    /// `Some` for a session that plays a recording.
+    pub fn playback_info(&self) -> Option<PlaybackInfo> {
+        lock(&self.shared.playback).clone()
+    }
+
+    /// The recording of a simulation, once [`Command::Record`] has been
+    /// carried out.
+    pub fn recording_status(&self) -> Option<RecordingStatus> {
+        lock(&self.shared.recording).clone()
+    }
+
     /// Queues a command. Returns `false` if the simulation thread is gone.
     pub fn send(&self, command: Command) -> bool {
         self.tx.send(command).is_ok()
@@ -535,6 +733,16 @@ impl Session {
     /// The rows of the updates finished since the last call, in order.
     pub fn drain_rows(&self) -> Vec<UpdateRow> {
         std::mem::take(&mut *lock(&self.shared.rows))
+    }
+
+    /// [`Session::drain_rows`], and whether the rows delivered before are
+    /// void: in a playback, a seek backwards (or a replay) restarts the
+    /// history, and the rows returned are all of it up to the frame now
+    /// shown. A simulation never says so.
+    pub fn drain_rows_reset(&self) -> (bool, Vec<UpdateRow>) {
+        let mut rows = lock(&self.shared.rows);
+        let reset = self.shared.rows_reset.swap(false, Ordering::AcqRel);
+        (reset, std::mem::take(&mut *rows))
     }
 
     /// The events since the last call, in order.

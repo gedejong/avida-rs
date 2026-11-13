@@ -73,6 +73,7 @@ fn frame_costs_on_a_300_by_300_world() {
             avida_args: ["-set", "WORLD_X", "300", "-set", "WORLD_Y", "300"]
                 .map(String::from)
                 .to_vec(),
+            ..Default::default()
         },
         vec2(1440.0, 900.0),
     );

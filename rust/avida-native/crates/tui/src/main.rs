@@ -45,13 +45,20 @@ fn main() -> ExitCode {
 
     // Build the world before taking over the terminal, so a configuration
     // error prints as ordinary text.
-    let mut driver = match Driver::start(cli.work_dir, cli.args, colors) {
+    let started = match &cli.play {
+        Some(path) => Driver::start_playback(path, colors),
+        None => Driver::start(cli.work_dir, cli.args, colors),
+    };
+    let mut driver = match started {
         Ok(d) => d,
         Err(e) => {
             eprintln!("{e}");
             return ExitCode::from(1);
         }
     };
+    if let Some(spec) = cli.record {
+        driver.record(spec);
+    }
     if !driver.catch_signals() {
         eprintln!("avida-tui: cannot install the signal handlers");
         return ExitCode::from(1);

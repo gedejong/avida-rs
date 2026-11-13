@@ -21,6 +21,22 @@ pub fn count(v: i64) -> String {
 
 /// A real number, compactly (`avida_viewmodel::format_number`), with
 /// separators for large whole values.
+/// A file size: `3.7 MiB`.
+pub fn bytes(b: u64) -> String {
+    const UNITS: [&str; 4] = ["B", "KiB", "MiB", "GiB"];
+    let mut v = b as f64;
+    let mut u = 0;
+    while v >= 1024.0 && u + 1 < UNITS.len() {
+        v /= 1024.0;
+        u += 1;
+    }
+    if u == 0 {
+        format!("{b} B")
+    } else {
+        format!("{v:.1} {}", UNITS[u])
+    }
+}
+
 pub fn real(v: f64) -> String {
     if v.is_finite() && v.fract() == 0.0 && v.abs() < 1e15 && v.abs() >= 1e4 {
         return count(v as i64);

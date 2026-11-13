@@ -15,17 +15,18 @@ use avida_config::cmdline::{
 use avida_config::config::{find_entry, Config};
 use avida_config::init_file::InitFile;
 use avida_viewmodel::{
-    capture_with_progress, find_organism, ip_positions, ip_sites, probe, update_row, OrgProbe,
-    Subscription, UpdateProgress,
+    all_layers, capture_with_progress, find_organism, ip_positions, ip_sites, probe, update_row,
+    LayerId, OrgProbe, Subscription, UpdateProgress,
 };
 use avida_world::births::Birth;
 use avida_world::run::{Stepper, WatchedStep};
 use avida_world::world::World;
 
+use crate::recording::{Meta, RecordingWriter};
 use crate::{
-    lock, Command, EventLine, ExperimentSetup, RunState, RunUntil, SessionConfig, SessionEvent,
-    Setting, Shared, Speed, Status, StopWhen, UntilOutcome, WakeFn, MIN_FRAME_INTERVAL,
-    SLICE_BATCH,
+    lock, Command, EventLine, ExperimentSetup, RecordSpec, RecordingStatus, RunState, RunUntil,
+    SessionConfig, SessionEvent, Setting, Shared, Speed, Status, StopWhen, UntilOutcome, WakeFn,
+    MIN_FRAME_INTERVAL, SLICE_BATCH,
 };
 
 /// The text of a panic payload.
@@ -298,6 +299,16 @@ struct Sim {
     until_ended: Option<UntilOutcome>,
     /// `FollowOffspring` is on.
     follow: bool,
+    /// The recording in progress.
+    recorder: Option<Recorder>,
+}
+
+/// A recording in progress: frames are captured between updates, with a
+/// subscription of its own, and appended to the file.
+struct Recorder {
+    writer: RecordingWriter,
+    every: i32,
+    sub: Subscription,
 }
 
 /// A `RunUntil` in progress.
@@ -334,6 +345,7 @@ impl Sim {
             until: None,
             until_ended: None,
             follow: false,
+            recorder: None,
         }
     }
 
@@ -430,6 +442,12 @@ impl Sim {
                 self.publish_status();
             }
             Command::Restart { args } => self.restart(args),
+            Command::Record(spec) => self.start_recording(spec),
+            Command::StopRecording => self.stop_recording(),
+            Command::RecordNow => self.record_now(),
+            Command::SeekFrame(_) => self.push_event(SessionEvent::Error(
+                "SeekFrame works in a playback of a recording, not in a simulation".to_string(),
+            )),
         }
         Flow::Continue
     }
@@ -441,6 +459,7 @@ impl Sim {
         // same files.
         self.forward_stdout_tail();
         self.world.out.flush_all();
+        self.stop_recording();
         let config = SessionConfig {
             work_dir: self.config.work_dir.clone(),
             args,
@@ -879,6 +898,7 @@ impl Sim {
         match r {
             Ok(row) => {
                 lock(&self.shared.rows).push(row);
+                self.record_frame(false);
                 // `Avida2Driver::Run` leaves its loop here when the
                 // population died out; `begin_update` would only say so.
                 if self.world.done {
@@ -890,6 +910,177 @@ impl Sim {
             Err(e) => {
                 self.enter_failed(e);
                 false
+            }
+        }
+    }
+
+    // --- recording --------------------------------------------------------
+
+    /// `Command::Record`: opens the file and writes its header. The frames
+    /// follow as updates end ([`Sim::record_frame`]).
+    fn start_recording(&mut self, spec: RecordSpec) {
+        if self.poisoned {
+            self.push_event(SessionEvent::Error(
+                "cannot record: a panic left the world in an unknown state".to_string(),
+            ));
+            return;
+        }
+        self.stop_recording();
+        let every = spec.every.max(1);
+        let all = all_layers(&self.world);
+        let mut layers: Vec<LayerId> = match &spec.layers {
+            None => all,
+            Some(want) => {
+                let mut v = vec![LayerId::Genotype];
+                v.extend(want.iter().copied().filter(|l| all.contains(l)));
+                v
+            }
+        };
+        let mut seen = Vec::new();
+        layers.retain(|l| {
+            let new = !seen.contains(l);
+            seen.push(*l);
+            new
+        });
+        let sub = Subscription {
+            layers,
+            inspect_cell: None,
+            genotypes_top_n: spec.genotypes_top_n,
+            lineage_of: None,
+        };
+        let (world, progress) = (&self.world, self.progress());
+        let first = match catch_unwind(AssertUnwindSafe(|| {
+            capture_with_progress(world, &sub, progress)
+        })) {
+            Ok(f) => f,
+            Err(p) => {
+                self.push_event(SessionEvent::Error(format!(
+                    "cannot record: capturing a frame panicked ({})",
+                    panic_message(p.as_ref())
+                )));
+                return;
+            }
+        };
+        let meta = Meta::for_frame(
+            &first,
+            every,
+            spec.genotypes_top_n,
+            self.config.args.clone(),
+            self.config.work_dir.display().to_string(),
+        );
+        match RecordingWriter::create(&spec.path, &meta) {
+            Ok(writer) => {
+                let path = std::path::absolute(&spec.path).unwrap_or(spec.path);
+                *lock(&self.shared.recording) = Some(RecordingStatus {
+                    path: path.clone(),
+                    every,
+                    frames: 0,
+                    bytes: writer.bytes(),
+                    last_update: None,
+                    time_spent: Duration::ZERO,
+                    error: None,
+                    active: true,
+                });
+                self.recorder = Some(Recorder {
+                    writer,
+                    every: i32::try_from(every).unwrap_or(i32::MAX),
+                    sub,
+                });
+                self.push_event(SessionEvent::RecordingStarted(path));
+            }
+            Err(e) => self.push_event(SessionEvent::Error(format!(
+                "cannot record to {}: {e}",
+                spec.path.display()
+            ))),
+        }
+    }
+
+    /// `Command::StopRecording`, and what a restart and a replaced
+    /// recording do: the file is complete as it stands.
+    fn stop_recording(&mut self) {
+        let Some(rec) = self.recorder.take() else {
+            return;
+        };
+        if let Some(status) = lock(&self.shared.recording).as_mut() {
+            status.active = false;
+        }
+        self.push_event(SessionEvent::RecordingStopped {
+            frames: rec.writer.frames(),
+            bytes: rec.writer.bytes(),
+        });
+    }
+
+    /// `Command::RecordNow`.
+    fn record_now(&mut self) {
+        if self.recorder.is_none() {
+            self.push_event(SessionEvent::Error(
+                "RecordNow: no recording is under way".to_string(),
+            ));
+        } else if self.stepper.in_update() {
+            self.push_event(SessionEvent::Error(
+                "RecordNow: frames are recorded between updates; finish the update first"
+                    .to_string(),
+            ));
+        } else {
+            self.record_frame(true);
+        }
+    }
+
+    /// Appends a frame to the recording when the world stands between
+    /// updates at a multiple of the interval, or `force`d (and the update
+    /// is not recorded yet). Capturing only reads the world, so a recorded
+    /// run computes what an unrecorded one does; a failure to write ends
+    /// the recording, not the run.
+    fn record_frame(&mut self, force: bool) {
+        if self.poisoned || self.stepper.in_update() {
+            return;
+        }
+        let Some(mut rec) = self.recorder.take() else {
+            return;
+        };
+        let update = self.world.stats.update();
+        let due = update >= 0
+            && rec.writer.last_update() != Some(update)
+            && (force || update % rec.every == 0);
+        if !due {
+            self.recorder = Some(rec);
+            return;
+        }
+        let began = Instant::now();
+        let world = &self.world;
+        let sub = &rec.sub;
+        let frame = catch_unwind(AssertUnwindSafe(|| {
+            capture_with_progress(world, sub, UpdateProgress::default())
+        }));
+        let result = match frame {
+            Ok(frame) => rec.writer.append(&frame).map_err(|e| e.to_string()),
+            Err(p) => Err(format!(
+                "capturing a frame panicked ({})",
+                panic_message(p.as_ref())
+            )),
+        };
+        let mut shared = lock(&self.shared.recording);
+        let status = shared.as_mut();
+        match result {
+            Ok(_) => {
+                if let Some(s) = status {
+                    s.time_spent += began.elapsed();
+                    s.frames = rec.writer.frames();
+                    s.bytes = rec.writer.bytes();
+                    s.last_update = rec.writer.last_update();
+                }
+                drop(shared);
+                self.recorder = Some(rec);
+            }
+            Err(e) => {
+                if let Some(s) = status {
+                    s.active = false;
+                    s.error = Some(e.clone());
+                }
+                drop(shared);
+                self.push_event(SessionEvent::Error(format!(
+                    "the recording stopped: {e}. The file holds the frames written before."
+                )));
             }
         }
     }
@@ -911,6 +1102,7 @@ impl Sim {
         self.end_until(UntilOutcome::RunOver);
         self.mode = RunState::Finished;
         self.run_to = None;
+        self.record_frame(true);
         *lock(&self.shared.exit_code) = Some(0);
         self.forward_stdout_tail();
         self.world.out.flush_all();
@@ -971,19 +1163,24 @@ impl Sim {
         *lock(&self.shared.status) = status;
     }
 
+    /// Where the run stands inside its update cycle.
+    fn progress(&self) -> UpdateProgress {
+        if self.stepper.in_update() {
+            let (done, total) = self.stepper.slice_progress();
+            UpdateProgress::inside(done, total)
+        } else {
+            UpdateProgress::default()
+        }
+    }
+
     /// Captures a frame for the current subscription. Capturing only reads
     /// the world, so a panic in it costs the subscription, not the run.
     fn publish_frame(&mut self) {
         if self.poisoned {
             return;
         }
+        let progress = self.progress();
         let (world, sub) = (&self.world, &self.sub);
-        let progress = if self.stepper.in_update() {
-            let (done, total) = self.stepper.slice_progress();
-            UpdateProgress::inside(done, total)
-        } else {
-            UpdateProgress::default()
-        };
         match catch_unwind(AssertUnwindSafe(|| {
             capture_with_progress(world, sub, progress)
         })) {

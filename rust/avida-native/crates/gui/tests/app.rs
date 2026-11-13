@@ -23,6 +23,7 @@ fn open_args(dir: &std::path::Path) -> StartupArgs {
     StartupArgs {
         dir: Some(dir.to_path_buf()),
         avida_args: Vec::new(),
+        ..Default::default()
     }
 }
 
@@ -30,6 +31,7 @@ fn open_with(dir: &Path, args: &[&str]) -> StartupArgs {
     StartupArgs {
         dir: Some(dir.to_path_buf()),
         avida_args: args.iter().map(|a| a.to_string()).collect(),
+        ..Default::default()
     }
 }
 
