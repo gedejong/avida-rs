@@ -60,6 +60,7 @@ use crate::head_cpu::HeadCpu;
 use crate::nhardware::*;
 use crate::org_interface::OrgInterface;
 use crate::organism::{do_output, print_status, transmission, OrgSource, OrgState};
+use crate::parallel::smt_parallel_ok;
 use avida_config::config::Config;
 use avida_environment::ContextPhenotype;
 use avida_genome::{CpuMemory, Genome, InstSet, Instruction, InstructionSequence};
@@ -248,6 +249,18 @@ pub struct HardwareTransSmt {
     pub(crate) cur_thread: i32,
     /// `m_cur_child`
     pub(crate) cur_child: i32,
+    /// `THREAD_SLICING_METHOD == 1` (every thread runs each step): such
+    /// organisms do not run bursts (`EXECUTION_MODE 1`, not in the C++).
+    pub(crate) thread_slicing_parallel: bool,
+    /// `ENERGY_ENABLED`: `pay_pre_costs` then reaches the world, so
+    /// these organisms do not run bursts either.
+    pub(crate) energy_enabled: bool,
+    /// The thread-choice draw of a burst step that stopped before an
+    /// instruction the world has to run: the step the world then runs
+    /// uses this draw instead of a new one, so that the choice of thread
+    /// does not depend on which instruction it landed on. Always `None`
+    /// in the exact mode.
+    pub(crate) pending_draw: Option<f64>,
 }
 
 impl std::fmt::Debug for HardwareTransSmt {
@@ -280,6 +293,9 @@ impl HardwareTransSmt {
             thread_lbls: BTreeMap::new(),
             cur_thread: 0,
             cur_child: 0,
+            thread_slicing_parallel: cfg.thread_slicing_method == 1,
+            energy_enabled: cfg.energy_enabled,
+            pending_draw: None,
         };
         org.hardware_reset_state(cfg);
         hw.base.reset_costs(cfg);
@@ -1090,6 +1106,121 @@ impl HardwareTransSmt {
         Ok(exec_success)
     }
 
+    /// One step of a burst in the parallel phase of `EXECUTION_MODE 1`
+    /// (not in the C++): `SingleProcess` for `THREAD_SLICING_METHOD 0`,
+    /// which runs the step only when it is organism-local, else changes
+    /// nothing but the pending thread-choice draw and answers `Ok(false)`
+    /// so that the world runs the step through the exact path.
+    ///
+    /// A step goes to the world when its instruction is not on
+    /// [`crate::parallel::SMT_PARALLEL_METHODS`], when it is the organism's last one
+    /// (`max_executed` reached: the death reaches the world), or when it
+    /// meets a state only the exact path reports as an error. Parasite
+    /// threads are no obstacle: threads, memory spaces and the parasite
+    /// list belong to the host organism, and the parasite's units are
+    /// only read. Time used and the debugger's cycle count advance as in
+    /// the exact step; the organism's own random stream serves the thread
+    /// choice, `PROB_FAIL` and the copy mutations.
+    pub(crate) fn burst_step(
+        &mut self,
+        org: &mut OrgState,
+        world: &mut dyn OrgInterface,
+    ) -> Result<bool, String> {
+        if org.phenotype.to_die
+            || (org.max_executed > 0 && org.phenotype.time_used.wrapping_add(1) >= org.max_executed)
+        {
+            return Ok(false);
+        }
+        let saved_thread = self.cur_thread;
+        self.cur_thread += 1;
+        let parasite_virulence = if self.threads.len() > 1 {
+            let Some(owner) = self.threads[1].owner.as_ref() else {
+                self.cur_thread = saved_thread;
+                return Ok(false);
+            };
+            if owner.source.transmission_type == transmission::HORIZONTAL {
+                if world.config().virulence_source == 2 {
+                    org.para_donate
+                } else {
+                    owner.virulence
+                }
+            } else {
+                world.config().parasite_virulence
+            }
+        } else {
+            world.config().parasite_virulence
+        };
+
+        let mut drawn = None;
+        if parasite_virulence != -1.0 && world.config().thread_slicing_method == 0 {
+            let prob_thread = match self.pending_draw.take() {
+                Some(p) => p,
+                None => world.rng().get_double(),
+            };
+            drawn = Some(prob_thread);
+            self.cur_thread = i32::from(prob_thread < parasite_virulence);
+        }
+        // Stop before the step: the world repeats it, with this draw.
+        macro_rules! to_world {
+            () => {{
+                self.cur_thread = saved_thread;
+                self.pending_draw = drawn;
+                return Ok(false);
+            }};
+        }
+
+        if self.cur_thread >= self.threads.len() as i32 {
+            self.cur_thread = 0;
+        }
+        if self.threads[self.cur_thread as usize].skip_execution {
+            self.cur_thread += 1;
+            if self.cur_thread >= self.threads.len() as i32 {
+                to_world!();
+            }
+        }
+
+        let ct = self.cur_thread as usize;
+        if self.threads[ct].running {
+            head_adjust(&self.mem_array, &mut self.threads[ct].heads[HEAD_IP]);
+            let cur_inst = self.ip_inst();
+            let op = cur_inst.op();
+            if op < 0 || op >= self.base.inst_set.size() {
+                to_world!();
+            }
+            if !smt_parallel_ok(self.base.inst_set.lib_function_index(cur_inst)) {
+                to_world!();
+            }
+        }
+
+        // From here on the step is this organism's alone.
+        org.set_running(true);
+        org.phenotype.inc_time_used(1);
+        org.phenotype.lifetime_cpu_cycles += 1;
+        self.base.burst_stepped = true;
+        if self.threads[ct].running {
+            self.threads[ct].advance_ip = true;
+            let cur_inst = self.ip_inst();
+            let mut exec = self.base.pay_pre_costs(org, world, cur_inst, ct);
+            if exec {
+                let prob_fail = self.base.inst_set.prob_fail(cur_inst);
+                if prob_fail > 0.0 {
+                    exec = !world.rng().p(prob_fail);
+                }
+                if exec && self.execute_inst(org, world, cur_inst)? {
+                    self.base.pay_post_res_costs(org, world, cur_inst);
+                    let t = self.cur_thread.max(0) as usize;
+                    self.base.set_post_cpu_costs(cur_inst, t);
+                }
+                let ct = self.ct();
+                if self.threads[ct].advance_ip {
+                    head_advance(&self.mem_array, &mut self.threads[ct].heads[HEAD_IP]);
+                }
+            }
+        }
+        org.set_running(false);
+        Ok(true)
+    }
+
     /// `m_tracer->TraceHardware(ctx, *this, bonus)`.
     fn trace(&self, org: &OrgState, world: &mut dyn OrgInterface, bonus: bool) {
         let Some(tracer) = self.base.tracer.clone() else {
@@ -1158,6 +1289,26 @@ impl Hardware for HardwareTransSmt {
         false
     }
 
+    /// Bursts of `EXECUTION_MODE 1` (see [`HardwareTransSmt::burst_step`]):
+    /// everything a step does besides its instruction stays in the
+    /// organism unless one of these is on (as for the heads CPU, plus the
+    /// energy model and `THREAD_SLICING_METHOD 1`).
+    fn parallel_capable(&self) -> bool {
+        let b = &self.base;
+        !self.thread_slicing_parallel
+            && !self.energy_enabled
+            && !b.has_energy_costs
+            && !b.implicit_repro_active
+            && !b.has_res_costs
+            && !b.has_fem_res_costs
+            && b.task_switching_cost == 0
+            && b.tracer.is_none()
+            && !b.minitrace
+            && !b.microtrace
+            && !b.topnavtrace
+            && !b.reprotrace
+    }
+
     fn reset(&mut self, org: &mut OrgState, world: &mut dyn OrgInterface) {
         self.full_reset(org, world);
     }
@@ -1173,7 +1324,13 @@ impl Hardware for HardwareTransSmt {
         speculative: bool,
     ) -> Result<bool, String> {
         if speculative {
-            return Ok(false);
+            // The exact mode never takes speculative steps of this
+            // hardware; the parallel phase takes them as bursts.
+            return if self.base.parallel_burst {
+                self.burst_step(org, world)
+            } else {
+                Ok(false)
+            };
         }
         org.set_running(true);
         org.phenotype.inc_time_used(1);
@@ -1206,7 +1363,10 @@ impl Hardware for HardwareTransSmt {
             };
 
             if parasite_virulence != -1.0 && world.config().thread_slicing_method == 0 {
-                let prob_thread = world.rng().get_double();
+                let prob_thread = match self.pending_draw.take() {
+                    Some(p) => p,
+                    None => world.rng().get_double(),
+                };
                 self.cur_thread = 0;
                 if prob_thread < parasite_virulence {
                     self.cur_thread = 1;

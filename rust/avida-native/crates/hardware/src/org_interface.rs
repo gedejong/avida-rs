@@ -237,6 +237,12 @@ pub trait OrgInterface: WorldServices {
     // World services beyond construction
     // ------------------------------------------------------------------
 
+    /// The data an output test needs when it can run inside a burst of the
+    /// parallel execution mode, see [`crate::local_output`]; `None` (the
+    /// default, and always outside a burst) for the world's own path.
+    fn local_output(&mut self) -> Option<crate::local_output::LocalOutput<'_>> {
+        None
+    }
     /// Split borrow for `cOrganism::doOutput` (see [`OutputServices`]).
     fn output_services(&mut self) -> OutputServices<'_>;
     /// A deadly or predatory gradient resource hit the running organism

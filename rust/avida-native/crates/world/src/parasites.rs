@@ -133,12 +133,21 @@ pub struct ParasiteState {
     /// Groups of parasite units that died and have not yet left them, in
     /// order of death.
     deaths: Arc<DeathQueue>,
+    /// Whether any parasite unit was ever made (units are the only thing
+    /// whose drop touches the world's state).
+    made_units: AtomicBool,
 }
 
 impl ParasiteState {
+    /// Whether a parasite unit was ever made in this world.
+    pub fn made_units(&self) -> bool {
+        self.made_units.load(Ordering::Relaxed)
+    }
+
     /// `new cParasite(world, genome, parent_generation, Source(HORIZONTAL,
     /// label))` with its virulence set.
     pub fn new_unit(&self, genome: Genome, label: &str, virulence: f64) -> Arc<ParasiteUnit> {
+        self.made_units.store(true, Ordering::Relaxed);
         Arc::new(ParasiteUnit {
             genome: genome.representation().clone(),
             source: OrgSource::new(transmission::HORIZONTAL, label, false),
@@ -380,10 +389,16 @@ impl World {
             mut state,
             hardware,
         } = *org;
-        drop(hardware);
-        state.clear_parasites();
-        drop(state);
-        self.flush_parasite_deaths();
+        if self.pop.defer_drops && !self.pop.parasites.made_units() {
+            // Nothing in the organism can reach the world when it is freed:
+            // the parallel mode frees it on a worker thread.
+            self.pop.graveyard.push((hardware, state));
+        } else {
+            drop(hardware);
+            state.clear_parasites();
+            drop(state);
+            self.flush_parasite_deaths();
+        }
         if let Some(m) = membership {
             self.systematics.remove_unit(&m);
         }

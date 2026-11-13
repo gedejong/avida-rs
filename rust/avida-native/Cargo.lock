@@ -421,6 +421,7 @@ version = "0.1.0"
 dependencies = [
  "avida-analyze",
  "avida-config",
+ "avida-hardware",
  "avida-world",
 ]
 

@@ -83,7 +83,7 @@ One measurement from the maintainers, on an Apple M1 Pro (8 performance and 2 ef
 | Parallel, 4 threads | 18.1 s | 2.61 |
 | Parallel, 8 threads | 18.1 s | 2.61 |
 
-The four parallel runs wrote identical files. More than four threads add nothing, because the sequential phase and the gathering of statistics set the limit. A shared machine is much slower: with other processes on every core, an 8-thread run took 91 s in one test.
+The four parallel runs wrote identical files. Later work (2026-11-13) moved output tests and divides into the parallel phase for environments without resources or with only per-cell (spatial) resources, which brought the four-thread run to 13–15 s; eight threads gain only about 10% more, because placing offspring and gathering statistics remain sequential. A shared machine is much slower: with other processes on every core, an 8-thread run took 91 s in one test.
 
 **Running many replicate seeds at once.** When the cores are busy with other runs anyway, use `EXECUTION_THREADS 1`: it keeps the single-thread gain (1.65 times in the table) without the contention between pools. The program's own statistics tool runs the parallel mode that way.
 

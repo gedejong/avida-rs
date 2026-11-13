@@ -63,11 +63,16 @@ use avida_apto::scheduler::slicing_method;
 use avida_apto::AvidaRng;
 use avida_config::config::Config;
 use avida_config::port_settings::{EXECUTION_MODE_EXACT, EXECUTION_MODE_PARALLEL};
+use avida_hardware::local_output::{output_is_local, CellResources, OutEvent};
 use avida_hardware::nhardware::VERBOSE_DETAILS;
 use avida_hardware::organism::Organism;
-use avida_hardware::parallel::{run_burst, stream, BurstOutcome, LocalWorld, ParallelOrgState};
+use avida_hardware::parallel::{
+    divide_is_local, run_burst, stream, BurstOutcome, CellInputs, LocalWorld, ParallelOrgState,
+};
+use avida_phenotype::{PhenotypeDeme, PhenotypeStats};
 use rayon::prelude::*;
 
+use crate::population_cell::PopulationCell;
 use crate::world::World;
 
 /// Rounds with fewer organisms than this run their bursts on the calling
@@ -197,6 +202,9 @@ pub struct ParallelStats {
     pub parallel_insts: u64,
     /// Instructions executed in sequential phases.
     pub sequential_insts: u64,
+    /// Divides whose organism-local half ran in a burst and whose world
+    /// half ran in a sequential phase.
+    pub commits: u64,
     /// Organism bursts run (the work items of the parallel phases).
     pub bursts: u64,
     /// Bursts run on the calling thread (small rounds).
@@ -215,6 +223,15 @@ pub struct ParallelStats {
     pub parallel_time: Duration,
     /// Wall time in sequential phases.
     pub sequential_time: Duration,
+    /// Wall time in the end-of-update statistics (`process_post_update`).
+    pub post_time: Duration,
+    /// Wall time of the bursts run on the worker pool, and of those run on
+    /// the calling thread (both part of the parallel phases).
+    pub pool_time: Duration,
+    pub grant_time: Duration,
+    pub inline_time: Duration,
+    /// Wall time in the rest of the end of an update (output, systematics).
+    pub after_time: Duration,
 }
 
 impl ParallelStats {
@@ -232,14 +249,16 @@ impl ParallelStats {
         };
         format!(
             "parallel mode: {} updates, {:.1} rounds/update (max {}), {:.0} instructions/update \
-             ({:.2}% sequential, {:.2}% newborn grants, {:.0} rescales/update, carry-over {}), \
+             ({:.2}% sequential, {} commits/update, {:.2}% newborn grants, {:.0} rescales/update, carry-over {}), \
              {:.0} bursts/update ({:.1}% inline); time in updates {:.3} s: \
-             allocation {:.1}%, parallel phases {:.1}%, sequential phases {:.1}%",
+             allocation {:.1}%, parallel phases {:.1}%, sequential phases {:.1}%; \
+             end of update: statistics {:.3} s, rest {:.3} s; bursts: pool {:.3} s, inline {:.3} s; grants {:.3} s",
             self.updates,
             per_update(self.rounds),
             self.max_rounds,
             per_update(insts),
             100.0 * self.sequential_insts as f64 / insts.max(1) as f64,
+            per_update(self.commits).round(),
             100.0 * self.newborn_grants as f64 / insts.max(1) as f64,
             per_update(self.rescales),
             self.carry_over,
@@ -249,6 +268,11 @@ impl ParallelStats {
             100.0 * frac(self.alloc_time),
             100.0 * frac(self.parallel_time),
             100.0 * frac(self.sequential_time),
+            self.post_time.as_secs_f64(),
+            self.after_time.as_secs_f64(),
+            self.pool_time.as_secs_f64(),
+            self.inline_time.as_secs_f64(),
+            self.grant_time.as_secs_f64(),
         )
     }
 }
@@ -265,6 +289,62 @@ struct DemeBurst {
     /// The organism's update clock before and after the burst.
     start: f64,
     clock: f64,
+}
+
+/// The cells' input values, as the bursts' input instructions read them.
+struct CellInputView<'a>(&'a [PopulationCell]);
+
+impl CellInputs for CellInputView<'_> {
+    fn inputs(&self, cell: i32) -> &[i32] {
+        self.0
+            .get(cell as usize)
+            .map_or(&[][..], |c| c.inputs.as_slice())
+    }
+}
+
+/// The population's resources as the bursts read them: the amounts in a
+/// cell, which nothing changes during the parallel phase.
+struct CellResourceView<'a>(&'a avida_resources::ResourceCount);
+
+impl CellResources for CellResourceView<'_> {
+    fn cell_levels(&self, cell: i32, out: &mut Vec<f64>) {
+        self.0.frozen_cell_amounts(cell, out);
+    }
+}
+
+/// What the output tests of a burst did to the statistics and to the
+/// deme of the organism's cell, applied now in the order they were made
+/// (`events` is emptied).
+fn replay_out_events(w: &mut World, cell: i32, events: &mut Vec<OutEvent>) {
+    let deme_id = w.pop.cells[cell as usize].deme_id as usize;
+    for e in events.drain(..) {
+        match e {
+            OutEvent::AgeTask(org_id, task, age) => w.stats.age_task_event(org_id, task, age),
+            OutEvent::NewTask(t) => w.stats.add_new_task_count(t),
+            OutEvent::OtherTasks(t, prev, cur) => w.stats.add_other_task_counts(t, prev, cur),
+            OutEvent::NewReaction(r) => w.stats.add_new_reaction_count(r),
+            OutEvent::SwitchTime(a, b, t) => w.stats.add_task_switch_time(a, b, t),
+            OutEvent::DemeMeritUnchanged => {
+                if let Some(d) = w.pop.demes.get_mut(deme_id) {
+                    let merit = d.heritable_deme_merit();
+                    d.update_heritable_deme_merit(merit * 1.0 + 0.0);
+                }
+            }
+            OutEvent::DemeTask(t) => {
+                if let Some(d) = w.pop.demes.get_mut(deme_id) {
+                    d.add_cur_task(t);
+                }
+            }
+            OutEvent::DemeReaction(r) => {
+                if let Some(d) = w.pop.demes.get_mut(deme_id) {
+                    d.add_cur_reaction(r);
+                }
+            }
+            OutEvent::ResourceChange(change) => {
+                w.pop.resource_count.modify_cell_updated(&change, cell);
+            }
+        }
+    }
 }
 
 /// The state of the parallel mode a [`crate::run::Stepper`] keeps.
@@ -303,8 +383,33 @@ pub struct ParallelExec {
     /// The bursts of the last parallel phase, kept (with demes only) for
     /// the deme bookkeeping at the start of the sequential phase.
     deme_bursts: Vec<DemeBurst>,
+    /// Whether the pool has been lent to the population's resources.
+    executor_set: bool,
+    /// The output tests of this update run in the bursts
+    /// ([`output_is_local`]); decided at the start of each update.
+    io_local: bool,
+    /// The environment has resources and the output tests of the bursts read
+    /// and change them in the organisms' cells (`io_local` with
+    /// [`avida_resources::ResourceCount::are_plain_cell_grids`]).
+    cell_res_local: bool,
+    /// The divides of this update run their organism-local half in the
+    /// bursts ([`divide_is_local`]).
+    divide_local: bool,
     /// Performance counters.
     pub stats: ParallelStats,
+}
+
+/// The worker pool as the executor of the spatial resource updates.
+struct PoolExecutor(Arc<rayon::ThreadPool>);
+
+impl avida_resources::SpatialExecutor for PoolExecutor {
+    fn run<'a>(&self, jobs: Vec<Box<dyn FnOnce() + Send + 'a>>) {
+        self.0.scope(|s| {
+            for job in jobs {
+                s.spawn(move |_| job());
+            }
+        });
+    }
 }
 
 impl std::fmt::Debug for ParallelExec {
@@ -350,6 +455,10 @@ impl ParallelExec {
             weight_sum: 0.0,
             births: Vec::new(),
             deme_bursts: Vec::new(),
+            executor_set: false,
+            io_local: false,
+            cell_res_local: false,
+            divide_local: false,
             stats: ParallelStats::default(),
         })
     }
@@ -401,7 +510,21 @@ impl ParallelExec {
         step_size: f64,
     ) -> Result<(), String> {
         self.ensure_pool()?;
+        w.pop.defer_drops = self.pool.is_some();
+        if !self.executor_set {
+            self.executor_set = true;
+            if let Some(pool) = &self.pool {
+                w.pop
+                    .resource_count
+                    .set_spatial_executor(Some(Arc::new(PoolExecutor(Arc::clone(pool)))));
+            }
+        }
         self.stats.updates += 1;
+        let cell_grids = w.env.resource_lib().size().max(0) as usize == w.pop.resource_count.size()
+            && w.pop.resource_count.are_plain_cell_grids(w.pop.cells.len());
+        self.io_local = !self.force_world && output_is_local(&w.cfg, &w.env, cell_grids);
+        self.cell_res_local = self.io_local && cell_grids;
+        self.divide_local = divide_is_local(&w.cfg, self.io_local, w.test_on_div, w.test_sterilize);
         let t0 = Instant::now();
         self.shuffle(w.pop.cells.len());
         let target = (i64::from(ud_size) - self.stats.carry_over).max(0);
@@ -635,7 +758,16 @@ impl ParallelExec {
                 work.push((c, org, BurstOutcome::default()));
             }
         }
+        if self.cell_res_local {
+            // The lazy update of the grids, which the first output test of
+            // the update would make: after it, nothing in the parallel phase
+            // changes a cell's amounts but the output tests of the
+            // cell's own organism.
+            w.with_pop_resources_for(None, |rc, rng, env| rc.update_resources(rng, env));
+        }
         {
+            let cell_inputs = CellInputView(&w.pop.cells);
+            let res_view = CellResourceView(&w.pop.resource_count);
             let lw = LocalWorld {
                 config: &w.cfg,
                 environment: &w.env,
@@ -643,6 +775,15 @@ impl ParallelExec {
                 update: w.stats.update(),
                 tot_creatures: w.stats.tot_organisms,
                 sense_size: w.stats.sense_size.max(0) as usize,
+                io_local: self.io_local,
+                divide_local: self.divide_local,
+                cell_resources: if self.cell_res_local {
+                    Some(&res_view)
+                } else {
+                    None
+                },
+                cell_inputs: &cell_inputs,
+                group_attack_counts: &w.group_attack_counts,
             };
             let seed = self.run_seed;
             let force = self.force_world;
@@ -652,11 +793,15 @@ impl ParallelExec {
             self.stats.bursts += work.len() as u64;
             match &self.pool {
                 Some(pool) if work.len() >= POOL_MIN_ORGANISMS => {
+                    let t = Instant::now();
                     pool.install(|| work.par_iter_mut().with_min_len(BURST_CHUNK).for_each(run));
+                    self.stats.pool_time += t.elapsed();
                 }
                 _ => {
+                    let t = Instant::now();
                     self.stats.inline_bursts += work.len() as u64;
                     work.iter_mut().for_each(run);
+                    self.stats.inline_time += t.elapsed();
                 }
             }
         }
@@ -678,6 +823,12 @@ impl ParallelExec {
                     start: (clock - (1.0 - p.t0) * spent).max(p.t0),
                     clock,
                 });
+            }
+            let mut org = org;
+            if !org.state.parallel.out_events.is_empty() {
+                let mut events = std::mem::take(&mut org.state.parallel.out_events);
+                replay_out_events(w, c, &mut events);
+                org.state.parallel.out_events = events;
             }
             w.pop.orgs[c as usize] = Some(org);
             executed += u64::from(out.executed);
@@ -734,22 +885,33 @@ impl ParallelExec {
                 continue;
             };
             let p = &mut org.state.parallel;
-            if p.budget == 0 {
+            // A divide whose organism-local half ran in the burst: the
+            // burst counted the instruction, and the world's half is not a
+            // step of its own.
+            let commit = p.pending_birth.0.is_some();
+            if p.budget == 0 && !commit {
                 continue;
             }
-            if p.stamp == stamp {
+            if p.stamp == stamp && !commit {
                 // It ran in this phase already, from another cell.
                 next.push(c);
                 continue;
             }
-            p.budget -= 1;
-            p.stamp = stamp;
+            if !commit {
+                p.budget -= 1;
+                p.stamp = stamp;
+            }
             let clock = Self::clock(p);
             let uid = org.state.uid;
             let last_uid = w.pop.last_org_uid;
-            w.process_step(step_size, c, false)?;
+            if commit {
+                w.commit_divide(c)?;
+                self.stats.commits += 1;
+            } else {
+                w.process_step(step_size, c, false)?;
+                ran += 1;
+            }
             w.check_fatal()?;
-            ran += 1;
             if w.pop.last_org_uid > last_uid {
                 self.births.push((last_uid + 1, w.pop.last_org_uid, clock));
             }
@@ -777,11 +939,27 @@ impl ParallelExec {
             }
         }
         if !self.births.is_empty() {
+            let t = Instant::now();
             self.grant_newborns(w, constant, random, next);
+            self.stats.grant_time += t.elapsed();
         }
         next.sort_unstable();
         next.dedup();
+        self.free_graveyard(w);
         Ok(ran)
+    }
+
+    /// Frees the organisms the phase deleted on a worker thread, while the
+    /// main thread goes on.
+    fn free_graveyard(&self, w: &mut World) {
+        if w.pop.graveyard.is_empty() {
+            return;
+        }
+        let dead = std::mem::take(&mut w.pop.graveyard);
+        match &self.pool {
+            Some(pool) => pool.spawn(move || drop(dead)),
+            None => drop(dead),
+        }
     }
 
     /// The deme half of the time slices the bursts of the last parallel

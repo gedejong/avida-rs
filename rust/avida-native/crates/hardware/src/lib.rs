@@ -92,6 +92,7 @@ pub mod hardware_manager;
 pub mod hardware_transsmt;
 pub mod hardware_transsmt_insts;
 pub mod head_cpu;
+pub mod local_output;
 pub mod mini_trace;
 pub mod nhardware;
 pub mod org_interface;

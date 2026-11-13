@@ -901,7 +901,12 @@ impl Stepper {
 
         // end of update stats... (the parallel mode reads the organisms on
         // its worker threads, with the same result)
+        let t_post = std::time::Instant::now();
         w.process_post_update_with(self.parallel.as_ref().and_then(|p| p.pool()));
+        if let Some(p) = self.parallel.as_mut() {
+            p.stats.post_time += t_post.elapsed();
+        }
+        let t_after = std::time::Instant::now();
         // What organisms printed to `std::cout` during the steps.
         w.flush_action_stdout(stdout)?;
         w.check_fatal()?;
@@ -937,6 +942,9 @@ impl Stepper {
         // Exit conditons...
         if w.pop.num_organisms == 0 {
             w.done = true;
+        }
+        if let Some(p) = self.parallel.as_mut() {
+            p.stats.after_time += t_after.elapsed();
         }
         Ok(())
     }

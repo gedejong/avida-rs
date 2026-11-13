@@ -3,6 +3,8 @@
 //! Ports `cResourceCount` (`avida-core/source/main/cResourceCount.{h,cc}`,
 //! reference bodies from git `47f13dadb`, the last pre-Rust commit).
 
+use std::sync::Arc;
+
 use avida_apto::{fmt_g, AvidaRng};
 
 use crate::cell_resource::CellResource;
@@ -172,6 +174,36 @@ impl Default for ResourceSetup {
     }
 }
 
+/// Runs independent jobs, possibly at the same time: how a front end with a
+/// worker pool lends it to [`ResourceCount`] for the spatial updates of its
+/// plain grid resources (see [`ResourceCount::set_spatial_executor`]).
+pub trait SpatialExecutor: Send + Sync {
+    /// Runs every job, in any order or at once, and returns when all are
+    /// done.
+    fn run<'a>(&self, jobs: Vec<Box<dyn FnOnce() + Send + 'a>>);
+}
+
+/// The executor a [`ResourceCount`] may hold. It takes no part in `==` or in
+/// copies: it is a way of doing the work, not state.
+#[derive(Default)]
+struct ExecutorHandle(Option<Arc<dyn SpatialExecutor>>);
+
+impl std::fmt::Debug for ExecutorHandle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ExecutorHandle({})", self.0.is_some())
+    }
+}
+
+impl PartialEq for ExecutorHandle {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+/// Grids with fewer cells than this are updated one after the other even
+/// with an executor: handing out jobs costs more than they save.
+const PARALLEL_MIN_CELLS: i32 = 4096;
+
 /// `cResourceCount`: current amounts of all resources, with lazy global
 /// updates in steps of [`UPDATE_STEP`] and once-per-update spatial updates.
 ///
@@ -198,6 +230,7 @@ pub struct ResourceCount {
     spatial_update_time: f64,
     last_updated: i32,
     spatial_update: i32,
+    spatial_executor: ExecutorHandle,
 }
 
 impl Default for ResourceCount {
@@ -240,6 +273,7 @@ impl ResourceCount {
             spatial_update_time: 0.0,
             last_updated: 0,
             spatial_update: 0,
+            spatial_executor: ExecutorHandle::default(),
         };
         if num_resources > 0 {
             rc.set_size(num_resources);
@@ -674,6 +708,11 @@ impl ResourceCount {
         cell_id: i32,
     ) {
         self.do_updates(rng, env, false);
+        self.apply_cell_change(res_change, cell_id);
+    }
+
+    /// The body of [`modify_cell`](Self::modify_cell) after the update.
+    fn apply_cell_change(&mut self, res_change: &[f64], cell_id: i32) {
         let n = self.resource_count.len();
         for (i, &change) in res_change.iter().enumerate().take(n) {
             if !is_spatial(self.geometry[i]) {
@@ -691,6 +730,43 @@ impl ResourceCount {
                 }
             }
         }
+    }
+
+    /// Whether every resource is a plain spatial grid with a cell for each of
+    /// `num_cells` cells and none is a `PARTIAL` list: then what an organism
+    /// reads of a resource, and what it changes, is the amount in its own
+    /// cell, and an update of the grids happens once per update of the world
+    /// and no sooner (the lazy update of [`do_updates`](Self::do_updates)
+    /// has nothing global to advance). The parallel execution mode runs
+    /// output tests in organisms' bursts on that basis.
+    pub fn are_plain_cell_grids(&self, num_cells: usize) -> bool {
+        !self.resource_count.is_empty()
+            && self.geometry.iter().all(|&g| is_spatial(g))
+            && self.cell_lists.iter().all(Vec::is_empty)
+            && self.spatial_resource_count.iter().all(
+                |s| matches!(s, SpatialResource::Plain(p) if p.size().max(0) as usize >= num_cells),
+            )
+    }
+
+    /// `curr_grid_res_cnt` of [`get_cell_resources`](Self::get_cell_resources)
+    /// for a cell of [`are_plain_cell_grids`](Self::are_plain_cell_grids)
+    /// without updating or taking `&mut self`: the amount of every resource
+    /// in `cell_id`, into `out`.
+    pub fn frozen_cell_amounts(&self, cell_id: i32, out: &mut Vec<f64>) {
+        out.clear();
+        out.extend(
+            self.spatial_resource_count
+                .iter()
+                .map(|s| s.base().get_amount(cell_id)),
+        );
+    }
+
+    /// [`modify_cell`](Self::modify_cell) for a caller that has brought the
+    /// grids up to date itself ([`update_resources`](Self::update_resources))
+    /// and knows nothing has advanced since: the same change to the cell,
+    /// without the lazy update.
+    pub fn modify_cell_updated(&mut self, res_change: &[f64], cell_id: i32) {
+        self.apply_cell_change(res_change, cell_id);
     }
 
     /// `Get(ctx, int id)`: update, then the global amount or the spatial sum.
@@ -1073,6 +1149,65 @@ impl ResourceCount {
         }
     }
 
+    /// Lends `executor` to the spatial updates: the pending updates of the
+    /// plain grid resources (which neither draw random numbers nor call the
+    /// population, and do not depend on one another) then run as jobs of
+    /// the executor, each resource doing exactly what
+    /// [`do_spatial_updates`](Self::do_spatial_updates) does to it, so the
+    /// amounts are the same bits. Gradient resources and the global ones
+    /// are done in their order as before.
+    pub fn set_spatial_executor(&mut self, executor: Option<Arc<dyn SpatialExecutor>>) {
+        self.spatial_executor = ExecutorHandle(executor);
+    }
+
+    /// The part of [`do_updates`](Self::do_updates) the executor takes:
+    /// returns, per resource, whether it was done here.
+    fn do_plain_spatial_updates_at_once(&mut self, num_updates: i32) -> Vec<bool> {
+        let Some(executor) = self.spatial_executor.0.clone() else {
+            return Vec::new();
+        };
+        if num_updates <= 0 {
+            return Vec::new();
+        }
+        let mut done = vec![false; self.resource_count.len()];
+        let mut jobs: Vec<Box<dyn FnOnce() + Send + '_>> = Vec::new();
+        for (res_id, ((sr, &inflow), &decay)) in self
+            .spatial_resource_count
+            .iter_mut()
+            .zip(&self.inflow_rate)
+            .zip(&self.decay_rate)
+            .enumerate()
+        {
+            if !is_spatial(self.geometry[res_id]) {
+                continue;
+            }
+            let SpatialResource::Plain(s) = sr else {
+                continue;
+            };
+            if s.size() < PARALLEL_MIN_CELLS {
+                continue;
+            }
+            done[res_id] = true;
+            jobs.push(Box::new(move || {
+                for _ in 0..num_updates {
+                    s.source(inflow);
+                    s.sink(decay);
+                    if s.cell_list_size() > 0 {
+                        s.cell_inflow();
+                        s.cell_outflow();
+                    }
+                    s.flow_all();
+                    s.state_all();
+                }
+            }));
+        }
+        if jobs.len() < 2 {
+            return Vec::new();
+        }
+        executor.run(jobs);
+        done
+    }
+
     /// `DoUpdates(ctx, global_only)`.
     ///
     /// Resource-major, as at `47f13dadb`: each resource in id order is
@@ -1086,10 +1221,15 @@ impl ResourceCount {
     fn do_updates(&mut self, rng: &mut AvidaRng, env: &mut dyn ResourceEnv, global_only: bool) {
         let num_steps = self.take_global_steps();
         let num_spatial_updates = self.spatial_update.wrapping_sub(self.last_updated);
+        let done = if global_only {
+            Vec::new()
+        } else {
+            self.do_plain_spatial_updates_at_once(num_spatial_updates)
+        };
         for res_id in 0..self.resource_count.len() {
             if !is_spatial(self.geometry[res_id]) {
                 self.do_non_spatial_updates(res_id, num_steps);
-            } else if !global_only {
+            } else if !global_only && !done.get(res_id).copied().unwrap_or(false) {
                 self.do_spatial_updates(rng, env, res_id, num_spatial_updates);
             }
         }
@@ -1198,5 +1338,52 @@ mod tests {
         rc.setup(0, &s, &mut rng, &mut env).unwrap();
         rc.set_spatial_update(2);
         assert_eq!(rc.get(&mut rng, &mut env, 0), 0.0);
+    }
+
+    /// Runs every job on a thread of its own.
+    struct ThreadedExecutor;
+
+    impl SpatialExecutor for ThreadedExecutor {
+        fn run<'a>(&self, jobs: Vec<Box<dyn FnOnce() + Send + 'a>>) {
+            std::thread::scope(|s| {
+                for job in jobs {
+                    s.spawn(job);
+                }
+            });
+        }
+    }
+
+    #[test]
+    fn executor_gives_the_same_amounts_as_the_plain_loop() {
+        let build = |executor: Option<Arc<dyn SpatialExecutor>>| {
+            let mut rng = AvidaRng::new(1);
+            let mut env = RecordingEnv::new(-1, false);
+            let mut rc = ResourceCount::new(3);
+            rc.resize_spatial_grids(80, 80);
+            for (i, (inflow, outflow)) in
+                [(640.0, 0.05), (90.0, 0.2), (5.0, 0.0)].iter().enumerate()
+            {
+                let mut s = global("grid", *inflow, *outflow);
+                s.geometry = geometry::GRID;
+                s.xdiffuse = 0.2;
+                s.ydiffuse = 0.3;
+                (s.inflow_x1, s.inflow_x2, s.inflow_y1, s.inflow_y2) =
+                    (0, 40 + 10 * i as i32, 0, 79);
+                (s.outflow_x1, s.outflow_x2, s.outflow_y1, s.outflow_y2) = (0, 79, 0, 79);
+                rc.setup(i, &s, &mut rng, &mut env).unwrap();
+            }
+            rc.set_spatial_executor(executor);
+            for update in 1..=4 {
+                rc.set_spatial_update(update * 3);
+                let _ = rc.get_cell_resources(100, &mut rng, &mut env);
+            }
+            (0..3)
+                .map(|i| rc.get_spatial_resource(i).clone())
+                .collect::<Vec<_>>()
+        };
+        let plain = build(None);
+        let lent = build(Some(Arc::new(ThreadedExecutor)));
+        assert_eq!(plain, lent);
+        assert!(plain[0].base().get_amount(0) > 0.0);
     }
 }

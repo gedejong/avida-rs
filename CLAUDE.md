@@ -79,10 +79,10 @@ The `rust-migration-*.md` files at the repository root record the FFI migration 
 - Arena recording and playback: `avida-rec` (headless), `--record` and `--play` on the GUI and TUI (`ARCHITECTURE.md`, "Recording and playback").
 - All five hardware types, all 423 distinct actions, analyze mode (batch, interactive, multi-core), demes, parasites, predator/prey, gene transfer, the energy model.
 - Suite: 85 byte-identical, 34 fail the same way the C++ does, none differs.
-- Default run (3000 updates, seed 42): about 47 s in exact mode against 57–64 s for the C++; 18 s in parallel mode on four threads. With gene transfer on: 35 s against 42 s.
+- Default run (3000 updates, seed 42): about 47 s in exact mode against 57–64 s for the C++; 13–15 s in parallel mode on four threads. With gene transfer on: 35 s against 42 s.
 
 ### Open work
-1. Parallel execution mode (`EXECUTION_MODE 1`, opt-in, not byte-identical by design): threads beyond four add nothing; the sequential phase and the statistics gather are the limit. Demes run since 2026-11-13; with implicit deme replication a deme generation takes about one update longer than in the exact mode (`ARCHITECTURE.md`, "Demes").
+1. Parallel execution mode (`EXECUTION_MODE 1`, opt-in, not byte-identical by design): since 2026-11-13 output tests and divides run inside the bursts on the stock environment, but eight threads still gain only about 10% over four; the divide commits, the end-of-update statistics and the burst itself are the limit. The same holds for worlds whose resources are all plain per-cell grids; a global (well-mixed) resource still stops the burst at every output test. Demes run since 2026-11-13; with implicit deme replication a deme generation takes about one update longer than in the exact mode (`ARCHITECTURE.md`, "Demes").
 2. `unsupported:` stops: where the C++ behaviour is undefined or crashes the stop stays (maintainer's ruling, 2026-11-12). The stops with defined C++ behaviour were closed on 2026-11-13 except a few narrow cases listed in `documentation/Tech-Debt-Backlog.md` (a `MAX_PREY_BT` kill from a plasticity or event-time test CPU, merit driven to zero by a damaging gradient).
 3. The GUI and TUI were reviewed from rendered sweeps (`cargo test -p avida-gui --test audit -- --ignored`, `cargo test -p avida-tui --test screens -- --ignored`); nobody has yet judged them in a real window or terminal.
 4. A single long simulation step cannot be interrupted; on close the front ends wait 2 s and detach the thread.

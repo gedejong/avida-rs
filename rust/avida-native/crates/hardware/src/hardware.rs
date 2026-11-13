@@ -385,6 +385,19 @@ pub struct HardwareBase {
     /// hardware type's parallel allow-list (see [`crate::parallel`]).
     /// Always false in the exact mode.
     pub parallel_burst: bool,
+    /// With [`HardwareBase::parallel_burst`]: the output test and the
+    /// inputs are organism-local in this run (`local_output`), so the
+    /// heads CPU's input and output instructions run in the burst too.
+    pub burst_io: bool,
+    /// With [`HardwareBase::parallel_burst`]: a successful divide of the
+    /// heads CPU runs its organism-local half in the burst and leaves the
+    /// world's half (`ActivateOffspring`) to the sequential phase, see
+    /// [`crate::parallel::PendingBirth`]. Implies `burst_io`.
+    pub burst_divide: bool,
+    /// Set by a burst step of a hardware type whose steps do not count
+    /// CPU cycles (transsmt) when it ran: [`crate::parallel::run_burst`]
+    /// reads and clears it. Never set in the exact mode.
+    pub burst_stepped: bool,
 }
 
 impl std::fmt::Debug for HardwareBase {
@@ -461,6 +474,9 @@ impl HardwareBase {
             ext_mem: Vec::new(),
             implicit_repro_active,
             parallel_burst: false,
+            burst_io: false,
+            burst_divide: false,
+            burst_stepped: false,
         }
     }
 

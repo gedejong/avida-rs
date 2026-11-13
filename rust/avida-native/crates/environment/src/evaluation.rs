@@ -224,6 +224,82 @@ impl<T: TaskRegistry> Environment<T> {
         result.active()
     }
 
+    /// [`Environment::test_output`] for an environment whose evaluation
+    /// changes nothing in the environment, which the parallel execution
+    /// mode checks before it runs output tests in the organisms' bursts
+    /// (`avida_hardware::local_output::output_is_local`): no task asks to
+    /// change a reaction's resource (`xor-max`), no process uses a
+    /// `phenplastbonus` method (the plasticity test runs test CPUs over the
+    /// environment), and there is no context phenotype. It is the same loop
+    /// on a shared borrow, so that many workers can evaluate at once.
+    #[allow(clippy::too_many_arguments)]
+    pub fn test_output_shared(
+        &self,
+        rng: &mut AvidaRng,
+        config: &Config,
+        result: &mut ReactionResult,
+        taskctx: &mut dyn TaskEvaluator<T>,
+        task_count: &[i32],
+        reaction_count: &mut [i32],
+        resource_count: &[f64],
+        rbins_count: &[f64],
+        is_parasite: bool,
+    ) -> bool {
+        let skip_processing = is_parasite && config.parasite_skip_reactions != 0;
+        taskctx.setup_tests(&self.tasklib);
+        let num_reactions = self.reaction_lib.size() as usize;
+        for i in 0..num_reactions {
+            let (active, task) = {
+                let r = self.reaction_lib.reaction(i);
+                (r.active, r.task)
+            };
+            if !active {
+                continue;
+            }
+            let Some(task_id) = task else {
+                continue;
+            };
+            taskctx.set_task_entry(&self.tasklib, task_id);
+            let task_cnt = task_count[task_id as usize];
+            let on_divide = taskctx.on_divide();
+            if !self.test_requisites(
+                &*taskctx,
+                i,
+                task_cnt,
+                reaction_count,
+                on_divide,
+                is_parasite,
+                config,
+            ) && !skip_processing
+            {
+                continue;
+            }
+            let task_quality = taskctx.test_output(&self.tasklib, rng);
+            // `get_task_probability` of an environment without a plastic
+            // process: -1, nothing forced.
+            if task_quality == 0.0 {
+                continue;
+            }
+            result.mark_task(task_id as usize, task_quality, taskctx.task_value());
+            if !skip_processing {
+                let args = ProcessArgs {
+                    resource_count,
+                    rbins_count,
+                    task_quality,
+                    task_probability: -1.0,
+                    task_count: task_cnt,
+                    reaction_id: i,
+                };
+                self.do_processes(rng, config, &args, result, &mut *taskctx);
+                if result.reaction_triggered(i) {
+                    reaction_count[i] = reaction_count[i].wrapping_add(1);
+                    taskctx.set_first_reaction(i as i32);
+                }
+            }
+        }
+        result.active()
+    }
+
     /// `TestRequisites(taskctx, reaction, task_count, reaction_count,
     /// on_divide, is_parasite)`: true if any requisite of the reaction is
     /// met (or, with none, when not on divide).

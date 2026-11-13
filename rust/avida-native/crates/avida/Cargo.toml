@@ -14,3 +14,6 @@ path = "src/main.rs"
 avida-analyze = { path = "../analyze" }
 avida-config = { path = "../config" }
 avida-world = { path = "../world" }
+
+[dev-dependencies]
+avida-hardware = { path = "../hardware" }

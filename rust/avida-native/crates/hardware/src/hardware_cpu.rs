@@ -1403,11 +1403,34 @@ impl Hardware for HardwareCpu {
             if speculative
                 && (self.spec_die
                     || (valid
-                        && (self.base.inst_set.should_stall(cur_inst)
-                            || (self.base.parallel_burst
-                                && !crate::parallel::cpu_parallel_ok(
-                                    self.base.inst_set.lib_function_index(cur_inst),
-                                )))))
+                        && (if self.base.parallel_burst {
+                            let idx = self.base.inst_set.lib_function_index(cur_inst);
+                            // The input and output instructions are marked
+                            // `STALL` and run in a burst when they are
+                            // organism-local in this run.
+                            let io = self.base.burst_io && crate::parallel::cpu_io_ok(idx);
+                            // A divide runs in the burst when nothing it
+                            // would leave to the world could be undone by
+                            // what a step does after the instruction: it
+                            // costs no extra time, and the organism neither
+                            // dies of age nor is to die (the exact order
+                            // resets the clock first, `ActivateOffspring`
+                            // runs after the burst here).
+                            let divide = self.base.burst_divide
+                                && crate::parallel::cpu_divide_ok(idx)
+                                && (org.max_executed <= 0
+                                    || org.phenotype.time_used < org.max_executed)
+                                && !org.phenotype.to_die
+                                && org.mut_rates.divide.lgt_prob == 0.0
+                                && org.mut_rates.divide.divide_lgt_prob == 0.0
+                                && org.mut_rates.divide.divide_poisson_lgt_mean == 0.0
+                                && self.base.inst_set.addl_time_cost(cur_inst) == 0;
+                            !(io || divide
+                                || (!self.base.inst_set.should_stall(cur_inst)
+                                    && crate::parallel::cpu_parallel_ok(idx)))
+                        } else {
+                            self.base.inst_set.should_stall(cur_inst)
+                        })))
             {
                 self.cur_thread = last_thread;
                 org.phenotype.dec_cpu_cycles_used();

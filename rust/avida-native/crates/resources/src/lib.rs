@@ -44,7 +44,8 @@ pub use cell_resource::CellResource;
 pub use env::{RecordingEnv, ResourceEnv};
 pub use gradient_count::{GradientCount, GradientParams};
 pub use resource_count::{
-    ResourceCount, ResourceSetup, EPSILON, PRECALC_DISTANCE, UPDATE_STEP, VERBOSE_NORMAL,
+    ResourceCount, ResourceSetup, SpatialExecutor, EPSILON, PRECALC_DISTANCE, UPDATE_STEP,
+    VERBOSE_NORMAL,
 };
 pub use spatial_count_elem::SpatialCountElem;
 pub use spatial_res_count::{flow_matter, SpatialResCount};

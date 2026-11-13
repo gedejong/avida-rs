@@ -1369,6 +1369,78 @@ impl World {
         Ok(())
     }
 
+    /// The world's half of a divide whose organism-local half the organism
+    /// ran in a burst of the parallel mode (`EXECUTION_MODE 1`): the
+    /// `m_interface->Divide` call of `cOrganism::ActivateDivide`, with the
+    /// parent out of its cell as in [`World::process_step`]. The burst
+    /// counted the divide instruction; this does not count it again. The
+    /// offspring's organism, built in the burst, is adopted by the birth
+    /// chamber. What the exact path does after the call (the parent's
+    /// reset, when it lives) the burst has done already, which is
+    /// unobservable: the call reads none of it (`divide_is_local`).
+    pub fn commit_divide(&mut self, cell_id: i32) -> Result<(), String> {
+        let c = cell_id as usize;
+        let mut org = self.pop.orgs[c]
+            .take()
+            .ok_or("Unoccupied cell getting processor time!")?;
+        let Some(pending) = org.state.parallel.pending_birth.0.take() else {
+            self.pop.orgs[c] = Some(org);
+            return Err("internal: a divide to commit has no offspring".to_string());
+        };
+        self.pop.running = Some(Running {
+            cell_id,
+            org_id: org.state.id,
+            uid: org.state.uid,
+            ..Running::default()
+        });
+        self.host.cur_sg = org.state.cur_sg;
+        self.hgt_step_begins(&org.state);
+        self.pop.prebuilt_offspring = Some(Box::new(pending.organism));
+
+        {
+            let mut iface = PopulationInterface { w: self, cell_id };
+            org.state.set_running(true);
+            let Organism { state, hardware } = &mut *org;
+            let mut lent =
+                avida_hardware::mini_trace::LentTraces::lend(hardware.base_mut(), String::new());
+            avida_hardware::OrgInterface::divide_with_traces(
+                &mut iface,
+                state,
+                &**hardware,
+                &pending.genome,
+                &mut lent,
+            );
+            lent.restore(hardware.base_mut());
+            // What a step does once its instruction is over.
+            if org.state.phenotype.to_die {
+                org.state.die(&mut iface);
+            }
+            org.state.set_running(false);
+            iface.w.settle_habitat_to_die(&mut org.state);
+        }
+        self.pop.prebuilt_offspring = None;
+
+        let running = self.pop.running.take().unwrap_or_default();
+        let dead = running.removed.then_some(&mut *org);
+        self.mini_trace_step_end(dead, running.dead_membership.as_ref());
+        if running.removed {
+            if running.notify_pending {
+                let mut iface = PopulationInterface {
+                    w: self,
+                    cell_id: running.cell_id,
+                };
+                org.notify_death(&mut iface);
+            }
+            self.delete_organism(org, running.dead_membership);
+        } else {
+            self.pop.orgs[running.cell_id as usize] = Some(org);
+        }
+        self.pop.last_step_cell = running.cell_id;
+        self.flush_parasite_deaths();
+        self.flush_host();
+        Ok(())
+    }
+
     // ------------------------------------------------------------------
     // Per-update processing
     // ------------------------------------------------------------------
@@ -1564,7 +1636,6 @@ impl World {
             }
         }
         totals.store(&mut self.stats);
-
         self.pop.resource_count.update_global_resources();
     }
 
@@ -1583,30 +1654,66 @@ impl World {
             live[c as usize] = true;
         }
         let orgs = &mut self.pop.orgs;
-        let chunks: Vec<(Vec<Option<OrgStatsRecord<'_>>>, Vec<StatsEvent>)> = pool.install(|| {
-            orgs.par_chunks_mut(STATS_CHUNK)
+        let live_list = &self.pop.live_org_list;
+        let stats = &mut self.stats;
+        // One entry to the pool for both steps: waking the workers is a
+        // good part of what a step this short costs, and the second step
+        // starts on threads that have just been working.
+        pool.install(|| {
+            let chunks: Vec<(Vec<Option<OrgStatsRecord<'_>>>, Vec<StatsEvent>)> = orgs
+                .par_chunks_mut(STATS_CHUNK)
                 .zip(live.par_chunks(STATS_CHUNK))
                 .map(|(orgs, live)| {
                     let mut events = Vec::new();
-                    let records = orgs
-                        .iter_mut()
-                        .zip(live)
-                        .map(|(slot, &live)| {
-                            let org = slot.as_deref_mut().filter(|_| live)?;
-                            Some(gather_org_stats(org, dims, &mut events))
-                        })
-                        .collect();
+                    let mut records = Vec::with_capacity(orgs.len());
+                    for (block, live) in orgs
+                        .chunks_mut(STATS_PREFETCH)
+                        .zip(live.chunks(STATS_PREFETCH))
+                    {
+                        // As in the walk on one thread, the loads of the
+                        // organisms of a block are all issued before the
+                        // work on the first, so their cache misses overlap.
+                        for (slot, &live) in block.iter().zip(live) {
+                            if let Some(org) = slot.as_deref().filter(|_| live) {
+                                touch_stats_fields(org);
+                            }
+                        }
+                        for (slot, &live) in block.iter_mut().zip(live) {
+                            records.push(
+                                slot.as_deref_mut()
+                                    .filter(|_| live)
+                                    .map(|org| gather_org_stats(org, dims, &mut events)),
+                            );
+                        }
+                    }
                     (records, events)
                 })
-                .collect()
-        });
-        for &c in &self.pop.live_org_list {
-            let c = c as usize;
-            let (records, events) = &chunks[c / STATS_CHUNK];
-            if let Some(rec) = &records[c % STATS_CHUNK] {
-                totals.add(&mut self.stats, rec, events);
+                .collect();
+            let mut recs: Vec<(&OrgStatsRecord<'_>, &[StatsEvent])> =
+                Vec::with_capacity(live_list.len());
+            for &c in live_list {
+                let c = c as usize;
+                let (records, events) = &chunks[c / STATS_CHUNK];
+                if let Some(rec) = &records[c % STATS_CHUNK] {
+                    recs.push((rec, events));
+                }
             }
-        }
+            // The columns of the sums are independent of one another, so
+            // each can take the organisms in `live_org_list` order on a
+            // thread of its own and give the same bits as the walk on one
+            // thread. Organisms of different instruction sets (their message
+            // counts are kept per set) take the walk.
+            let one_set = recs
+                .first()
+                .is_none_or(|(first, _)| recs.iter().all(|(r, _)| r.inst_set == first.inst_set));
+            if one_set {
+                totals.add_columns(pool, stats, &recs);
+            } else {
+                for (rec, events) in &recs {
+                    totals.add(stats, rec, events);
+                }
+            }
+        });
     }
 }
 
@@ -1614,8 +1721,12 @@ impl World {
 /// walks them on the calling thread even with a pool.
 const STATS_POOL_MIN: usize = 512;
 
+/// The cells whose organisms [`World::gather_organism_stats`] starts loading
+/// together.
+const STATS_PREFETCH: usize = 8;
+
 /// The cells one task of [`World::gather_organism_stats`] reads.
-const STATS_CHUNK: usize = 256;
+const STATS_CHUNK: usize = 64;
 
 /// The sizes of the per-organism arrays [`World::update_organism_stats`]
 /// reads.
@@ -1879,42 +1990,7 @@ impl OrgStatsTotals {
         }
 
         for event in &events[rec.events.clone()] {
-            match *event {
-                StatsEvent::CurTask(j, quality) => {
-                    stats.add_cur_task(j);
-                    stats.add_cur_task_quality(j, quality);
-                }
-                StatsEvent::LastTask(j, quality, count) => {
-                    stats.add_last_task(j);
-                    stats.add_last_task_quality(j, quality);
-                    stats.inc_task_exe_count(j, count);
-                }
-                StatsEvent::CurHostTask(j) => stats.add_cur_host_task(j),
-                StatsEvent::LastHostTask(j) => stats.add_last_host_task(j),
-                StatsEvent::CurParasiteTask(j) => stats.add_cur_parasite_task(j),
-                StatsEvent::LastParasiteTask(j) => stats.add_last_parasite_task(j),
-                StatsEvent::CurInternalTask(j, quality) => {
-                    stats.add_cur_internal_task(j);
-                    stats.add_cur_internal_task_quality(j, quality);
-                }
-                StatsEvent::LastInternalTask(j, quality) => {
-                    stats.add_last_internal_task(j);
-                    stats.add_last_internal_task_quality(j, quality);
-                }
-                StatsEvent::CurReaction(j, reward) => {
-                    stats.add_cur_reaction(j);
-                    stats.add_cur_reaction_add_reward(j, reward);
-                }
-                StatsEvent::LastReaction(j, count, reward) => {
-                    stats.add_last_reaction(j);
-                    stats.inc_reaction_exe_count(j, count);
-                    stats.add_last_reaction_add_reward(j, reward);
-                }
-                StatsEvent::Sense(j, count) => {
-                    stats.sense_last_count[j] += 1;
-                    stats.sense_last_exe_count[j] += count;
-                }
-            }
+            apply_stats_event(stats, event);
         }
 
         // Increment the counts for all qualities the organism has...
@@ -1936,6 +2012,165 @@ impl OrgStatsTotals {
 
         // Hardware specific collections...
         stats.sum_mem_size.add(f64::from(rec.mem_size));
+        self.num_threads += rec.num_threads;
+    }
+
+    /// [`OrgStatsTotals::add`] for every record of `recs` (in the order
+    /// given, all of one instruction set), by column: every sum and every
+    /// group of counts takes the records in order on a task of its own, so
+    /// each ends with the bits the one-by-one walk gives it.
+    fn add_columns(
+        &mut self,
+        pool: &rayon::ThreadPool,
+        stats: &mut Stats,
+        recs: &[(&OrgStatsRecord<'_>, &[StatsEvent])],
+    ) {
+        let Some(&(first, _)) = recs.first() else {
+            return;
+        };
+        let mut counts =
+            std::mem::take(stats.inst_from_message_exe_counts_for_inst_set(first.inst_set));
+        let (mut fitness, mut merit, mut gestation, mut age, mut generation) = (
+            stats.sum_fitness,
+            stats.sum_merit,
+            stats.sum_gestation,
+            stats.sum_creature_age,
+            stats.sum_generation,
+        );
+        let (mut neutral, mut lineage, mut copy_size, mut exe_size, mut mem_size) = (
+            stats.sum_neutral_metric,
+            stats.sum_lineage_label,
+            stats.sum_copy_size,
+            stats.sum_exe_size,
+            stats.sum_mem_size,
+        );
+        let (mut copy_rate, mut log_copy_rate, mut div_rate, mut log_div_rate) = (
+            stats.sum_copy_mut_rate,
+            stats.sum_log_copy_mut_rate,
+            stats.sum_div_mut_rate,
+            stats.sum_log_div_mut_rate,
+        );
+        pool.scope(|s| {
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    fitness.add(r.fitness);
+                    merit.add(r.merit);
+                    gestation.add(f64::from(r.gestation_time));
+                    age.add(f64::from(r.age));
+                    generation.add(f64::from(r.generation));
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    neutral.add(r.neutral_metric);
+                    lineage.add(f64::from(r.lineage_label));
+                    copy_size.add(f64::from(r.copied_size));
+                    exe_size.add(f64::from(r.executed_size));
+                    mem_size.add(f64::from(r.mem_size));
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    copy_rate.push(r.copy_mut_prob);
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    log_copy_rate.push(r.copy_mut_prob.ln());
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    div_rate.push(r.div_mut);
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    log_div_rate.push(r.div_mut.ln());
+                }
+            });
+            s.spawn(|_| {
+                for (r, events) in recs {
+                    for event in &events[r.events.clone()] {
+                        apply_stats_event(stats, event);
+                    }
+                }
+            });
+            s.spawn(|_| {
+                for (r, _) in recs {
+                    self.add_counts(r);
+                }
+            });
+            for (k, piece) in counts.chunks_mut(MSG_COLUMNS_PER_TASK).enumerate() {
+                let lo = k * MSG_COLUMNS_PER_TASK;
+                s.spawn(move |_| {
+                    for (r, _) in recs {
+                        let from = r.from_message.get(lo..).unwrap_or(&[]);
+                        for (a, &v) in piece.iter_mut().zip(from) {
+                            a.add(v);
+                        }
+                    }
+                });
+            }
+        });
+        stats.sum_fitness = fitness;
+        stats.sum_merit = merit;
+        stats.sum_gestation = gestation;
+        stats.sum_creature_age = age;
+        stats.sum_generation = generation;
+        stats.sum_neutral_metric = neutral;
+        stats.sum_lineage_label = lineage;
+        stats.sum_copy_size = copy_size;
+        stats.sum_exe_size = exe_size;
+        stats.sum_mem_size = mem_size;
+        stats.sum_copy_mut_rate = copy_rate;
+        stats.sum_log_copy_mut_rate = log_copy_rate;
+        stats.sum_div_mut_rate = div_rate;
+        stats.sum_log_div_mut_rate = log_div_rate;
+        self.msg_counts = Some((first.inst_set.to_string(), counts));
+    }
+
+    /// The maximums, minimums and counts of [`OrgStatsTotals::add`].
+    fn add_counts(&mut self, rec: &OrgStatsRecord<'_>) {
+        if rec.merit > self.max_merit {
+            self.max_merit = rec.merit;
+        }
+        if rec.fitness > self.max_fitness {
+            self.max_fitness = rec.fitness;
+        }
+        if rec.gestation_time > self.max_gestation_time {
+            self.max_gestation_time = rec.gestation_time;
+        }
+        if rec.genome_length > self.max_genome_length {
+            self.max_genome_length = rec.genome_length;
+        }
+        if rec.merit < self.min_merit {
+            self.min_merit = rec.merit;
+        }
+        if rec.fitness < self.min_fitness {
+            self.min_fitness = rec.fitness;
+        }
+        if rec.gestation_time < self.min_gestation_time {
+            self.min_gestation_time = rec.gestation_time;
+        }
+        if rec.genome_length < self.min_genome_length {
+            self.min_genome_length = rec.genome_length;
+        }
+        self.num_parasites += rec.parasites;
+        if rec.parent_true {
+            self.num_breed_true += 1;
+        }
+        if rec.no_birth {
+            self.num_no_birth += 1;
+        }
+        if rec.multi_thread {
+            self.num_multi_thread += 1;
+        } else {
+            self.num_single_thread += 1;
+        }
+        if rec.modified {
+            self.num_modified += 1;
+        }
         self.num_threads += rec.num_threads;
     }
 
@@ -1963,6 +2198,51 @@ impl OrgStatsTotals {
         stats.min_genome_length = self.min_genome_length;
     }
 }
+
+/// One task, reaction or sense count of an organism added to `stats`.
+#[inline]
+fn apply_stats_event(stats: &mut Stats, event: &StatsEvent) {
+    match *event {
+        StatsEvent::CurTask(j, quality) => {
+            stats.add_cur_task(j);
+            stats.add_cur_task_quality(j, quality);
+        }
+        StatsEvent::LastTask(j, quality, count) => {
+            stats.add_last_task(j);
+            stats.add_last_task_quality(j, quality);
+            stats.inc_task_exe_count(j, count);
+        }
+        StatsEvent::CurHostTask(j) => stats.add_cur_host_task(j),
+        StatsEvent::LastHostTask(j) => stats.add_last_host_task(j),
+        StatsEvent::CurParasiteTask(j) => stats.add_cur_parasite_task(j),
+        StatsEvent::LastParasiteTask(j) => stats.add_last_parasite_task(j),
+        StatsEvent::CurInternalTask(j, quality) => {
+            stats.add_cur_internal_task(j);
+            stats.add_cur_internal_task_quality(j, quality);
+        }
+        StatsEvent::LastInternalTask(j, quality) => {
+            stats.add_last_internal_task(j);
+            stats.add_last_internal_task_quality(j, quality);
+        }
+        StatsEvent::CurReaction(j, reward) => {
+            stats.add_cur_reaction(j);
+            stats.add_cur_reaction_add_reward(j, reward);
+        }
+        StatsEvent::LastReaction(j, count, reward) => {
+            stats.add_last_reaction(j);
+            stats.inc_reaction_exe_count(j, count);
+            stats.add_last_reaction_add_reward(j, reward);
+        }
+        StatsEvent::Sense(j, count) => {
+            stats.sense_last_count[j] += 1;
+            stats.sense_last_exe_count[j] += count;
+        }
+    }
+}
+
+/// Message-count accumulators one task of [`OrgStatsTotals::add_columns`]
+/// takes.
+const MSG_COLUMNS_PER_TASK: usize = 8;
 
 /// Reads the fields of `org` that [`World::update_organism_stats`] reads,
 /// discarding the values. Only the loads matter: issued one organism

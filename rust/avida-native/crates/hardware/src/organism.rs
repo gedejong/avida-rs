@@ -816,6 +816,22 @@ impl OrgState {
         Ok(())
     }
 
+    /// [`OrgState::apply_task_snapshot`] for a snapshot whose evaluation
+    /// asked for nothing the world must answer (no tag or opinion to
+    /// apply; see `local_output`).
+    pub fn apply_task_snapshot_local(&mut self, snap: OrgTaskSnapshot) -> Result<(), String> {
+        if !snap.pending_tags.is_empty() || !snap.pending_opinions.is_empty() {
+            return Err(
+                "internal: an output test of a burst changed the organism's tag or \
+                        opinion (parallel phase of EXECUTION_MODE 1)"
+                    .to_string(),
+            );
+        }
+        self.lineage_label = snap.lineage_label;
+        self.phenotype.kaboom_executed = snap.kaboom_executed;
+        Ok(())
+    }
+
     /// `UpdateTag(new_tag, bits)`.
     pub fn update_tag(&mut self, world: &mut dyn OrgInterface, new_tag: i32, bits: i32) {
         let rand_int = world.rng().get_uint_range(0, 2);
@@ -1041,6 +1057,9 @@ pub fn do_output(
 ) -> Result<OutputEffects, String> {
     if let Some(v) = value {
         org.output_buf.add(v);
+    }
+    if let Some(lo) = world.local_output() {
+        return crate::local_output::do_output_local(org, ext_mem, inst_set, lo, on_divide);
     }
     let av = world.config().use_avatars != 0;
     do_output_inner(

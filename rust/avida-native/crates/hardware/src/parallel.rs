@@ -25,6 +25,7 @@
 //! [`HardwareBase::parallel_burst`]: crate::hardware::HardwareBase::parallel_burst
 
 use std::cell::Cell;
+use std::collections::BTreeMap;
 use std::sync::{Arc, OnceLock};
 
 use avida_apto::AvidaRng;
@@ -35,11 +36,12 @@ use crate::cpu_inst_lib::CPU_INST_DEFS;
 use crate::hardware::Hardware;
 use crate::hardware_manager::HardwareManager;
 use crate::hardware_transsmt::ParasiteUnit;
+use crate::local_output::{CellResources, LocalOutput, LocalResources, OutEvent};
 use crate::org_interface::{
     Faced, OffspringTest, OrgInterface, OrgMessage, OutputServices, SeenOrg, SelfDelivery,
     TestamentTarget, WorldServices,
 };
-use crate::organism::{OrgState, OrgUid, Organism};
+use crate::organism::{transmission, OrgSource, OrgState, OrgUid, Organism};
 use crate::task_adapter::Env;
 
 /// The heads-CPU (`cHardwareCPU`) handlers an organism may run in the
@@ -222,6 +224,122 @@ pub static CPU_PARALLEL_METHODS: &[&str] = &[
     "Inst_SetFlow",
 ];
 
+/// The heads-CPU input and output handlers that run in a burst when the
+/// run's output tests are organism-local ([`crate::local_output`]); the
+/// instruction set marks them `STALL`, which a burst overrides for these
+/// only. Each asks the interface for nothing but the next input of its cell
+/// ([`LocalWorld::cell_inputs`]) and for `DoOutput`, which answers from
+/// [`OrgInterface::local_output`]. `Inst_TaskGet2` and the `*ResetInputs`
+/// variants redraw the cell's inputs and stay in the sequential phase.
+pub static CPU_PARALLEL_IO_METHODS: &[&str] = &[
+    "Inst_TaskIO",
+    "Inst_TaskIO_Feedback",
+    "Inst_TaskIO_BonusCost_0_001",
+    "Inst_TaskGet",
+    "Inst_TaskPut",
+    "Inst_TaskStackGet",
+    "Inst_TaskStackLoad",
+];
+
+/// The heads-CPU divide handlers that run in a burst when the divide is
+/// organism-local in this run ([`divide_is_local`]): the `Divide_Main`
+/// family without resampling. Their world half is left to the sequential
+/// phase ([`PendingBirth`]).
+pub static CPU_PARALLEL_DIVIDE_METHODS: &[&str] = &[
+    "Inst_HeadDivide",
+    "Inst_HeadDivide1",
+    "Inst_HeadDivide2",
+    "Inst_HeadDivide3",
+    "Inst_HeadDivide4",
+    "Inst_HeadDivide5",
+    "Inst_HeadDivide6",
+    "Inst_HeadDivide7",
+    "Inst_HeadDivide8",
+    "Inst_HeadDivide9",
+    "Inst_HeadDivide10",
+    "Inst_HeadDivide16",
+    "Inst_HeadDivide32",
+    "Inst_HeadDivide50",
+    "Inst_HeadDivide100",
+    "Inst_HeadDivide500",
+    "Inst_HeadDivide1000",
+    "Inst_HeadDivide5000",
+    "Inst_HeadDivide10000",
+    "Inst_HeadDivide50000",
+    "Inst_HeadDivide0_5",
+    "Inst_HeadDivide0_1",
+    "Inst_HeadDivide0_05",
+    "Inst_HeadDivide0_01",
+    "Inst_HeadDivide0_001",
+];
+
+/// Whether the heads-CPU library entry `lib_fun_id` is one of
+/// [`CPU_PARALLEL_DIVIDE_METHODS`].
+#[inline]
+pub fn cpu_divide_ok(lib_fun_id: i32) -> bool {
+    static TABLE: OnceLock<Vec<bool>> = OnceLock::new();
+    let table = TABLE.get_or_init(|| {
+        CPU_INST_DEFS
+            .iter()
+            .map(|d| CPU_PARALLEL_DIVIDE_METHODS.contains(&d.method))
+            .collect()
+    });
+    usize::try_from(lib_fun_id)
+        .ok()
+        .and_then(|i| table.get(i))
+        .copied()
+        .unwrap_or(false)
+}
+
+/// Whether the divides of the run can run their organism-local half in a
+/// burst: the output tests are organism-local, and nothing in the
+/// configuration makes the divide read the world before the offspring is
+/// placed (groups, habitat requirements, test CPUs on divide or for
+/// sterilisation, epigenetic inheritance, precalculated phenotypes,
+/// tolerance, reputation, genotype files, horizontal gene transfer). Then
+/// the offspring's organism can be built in the burst
+/// ([`PendingBirth`]).
+pub fn divide_is_local(
+    cfg: &Config,
+    io_local: bool,
+    test_on_divide: bool,
+    test_sterilize: bool,
+) -> bool {
+    io_local
+        && !test_on_divide
+        && !test_sterilize
+        && cfg.use_form_groups == 0
+        && cfg.required_pred_habitat == -1
+        && cfg.required_prey_habitat == -1
+        && cfg.epigenetic_method == 0
+        && cfg.precalc_phenotype == 0
+        && cfg.reset_inputs_on_divide == 0
+        && cfg.tolerance_window == 0
+        && cfg.inherit_reputation == 0
+        && cfg.host_use_genotype_file == 0
+        && cfg.enable_hgt == 0
+        && cfg.set_ft_at_birth == 0
+        && !cfg.energy_enabled
+}
+
+/// Whether the heads-CPU library entry `lib_fun_id` is one of
+/// [`CPU_PARALLEL_IO_METHODS`].
+#[inline]
+pub fn cpu_io_ok(lib_fun_id: i32) -> bool {
+    static TABLE: OnceLock<Vec<bool>> = OnceLock::new();
+    let table = TABLE.get_or_init(|| {
+        CPU_INST_DEFS
+            .iter()
+            .map(|d| CPU_PARALLEL_IO_METHODS.contains(&d.method))
+            .collect()
+    });
+    usize::try_from(lib_fun_id)
+        .ok()
+        .and_then(|i| table.get(i))
+        .copied()
+        .unwrap_or(false)
+}
+
 /// Whether the heads-CPU library entry `lib_fun_id` (an index into
 /// [`CPU_INST_DEFS`], `cInstSet::GetLibFunctionIndex`) may run in the
 /// parallel phase.
@@ -239,6 +357,109 @@ pub fn cpu_parallel_ok(lib_fun_id: i32) -> bool {
         .and_then(|i| table.get(i))
         .copied()
         .unwrap_or(false)
+}
+
+/// The `cHardwareTransSMT` handlers an organism may run in the parallel
+/// phase (by name in the instruction library). Each was read for what it
+/// reaches: only the organism's own state (stacks, heads, memory spaces,
+/// threads and their labels), `config()` and, for `Inst-Read` (copy
+/// mutations), the organism's own random stream. Not on it: `IO`
+/// (inputs, tasks), the `Divide` family, `Inject`, `Apoptosis`, the
+/// rotations (neighbourhood) and `Collect-Unit` (resources), which all
+/// reach the world. A refused request still stops the run with an
+/// `internal:` error.
+pub static SMT_PARALLEL_METHODS: &[&str] = &[
+    "Nop-A",
+    "Nop-B",
+    "Nop-C",
+    "Nop-D",
+    "Nop-X",
+    "NULL",
+    "Val-Shift-R",
+    "Val-Shift-L",
+    "Val-Nand",
+    "Val-Add",
+    "Val-Sub",
+    "Val-Mult",
+    "Val-Div",
+    "Val-Mod",
+    "Val-Inc",
+    "Val-Dec",
+    "SetMemory",
+    "Inst-Read",
+    "Inst-Write",
+    "If-Equal",
+    "If-Not-Equal",
+    "If-Less",
+    "If-Greater",
+    "If-Greater-Equal",
+    "Head-Push",
+    "Head-Pop",
+    "Head-Move",
+    "Search",
+    "Push-Next",
+    "Push-Prev",
+    "Push-Comp",
+    "Val-Delete",
+    "Val-Copy",
+    "Thread-Create",
+    "Thread-Cancel",
+    "Thread-Kill",
+    "Call-Flow",
+    "Call-Label",
+    "Return",
+];
+
+/// Whether the transsmt library entry `lib_fun_id` (an index into the
+/// instruction library of `transsmt_inst_lib`) may run in the parallel
+/// phase.
+#[inline]
+pub fn smt_parallel_ok(lib_fun_id: i32) -> bool {
+    static TABLE: OnceLock<Vec<bool>> = OnceLock::new();
+    let table = TABLE.get_or_init(|| {
+        let lib = crate::hardware_transsmt_insts::transsmt_inst_lib();
+        (0..lib.size())
+            .map(|i| SMT_PARALLEL_METHODS.contains(&lib.name(i)))
+            .collect()
+    });
+    usize::try_from(lib_fun_id)
+        .ok()
+        .and_then(|i| table.get(i))
+        .copied()
+        .unwrap_or(false)
+}
+
+/// The offspring of a divide whose organism-local half ran in a burst: the
+/// organism built from the offspring's genome (its `id` and `uid` still
+/// unset, its generation that of the parent before `DivideReset`) and the
+/// genome the world's half is to place. The sequential phase takes it
+/// ([`ParallelOrgState::pending_birth`]) and runs `ActivateOffspring` with
+/// the parent, which adopts the organism where the exact path builds one.
+pub struct PendingBirth {
+    pub organism: Organism,
+    pub genome: Genome,
+}
+
+/// [`ParallelOrgState`]'s slot for a [`PendingBirth`]. Cloning gives an
+/// empty slot: an organism copied while its divide is pending (nothing does
+/// that) would lose the birth.
+#[derive(Default)]
+pub struct PendingBirthSlot(pub Option<Box<PendingBirth>>);
+
+impl Clone for PendingBirthSlot {
+    fn clone(&self) -> Self {
+        PendingBirthSlot(None)
+    }
+}
+
+impl std::fmt::Debug for PendingBirthSlot {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(if self.0.is_some() {
+            "PendingBirth"
+        } else {
+            "no pending birth"
+        })
+    }
 }
 
 /// What the parallel mode keeps on each organism. Nothing here is read in
@@ -267,6 +488,13 @@ pub struct ParallelOrgState {
     /// instruction (the world's counter), so that an organism that moved
     /// into another waiting cell does not run twice in one phase.
     pub stamp: u64,
+    /// What the burst's output tests did to the world's statistics and to
+    /// the organism's deme ([`OutEvent`]), until the world applies it
+    /// after the parallel phase.
+    pub out_events: Vec<OutEvent>,
+    /// The divide the burst ran the organism-local half of, until the
+    /// sequential phase runs its world half.
+    pub pending_birth: PendingBirthSlot,
 }
 
 /// `Apto::RNG::AvidaRNG`'s largest effective seed.
@@ -343,14 +571,19 @@ pub fn run_burst(
         None => Box::new(org_stream(run_seed, org.state.uid)),
     };
     org.hardware.base_mut().parallel_burst = true;
+    org.hardware.base_mut().burst_io = world.io_local;
+    org.hardware.base_mut().burst_divide = world.divide_local;
+    let mut events = std::mem::take(&mut org.state.parallel.out_events);
+    let mut pending = PendingBirthSlot(None);
     {
-        let mut iface = LocalInterface::new(world, &mut rng, cell_id);
+        let mut iface = LocalInterface::new(world, &mut rng, cell_id, &mut events, &mut pending);
         while out.executed < cap {
             let cycles = org.state.phenotype.cpu_cycles_used;
             let r = org
                 .hardware
                 .single_process(&mut org.state, &mut iface, true);
-            let executed = org.state.phenotype.cpu_cycles_used != cycles;
+            let executed = org.state.phenotype.cpu_cycles_used != cycles
+                || std::mem::take(&mut org.hardware.base_mut().burst_stepped);
             if executed {
                 out.executed += 1;
                 org.state.parallel.budget -= 1;
@@ -364,7 +597,14 @@ pub fn run_burst(
                 break;
             }
             match r {
-                Ok(true) if executed => {}
+                Ok(true) if executed => {
+                    if iface.has_pending_birth() {
+                        // The divide's world half is the sequential
+                        // phase's; the parent must not run before it.
+                        out.needs_world = true;
+                        break;
+                    }
+                }
                 Ok(_) => {
                     out.needs_world = out.executed < cap;
                     break;
@@ -377,6 +617,10 @@ pub fn run_burst(
         }
     }
     org.hardware.base_mut().parallel_burst = false;
+    org.hardware.base_mut().burst_io = false;
+    org.hardware.base_mut().burst_divide = false;
+    org.state.parallel.out_events = events;
+    org.state.parallel.pending_birth = pending;
     org.state.parallel.rng = Some(rng);
     out
 }
@@ -396,6 +640,27 @@ pub struct LocalWorld<'a> {
     pub tot_creatures: i32,
     /// `m_world->GetStats().GetSenseSize()`
     pub sense_size: usize,
+    /// The run's output tests are organism-local
+    /// ([`crate::local_output::output_is_local`]).
+    pub io_local: bool,
+    /// The run's divides run their organism-local half in the bursts
+    /// ([`divide_is_local`]).
+    pub divide_local: bool,
+    /// The amounts of the resources in each cell, when the run's output
+    /// tests read them in the bursts ([`crate::local_output`]).
+    pub cell_resources: Option<&'a dyn CellResources>,
+    /// The inputs of every cell.
+    pub cell_inputs: &'a dyn CellInputs,
+    /// `m_world->GetStats().GetGroupAttackInsts(name).GetSize()` by
+    /// instruction set name (absent: 0).
+    pub group_attack_counts: &'a BTreeMap<String, usize>,
+}
+
+/// The input values of the cells (`cPopulationCell::m_inputs`), read in
+/// the parallel phase by the input instructions.
+pub trait CellInputs: Sync {
+    /// The inputs of cell `cell`.
+    fn inputs(&self, cell: i32) -> &[i32];
 }
 
 /// The [`OrgInterface`] of an organism in the parallel phase: the
@@ -407,18 +672,42 @@ pub struct LocalInterface<'a> {
     world: &'a LocalWorld<'a>,
     rng: &'a mut AvidaRng,
     cell_id: i32,
+    events: &'a mut Vec<OutEvent>,
+    pending: &'a mut PendingBirthSlot,
+    /// An organism is being built for a pending birth: its identity is
+    /// given by the world when it adopts it.
+    building: bool,
+    /// The organism's copy of its cell's resource amounts
+    /// ([`LocalResources`]).
+    levels: Vec<f64>,
     denied: Cell<Option<&'static str>>,
 }
 
 impl<'a> LocalInterface<'a> {
-    /// The interface of the organism in `cell_id`, drawing from `rng`.
-    pub fn new(world: &'a LocalWorld<'a>, rng: &'a mut AvidaRng, cell_id: i32) -> Self {
+    /// The interface of the organism in `cell_id`, drawing from `rng` and
+    /// writing the statistics changes of its output tests to `events`.
+    pub fn new(
+        world: &'a LocalWorld<'a>,
+        rng: &'a mut AvidaRng,
+        cell_id: i32,
+        events: &'a mut Vec<OutEvent>,
+        pending: &'a mut PendingBirthSlot,
+    ) -> Self {
         LocalInterface {
             world,
             rng,
             cell_id,
+            events,
+            pending,
+            building: false,
+            levels: Vec::new(),
             denied: Cell::new(None),
         }
+    }
+
+    /// A divide ran its organism-local half in this burst.
+    pub fn has_pending_birth(&self) -> bool {
+        self.pending.0.is_some()
     }
 
     /// The first request this interface refused, if any.
@@ -460,9 +749,12 @@ impl WorldServices for LocalInterface<'_> {
     fn sense_size(&self) -> usize {
         self.world.sense_size
     }
-    fn group_attack_inst_count(&self, _inst_set: &str) -> usize {
-        self.deny("group_attack_inst_count");
-        0
+    fn group_attack_inst_count(&self, inst_set: &str) -> usize {
+        self.world
+            .group_attack_counts
+            .get(inst_set)
+            .copied()
+            .unwrap_or(0)
     }
     fn test_mode(&self) -> bool {
         false
@@ -477,7 +769,9 @@ impl WorldServices for LocalInterface<'_> {
         self.world.config.verbosity
     }
     fn new_org_uid(&mut self) -> OrgUid {
-        self.deny("new_org_uid");
+        if !self.building {
+            self.deny("new_org_uid");
+        }
         OrgUid::NONE
     }
 }
@@ -493,6 +787,26 @@ impl OrgInterface for LocalInterface<'_> {
              its handler must not be on the parallel allow-list"
         )
     }
+    fn local_output(&mut self) -> Option<LocalOutput<'_>> {
+        if !self.world.io_local {
+            return None;
+        }
+        Some(LocalOutput {
+            config: self.world.config,
+            environment: self.world.environment,
+            rng: &mut *self.rng,
+            update: self.world.update,
+            cell_id: self.cell_id,
+            events: &mut *self.events,
+            resources: match self.world.cell_resources {
+                Some(view) => Some(LocalResources {
+                    view,
+                    levels: &mut self.levels,
+                }),
+                None => None,
+            },
+        })
+    }
     fn get_cell_id(&self) -> i32 {
         self.cell_id
     }
@@ -500,8 +814,9 @@ impl OrgInterface for LocalInterface<'_> {
         Vec::new()
     }
     fn test_sterilize(&self) -> bool {
-        self.deny("test_sterilize");
-        Default::default()
+        // Only asked by a divide, which runs in a burst only when no
+        // sterilisation test is on ([`divide_is_local`]).
+        false
     }
     fn genotype_test_fitness(&mut self, _org: &OrgState) -> f64 {
         self.deny("genotype_test_fitness");
@@ -641,15 +956,46 @@ impl OrgInterface for LocalInterface<'_> {
         self.deny("divide");
         Default::default()
     }
+    /// The organism-local half of `ActivateOffspring`: builds the
+    /// offspring's organism (what `cBirthChamber::SubmitOffspring` does
+    /// first for an asexual parent) and keeps it for the world's half,
+    /// which the sequential phase runs after the burst. Answers that the
+    /// parent lives; the world finds out, and the parent is gone then if
+    /// it was not.
     fn divide_with_traces(
         &mut self,
-        _parent: &mut OrgState,
+        parent: &mut OrgState,
         _parent_hw: &dyn Hardware,
-        _offspring_genome: &Genome,
+        offspring_genome: &Genome,
         _traces: &mut crate::mini_trace::LentTraces,
     ) -> bool {
-        self.deny("divide_with_traces");
-        Default::default()
+        if !self.world.divide_local || self.pending.0.is_some() {
+            self.deny("divide_with_traces");
+            return true;
+        }
+        let temp = Genome::new(
+            parent.genome().hardware_type(),
+            &parent.genome().properties(),
+            offspring_genome.representation().clone(),
+        );
+        self.building = true;
+        let built = Organism::new(
+            self,
+            &temp,
+            parent.phenotype.generation,
+            OrgSource::new(transmission::DIVISION, "", false),
+        );
+        self.building = false;
+        match built {
+            Ok(organism) => {
+                self.pending.0 = Some(Box::new(PendingBirth {
+                    organism,
+                    genome: offspring_genome.clone(),
+                }));
+            }
+            Err(_) => self.deny("building the offspring's organism"),
+        }
+        true
     }
     fn with_neighbor(&mut self, _f: &mut dyn FnMut(&mut Organism)) -> Faced {
         self.deny("with_neighbor");
@@ -698,9 +1044,23 @@ impl OrgInterface for LocalInterface<'_> {
         self.deny("get_lgt_fragment");
         Default::default()
     }
-    fn get_input_at(&mut self, _input_pointer: &mut i32) -> i32 {
-        self.deny("get_input_at");
-        Default::default()
+    /// `cPopulationCell::GetInputAt` of the organism's own cell.
+    fn get_input_at(&mut self, input_pointer: &mut i32) -> i32 {
+        if !self.world.io_local {
+            self.deny("get_input_at");
+            return 0;
+        }
+        let inputs = self.world.cell_inputs.inputs(self.cell_id);
+        if inputs.is_empty() {
+            // The world reports this as an unsupported state in the
+            // sequential phase.
+            self.deny("get_input_at of a cell without inputs");
+            return 0;
+        }
+        *input_pointer %= inputs.len() as i32;
+        let value = inputs[*input_pointer as usize];
+        *input_pointer += 1;
+        value
     }
     fn reset_inputs(&mut self) {
         self.deny("reset_inputs");
@@ -825,8 +1185,8 @@ impl OrgInterface for LocalInterface<'_> {
         Default::default()
     }
     fn test_on_divide(&self) -> bool {
-        self.deny("test_on_divide");
-        Default::default()
+        // See `test_sterilize`.
+        false
     }
     fn send_message(&mut self, _msg: &mut OrgMessage) -> bool {
         self.deny("send_message");

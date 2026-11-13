@@ -223,6 +223,21 @@ pub struct Population {
     /// built in this world are numbered from 1; not in the C++, where the
     /// `cOrganism*` is the identity).
     pub last_org_uid: u64,
+    /// Whether [`World::delete_organism`](crate::world::World::delete_organism)
+    /// parks the memory of the organisms it deletes in `graveyard` instead
+    /// of freeing it (the parallel mode, which frees it on its worker
+    /// threads).
+    pub defer_drops: bool,
+    /// Hardware and state of deleted organisms, not yet freed.
+    pub graveyard: Vec<(
+        Box<dyn avida_hardware::hardware::Hardware>,
+        avida_hardware::organism::OrgState,
+    )>,
+    /// The offspring's organism a burst of the parallel mode built for the
+    /// divide being committed ([`World::commit_divide`]); the birth chamber
+    /// takes it where the exact path builds one. Always `None` in the exact
+    /// mode.
+    pub prebuilt_offspring: Option<Box<avida_hardware::organism::Organism>>,
 }
 
 /// The organism a process step has taken out of its cell.
@@ -477,6 +492,9 @@ impl Population {
                 parasites: crate::parasites::ParasiteState::default(),
                 births: crate::births::BirthLog::default(),
                 last_org_uid: 0,
+                defer_drops: false,
+                graveyard: Vec::new(),
+                prebuilt_offspring: None,
             },
             report,
         ))

@@ -140,11 +140,14 @@ which runs a whole update as one slice) and `hardware/src/parallel.rs`
    (seeded from the run seed and the organism's uid), and refuses
    everything else. A step stops before its instruction when the
    instruction set marks it `STALL` or its handler is not on the hardware
-   type's allow-list (`CPU_PARALLEL_METHODS` for the heads CPU: no-ops,
+   type's allow-list (`CPU_PARALLEL_METHODS` for the heads CPU, and
+   `SMT_PARALLEL_METHODS` for TransSMT, see "TransSMT in bursts": no-ops,
    conditionals, flow control, stacks, registers, arithmetic, heads,
    copying, allocation, search, threads; every handler on it was read for
    what it reaches, and a refused request stops the run with an
-   `internal:` error instead of computing something else). Mutations
+   `internal:` error instead of computing something else; where they are
+   organism-local, the heads CPU's input, output and divide instructions
+   run in the burst too, see "Output tests and divides in the burst"). Mutations
    drawn in a burst (copy mutations, `if-p-*`, `PROB_FAIL`) come from the
    organism's stream. The executed instructions then advance the
    instruction counter and the resource clock exactly as that many exact
@@ -152,7 +155,9 @@ which runs a whole update as one slice) and `hardware/src/parallel.rs`
 3. **Sequential phase.** The organisms that stopped run that one
    instruction through the exact code path (`World::process_step`,
    non-speculative), in the order of a random permutation of the cells
-   drawn for the update from a stream of its own.
+   drawn for the update from a stream of its own. An organism whose burst
+   ended in a divide (see "Output tests and divides in the burst") runs
+   only the world's half of it there (`World::commit_divide`).
 4. **Changes of rate.** Each organism keeps an update clock (how far
    through the update its spending has taken it, 0 to 1). An organism whose
    priority changed during its step (a divide that changed its merit) has
@@ -215,13 +220,71 @@ which runs a whole update as one slice) and `hardware/src/parallel.rs`
 
 Nothing is rejected at start-up any more (`NUM_DEMES` above 1 was, until
 2026-11-13; see "Demes" below). These organisms or runs execute every
-instruction through the sequential phase, so they gain nothing: hardware types other than the heads CPU (TransSMT and its
-parasites, experimental, GP8, BCR), organisms with a tracer or a mini,
+instruction through the sequential phase, so they gain nothing: hardware types other than the heads CPU and TransSMT
+(experimental, GP8, BCR), organisms with a tracer or a mini,
 micro, navigation or reproduction trace, `THREAD_SLICING_METHOD 1`,
-promoters, constitutive regulation, implicit reproduction, instructions
-with resource costs, and whole runs at `VERBOSITY` 3 or more (slip mutations
+promoters (heads CPU), constitutive regulation (heads CPU), implicit
+reproduction, instructions with resource costs, the energy model (TransSMT),
+and whole runs at `VERBOSITY` 3 or more (slip mutations
 print) or with `TASK_SWITCH_PENALTY` (charged to the deme from the cost
-check).
+check). Runs where the output tests or the divides cannot be organism-local
+(see "Output tests and divides in the burst") still run their bursts, and
+stop them before each `IO` or `h-divide`, as before that section.
+
+### TransSMT in bursts
+
+`HardwareTransSmt::burst_step` (hardware type 2; `hardware_transsmt.rs`) is
+the burst counterpart of `SingleProcess` for `THREAD_SLICING_METHOD 0`.
+The allow-list is `SMT_PARALLEL_METHODS` in `hardware/src/parallel.rs`: the
+no-ops, `Val-*` arithmetic, `SetMemory`, `Inst-Read` (its copy mutation
+draws from the organism's stream), `Inst-Write`, the `If-*` tests, the
+`Head-*` instructions, `Search`, the `Push-*` and `Val-Copy`/`Val-Delete`
+stack moves, the thread instructions (`Thread-Create`, `-Cancel`,
+`-Kill`: threads are only marked) and `Call-Flow`, `Call-Label`, `Return`.
+`IO`, the `Divide` family, `Inject`, `Apoptosis`, `Rotate-*` and
+`Collect-Unit` stop the burst and run in the sequential phase. Parasites
+need no special case: a parasite's threads, memory spaces and its entry in
+the host's parasite list all belong to the host organism, so a burst runs
+the parasite thread's organism-local instructions like the host's (the
+`ParasiteUnit` is only read). An infection is an `Inject` of another
+organism and so happens in the sequential phase.
+
+Details that keep the schedule right: with `PARASITE_VIRULENCE` other than
+-1 every step draws which of threads 0 and 1 runs. A burst step that draws
+and then finds its instruction not on the list leaves the draw in
+`pending_draw`, which the world's step uses instead of drawing again;
+without that, the thread of a world instruction would be biased towards
+whichever thread the burst's draw had not stopped on. The organism's last
+step (`max_executed` reached, whose death reaches the world) and a step in
+a state only the exact path reports (a thread-1 without owner) also go to
+the world. The exact mode never sets `pending_draw` and never calls the
+burst step. Organisms with `THREAD_SLICING_METHOD 1` or `ENERGY_ENABLED`
+(whose cost check puts the organism to sleep through the world) stay
+sequential. A gradient habitat's `SetToDie` is read in the sequential
+phase only.
+
+Statistical equivalence (2026-11-13): the stock host-parasite configuration
+(`avida-lab/04-host-parasite`: 50 x 50, TransSMT, `PARASITE_VIRULENCE 0.85`,
+parasites injected at update 600 into cells 0 to 399), seeds 101 to 116 in
+each mode, 1500 updates, the mean of the last three samples of each run,
+medians with interquartile ranges and Mann-Whitney p values:
+
+| Outcome | Exact | Parallel | p |
+|---|---|---|---|
+| organisms | 2303 [2281, 2325] | 2300 [2286, 2329] | 0.61 |
+| genotypes | 1562 [1538, 1578] | 1540 [1523, 1589] | 0.62 |
+| average gestation time | 2671 [2604, 2739] | 2642 [2546, 2715] | 0.51 |
+| average fitness | 0.1427 [0.1410, 0.1452] | 0.1436 [0.1423, 0.1463] | 0.51 |
+| average generation | 18.90 [18.83, 19.05] | 18.95 [18.87, 19.38] | 0.56 |
+| organisms with NOT | 2255 [2232, 2301] | 2273 [2236, 2288] | 0.84 |
+| parasites | 1485 [1447, 1532] | 1490 [1443, 1543] | 0.84 |
+
+Without the parasites (the same configuration with `events-no-parasites.cfg`,
+16 seeds each) every outcome has p of 0.13 or more (organisms 2432 against
+2430, p = 0.93). `crates/avida/tests/parallel.rs` repeats the comparison
+at a size a test can run (30 x 30, 8 seeds, Welch z below 3.5 for each
+outcome, with and without parasites), and checks that 1, 2 and 4 threads
+write the same files.
 
 ### Demes (2026-11-13)
 
@@ -431,11 +494,274 @@ updates). For batches of replicate runs, where the cores are busy anyway,
 of the statistics runs above are not comparable between the modes: the two
 sets ran hours apart under very different load.
 
-Where further speed would come from, in the order of the profile: a
-parallel gather for `update_organism_stats`, output written off the main
-thread, fewer rounds per update (after the first, a round advances only a
-few dozen organisms past one world instruction each), and the main thread taking
-part in the pool instead of waiting on it.
+#### Scaling work of 2026-11-13
+
+Measured with the counters of `AVIDA_EXECUTION_STATS` (they now also give the
+time of the end-of-update statistics and of the rest of the end of an update,
+and the bursts run on the pool against inline) and `sample` on the main
+thread. At 4 to 8 threads the main thread spent 45 to 60% of its time in the
+sequential phases (divides, and the one `IO` per gestation that reaches the
+world), 25 to 30% waiting for bursts, and 10 to 15% in the statistics; the
+workers' bursts reached 3.5x (4 threads) to 4.3x (8 threads) of one thread,
+so the sequential phase and the end of the update are the limit. The output
+of a seed did not change with any of these steps (byte-identical data files
+before and after, for 1, 4 and 8 threads on the stock configuration and for 4
+on `10-continents`).
+
+| Change | Effect |
+|---|---|
+| The sums of `update_organism_stats` by column: after the gather, every sum (and every group of eight message counts, and the task and reaction counts) takes the organisms in `live_org_list` order on a task of its own, so each ends with the bits of the walk. Gather and sums share one entry to the pool, the gather loads a block of eight organisms before working on them. | statistics 3.0 s to 2.4 s of a 17 s run (stock, 4 threads) |
+| Plain grid resources update at once: with two or more grids of at least 4096 cells, `ResourceCount::do_updates` hands the pending per-update flows of the plain grids to an executor (`SpatialExecutor`, the pool), one job per resource. A plain grid draws no random numbers and calls nothing outside its own cells, so the amounts are the same bits (`executor_gives_the_same_amounts_as_the_plain_loop`). The exact mode has no executor and runs the old loop. | `10-continents` (nine 160 x 160 grids): the first `IO` of every update waited for 9 flows on the main thread, 26% of its time; wall time of 1000 updates at 4 threads 14.5 s to 11.0 s |
+| Deleted organisms are freed on a worker (`Population::graveyard`, off while a parasite unit ever existed, since a unit's drop queues a systematics change) | 0.3 s of 17 s |
+
+Tried and left out: finer or coarser burst chunks (1 to 64) and pool
+thresholds (128, 1024) changed the pool time by less than the noise;
+splitting the sum tasks further; finding the cells of newborns from the
+placement instead of a scan of the cells (the scan costs 0.1 s of 17 s on the
+stock configuration and 1.2 s of 82 s on `10-continents`, which does not pay
+for a second path that must see every way an organism is placed).
+
+#### Output tests and divides in the burst (2026-11-13)
+
+What was left of the sequential phase after the steps above was two things,
+both the exact code path: the one `IO` of each gestation (a task test through
+the world) and the `h-divide` (`Divide_Main`, `ActivateOffspring`). Profile of
+the main thread at 4 threads (`sample`, stock configuration): 34% of its time
+in the sequential phase, 80% of that in the divide, 16% of the thread's time
+in the output test. Most of both is organism-local, so the heads CPU's
+handlers now run in the burst, and the sequential phase keeps what must see
+the whole population.
+
+**Output tests** (`hardware/src/local_output.rs`). `IO`, `IO-Feedback`,
+`IO-bc-0.001`, `get`, `put`, `get-stack` and `load-stack` (`CPU_PARALLEL_IO_METHODS`;
+the instruction set marks them `STALL`, which a burst overrides for these
+only) run in a burst when `output_is_local` holds for the run: the
+environment has no resources (or only per-cell ones, see "Per-cell resources
+in the burst"), state grids or neighbour input and output;
+every reaction's task is a pure function of the organism's buffers
+(`TaskLib::is_organism_local`: the logic, arithmetic, `fib`, `all-ones`,
+`royal-road` families); the reaction's processes only add to or multiply the
+bonus (no resource, product, detection, lethality, sterilisation, germline
+share, deme fraction, triggered instruction or `phenplastbonus`); and the
+run has no avatars, energy model, task-switch penalty or immediate merit
+update. The stock environment qualifies. `do_output_local` is the body of
+`cOrganism::doOutput` on a shared borrow of the environment
+(`Environment::test_output_shared`: the same loop as `test_output`, which
+needs `&mut self` only for `xor-max` and the plasticity test) and the
+cell's inputs (`LocalWorld::cell_inputs`, read through the organism's own
+`input_pointer`). What the exact path adds to the world's statistics and to
+the organism's deme (`AddNewTaskCount`, `AddOtherTaskCounts`,
+`AddNewReactionCount`, `AgeTaskEvent`, the deme's task and reaction counts)
+the organism writes as `OutEvent`s into its own list, and the world replays
+them in cell order after the parallel phase (`replay_out_events`), so the
+statistics end with the same counts as with the output tests in the
+sequential phase (`local_output_test_matches_the_world_path`). The output
+test draws no random numbers.
+
+**Divides.** `h-divide` and its multiplier variants
+(`CPU_PARALLEL_DIVIDE_METHODS`) run in a burst when `divide_is_local`
+holds as well (output tests local; no groups, habitat requirements, test
+CPU on divide or for sterilisation, epigenetic inheritance, precalculated
+phenotypes, input reset on divide, tolerance, inherited reputation, genotype
+file, gene transfer or forage target at birth) and the organism cannot
+die of age or be marked to die, has no additional time cost for the
+instruction and no lateral gene transfer rate (all of which the exact order
+would resolve after resetting the organism, so such a step stays in the
+sequential phase). The handler runs completely: viability checks (a failed
+divide is now an ordinary step of the burst), the copy mutations (from the
+organism's stream), the last output test with its `on_divide` flag, and the
+parent's own tail (`full_reset`, `clear_flags`). Where the exact path
+calls `m_interface->Divide`, `LocalInterface::divide_with_traces` builds the
+offspring's organism (`Organism::new`, a quarter of the divide) and keeps it
+with the offspring's genome in the parent's `ParallelOrgState::pending_birth`
+(`PendingBirth`); it answers that the parent lives, and the burst ends with
+the divide as its last instruction. The sequential phase then calls
+`World::commit_divide` instead of stepping the organism: the parent goes out
+of its cell as in `process_step`, `ActivateOffspring` runs, the birth chamber
+adopts the prebuilt organism where it would have built one
+(`adopt_prebuilt_org`: the world numbers it, and its generation is the
+parent's after `DivideReset`, which has run by now), and the step's epilogue
+follows (the parent dies if it is to die, or if the offspring replaced it).
+The burst counted the instruction; the commit does not. Commits go in the
+update's permutation order like the other sequential steps.
+
+The only reorderings against the exact path are the parent's tail and the
+parent's `time_used` check, both before `ActivateOffspring` instead of
+after; the gating above is what makes them unobservable (`ActivateOffspring`
+reads of the parent's hardware are `EPIGENETIC_METHOD` and
+`PRECALC_PHENOTYPE`, both excluded). With demes, the deme's normalized time
+of the step in which an organism divides uses its merit before the divide,
+not after.
+
+**What stays sequential, and why.** The commit is `ActivateOffspring` less
+the construction of the organism: `DivideReset` of the parent (draws from the
+world's generator and adds to its statistics), the birth chamber's
+classification of the offspring in the systematics (shared genotype tables),
+`PositionOffspring` (world generator, the occupancy of the cells, the
+neighbourhood), the kill of the cell's previous occupant (systematics,
+statistics, schedule) and the placement (cell inputs drawn from the world
+generator, schedule, birth statistics). None of it can run before the
+previous commit of the round has finished. Also still sequential: `get2`
+and `put-reset` (redraw the cell's inputs), divides of the resampling and
+sex families, and, in runs whose environment has global resources or non-pure tasks,
+every output test (the burst stops before the instruction as before).
+
+**Result.** One run of the stock configuration, 3000 updates, seed 42,
+release build, one run at a time, interleaved (load average 6 to 8 from
+desktop applications; a range is the spread of the runs, three at 4 and 8
+threads, two at 1):
+
+| Threads | Before | After | Sequential phase before, after |
+|---|---|---|---|
+| 1 | 28.5, 29.0 s | 29.2, 29.9 s | |
+| 4 | 16.6 to 17.7 s | 13.0 to 13.6 s | 7.7 s (54%), 3.1 s (30%) |
+| 8 | 15.9 to 16.2 s | 11.8 to 12.4 s | 8.0 s (60%), 3.2 s (34%) |
+
+The sequential phase is the commits now (151 per update, 6.8 microseconds
+each) and the instructions that stop for other reasons; it was 1.8% of the
+instructions in 33 rounds per update and is 2 rounds per update (at most 5):
+a round now ends in the divides it ran, not in each `IO`. One thread is 3%
+slower than before; not investigated (the burst now carries an event list
+for the output tests and one more copy of the offspring's genome per divide,
+and with one thread nothing waits for the sequential phase, so there is
+nothing to win there). Eight threads gain 9% over four (12.0 against
+13.2 s): what remains is the commits, 3 s, the statistics at the end of the
+update, 2.1 s, and the bursts, which cost about 60 ns per instruction on one
+thread and 90 ns per instruction and core with four, on a machine whose
+performance cores the desktop was also using. The
+output of a seed is identical for 1, 4 and 8 threads (compared file by
+file, `crates/avida/tests/parallel.rs`); it is not the output the parallel
+mode wrote before this change (the divides draw from the organisms'
+streams, and a round ends elsewhere), so the statistics comparison was
+repeated:
+
+| Outcome at update 5000 (16 seeds each) | Exact | Parallel | p |
+|---|---|---|---|
+| log10 average fitness | 3.42 [2.56, 3.54] | 3.30 [2.83, 3.85] | 0.81 |
+| average genome length | 102.2 [100.0, 105.1] | 104.0 [99.6, 110.9] | 0.54 |
+| tasks held by at least 5% of the organisms | 6 [5, 6] | 6 [5.75, 7] | 0.18 |
+| first update with NOT | 527 [436, 609] | 607 [440, 689] | 0.29 |
+| first update with NAND | 650 [534, 856] | 654 [562, 843] | 0.68 |
+| average generation | 1062 [954, 1146] | 959 [842, 1104] | 0.13 |
+| average gestation time | 371 [361, 383] | 385 [375, 423] | 0.032 |
+| organisms | 3593 [3592, 3594] | 3592 [3590, 3593] | 0.080 |
+| instructions in the last update | 107,800 | 107,800 | 0.93 |
+
+Nothing is significant after the correction for nine outcomes (the
+smallest, 0.032, becomes 0.29 with Holm's). The build before this change on
+the same seeds gave 0.039 for the average generation (941 against 1062) and
+0.93 for the gestation time; between the two parallel builds the smallest p
+is 0.08 (gestation time). The statistics test of the crate repeats the
+comparison for the heads CPU at 30 x 30 over 8 seeds
+(`heads_cpu_with_bursts_for_divides_matches_the_exact_mode_statistically`).
+
+Considered and not built: running the placement (`PositionOffspring`, the
+occupant's kill) speculatively in the burst, which needs the world's
+occupancy and generator; and a second pipeline stage that commits round `r`
+while the workers run the bursts of the organisms that did not divide, which
+in this schedule are finished by round 1.
+
+Where further speed would come from: the commit (3 s of 13), whose largest
+parts in the profile are the placement and the kill of the occupant, and
+the classification of the offspring and the release of the occupant's
+genotype in the systematics; the statistics at the end of the update
+(2.1 s), whose sums already take one task per column; and the burst itself,
+which does not scale beyond the performance cores of the machine.
+
+#### Per-cell resources in the burst (2026-11-13)
+
+Environments with resources used to keep every output test in the
+sequential phase. When every resource of the population is a plain spatial
+grid (`ResourceCount::are_plain_cell_grids`: no global or `PARTIAL`
+resource, no gradient, a grid cell for every world cell) the output tests
+run in the burst too. The gate is `output_is_local(cfg, env, cell_resources)`
+with the extra conditions: no deme, energy, HGT, deadly or predatory
+resource, no resource bins, no `internal` or `detect` process, and every
+`resource` and `product` of a process an index of the library. It is decided
+each update. The `10-continents` configuration qualifies.
+
+Why it is sound. An organism's output test reads and changes only the
+amounts in its own cell. During a parallel phase nothing else changes a
+cell's amount: grids advance once per update of the world (the lazy
+`DoUpdates` has no global resource to advance by the resource clock),
+other organisms' output tests touch their own cells, and every instruction
+that reaches another cell (`collect`, movement, sensing) is outside the
+burst. So:
+
+1. At the start of each parallel phase the world brings the grids up to date
+   (`update_resources`, the call the first output test of the update would
+   make) and lends the bursts a read-only view (`CellResources`,
+   `ResourceCount::frozen_cell_amounts`).
+2. The first output test of a burst copies the cell's amounts into the
+   organism's `LocalInterface` and evaluates against them
+   (`res_count`); after the test it folds `produced - consumed` into that
+   copy with the arithmetic of `ModifyCell` (`amount += 0.0 + change`), so a
+   second or third test of the same burst sees what the first took, to the
+   bit. A change that is not all zero is also written as an
+   `OutEvent::ResourceChange`.
+3. After the phase `replay_out_events` applies the changes in cell order
+   (`ResourceCount::modify_cell_updated`, `ModifyCell` without the lazy
+   update) before the sequential phase runs, so a `collect` or an output test
+   of a world instruction in the same round sees them. Cells are independent,
+   so the order cannot change an amount; the thread count does not enter.
+
+`cell_resource_output_tests_match_the_world_path` runs six output tests
+(repeated NOT, a byproduct, two resources) through the world and through one
+burst interface and compares the phenotype after each test and the cell's
+amounts bit for bit. Resource totals are conserved as in the exact mode because
+the same change is applied to the same cell by the same arithmetic; no cell can
+go below zero (`consumed` is capped by the level, as in `DoProcesses`;
+`cell_resource_world_does_not_depend_on_the_thread_count` checks it).
+
+What stays sequential, and why: global (well-mixed) resources, and mixed
+environments. One pool is read and consumed by every organism, so the result
+of an output test depends on the order of all the others, and on the resource
+clock at the instruction. A deterministic scheme exists in principle (stop the
+burst *before* an `IO` whose triggered reaction has a global resource, which
+needs a non-mutating look at the register the handler will output and a probe
+evaluation of the task) but it was not built: the handler consumes its nop
+modifier and the output buffer before the test, so the probe has to be written
+for each of the four output handlers. Such runs keep stopping the burst
+before each `IO`, as before this section.
+
+**Result** (`10-continents` configuration, seed 1, release build, one run at
+a time, interleaved, load average 6.5 to 9 from desktop applications):
+
+| Run | Before | After |
+|---|---|---|
+| 1000 updates, 4 threads | 8.36, 8.38 s in updates | 6.47, 7.73 s |
+| 1000 updates, 8 threads | 7.56, 8.89 s | 5.70, 6.82 s |
+| 3000 updates, 4 threads | 117.3 s (66.6% of it sequential phases, 23 rounds per update) | 77.6 s (29.5%, 2.0 rounds) |
+| stock configuration, 3000 updates, 4 threads | 12.0, 12.2 s | 12.1, 12.4 s |
+
+The sequential share left on the continents world is the divide commits (196 per
+update at update 1000), as on the stock configuration. At 1000 updates the world
+holds about 4600 organisms and the gain is a fifth; the full world gains a third.
+The output for a seed is identical for 1, 4 and 8 threads (every data file,
+the grids' `.m` files and the population save compared at 1000 updates). It
+differs from what the build before this change wrote.
+
+Equivalence, 12 seeds in each mode, 3000 updates, 30 x 30 world with the two
+resources of the unit test (`tools/parallel_stats.py`; the exact mode against the
+parallel mode at one thread):
+
+| Outcome | Exact | Parallel | p |
+|---|---|---|---|
+| log10 average fitness | -0.534 | -0.561 | 0.078 |
+| average genome length | 103.1 | 104.1 | 0.55 |
+| first update with NOT | 518 | 563 | 0.27 |
+| first update with NAND | 599 | 713 | 0.69 |
+| average generation | 262 | 243 | 0.033 |
+| average gestation time | 338 | 356 | 0.068 |
+| organisms | 3598 | 3598 | 0.26 |
+| instructions in the last update | 107,900 | 108,100 | 0.14 |
+
+Nothing is significant after Holm's correction (the smallest, 0.033, becomes
+0.30 for nine outcomes; tasks held is 0 in both modes, as the resources limit
+the rewards). The generation and gestation time lean the same way as in the
+stock configuration's comparison above; that run is the reference for whether it
+is a real shift. The crate's `cell_resources_in_bursts_match_the_exact_mode_statistically`
+repeats a smaller comparison with the loose |z| < 3.5 bound.
 
 ## Recording and playback (2026-11-13)
 

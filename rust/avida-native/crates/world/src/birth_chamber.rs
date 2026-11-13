@@ -1201,6 +1201,23 @@ impl World {
         Organism::new(self, genome, parent_generation, src)
     }
 
+    /// The organism a burst built for the offspring (parallel mode, see
+    /// [`World::commit_divide`]) as `new cOrganism` would have returned it
+    /// here: numbered by the world, and with the generation of a parent that
+    /// has reset (`DivideReset` ran since the burst built it).
+    fn adopt_prebuilt_org(&mut self, mut org: Organism, parent_generation: i32) -> Organism {
+        org.state.id = self.stats.tot_organisms;
+        org.state.uid = avida_hardware::org_interface::WorldServices::new_org_uid(self);
+        if parent_generation >= 0 {
+            let mut g = parent_generation;
+            if self.cfg.generation_inc_method != avida_phenotype::phenotype::GENERATION_INC_BOTH {
+                g += 1;
+            }
+            org.state.phenotype.generation = g;
+        }
+        org
+    }
+
     /// `SetupGenotypeInfo(organism, p0grps, p1grps)` / `SelfClassify`
     fn classify_offspring(
         &mut self,
@@ -1235,7 +1252,10 @@ impl World {
         if !parent.phenotype.divide_sex {
             // `DoAsexBirth`: this is asexual who doesn't need to wait in the
             // birth chamber; just build the child and return.
-            let mut org = self.new_offspring_org(offspring, parent_generation)?;
+            let mut org = match self.pop.prebuilt_offspring.take() {
+                Some(built) => self.adopt_prebuilt_org(*built, parent_generation),
+                None => self.new_offspring_org(offspring, parent_generation)?,
+            };
             let merit = if self.cfg.energy_enabled {
                 // calculate energy to be given to child
                 let child_energy =

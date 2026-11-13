@@ -646,6 +646,49 @@ impl TaskLib {
         ctx.logic_id = compute_logic_id(ctx.input_buffer, ctx.output_buffer);
     }
 
+    /// Whether task `id` is evaluated by [`TaskLib::test_output_pure`] from
+    /// the organism's input and output buffers alone: it reads nothing of
+    /// the organism, the cell or the world, writes nothing outside the
+    /// returned quality and prints nothing. The parallel execution mode
+    /// runs the output test of an organism in its burst only when every
+    /// task of the environment is such a task. Left out although pure
+    /// evaluators: the tasks reading received messages or the task state
+    /// (`comm_*`, `match_str`, `fibonacci_seq`) and `optimize`, which
+    /// writes a note to standard output.
+    pub fn is_organism_local(&self, id: usize) -> bool {
+        let Some(entry) = self.task_array.get(id) else {
+            return false;
+        };
+        matches!(
+            entry.kind,
+            TaskKind::Echo
+                | TaskKind::Add
+                | TaskKind::Add3
+                | TaskKind::Sub
+                | TaskKind::AddLowBits
+                | TaskKind::AddMiss
+                | TaskKind::AddLowBits4
+                | TaskKind::AddMiss4
+                | TaskKind::IncLowBits
+                | TaskKind::DecLowBits
+                | TaskKind::ArithMiss
+                | TaskKind::DontCare
+                | TaskKind::Logic(_)
+                | TaskKind::Logic3(_)
+                | TaskKind::Math1(_)
+                | TaskKind::Math2(_)
+                | TaskKind::Math3(_)
+                | TaskKind::Fib(_)
+                | TaskKind::MatchNumber
+                | TaskKind::Mult
+                | TaskKind::Div
+                | TaskKind::Unary(_)
+                | TaskKind::AllOnes
+                | TaskKind::RoyalRoad
+                | TaskKind::RoyalRoadWithDitches
+        )
+    }
+
     /// Evaluate the task selected by `ctx.task_entry` when it needs nothing
     /// from the organism or world (logic, math, match, sort-free, optimize,
     /// string tasks); `None` when the task needs a [`TaskWorld`].
