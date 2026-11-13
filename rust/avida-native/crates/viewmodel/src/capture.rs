@@ -463,11 +463,31 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
 fn phylogeny(w: &World, role: Option<usize>, on_map: &[GenotypeCells]) -> Vec<Node> {
     let mut nodes: Vec<Node> = Vec::with_capacity(on_map.len() * 2);
     let mut seen: HashSet<i32> = on_map.iter().map(|g| g.id).collect();
+    // One pass over the arbiter: looking a genotype up by id walks its
+    // lists, which over a whole population is quadratic.
+    let mut by_id: HashMap<i32, GroupRef> = HashMap::new();
+    if let Some(r) = role {
+        let sys = &w.systematics;
+        let historic = sys
+            .arbiter(r)
+            .and_then(|a| a.as_genotype())
+            .map(|a| a.historic())
+            .unwrap_or_default();
+        let all = sys.iter_groups(r).into_iter().chain(
+            historic
+                .into_iter()
+                .map(|handle| GroupRef { role: r, handle }),
+        );
+        for g in all {
+            if let Some(id) = sys.group_id(g) {
+                by_id.entry(id).or_insert(g);
+            }
+        }
+    }
     let parent_of = |id: i32| {
-        role.and_then(|r| w.systematics.group(r, id))
-            .map_or(-1, |g| {
-                first_parent(&w.systematics.property(g, "parents").string_value())
-            })
+        by_id.get(&id).map_or(-1, |&g| {
+            first_parent(&w.systematics.property(g, "parents").string_value())
+        })
     };
     for g in on_map {
         let mut parent = parent_of(g.id);

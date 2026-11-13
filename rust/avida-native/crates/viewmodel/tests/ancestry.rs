@@ -79,7 +79,14 @@ fn dump_layers() {
         .and_then(|v| v.parse().ok())
         .unwrap_or(2000);
     let world = stock_run("ancestry_dump", updates);
+    let started = std::time::Instant::now();
     let map = ancestry_frame(&world);
+    println!(
+        "capture of {}x{} with the ancestry layer: {:?}",
+        map.w,
+        map.h,
+        started.elapsed()
+    );
     let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join("viewmodel");
     for (layer, palette, name) in [
         (LayerId::Genotype, Palette::OkabeIto, "genotype"),
