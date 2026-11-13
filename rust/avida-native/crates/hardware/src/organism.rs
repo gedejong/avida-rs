@@ -1274,7 +1274,7 @@ fn do_output_inner(
         world.update_av_resources(org, &res_change, 0);
     } else {
         if org.phenotype.make_random_resource {
-            world.update_random_resources(&global_res_change);
+            world.update_random_resources(org, &global_res_change);
         } else {
             world.update_resources(org, &global_res_change);
         }

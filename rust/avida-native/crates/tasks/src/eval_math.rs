@@ -64,9 +64,96 @@ fn add_low_bits(input: &IoBuffer, output: &IoBuffer) -> Option<u32> {
 /// chance agreement rarely pays. Each round of carry propagation makes more
 /// low bits right, so a partial adder earns more than none.
 pub(crate) fn eval_add_lowbits(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    add_lowbits_quality(input, output, ADD_LOWBITS_MIN)
+}
+
+/// The minimum of `add_lowbits4`. An arbitrary output reaches 4 bits once in
+/// 16 times, the XOR of the inputs about 4 times in 10, so that with a
+/// penalty on `add_miss4` a sum without carries pays and guessing does not.
+const ADD_LOWBITS4_MIN: u32 = 4;
+
+fn add_lowbits_quality(input: &IoBuffer, output: &IoBuffer, min: u32) -> f64 {
     match add_low_bits(input, output) {
-        Some(bits) if bits >= ADD_LOWBITS_MIN => f64::from(bits) / 32.0,
+        Some(bits) if bits >= min => f64::from(bits) / 32.0,
         _ => 0.0,
+    }
+}
+
+fn add_miss_quality(input: &IoBuffer, output: &IoBuffer, min: u32) -> f64 {
+    match add_low_bits(input, output) {
+        Some(bits) if bits < min => 1.0,
+        _ => 0.0,
+    }
+}
+
+/// Port addition, not in the C++: `add_lowbits` with a minimum of 4 right
+/// low bits.
+pub(crate) fn eval_add_lowbits4(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    add_lowbits_quality(input, output, ADD_LOWBITS4_MIN)
+}
+
+/// Port addition, not in the C++: the counterpart of `add_lowbits4`.
+pub(crate) fn eval_add_miss4(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    add_miss_quality(input, output, ADD_LOWBITS4_MIN)
+}
+
+/// Fewer right low bits than this earn nothing in `inc_lowbits` and
+/// `dec_lowbits`. Only inputs that need a carry (a borrow) count, see
+/// [`step_low_bits`]; `k` rounds of carry propagation are wrong for one of
+/// those in `2^(k-1)` and then right in `k` bits. With this minimum those
+/// wrong outputs count as misses until the sixth round, and an arbitrary
+/// output reaches it once in 64 times per input.
+const STEP_LOWBITS_MIN: u32 = 6;
+
+/// The most low bits in which the output agrees with `input[i] + delta`
+/// before the first wrong bit, over the stored inputs whose lowest bit
+/// makes the step carry (odd inputs for +1, even inputs for -1). Flipping
+/// the lowest bit of any input gives its increment or its decrement, so
+/// without this restriction `inc_lowbits` and `dec_lowbits` together paid
+/// that output every time (lab pilot, 2026-11-13).
+fn step_low_bits(input: &IoBuffer, output: &IoBuffer, delta: i32) -> Option<u32> {
+    let test_output = output.get(0);
+    let carries = if delta > 0 { 1 } else { 0 };
+    (0..input.num_stored())
+        .map(|i| input.get(i))
+        .filter(|x| x & 1 == carries)
+        .map(|x| (test_output ^ x.wrapping_add(delta)).trailing_zeros())
+        .max()
+}
+
+fn step_lowbits_quality(input: &IoBuffer, output: &IoBuffer, delta: i32) -> f64 {
+    match step_low_bits(input, output, delta) {
+        Some(bits) if bits >= STEP_LOWBITS_MIN => f64::from(bits) / 32.0,
+        _ => 0.0,
+    }
+}
+
+/// Port addition, not in the C++: the increment of an input, with the
+/// partial credit of `add_lowbits`. A stepping stone to `add`: `x + 1` is
+/// the loop of an adder with a constant second operand.
+pub(crate) fn eval_inc_lowbits(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    step_lowbits_quality(input, output, 1)
+}
+
+/// Port addition, not in the C++: the decrement of an input, as
+/// `inc_lowbits`.
+pub(crate) fn eval_dec_lowbits(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    step_lowbits_quality(input, output, -1)
+}
+
+/// Port addition, not in the C++: scores 1 for an output that none of
+/// `inc_lowbits`, `dec_lowbits` and `add_lowbits4` gives anything, once an
+/// input has been read. The one penalty for environments that reward all
+/// three (separate miss tasks would charge a right increment as a missed
+/// sum).
+pub(crate) fn eval_arith_miss(input: &IoBuffer, output: &IoBuffer) -> f64 {
+    let paid = eval_inc_lowbits(input, output) > 0.0
+        || eval_dec_lowbits(input, output) > 0.0
+        || eval_add_lowbits4(input, output) > 0.0;
+    if input.num_stored() > 0 && !paid {
+        1.0
+    } else {
+        0.0
     }
 }
 
@@ -76,10 +163,7 @@ pub(crate) fn eval_add_lowbits(input: &IoBuffer, output: &IoBuffer) -> f64 {
 /// output cost merit, so that putting out many values until one agrees by
 /// chance does not pay.
 pub(crate) fn eval_add_miss(input: &IoBuffer, output: &IoBuffer) -> f64 {
-    match add_low_bits(input, output) {
-        Some(bits) if bits < ADD_LOWBITS_MIN => 1.0,
-        _ => 0.0,
-    }
+    add_miss_quality(input, output, ADD_LOWBITS_MIN)
 }
 
 /// `Task_Add3`: output equals the sum of three consecutive inputs.
@@ -497,6 +581,29 @@ mod tests {
     }
 
     #[test]
+    fn inc_and_dec_count_the_right_low_bits() {
+        let i = buf(&[8, 11, 100]);
+        assert_eq!(eval_inc_lowbits(&i, &out(12)), 1.0);
+        assert_eq!(eval_dec_lowbits(&i, &out(7)), 1.0);
+        assert_eq!(eval_dec_lowbits(&i, &out(99)), 1.0);
+        // Flipping the lowest bit (9 = 8 + 1, 10 = 11 - 1) needs no carry
+        // and earns nothing.
+        assert_eq!(eval_inc_lowbits(&i, &out(9)), 0.0);
+        assert_eq!(eval_dec_lowbits(&i, &out(10)), 0.0);
+        assert_eq!(eval_arith_miss(&i, &out(10)), 1.0);
+        // Six right low bits of 12 pay, five do not.
+        assert_eq!(eval_inc_lowbits(&i, &out(12 ^ (1 << 6))), 6.0 / 32.0);
+        assert_eq!(eval_inc_lowbits(&i, &out(12 ^ (1 << 5))), 0.0);
+        // 2 is no increment, decrement or sum (19, 108, 111) of these.
+        assert_eq!(eval_arith_miss(&i, &out(2)), 1.0);
+        assert_eq!(eval_arith_miss(&i, &out(19)), 0.0);
+        assert_eq!(eval_arith_miss(&i, &out(12)), 0.0);
+        // Without an input there is nothing to miss.
+        assert_eq!(eval_arith_miss(&buf(&[]), &out(2)), 0.0);
+        assert_eq!(eval_inc_lowbits(&buf(&[i32::MAX]), &out(i32::MIN)), 1.0);
+    }
+
+    #[test]
     fn add_lowbits_counts_the_right_low_bits() {
         let i = buf(&[3, 5, 7]);
         assert_eq!(eval_add_lowbits(&i, &out(12)), 1.0); // 7+5
@@ -508,6 +615,12 @@ mod tests {
         assert_eq!(eval_add_lowbits(&i, &out(12 ^ (1 << 7))), 0.0);
         assert_eq!(eval_add_lowbits(&i, &out(12 ^ (1 << 8))), 8.0 / 32.0);
         assert_eq!(eval_add_miss(&i, &out(2)), 1.0);
+        // The 4-bit variants: 12 ^ (1 << 4) has 4 right low bits, 12 ^ (1 << 3) has 3.
+        assert_eq!(eval_add_lowbits4(&i, &out(12 ^ (1 << 4))), 4.0 / 32.0);
+        assert_eq!(eval_add_miss4(&i, &out(12 ^ (1 << 4))), 0.0);
+        assert_eq!(eval_add_lowbits4(&i, &out(12 ^ (1 << 3))), 0.0);
+        assert_eq!(eval_add_miss4(&i, &out(12 ^ (1 << 3))), 1.0);
+        assert_eq!(eval_add_lowbits4(&i, &out(12)), 1.0);
         assert_eq!(eval_add_miss(&i, &out(12)), 0.0);
         assert_eq!(eval_add_miss(&i, &out(12 ^ (1 << 8))), 0.0);
         // With one input there is no sum to miss.

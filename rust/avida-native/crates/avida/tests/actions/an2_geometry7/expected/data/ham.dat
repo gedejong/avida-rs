@@ -1,0 +1,8 @@
+# Hamming distance information
+# Thu Nov 12 23:44:38 2026
+#  1: Name of First Batch
+#  2: Name of Second Batch
+#  3: Average Hamming Distance
+#  4: Total Pairs Test
+
+Batch1 Batch0 30.189 52635 

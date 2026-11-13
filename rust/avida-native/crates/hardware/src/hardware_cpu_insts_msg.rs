@@ -157,6 +157,7 @@ pub(crate) fn org_broadcast_message(
     msg: &mut OrgMessage,
     depth: i32,
 ) -> Result<bool, String> {
+    world.set_sender_recv_len(org.msg_received.len());
     let sent = world.broadcast_message(msg, depth);
     deliver_to_self(hw, org, world)?;
     if sent {
@@ -177,6 +178,7 @@ fn org_send_message(
     if world.config().check_task_on_send {
         hw.org_do_output(org, world, Some(msg.data as i32), false)?;
     }
+    world.set_sender_recv_len(org.msg_received.len());
     let sent = world.send_message(msg);
     deliver_to_self(hw, org, world)?;
     if sent {

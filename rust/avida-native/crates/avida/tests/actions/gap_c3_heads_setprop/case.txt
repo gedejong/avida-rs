@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 3 -set DIV_INS_PROB 0.05 -set DIV_DEL_PROB 0.02

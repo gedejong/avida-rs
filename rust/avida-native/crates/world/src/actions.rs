@@ -402,6 +402,17 @@ pub fn canonical_name(name: &str) -> Option<&'static str> {
         .find(|n| n.eq_ignore_ascii_case(name))
 }
 
+/// Marks an action constructor's `Err` text as what the C++ prints to `cerr`
+/// before `exit(1)` while the event file loads: no `error:` prefix, no
+/// further feedback, exit status 1 (see [`cerr_exit`]).
+pub const CERR_EXIT_MARK: &str = "\u{1}cerr-exit-1\u{1}";
+
+/// The `Err` of an action constructor that does `cerr << line << endl;
+/// exit(1);`.
+pub fn cerr_exit(lines: &str) -> String {
+    format!("{CERR_EXIT_MARK}{lines}\n")
+}
+
 /// Is `name` an action this port can parse?
 pub fn is_supported(name: &str) -> bool {
     canonical_name(name).is_some()
@@ -442,8 +453,12 @@ pub fn cpp_event_file_failure(
             let cerr = format!("error: unable to load event '{}'\n", spec.name);
             return Some((cerr, feedback.render()));
         }
-        // Only the constructor's feedback matters here.
-        let _ = parse(&spec.name, &spec.args, ctx, &mut feedback);
+        // Only the constructor's feedback matters here, unless it exits.
+        if let Err(msg) = parse(&spec.name, &spec.args, ctx, &mut feedback) {
+            if msg.starts_with(CERR_EXIT_MARK) {
+                return Some((msg, String::new()));
+            }
+        }
     }
     None
 }
@@ -461,6 +476,7 @@ pub fn prefer_event_file_failure(
 ) -> String {
     let ctx = ParseContext { default_inst_set };
     match cpp_event_file_failure(event_file, defs, working_dir, &ctx) {
+        Some((cerr, _)) if cerr.starts_with(CERR_EXIT_MARK) => cerr,
         Some((cerr, action_feedback)) => {
             format!("{cerr}{feedback}{action_feedback}error: unable to load event file\n")
         }

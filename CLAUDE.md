@@ -81,7 +81,7 @@ The `rust-migration-*.md` files at the repository root record the FFI migration 
 - Default run (3000 updates, seed 42): about 47 s in exact mode against 57–64 s for the C++; 18 s in parallel mode on four threads. With gene transfer on: 35 s against 42 s.
 
 ### Open work
-1. Parallel execution mode (`EXECUTION_MODE 1`, opt-in, not byte-identical by design): threads beyond four add nothing; the sequential phase and the statistics gather are the limit. No demes.
-2. `unsupported:` stops listed in `ARCHITECTURE.md`: where the C++ behaviour is undefined the stop stays (maintainer's ruling, 2026-11-12: do what makes sense and record it in `PORTING.md`); where the C++ behaviour is defined the stop is a port gap to close. Two are unported paths (`consume-public-good` inside a plasticity test; an organism without a genotype there).
-3. Human review of the GUI and TUI in real windows and terminals.
+1. Parallel execution mode (`EXECUTION_MODE 1`, opt-in, not byte-identical by design): threads beyond four add nothing; the sequential phase and the statistics gather are the limit. Demes run since 2026-11-13; with implicit deme replication a deme generation takes about one update longer than in the exact mode (`ARCHITECTURE.md`, "Demes").
+2. `unsupported:` stops: where the C++ behaviour is undefined or crashes the stop stays (maintainer's ruling, 2026-11-12). The stops with defined C++ behaviour were closed on 2026-11-13 except a few narrow cases listed in `documentation/Tech-Debt-Backlog.md` (a `MAX_PREY_BT` kill from a plasticity or event-time test CPU, merit driven to zero by a damaging gradient).
+3. The GUI and TUI were reviewed from rendered sweeps (`cargo test -p avida-gui --test audit -- --ignored`, `cargo test -p avida-tui --test screens -- --ignored`); nobody has yet judged them in a real window or terminal.
 4. A single long simulation step cannot be interrupted; on close the front ends wait 2 s and detach the thread.

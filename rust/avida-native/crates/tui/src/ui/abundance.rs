@@ -16,7 +16,7 @@ use crate::app::App;
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let Some(frame) = app.frame.as_ref() else {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     };
     let Some(map) = frame.map.as_ref() else {
@@ -95,6 +95,7 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
             }
             let rgba = Palette::OkabeIto.category(Some(slot));
             let color = app.color_mode.color([rgba[0], rgba[1], rgba[2]]);
+            let ink = app.color_mode.ink_on([rgba[0], rgba[1], rgba[2]]);
             let name = frame
                 .genotypes
                 .iter()
@@ -102,7 +103,10 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                 .map_or_else(|| format!("#{g}"), |r| r.name.clone());
             let count = latest.map_or(0, |s| s.count_of(g));
             lines.push(Line::from(vec![
-                Span::styled(genotype_char(map, g).to_string(), Style::new().fg(color)),
+                Span::styled(
+                    genotype_char(map, g).to_string(),
+                    Style::new().fg(ink).bg(color),
+                ),
                 Span::raw(format!(" {:<13}{count:>6}", trunc(&name, 13))),
             ]));
         }
@@ -110,8 +114,9 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
             let listed: u32 = s.counts.iter().map(|&(_, n)| n).sum();
             let rgba = Palette::OkabeIto.category(None);
             let color = app.color_mode.color([rgba[0], rgba[1], rgba[2]]);
+            let ink = app.color_mode.ink_on([rgba[0], rgba[1], rgba[2]]);
             lines.push(Line::from(vec![
-                Span::styled("+", Style::new().fg(color)),
+                Span::styled("+", Style::new().fg(ink).bg(color)),
                 Span::raw(format!(
                     " {:<13}{:>6}",
                     "other",

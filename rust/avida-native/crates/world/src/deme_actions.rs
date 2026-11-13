@@ -233,16 +233,15 @@ pub fn parse(
             }
             // The C++ prints to `cerr` and calls `exit(1)` on either check.
             if inputs.len() != 3 {
-                return Some(Err("unsupported: SetEnvironmentInputs without exactly 3 \
-                     inputs (C++: exit(1) while the event file loads)"
-                    .to_string()));
+                return Some(Err(crate::actions::cerr_exit(
+                    "Must have exactly 3 inputs for SetEnvironmentInputs action.",
+                )));
             }
             if inputs[0] >> 24 != 15 || inputs[1] >> 24 != 51 || inputs[2] >> 24 != 85 {
-                return Some(Err(format!(
-                    "unsupported: SetEnvironmentInputs inputs {} {} {} that do not begin \
-                     0F, 33, 55 (C++: exit(1) while the event file loads)",
+                return Some(Err(crate::actions::cerr_exit(&format!(
+                    "Inputs must begin 0F, 33, 55 for SetEnvironmentInputs\nThey are: {} {} {}",
                     inputs[0], inputs[1], inputs[2]
-                )));
+                ))));
             }
             DemeAction::SetEnvironmentInputs { inputs }
         }

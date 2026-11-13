@@ -1,0 +1,47 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 4
+
+UD: 0       Gen: 0.000000   Fit: 0.000000   Orgs: 36      Demes: 2    
+UD: 1       Gen: 0.000000   Fit: 0.000000   Orgs: 36      Demes: 2    
+UD: 2       Gen: 0.000000   Fit: 0.000000   Orgs: 36      Demes: 2    
+UD: 3       Gen: 0.5000000  Fit: 0.4000000  Orgs: 36      Demes: 2    
+UD: 4       Gen: 1.000000   Fit: 0.8000000  Orgs: 36      Demes: 2    
+UD: 5       Gen: 1.000000   Fit: 0.8000000  Orgs: 36      Demes: 2    
+UD: 6       Gen: 1.000000   Fit: 0.8000000  Orgs: 36      Demes: 2    
+UD: 7       Gen: 1.333333   Fit: 0.7986030  Orgs: 36      Demes: 2    
+UD: 8       Gen: 1.666667   Fit: 0.7956298  Orgs: 36      Demes: 2    
+UD: 9       Gen: 1.666667   Fit: 0.7956298  Orgs: 36      Demes: 2    
+UD: 10      Gen: 1.861111   Fit: 0.7958005  Orgs: 36      Demes: 2    
+UD: 11      Gen: 2.277778   Fit: 0.7958005  Orgs: 36      Demes: 2    
+UD: 12      Gen: 2.611111   Fit: 0.7954478  Orgs: 36      Demes: 2    
+UD: 13      Gen: 2.444444   Fit: 0.7905779  Orgs: 36      Demes: 2    
+UD: 14      Gen: 2.527778   Fit: 0.7918472  Orgs: 36      Demes: 2    
+UD: 15      Gen: 2.861111   Fit: 0.7921824  Orgs: 36      Demes: 2    
+UD: 16      Gen: 3.055556   Fit: 0.7928908  Orgs: 36      Demes: 2    
+UD: 17      Gen: 3.361111   Fit: 0.7861205  Orgs: 36      Demes: 2    
+UD: 18      Gen: 3.472222   Fit: 0.7822858  Orgs: 36      Demes: 2    
+UD: 19      Gen: 3.444444   Fit: 0.7829656  Orgs: 36      Demes: 2    
+UD: 20      Gen: 3.694444   Fit: 0.7871415  Orgs: 36      Demes: 2    
+UD: 21      Gen: 4.055556   Fit: 0.7850358  Orgs: 36      Demes: 2    
+UD: 22      Gen: 4.111111   Fit: 0.7868115  Orgs: 36      Demes: 2    
+UD: 23      Gen: 4.444444   Fit: 0.7844665  Orgs: 36      Demes: 2    
+UD: 24      Gen: 4.638889   Fit: 0.7848165  Orgs: 36      Demes: 2    

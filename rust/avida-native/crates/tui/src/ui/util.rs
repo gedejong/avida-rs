@@ -1,7 +1,9 @@
 //! Small drawing helpers shared by the screens.
 
 use ratatui::layout::Rect;
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
+
+use crate::color::{hue, Hue};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType};
 
@@ -10,8 +12,16 @@ use ratatui::widgets::{Block, BorderType};
 /// colour schemes).
 pub const DIM: Style = Style::new().add_modifier(Modifier::DIM);
 pub const BOLD: Style = Style::new().add_modifier(Modifier::BOLD);
-pub const ACCENT: Style = Style::new().fg(Color::Cyan);
-pub const HEADING: Style = Style::new().fg(Color::Magenta).add_modifier(Modifier::BOLD);
+/// Accent colour (keys, prompts): cyan, darkened on light backgrounds.
+pub fn accent() -> Style {
+    Style::new().fg(hue(Hue::Cyan))
+}
+/// Headings and changed values: bold magenta.
+pub fn heading() -> Style {
+    Style::new()
+        .fg(hue(Hue::Magenta))
+        .add_modifier(Modifier::BOLD)
+}
 
 /// A rounded bordered block with a title.
 pub fn block(title: &str) -> Block<'_> {
@@ -89,6 +99,16 @@ pub fn centered(area: Rect, w: u16, h: u16) -> Rect {
         y: area.y + (area.height - h) / 2,
         width: w,
         height: h,
+    }
+}
+
+/// When a genotype or organism was born: `u41`, or `start` for what the run
+/// began with (Avida records those as born at update -1).
+pub fn born_at(update: i32) -> String {
+    if update < 0 {
+        "start".to_string()
+    } else {
+        format!("u{update}")
     }
 }
 

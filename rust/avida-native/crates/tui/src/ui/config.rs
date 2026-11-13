@@ -2,13 +2,14 @@
 //! overrides typed so far, and what a restart would run.
 
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Cell, Paragraph, Row, Table, TableState, Wrap};
 use ratatui::Frame;
 
-use super::util::{block, trunc, ACCENT, BOLD, DIM};
+use super::util::{accent, block, trunc, BOLD, DIM};
 use crate::app::App;
+use crate::color::{hue, Hue};
 
 pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     let Some(setup) = app.setup.clone() else {
@@ -36,15 +37,19 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     // Filter line.
     let overrides = app.config.overrides.len();
     let mut spans = vec![
-        Span::styled(" filter ", DIM),
+        Span::styled(" Filter ", DIM),
         Span::styled(
             format!(
                 "{}{}",
-                app.config.query,
+                if app.config.query.is_empty() && !app.config.filtering {
+                    "none (press / to type one)"
+                } else {
+                    app.config.query.as_str()
+                },
                 if app.config.filtering { "_" } else { "" }
             ),
             if app.config.filtering {
-                ACCENT.add_modifier(Modifier::BOLD)
+                accent().add_modifier(Modifier::BOLD)
             } else {
                 BOLD
             },
@@ -53,7 +58,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     if app.config.changed_only {
         spans.push(Span::styled(
             "  [changed only]",
-            Style::new().fg(Color::Magenta),
+            Style::new().fg(hue(Hue::Magenta)),
         ));
     }
     spans.push(Span::styled(
@@ -79,9 +84,11 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
                 None => s.value.clone(),
             };
             let style = if ov.is_some() {
-                Style::new().fg(Color::Magenta).add_modifier(Modifier::BOLD)
+                Style::new()
+                    .fg(hue(Hue::Magenta))
+                    .add_modifier(Modifier::BOLD)
             } else if s.is_changed() {
-                Style::new().fg(Color::Green)
+                Style::new().fg(hue(Hue::Green))
             } else {
                 Style::new()
             };
@@ -116,6 +123,22 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         .with_selected((n > 0).then_some(app.config.sel));
     f.render_stateful_widget(table, list, &mut state);
     app.config.offset = state.offset();
+    if n == 0 {
+        let msg = if app.config.changed_only {
+            " No setting has been changed. Press c to list every setting."
+        } else {
+            " No setting matches the filter. Press / to change it."
+        };
+        let inner = list.inner(ratatui::layout::Margin::new(1, 1));
+        f.render_widget(
+            Paragraph::new(msg).style(DIM),
+            Rect {
+                y: inner.y + 1,
+                height: inner.height.saturating_sub(1),
+                ..inner
+            },
+        );
+    }
 
     // Detail or the edit prompt.
     let mut lines: Vec<Line> = Vec::new();
@@ -125,11 +148,14 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
             Span::styled(format!("{} ({kind}) = ", e.name), BOLD),
             Span::styled(
                 format!("{}_", e.buffer),
-                ACCENT.add_modifier(Modifier::BOLD),
+                accent().add_modifier(Modifier::BOLD),
             ),
         ]));
         match &e.error {
-            Some(err) => lines.push(Line::styled(err.clone(), Style::new().fg(Color::Red))),
+            Some(err) => lines.push(Line::styled(
+                err.clone(),
+                Style::new().fg(hue(Hue::LightRed)),
+            )),
             None => lines.push(Line::styled(
                 "Enter keeps the value, Esc cancels, Ctrl-U clears.",
                 DIM,
@@ -140,7 +166,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
             Span::styled(s.name, BOLD),
             Span::styled(format!("  {} in {}", s.kind, s.group), DIM),
             if s.from_command_line {
-                Span::styled("  set on the command line", Style::new().fg(Color::Cyan))
+                Span::styled("  set on the command line", Style::new().fg(hue(Hue::Cyan)))
             } else {
                 Span::raw("")
             },
@@ -149,18 +175,30 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     if overrides > 0 || detail_h > 4 {
         let args = app.restart_args();
         let cmd = if args.is_empty() {
-            "(no arguments)".to_string()
+            "no extra arguments".to_string()
         } else {
             args.join(" ")
         };
         lines.push(Line::from(vec![
-            Span::styled("restart runs: ", DIM),
+            Span::styled("A restart would run with: ", DIM),
             Span::raw(cmd),
         ]));
     }
     if app.config.edit.is_none() && detail_h > 4 {
         if let Some(s) = vis.get(app.config.sel).map(|&i| &setup.settings[i]) {
-            lines.push(Line::styled(s.desc.replace('\n', " "), DIM));
+            // What the box has room for; the rest is cut with an ellipsis
+            // instead of mid-word at the border.
+            let room = usize::from(detail_h.saturating_sub(2)).saturating_sub(lines.len());
+            let width = usize::from(detail.width.saturating_sub(2)).max(1);
+            let desc = s.desc.replace('\n', " ");
+            let text = if room == 0 {
+                String::new()
+            } else if desc.chars().count() > room * width {
+                trunc(&desc, room * width)
+            } else {
+                desc
+            };
+            lines.push(Line::styled(text, DIM));
         }
     }
     f.render_widget(

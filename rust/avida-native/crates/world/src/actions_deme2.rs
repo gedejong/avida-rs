@@ -255,11 +255,10 @@ pub fn parse(
         "CompeteDemesByTaskCountAndEfficiency" => {
             if args.is_empty() {
                 // `cerr << ... << endl; exit(1);` in the constructor.
-                return Some(Err(
-                    "unsupported: CompeteDemesByTaskCountAndEfficiency without an \
-                     initial deme energy (C++: exit(1) while the event file loads)"
-                        .to_string(),
-                ));
+                return Some(Err(crate::actions::cerr_exit(
+                    "CompeteDemesByTaskCountAndEfficiency must be given an initial deme \
+                     energy amount",
+                )));
             }
             let initial_deme_energy = as_double(&pop_word(&mut a.0));
             // QUIRK: `if (largs.GetSize() > 1)` tests the length of what is

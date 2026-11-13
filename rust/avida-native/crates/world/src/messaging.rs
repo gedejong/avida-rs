@@ -44,6 +44,10 @@ pub struct MessagingState {
     /// Deliveries to the running organism, waiting for its hardware to
     /// take them (`take_self_deliveries`).
     self_deliveries: Vec<SelfDelivery>,
+    /// The length of the running (sending) organism's received-message
+    /// buffer while it sends, counting the messages already queued for it
+    /// during this send (`set_sender_recv_len`).
+    pub running_recv_len: Option<usize>,
 }
 
 impl MessagingState {
@@ -109,10 +113,29 @@ impl World {
     /// Would `cOrganism::ReceiveMessage` on the occupant of `cell` drop the
     /// message before `msg.SetReceiver(this)` (a full buffer with
     /// `MESSAGE_RECV_BUFFER_BEHAVIOR 1`)? The running organism's buffer is
-    /// out of reach; it can only receive from itself, and the receiver of
-    /// that message is not read again before `MessageSent` clears it.
-    fn receiver_drops_new(&self, cell: i32) -> bool {
+    /// out of reach: its length was told at the start of the send
+    /// ([`MessagingState::running_recv_len`]) and counts the messages this
+    /// send has already queued for it. `None` when the sender's hardware did
+    /// not tell (the delivery to it is assumed to be kept).
+    fn receiver_drops_new(&mut self, cell: i32) -> bool {
         let bsize = self.cfg.message_recv_buffer_size;
+        let behavior = self.cfg.message_recv_buffer_behavior;
+        let full_and_drops = |len: usize| bsize != -1 && bsize <= len as i32 && behavior == 1;
+        if self.is_running_cell(cell) {
+            let Some(len) = self.messaging.running_recv_len else {
+                return false;
+            };
+            if full_and_drops(len) {
+                return true;
+            }
+            // Kept: it grows the buffer, unless a full buffer drops its
+            // oldest message to make room (`BEHAVIOR 0`).
+            let full = bsize != -1 && bsize <= len as i32;
+            if !full {
+                self.messaging.running_recv_len = Some(len + 1);
+            }
+            return false;
+        }
         let Some(org) = usize::try_from(cell)
             .ok()
             .and_then(|c| self.pop.orgs.get(c))
@@ -120,9 +143,7 @@ impl World {
         else {
             return false;
         };
-        bsize != -1
-            && bsize <= org.state.msg_received.len() as i32
-            && self.cfg.message_recv_buffer_behavior == 1
+        full_and_drops(org.state.msg_received.len())
     }
 
     /// Messages travel between neural networking avatars
@@ -227,19 +248,21 @@ impl World {
                 );
                 return true;
             };
+            // A running organism whose hardware did not tell its buffer
+            // length cannot say whether a full buffer drops the message
+            // before `SetReceiver` decides which receiver the predicates and
+            // the log see.
             if self.is_running_cell(recvr_cell)
+                && self.messaging.running_recv_len.is_none()
                 && self.cfg.message_recv_buffer_size != -1
                 && self.cfg.message_recv_buffer_behavior == 1
                 && (!self.actions2.a3.msg_predicates.is_empty() || self.cfg.net_log_messages != 0)
             {
-                // Whether the sender's own full buffer drops the message
-                // before `SetReceiver` decides which receiver the predicates
-                // and later log entries see; the running organism's buffer
-                // is out of reach here.
                 self.set_fatal(
                     "unsupported: SELF_COMMUNICATION into a bounded MESSAGE_RECV_BUFFER_SIZE with \
-                     MESSAGE_RECV_BUFFER_BEHAVIOR 1 while message predicates or NET_LOG_MESSAGES \
-                     read the receiver",
+                     MESSAGE_RECV_BUFFER_BEHAVIOR 1 from hardware that does not report its \
+                     received-message buffer while message predicates or NET_LOG_MESSAGES read \
+                     the receiver",
                 );
                 return true;
             }

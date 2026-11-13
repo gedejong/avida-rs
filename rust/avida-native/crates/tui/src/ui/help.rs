@@ -8,7 +8,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Clear, Paragraph};
 use ratatui::Frame;
 
-use super::util::{block, centered, trunc, ACCENT, DIM, HEADING};
+use super::util::{accent, block, centered, heading, trunc, DIM};
 use crate::actions::{keys_label, title_for, Scope, BINDINGS};
 use crate::app::App;
 
@@ -45,8 +45,31 @@ pub fn entries(micro_ops: bool) -> Vec<(String, String, String)> {
 }
 
 pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
-    let rows = entries(app.steps_run_micro_ops());
-    let w = area.width.saturating_sub(2).min(78);
+    let mut rows = entries(app.steps_run_micro_ops());
+    // What the letters in the memory listings mean (the listing's own title
+    // carries them only when the window is wide).
+    rows.push((
+        String::new(),
+        "Marks in the memory listings".into(),
+        String::new(),
+    ));
+    rows.push((
+        "I R W F".into(),
+        "Instruction pointer, read head, write head, flow head".into(),
+        String::new(),
+    ));
+    rows.push((
+        "x c m".into(),
+        "Site executed, copied, mutated".into(),
+        String::new(),
+    ));
+    // A narrow terminal gets the whole width, so no edge of the screen
+    // underneath shows beside the box; a wide one gets a centred box.
+    let w = if area.width <= 90 {
+        area.width
+    } else {
+        area.width.saturating_sub(4).min(100)
+    };
     let h = area.height.saturating_sub(2).min(rows.len() as u16 + 2);
     let r = centered(area, w, h);
     f.render_widget(Clear, r);
@@ -73,7 +96,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         .take(visible)
         .map(|(k, t, screens)| {
             if k.is_empty() {
-                Line::styled(t.clone(), HEADING)
+                Line::styled(t.clone(), heading())
             } else {
                 let room = text_w.saturating_sub(KEY_W + 1);
                 let suffix = if screens.is_empty() {
@@ -85,7 +108,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
                 Line::from(vec![
                     Span::styled(
                         format!("{:<KEY_W$} ", trunc(k, KEY_W)),
-                        ACCENT.add_modifier(Modifier::BOLD),
+                        accent().add_modifier(Modifier::BOLD),
                     ),
                     Span::styled(main, Style::new()),
                     Span::styled(suffix, DIM),

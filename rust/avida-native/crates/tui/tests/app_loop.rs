@@ -100,7 +100,7 @@ fn tour(w: u16, h: u16) {
             Box::new(|a| a.frame.as_ref().is_some_and(|f| f.inspect.is_some())),
         ),
         Step::Check(Box::new(|_, t| {
-            has(t, "Organism (0,0)");
+            has(t, "in cell 0 (0,0)");
             has(t, "h-alloc");
             has(t, "Memory");
             has(t, "AX");
@@ -124,7 +124,7 @@ fn tour(w: u16, h: u16) {
         Step::Keys("H"),
         Step::Check(Box::new(|_, t| {
             has(t, "Genotype abundance");
-            has(t, "Each '#'");
+            has(t, "Bars are drawn to scale");
         })),
         snap("11_hist_genotype"),
         Step::Keys("]"),
@@ -322,7 +322,7 @@ fn cursor_scrolling_click_and_organism_inspection() {
         Step::Event(key(KeyCode::Enter)),
         Step::Check(Box::new(|a, t| {
             assert_eq!(a.screen, avida_tui::app::Screen::Zoom);
-            has(t, "Organism (0,0) #0");
+            has(t, "in cell 0 (0,0)");
             has(t, "Memory");
         })),
         Step::Keys(",,,,,"),
@@ -384,7 +384,7 @@ fn a_fatal_error_is_shown_and_the_last_frame_stays_inspectable() {
         ),
         Step::Check(Box::new(|a, t| {
             has(t, "FAILED");
-            has(t, "STOPPED:");
+            has(t, "Press D for the log");
             assert_eq!(a.run_state(), RunState::Failed);
         })),
         Step::Snap("fatal_map".into()),
@@ -393,7 +393,7 @@ fn a_fatal_error_is_shown_and_the_last_frame_stays_inspectable() {
         Step::Snap("fatal_log".into()),
         Step::Keys("M"),
         Step::Check(Box::new(|_, t| {
-            has(t, "STOPPED:");
+            has(t, "Press D for the log");
             has(t, "cell ");
         })),
         Step::Keys(" "),

@@ -239,6 +239,15 @@ pub trait OrgInterface: WorldServices {
 
     /// Split borrow for `cOrganism::doOutput` (see [`OutputServices`]).
     fn output_services(&mut self) -> OutputServices<'_>;
+    /// A deadly or predatory gradient resource hit the running organism
+    /// since the last call (`target_org->GetPhenotype().SetToDie()` in
+    /// `cPopulation::ExecuteDeadlyResource` / `ExecutePredatoryResource`).
+    /// The hardware folds it into `phenotype.to_die` where
+    /// `SingleProcess` reads `GetToDie()`, the only reader. Only a
+    /// population with gradient habitats ever answers true.
+    fn take_habitat_to_die(&mut self) -> bool {
+        false
+    }
     /// `m_world->GetTestSterilize()`
     fn test_sterilize(&self) -> bool;
     /// `cOrganism::GetTestFitness(ctx)`: the test-CPU fitness of the
@@ -448,7 +457,7 @@ pub trait OrgInterface: WorldServices {
     /// `UpdateResources(ctx, res_change)`
     fn update_resources(&mut self, org: &mut OrgState, res_change: &[f64]);
     /// `UpdateRandomResources(ctx, res_change)`
-    fn update_random_resources(&mut self, res_change: &[f64]);
+    fn update_random_resources(&mut self, org: &mut OrgState, res_change: &[f64]);
     /// `UpdateDemeResources(ctx, res_change)`
     fn update_deme_resources(&mut self, res_change: &[f64]);
 
@@ -458,6 +467,17 @@ pub trait OrgInterface: WorldServices {
 
     /// `Die(ctx)`: remove the organism from its cell.
     fn die(&mut self, org: &mut OrgState);
+    /// `orgs[i]->Die(ctx)` of `Inst_SetRandPFTOnce` from a test CPU: the
+    /// population organism `uid` in `cell`, a live organism that is not the
+    /// tested one, dies through its own interface. `Err` where the world
+    /// cannot do that at the point the test CPU is at.
+    fn kill_population_org(&mut self, _uid: OrgUid, _cell: i32) -> Result<(), String> {
+        Err(
+            "unsupported: a MAX_PREY_BT kill of a population organism from a test CPU \
+             (C++: cHardwareExperimental.cc:cHardwareExperimental::Inst_SetRandPFTOnce)"
+                .to_string(),
+        )
+    }
     /// `KillCellID(target, ctx)`. `org` is the running organism, which
     /// `target` may hold (a cell that is its own neighbour): its kill sets
     /// `SetToDelete()` on that state at once, as the C++ does.
@@ -505,6 +525,12 @@ pub trait OrgInterface: WorldServices {
     fn update_merit(&mut self, org: &mut OrgState, new_merit: f64) -> bool;
     /// `TestOnDivide()`
     fn test_on_divide(&self) -> bool;
+    /// The length of the sending (running) organism's received-message
+    /// buffer, told to the population just before `send_message` or
+    /// `broadcast_message`: the message may come back to the sender (its
+    /// own cell, its input avatar), whose buffer is out of the
+    /// population's reach and decides whether `ReceiveMessage` drops it.
+    fn set_sender_recv_len(&mut self, _len: usize) {}
     /// `SendMessage(msg)`
     fn send_message(&mut self, msg: &mut OrgMessage) -> bool;
     /// `BroadcastMessage(msg, depth)`
@@ -561,10 +587,6 @@ pub trait OrgInterface: WorldServices {
     fn do_deme_output(&mut self, value: i32);
 
     // ---- HGT ----
-    /// `DoHGTDonation(ctx)`
-    fn do_hgt_donation(&mut self, org: &mut OrgState);
-    /// `DoHGTConjugation(ctx)`
-    fn do_hgt_conjugation(&mut self, org: &mut OrgState);
     /// `DoHGTMutation(ctx, offspring)` of the dividing `org`, whose
     /// `offspring_genome` is the offspring. `org` is also where the world
     /// reads the parent's own genome (`HGT_SOURCE` 1, or conjugation from a
@@ -576,10 +598,6 @@ pub trait OrgInterface: WorldServices {
     // ---- movement and live-org bookkeeping ----
     /// `Move(ctx, src_id, dest_id)`
     fn move_org(&mut self, org: &mut OrgState, src_id: i32, dest_id: i32) -> bool;
-    /// `AddLiveOrg()`
-    fn add_live_org(&mut self);
-    /// `RemoveLiveOrg()`
-    fn remove_live_org(&mut self);
 
     // ---- opinions ----
     /// `HasOpinion(org)`
@@ -906,12 +924,7 @@ pub trait OrgInterface: WorldServices {
     /// `m_world->GetStats().GetNumPredCreatures()` (predators only, not top
     /// predators; `cHardwareBCR` / `cHardwareGP8` `makePred`); `Err` where
     /// the statistic is not available.
-    fn stats_num_pred_creatures(&self) -> Result<i32, String> {
-        Err(
-            "unsupported: the world statistics' predator count (C++: cStats::GetNumPredCreatures)"
-                .to_string(),
-        )
-    }
+    fn stats_num_pred_creatures(&self) -> Result<i32, String>;
 }
 
 /// Which `cStats::SumEnergyTestamentTo*` sum a relinquished energy amount

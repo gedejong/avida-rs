@@ -188,7 +188,7 @@ fn the_config_screen_lists_filters_and_previews_the_restart() {
     has(&t, "3 of 3 settings, 0 overrides");
     has(&t, "WORLD_X");
     has(&t, "COPY_MUT_PROB");
-    has(&t, "restart runs: (no arguments)");
+    has(&t, "A restart would run with: no extra arguments");
     a.config.query = "copy".into();
     a.config.filtering = true;
     let t = render(&mut a, 80, 24);
@@ -201,7 +201,7 @@ fn the_config_screen_lists_filters_and_previews_the_restart() {
     let t = render(&mut a, 80, 24);
     has(&t, "60 > 25");
     has(&t, "1 override");
-    has(&t, "restart runs: -set WORLD_Y 25");
+    has(&t, "A restart would run with: -set WORLD_Y 25");
 }
 
 #[test]
@@ -579,4 +579,25 @@ fn panels_cut_long_lines_with_an_ellipsis_and_wrap_messages() {
     b.goto(Screen::Debug);
     let t = render(&mut b, 50, 24);
     has(&t, "organism and press Enter");
+}
+
+#[test]
+fn before_the_first_report_the_header_says_starting_not_paused() {
+    let mut a = crate::fixtures::app();
+    let t = render(&mut a, 80, 24);
+    has(&t, "STARTING");
+    assert!(!t.contains("PAUSED"), "{t}");
+    a.apply_status(crate::fixtures::status(avida_session::RunState::Paused, 3));
+    let t = render(&mut a, 80, 24);
+    has(&t, "PAUSED");
+}
+
+#[test]
+fn the_help_overlay_explains_the_memory_marks() {
+    let mut a = app_with(frame_with_map());
+    a.perform(Action::Help, false);
+    a.help_scroll = 1000;
+    let t = render(&mut a, 80, 24);
+    has(&t, "Marks in the memory listings");
+    has(&t, "I R W F");
 }

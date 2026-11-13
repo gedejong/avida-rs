@@ -1,0 +1,2 @@
+base heads_default_100u
+args -s 7 -set WORLD_X 16 -set WORLD_Y 16 -set SPECULATIVE 0 -set IMPLICIT_REPRO_TIME 150

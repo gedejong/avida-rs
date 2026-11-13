@@ -1,0 +1,59 @@
+Avida 2.14.0
+release build
+--------------------------------------------------------------------------------
+by Charles Ofria
+Lead Developer: David M. Bryson
+
+Active developers include:
+Aaron P. Wagner and Anya E. Johnson
+For a more complete list of contributors, see the AUTHORS file.
+
+Copyright 1999-2014 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
+
+Avida comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain
+conditions. See file COPYING for details.
+
+For more information, see: http://avida.devosoft.org/
+--------------------------------------------------------------------------------
+
+Random Seed: 100
+Data Directory: /private/tmp/claude-501/-Users-edejong-src-avida/b76acc65-50b7-46a9-a314-b7af1bda8aa1/scratchpad/an2/w/g7.ref/data/
+
+In analyze mode!!
+Verbose NORMAL: Using standard log messages...
+Loading: detail-50000.pop
+Running through test CPUs...
+Detailing...
+Loading: detail-50000.pop
+Loading: detail-50000.pop
+Calculating Hamming Distance...  ave distance = 30.189
+Calculating Levenstein Distance...  ave distance = 13.2793
+Calculating Species Distance... 
+  ave distance = 0.177946 in 315810 tests.
+Calculating Edit Distance between all pairs of genotypes.
+0
+Printing diversity data...
+Creating recombinants...  
+Detailing...
+Creating recombinants...  
+Detailing...
+Detailing...
+Writing Competition events...
+Analyzing Instructions...
+Analyzeing Instructions...
+Constructing depth map...
+max_depth = 395
+Output to depth.dat
+Loading: qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva
+Loading: qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoqutttttaycsva
+Analyzing mutation traceback...
+Status Report:
+  Batch 0 -- 16 genotypes.
+  Batch 1 -- 7 genotypes.
+  Batch 2 -- 448 genotypes.
+  Batch 3 -- 20 genotypes.
+  Batch 6 -- 2 genotypes.  <current>
+Running through test CPUs...
+Detailing...

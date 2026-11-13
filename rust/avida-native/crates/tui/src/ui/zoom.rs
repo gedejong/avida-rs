@@ -9,15 +9,13 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Paragraph, Wrap};
 use ratatui::Frame;
 
-use super::util::{block, clip_lines, kv, trunc, DIM};
+use super::util::{block, born_at, clip_lines, kv, trunc, DIM};
 use crate::app::App;
+use crate::color::{hue, Hue};
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let Some(frame) = app.frame.as_ref() else {
-        f.render_widget(
-            Paragraph::new(" Waiting for the first frame...").style(DIM),
-            area,
-        );
+        f.render_widget(Paragraph::new(super::FIRST_FRAME).style(DIM), area);
         return;
     };
     let Some(org) = frame.inspect.as_ref() else {
@@ -111,9 +109,10 @@ fn draw_phenotype(f: &mut Frame, o: &OrganismView, area: Rect) {
                 } else {
                     o.genotype_name.clone()
                 },
-                Style::new().add_modifier(Modifier::BOLD).fg(Color::Magenta),
+                Style::new()
+                    .add_modifier(Modifier::BOLD)
+                    .fg(hue(Hue::Magenta)),
             ),
-            Span::styled(format!("  org {}", o.org_id), DIM),
         ]),
         Line::raw(format!(
             "merit {}  fitness {}  bonus {}",
@@ -130,19 +129,26 @@ fn draw_phenotype(f: &mut Frame, o: &OrganismView, area: Rect) {
             p.genome_length, p.copied_size, p.executed_size
         )),
         Line::raw(format!(
-            "cycles {}  time {}  divides {}  born u{}",
-            p.cpu_cycles_used, p.time_used, p.num_divides, p.birth_update
+            "cycles {}  time {}  divides {}  born {}",
+            p.cpu_cycles_used,
+            p.time_used,
+            p.num_divides,
+            born_at(p.birth_update)
         )),
         Line::raw(format!(
-            "true {}  modified {}  threads {}",
+            "breeds true {}  modified {}  threads {}",
             yes(p.parent_true),
             yes(p.is_modified),
             o.cpu.threads.len()
         )),
     ];
     f.render_widget(
-        Paragraph::new(clip_lines(lines, usize::from(area.width.saturating_sub(2))))
-            .block(block(&format!("Organism ({},{}) #{}", o.x, o.y, o.cell))),
+        Paragraph::new(clip_lines(lines, usize::from(area.width.saturating_sub(2)))).block(block(
+            &format!(
+                "Organism #{} in cell {} ({},{})",
+                o.org_id, o.cell, o.x, o.y
+            ),
+        )),
         area,
     );
 }
@@ -152,11 +158,11 @@ fn draw_tasks(f: &mut Frame, o: &OrganismView, env: &EnvView, area: Rect) {
     let w = usize::from(area.width.saturating_sub(2));
     let p = &o.phenotype;
     let mut lines: Vec<Line> = Vec::new();
+    let name_w = w.saturating_sub(10).clamp(4, 14);
     lines.push(Line::styled(
-        format!("{:<w$}", "task        now last", w = w),
+        format!("{:<name_w$} {:>4} {:>4}", "task", "now", "last"),
         DIM,
     ));
-    let name_w = w.saturating_sub(10).clamp(4, 14);
     let n = env.tasks.len();
     let room = h.saturating_sub(1);
     for (i, t) in env.tasks.iter().enumerate().take(room) {
@@ -167,7 +173,7 @@ fn draw_tasks(f: &mut Frame, o: &OrganismView, env: &EnvView, area: Rect) {
         let cur = p.cur_task_count.get(i).copied().unwrap_or(0);
         let last = p.last_task_count.get(i).copied().unwrap_or(0);
         let style = if last > 0 || cur > 0 {
-            Style::new().fg(Color::Green)
+            Style::new().fg(hue(Hue::Green))
         } else {
             DIM
         };
@@ -297,11 +303,11 @@ fn draw_cpu(
 
 pub(super) fn flag_char(flags: u8) -> (char, Color) {
     if flags & (mem_flags::MUTATED | mem_flags::POINT_MUT | mem_flags::COPY_MUT) != 0 {
-        ('m', Color::Magenta)
+        ('m', hue(Hue::Magenta))
     } else if flags & mem_flags::EXECUTED != 0 {
-        ('x', Color::Green)
+        ('x', hue(Hue::Green))
     } else if flags & mem_flags::COPIED != 0 {
-        ('c', Color::Cyan)
+        ('c', hue(Hue::Cyan))
     } else {
         (' ', Color::Reset)
     }

@@ -3,7 +3,7 @@ use std::process::ExitCode;
 use std::time::Duration;
 
 use avida_tui::cli::{self, Parsed};
-use avida_tui::color::ColorMode;
+use avida_tui::color::{Background, ColorMode};
 use avida_tui::runner::{
     enter_terminal, forget_terminal, is_terminal_gone, run_loop, settle_output, terminal_hung_up,
     terminal_problem, write_terminal_nonblocking, CrosstermEvents, Driver, TerminalGuard,
@@ -41,6 +41,7 @@ fn main() -> ExitCode {
         return ExitCode::from(1);
     }
     let colors = cli.colors.unwrap_or_else(ColorMode::detect);
+    avida_tui::color::set_theme(cli.theme.unwrap_or_else(Background::detect), colors);
 
     // Build the world before taking over the terminal, so a configuration
     // error prints as ordinary text.

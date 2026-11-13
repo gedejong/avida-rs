@@ -184,11 +184,16 @@ fn row(ui: &mut egui::Ui, t: &Tokens, item: &Item, hit: &Hit, selected: bool) ->
         galley.clone(),
         t.text,
     );
-    // The group, faint, after the title.
+    // The group, faint, after the title (not when it only repeats it).
+    let group = if item.group == item.title {
+        ""
+    } else {
+        item.group
+    };
     painter.text(
         egui::pos2(rect.left() + 12.0 + galley.size().x + 10.0, rect.center().y),
         Align2::LEFT_CENTER,
-        item.group,
+        group,
         FontId::proportional(12.0),
         t.text_faint,
     );

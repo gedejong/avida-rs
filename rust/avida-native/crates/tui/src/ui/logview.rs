@@ -9,6 +9,7 @@ use ratatui::Frame;
 
 use super::util::{block, clip_line, DIM};
 use crate::app::App;
+use crate::color::{hue, Hue};
 use crate::log::{LogKind, LogLine};
 
 /// How a line of this kind is drawn. Colours are the terminal's own named
@@ -18,9 +19,9 @@ fn style(kind: LogKind) -> Style {
     match kind {
         LogKind::Info => Style::new().add_modifier(Modifier::BOLD),
         LogKind::Output => Style::new(),
-        LogKind::Stderr => Style::new().fg(Color::Magenta),
+        LogKind::Stderr => Style::new().fg(hue(Hue::Magenta)),
         LogKind::Error => Style::new()
-            .fg(Color::LightRed)
+            .fg(hue(Hue::LightRed))
             .add_modifier(Modifier::BOLD),
         LogKind::Fatal => Style::new()
             .fg(Color::White)
@@ -64,7 +65,8 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         .skip(start)
         .take(h)
         .map(|l| {
-            let text = format!("{}{}", marker(l.kind), l.text);
+            // A message of several lines (a fatal error) is one line here.
+            let text = format!("{}{}", marker(l.kind), l.text.replace('\n', " "));
             clip_line(Line::styled(text, style(l.kind)), w)
         })
         .collect();

@@ -58,7 +58,12 @@ pub fn status_bar(ui: &mut Ui, state: &mut AppState) {
             let rate = state.rate.rate(state.now);
             let text = match (state.run_state(), rate) {
                 (Some(avida_session::RunState::Running), Some(r)) => format::rate(r),
-                (Some(avida_session::RunState::Running), None) => "starting…".to_string(),
+                // "Starting" holds only until the first update has finished;
+                // after that a missing rate (a slow update, or one sample
+                // so far) shows nothing rather than a stale word.
+                (Some(avida_session::RunState::Running), None) if state.history.is_empty() => {
+                    "Starting…".to_string()
+                }
                 _ => String::new(),
             };
             if !text.is_empty() {

@@ -10,25 +10,41 @@ use ratatui::Frame;
 
 use super::util::{block, clip_lines, trunc, DIM};
 use crate::app::App;
+use crate::color::{hue, Hue};
 use crate::metrics::Metric;
 
-pub const SERIES_COLORS: [Color; 6] = [
-    Color::Cyan,
-    Color::Yellow,
-    Color::Green,
-    Color::Magenta,
-    Color::LightRed,
-    Color::LightBlue,
+pub const SERIES_HUES: [Hue; 6] = [
+    Hue::Cyan,
+    Hue::Yellow,
+    Hue::Green,
+    Hue::Magenta,
+    Hue::LightRed,
+    Hue::LightBlue,
 ];
+
+/// The line marker of the i-th series. With colour the lines differ by
+/// colour and all use braille; without it (`--colors none`) the marker is
+/// what tells the series apart, so it changes with the series.
+pub fn series_marker(i: usize, mono: bool) -> (Marker, &'static str) {
+    if !mono {
+        return (Marker::Braille, "⣿");
+    }
+    [
+        (Marker::Braille, "⣿"),
+        (Marker::Dot, "•"),
+        (Marker::Block, "█"),
+        (Marker::Bar, "▄"),
+    ][i % 4]
+}
 
 /// The colour of the i-th selected series.
 pub fn series_color(i: usize) -> Color {
-    SERIES_COLORS[i % SERIES_COLORS.len()]
+    hue(SERIES_HUES[i % SERIES_HUES.len()])
 }
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let (chart_area, list_area) = if area.width >= 80 {
-        let [c, l] = Layout::horizontal([Constraint::Min(30), Constraint::Length(26)]).areas(area);
+        let [c, l] = Layout::horizontal([Constraint::Min(30), Constraint::Length(30)]).areas(area);
         (c, Some(l))
     } else {
         (area, None)
@@ -68,7 +84,7 @@ fn draw_list(f: &mut Frame, app: &App, area: Rect) {
             Line::styled(
                 format!(
                     "{mark} {}",
-                    trunc(m.label(), usize::from(area.width).saturating_sub(8))
+                    trunc(m.label(), usize::from(area.width).saturating_sub(7))
                 ),
                 style,
             )
@@ -159,15 +175,38 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
         .map(|(i, (m, pts))| {
             Dataset::default()
                 .name(m.label())
-                .marker(Marker::Braille)
+                .marker(series_marker(i, app.color_mode.is_mono()).0)
                 .graph_type(GraphType::Line)
                 .style(Style::new().fg(series_color(i)))
                 .data(pts)
         })
         .collect();
 
+    // The legend is drawn here rather than by the chart, which hides it
+    // whenever the names do not fit a quarter of the width.
+    let inner = blk.inner(area);
+    f.render_widget(blk, area);
+    let [legend_row, plot_area] =
+        Layout::vertical([Constraint::Length(1), Constraint::Min(1)]).areas(inner);
+    let mut legend: Vec<Span> = Vec::new();
+    for (i, (m, _)) in series.iter().enumerate() {
+        if i > 0 {
+            legend.push(Span::raw("  "));
+        }
+        let glyph = series_marker(i, app.color_mode.is_mono()).1;
+        legend.push(Span::styled(glyph, Style::new().fg(series_color(i))));
+        legend.push(Span::raw(format!(" {}", m.label())));
+    }
+    f.render_widget(
+        Paragraph::new(clip_lines(
+            vec![Line::from(legend)],
+            usize::from(legend_row.width),
+        )),
+        legend_row,
+    );
+
     let chart = Chart::new(datasets)
-        .block(blk)
+        .hidden_legend_constraints((Constraint::Length(0), Constraint::Length(0)))
         .x_axis(
             Axis::default()
                 .title(Span::styled("update", DIM))
@@ -189,5 +228,5 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
                 ])
                 .style(DIM),
         );
-    f.render_widget(chart, area);
+    f.render_widget(chart, plot_area);
 }

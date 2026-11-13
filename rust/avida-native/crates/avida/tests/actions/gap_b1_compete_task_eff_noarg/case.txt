@@ -1,0 +1,3 @@
+base demes_germline
+args -s 100 -set WORLD_Y 20 -set NUM_DEMES 10
+rc 1

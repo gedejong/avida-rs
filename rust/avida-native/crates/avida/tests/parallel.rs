@@ -278,16 +278,76 @@ fn parallel_update_is_one_slice() {
     }
 }
 
+/// The deme replications `PrintDemeReplicationData` recorded in `dir`.
+fn deme_replications(dir: &Path) -> u64 {
+    let text = fs::read_to_string(dir.join("data/deme_repl.dat")).unwrap();
+    text.lines()
+        .filter(|l| !l.starts_with('#') && !l.trim().is_empty())
+        .map(|l| l.split(' ').nth(1).unwrap().parse::<u64>().unwrap())
+        .sum()
+}
+
+#[test]
+fn demes_replicate_on_the_time_their_bursts_used() {
+    // The test's configuration seeds from the clock.
+    const SEED: (&str, &str) = ("RANDOM_SEED", "7");
+    // A hundred demes of one organism each, replicating (through the
+    // germline) on the instructions or the normalized time their organisms
+    // used: what the bursts of the parallel phases add up, checked at the
+    // start of each sequential phase. The run ends between two waves of
+    // replications (the demes start in step), so that the lag of about one
+    // update per deme generation the parallel mode has (ARCHITECTURE.md)
+    // does not move a wave across the end.
+    let events = "i InjectDemes default-classic.org\n\
+                  u 0:1:end PrintDemeReplicationData\n\
+                  u 0:10:end PrintAverageData\n\
+                  u 0:10:end PrintCountData\n\
+                  u 100 SavePopulation\n\
+                  u 100 Exit\n";
+    let test = "demes_germline";
+    for (trigger, value) in [
+        ("DEMES_REPLICATE_CPU_CYCLES", "3000"),
+        ("DEMES_REPLICATE_TIME", "20"),
+    ] {
+        let exact = &[SEED, (trigger, value)];
+        let (de, _, se, _) =
+            run_with_events(test, &format!("{trigger}_exact"), exact, Some(events));
+        assert!(se.is_none());
+        let one = &[SEED, PARALLEL, ("EXECUTION_THREADS", "1"), (trigger, value)];
+        let (d1, o1, s1, n1) = run_with_events(test, &format!("{trigger}_t1"), one, Some(events));
+        let s1 = s1.expect("NUM_DEMES 100 runs in the parallel mode");
+        assert!(s1.sequential_insts * 5 < n1, "{}", s1.summary());
+        let four = &[SEED, PARALLEL, ("EXECUTION_THREADS", "4"), (trigger, value)];
+        let (d4, o4, s4, _) = run_with_events(test, &format!("{trigger}_t4"), four, Some(events));
+        let s4 = s4.unwrap();
+        assert_eq!(
+            (
+                s4.parallel_insts,
+                s4.sequential_insts,
+                s4.rounds,
+                s4.carry_over
+            ),
+            (
+                s1.parallel_insts,
+                s1.sequential_insts,
+                s1.rounds,
+                s1.carry_over
+            )
+        );
+        compare_runs((&d1, &o1), (&d4, &o4)).unwrap();
+        // As many replications as the exact mode, up to the difference
+        // between two schedules.
+        let (re, rp) = (deme_replications(&de), deme_replications(&d1));
+        assert!(re > 50, "{trigger}: {re} replications in the exact mode");
+        assert!(
+            rp * 5 > re * 4 && rp * 4 < re * 5,
+            "{trigger}: {rp} replications against {re} in the exact mode"
+        );
+    }
+}
+
 #[test]
 fn unsupported_settings_are_rejected_at_start_up() {
-    let dir = fresh_config("demes_germline", "demes");
-    let err = try_world(&dir, &[PARALLEL])
-        .err()
-        .expect("NUM_DEMES 100 is rejected");
-    assert!(
-        err.contains("unsupported in EXECUTION_MODE 1: NUM_DEMES 100"),
-        "{err}"
-    );
     let dir = fresh_config("heads_default_100u", "mode2");
     let err = try_world(&dir, &[("EXECUTION_MODE", "2")])
         .err()

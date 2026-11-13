@@ -806,7 +806,7 @@ impl World {
             let prob_immigrate = -f64::from(window) / 100.0;
             let rand = self.rng.get_double();
             if rand <= prob_immigrate {
-                let num_groups = self.num_resources_updated();
+                let num_groups = self.num_resources_updated(held);
                 let mut target_group;
                 loop {
                     target_group = self.rng.get_uint(num_groups as u32) as i32;
@@ -868,7 +868,7 @@ impl World {
 
         // If the offspring is rejected by the parent group, and there are no
         // other groups, the offspring is doomed
-        let num_groups = self.num_resources_updated();
+        let num_groups = self.num_resources_updated(held);
         if num_groups <= 1 {
             return false;
         }
@@ -903,8 +903,19 @@ impl World {
 
     /// `GetResources(ctx).GetSize()`: the global resource count after
     /// bringing the resources up to date.
-    fn num_resources_updated(&mut self) -> usize {
-        self.with_pop_resources(|rc, rng, env| rc.get_resources(rng, env).len())
+    /// The running organism's state, when it is one of `held`, goes to the
+    /// resource read: a damaging gradient may injure it there.
+    fn num_resources_updated(&mut self, held: Held) -> usize {
+        let uid = self
+            .pop
+            .running
+            .as_ref()
+            .filter(|r| !r.removed)
+            .map(|r| r.uid);
+        let running = uid
+            .and_then(|u| held.iter_mut().find(|(_, s)| s.uid == u))
+            .map(|(_, s)| &mut **s);
+        self.with_pop_resources_for(running, |rc, rng, env| rc.get_resources(rng, env).len())
     }
 
     /// The per-member tolerance statistics behind `CalcGroupAve*` and

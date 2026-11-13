@@ -771,7 +771,7 @@ impl OrgInterface for LocalInterface<'_> {
     fn update_resources(&mut self, _org: &mut OrgState, _res_change: &[f64]) {
         self.deny("update_resources");
     }
-    fn update_random_resources(&mut self, _res_change: &[f64]) {
+    fn update_random_resources(&mut self, _org: &mut OrgState, _res_change: &[f64]) {
         self.deny("update_random_resources");
     }
     fn update_deme_resources(&mut self, _res_change: &[f64]) {
@@ -898,12 +898,6 @@ impl OrgInterface for LocalInterface<'_> {
     fn do_deme_output(&mut self, _value: i32) {
         self.deny("do_deme_output");
     }
-    fn do_hgt_donation(&mut self, _org: &mut OrgState) {
-        self.deny("do_hgt_donation");
-    }
-    fn do_hgt_conjugation(&mut self, _org: &mut OrgState) {
-        self.deny("do_hgt_conjugation");
-    }
     fn do_hgt_mutation(&mut self, _org: &mut OrgState) {
         self.deny("do_hgt_mutation");
     }
@@ -913,12 +907,6 @@ impl OrgInterface for LocalInterface<'_> {
     fn move_org(&mut self, _org: &mut OrgState, _src_id: i32, _dest_id: i32) -> bool {
         self.deny("move_org");
         Default::default()
-    }
-    fn add_live_org(&mut self) {
-        self.deny("add_live_org");
-    }
-    fn remove_live_org(&mut self) {
-        self.deny("remove_live_org");
     }
     fn has_opinion(&self, _org: &OrgState) -> bool {
         self.deny("has_opinion");

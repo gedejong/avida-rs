@@ -2,7 +2,7 @@
 
 use avida_viewmodel::format_number;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Cell, Paragraph, Row, Table};
 use ratatui::Frame;
@@ -10,6 +10,7 @@ use ratatui::Frame;
 use super::util::{block, DIM};
 use super::waiting;
 use crate::app::{App, EnvTab};
+use crate::color::{hue, Hue};
 
 fn geometry_name(g: i32) -> &'static str {
     match g {
@@ -25,7 +26,7 @@ fn geometry_name(g: i32) -> &'static str {
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let Some(env) = app.env() else {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     };
     let [tabs, body] = Layout::vertical([Constraint::Length(1), Constraint::Min(2)]).areas(area);
@@ -44,11 +45,14 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
         spans.push(Span::styled(format!(" {} ({n}) ", t.title()), style));
         spans.push(Span::raw(" "));
     }
-    spans.push(Span::styled("  Left/Right switch", DIM));
+    spans.push(Span::styled("  Left and Right switch the list", DIM));
     f.render_widget(Paragraph::new(Line::from(spans)), tabs);
 
-    let head = Style::new().add_modifier(Modifier::BOLD).fg(Color::Magenta);
-    let (title, header, rows, widths): (&str, Vec<&str>, Vec<Row>, Vec<Constraint>) =
+    let head = Style::new()
+        .add_modifier(Modifier::BOLD)
+        .fg(hue(Hue::Magenta));
+    // Each tab is a list of text rows; `numeric` marks the right-aligned columns.
+    let (title, header, data, numeric): (&str, Vec<&str>, Vec<Vec<String>>, Vec<bool>) =
         match app.env_tab {
             EnvTab::Resources => (
                 "Resources",
@@ -56,22 +60,16 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                 env.resources
                     .iter()
                     .map(|r| {
-                        Row::new(vec![
+                        vec![
                             r.name.clone(),
                             geometry_name(r.geometry).to_string(),
                             format_number(r.quantity),
                             r.inflow.map_or("-".into(), format_number),
                             r.outflow.map_or("-".into(), format_number),
-                        ])
+                        ]
                     })
                     .collect(),
-                vec![
-                    Constraint::Min(14),
-                    Constraint::Length(10),
-                    Constraint::Length(12),
-                    Constraint::Length(10),
-                    Constraint::Length(10),
-                ],
+                vec![false, false, true, true, true],
             ),
             EnvTab::Reactions => (
                 "Reactions",
@@ -83,42 +81,60 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                             .task
                             .and_then(|k| env.tasks.get(k))
                             .map_or("-".to_string(), |t| t.name.clone());
-                        Row::new(vec![
+                        vec![
                             r.name.clone(),
                             task,
                             format_number(r.value),
                             r.last_count.to_string(),
-                        ])
+                        ]
                     })
                     .collect(),
-                vec![
-                    Constraint::Min(14),
-                    Constraint::Length(14),
-                    Constraint::Length(10),
-                    Constraint::Length(10),
-                ],
+                vec![false, false, true, true],
             ),
             EnvTab::Tasks => (
                 "Tasks",
                 vec!["name", "description", "last count"],
                 env.tasks
                     .iter()
-                    .map(|t| {
-                        Row::new(vec![
-                            t.name.clone(),
-                            t.desc.clone(),
-                            t.last_count.to_string(),
-                        ])
-                    })
+                    .map(|t| vec![t.name.clone(), t.desc.clone(), t.last_count.to_string()])
                     .collect(),
-                vec![
-                    Constraint::Min(14),
-                    Constraint::Min(14),
-                    Constraint::Length(10),
-                ],
+                vec![false, false, true],
             ),
         };
-    let total = rows.len();
+    // Columns are as wide as their longest entry and sit close together;
+    // the last text column takes whatever is left.
+    let widths: Vec<Constraint> = (0..header.len())
+        .map(|c| {
+            let w = data
+                .iter()
+                .map(|r| r[c].chars().count())
+                .chain(std::iter::once(header[c].chars().count()))
+                .max()
+                .unwrap_or(1);
+            Constraint::Length(w.min(60) as u16)
+        })
+        .collect();
+    let total = data.len();
+    let rows: Vec<Row> = data
+        .into_iter()
+        .map(|r| {
+            Row::new(r.into_iter().zip(&numeric).map(|(t, &num)| {
+                if num {
+                    Cell::from(Line::from(t).right_aligned())
+                } else {
+                    Cell::from(t)
+                }
+            }))
+        })
+        .collect();
+    let header_row = Row::new(header.iter().zip(&numeric).map(|(&t, &num)| {
+        if num {
+            Cell::from(Line::from(t).right_aligned())
+        } else {
+            Cell::from(t)
+        }
+    }))
+    .style(head);
     let visible = usize::from(body.height.saturating_sub(3)).max(1);
     let scroll = app.env_scroll.min(total.saturating_sub(visible));
     let shown: Vec<Row> = rows.into_iter().skip(scroll).take(visible).collect();
@@ -131,13 +147,24 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     } else {
         title.to_string()
     };
+    // Spread the gaps over a wider panel, up to 100 columns of table.
+    let used: usize = widths
+        .iter()
+        .map(|c| match c {
+            Constraint::Length(n) => usize::from(*n),
+            _ => 0,
+        })
+        .sum();
+    let gaps = header.len().saturating_sub(1).max(1);
+    let spacing = (usize::from(body.width.saturating_sub(4)).min(100)).saturating_sub(used) / gaps;
     let table = Table::new(shown, widths)
-        .header(Row::new(header.into_iter().map(Cell::from)).style(head))
+        .column_spacing(spacing.clamp(3, 12) as u16)
+        .header(header_row)
         .block(block(&note));
     if total == 0 {
         f.render_widget(
             Paragraph::new(format!(
-                "The environment defines no {}.",
+                " The environment defines no {}.",
                 title.to_lowercase()
             ))
             .style(DIM)

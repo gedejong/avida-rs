@@ -66,6 +66,11 @@ fn main() -> ExitCode {
         Ok(w) => w,
         Err(text) => {
             let _ = out.flush();
+            if let Some(line) = text.strip_prefix(avida_world::actions::CERR_EXIT_MARK) {
+                // `cerr << ...; exit(1);` while the event file loads.
+                eprint!("{line}");
+                return status(1);
+            }
             eprint!("{text}");
             if !text.ends_with('\n') {
                 eprintln!();

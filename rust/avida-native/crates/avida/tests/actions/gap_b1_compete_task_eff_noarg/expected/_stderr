@@ -1,0 +1,32 @@
+warning: config file version number mismatch -- Avida: '2.14.0'  File: '2.7.0'
+warning: unknown lines in input file 'avida.cfg'.
+  avida.cfg:13: VIEW_MODE 1
+  avida.cfg:14: CLONE_FILE -
+  avida.cfg:44: DEMES_HAVE_MERIT 0
+  avida.cfg:130: INS_MUT_PROB 0.0
+  avida.cfg:131: DEL_MUT_PROB 0.0
+  avida.cfg:190: DONATE_SIZE 5.0
+  avida.cfg:191: DONATE_MULT 10.0
+  avida.cfg:202: PROMOTER_BG_STRENGTH 0
+  avida.cfg:204: REGULATION_STRENGTH 1
+  avida.cfg:205: REGULATION_DECAY_FRAC 0.1
+  avida.cfg:210: TRACK_MAIN_LINEAGE 1
+  avida.cfg:214: GENOTYPE_PRINT 0
+  avida.cfg:215: GENOTYPE_PRINT_DOM 0
+  avida.cfg:217: SPECIES_THRESHOLD 2
+  avida.cfg:218: SPECIES_RECORDING 0
+  avida.cfg:219: SPECIES_PRINT 0
+  avida.cfg:224: LOG_CREATURES 0
+  avida.cfg:225: LOG_GENOTYPES 0
+  avida.cfg:226: LOG_THRESHOLD 0
+  avida.cfg:227: LOG_SPECIES 0
+  avida.cfg:249: LOG_LINEAGES 0
+  avida.cfg:250: LINEAGE_CREATION_METHOD 0
+  avida.cfg:254: NET_ENABLED 0
+  avida.cfg:256: NET_MUT_PROB 0.0
+  avida.cfg:257: NET_MUT_TYPE 0
+  avida.cfg:258: NET_STYLE 0
+  avida.cfg:263: BUY_PRICE 0
+  avida.cfg:264: SELL_PRICE 0
+  avida.cfg:268: MT_CONCURRENCY 1
+CompeteDemesByTaskCountAndEfficiency must be given an initial deme energy amount

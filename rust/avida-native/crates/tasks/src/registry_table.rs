@@ -26,6 +26,16 @@ pub enum TaskKind {
     /// Port addition, not in the C++: an output `add_lowbits` gives nothing,
     /// see `eval_math::eval_add_miss`.
     AddMiss,
+    /// Port addition, not in the C++: `add_lowbits` with a 4-bit minimum.
+    AddLowBits4,
+    /// Port addition, not in the C++: the counterpart of `add_lowbits4`.
+    AddMiss4,
+    /// Port addition: `inc_lowbits`
+    IncLowBits,
+    /// Port addition: `dec_lowbits`
+    DecLowBits,
+    /// Port addition: `arith_miss`
+    ArithMiss,
     /// `Task_DontCare`
     DontCare,
     /// `Task_Not` ... `Task_Equ`: a boolean logic function by logic id.
@@ -404,6 +414,36 @@ pub(crate) static SIMPLE_TASKS: &[SimpleTask] = &[
         name: "add_miss",
         desc: "AddMiss",
         kind: TaskKind::AddMiss,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "add_lowbits4",
+        desc: "AddLowBits4",
+        kind: TaskKind::AddLowBits4,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "add_miss4",
+        desc: "AddMiss4",
+        kind: TaskKind::AddMiss4,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "inc_lowbits",
+        desc: "IncLowBits",
+        kind: TaskKind::IncLowBits,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "dec_lowbits",
+        desc: "DecLowBits",
+        kind: TaskKind::DecLowBits,
+        reqs: 0,
+    },
+    SimpleTask {
+        name: "arith_miss",
+        desc: "ArithMiss",
+        kind: TaskKind::ArithMiss,
         reqs: 0,
     },
     SimpleTask {

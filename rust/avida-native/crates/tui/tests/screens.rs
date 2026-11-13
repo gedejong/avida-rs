@@ -3,7 +3,7 @@
 //! (24-bit, 256 colours, none). It asserts little; it writes, under
 //! `$CARGO_TARGET_TMPDIR/tui-screens/<mode>/<size>/`, one plain text file
 //! and one file with ANSI colour escapes per state, and under
-//! `$CARGO_TARGET_TMPDIR/tui-screens/contrast.txt` the colour pairs the
+//! `$CARGO_TARGET_TMPDIR/tui-screens/contrast-<mode>.txt` the colour pairs the
 //! interface draws whose contrast is below 4.5:1.
 //!
 //! It runs a short experiment, so it is left out of the default run:
@@ -20,7 +20,7 @@ use std::time::{Duration, Instant};
 use avida_session::{RunState, SessionEvent};
 use avida_tui::actions::Action;
 use avida_tui::app::{EnvTab, GenoView, Screen};
-use avida_tui::color::ColorMode;
+use avida_tui::color::{set_theme, Background, ColorMode};
 use avida_tui::runner::Driver;
 use avida_tui::ui;
 use common::fresh_config;
@@ -31,10 +31,16 @@ use ratatui::style::{Color, Modifier};
 use ratatui::Terminal;
 
 const SIZES: [(u16, u16); 3] = [(80, 24), (100, 30), (160, 50)];
-const MODES: [(&str, ColorMode); 3] = [
-    ("truecolor", ColorMode::TrueColor),
-    ("256", ColorMode::Indexed256),
-    ("mono", ColorMode::Mono),
+/// Directory name, colour depth and the terminal background the hues are
+/// chosen for (the interface never paints the background itself).
+const MODES: [(&str, ColorMode, Background); 7] = [
+    ("truecolor", ColorMode::TrueColor, Background::Dark),
+    ("256", ColorMode::Indexed256, Background::Dark),
+    ("16", ColorMode::Ansi16, Background::Dark),
+    ("truecolor-light", ColorMode::TrueColor, Background::Light),
+    ("256-light", ColorMode::Indexed256, Background::Light),
+    ("16-light", ColorMode::Ansi16, Background::Light),
+    ("mono", ColorMode::Mono, Background::Dark),
 ];
 
 fn out_dir() -> PathBuf {
@@ -95,19 +101,21 @@ fn go(d: &mut Driver, screen: Screen) {
 
 struct Shots {
     mode: &'static str,
+    light: bool,
     count: usize,
     terminals: Vec<(u16, u16, Terminal<TestBackend>)>,
     pairs: BTreeMap<(String, String), String>,
 }
 
 impl Shots {
-    fn new(mode: &'static str) -> Shots {
+    fn new(mode: &'static str, light: bool) -> Shots {
         let terminals = SIZES
             .iter()
             .map(|&(w, h)| (w, h, Terminal::new(TestBackend::new(w, h)).unwrap()))
             .collect();
         Shots {
             mode,
+            light,
             count: 0,
             terminals,
             pairs: BTreeMap::new(),
@@ -125,8 +133,13 @@ impl Shots {
             let buf = done.buffer.clone();
             fs::write(dir.join(format!("{file}.txt")), plain(&buf)).unwrap();
             fs::write(dir.join(format!("{file}.ansi")), ansi(&buf)).unwrap();
-            if self.mode == "truecolor" {
-                collect_pairs(&buf, &format!("{name} {w}x{h}"), &mut self.pairs);
+            if self.mode != "mono" {
+                collect_pairs(
+                    &buf,
+                    self.light,
+                    &format!("{name} {w}x{h}"),
+                    &mut self.pairs,
+                );
             }
         }
     }
@@ -230,8 +243,44 @@ fn rgb_of(c: Color) -> Option<[u8; 3]> {
         Color::LightCyan => [0, 255, 255],
         Color::White => [255, 255, 255],
         Color::Rgb(r, g, b) => [r, g, b],
-        Color::Indexed(_) | Color::Reset => return None,
+        Color::Indexed(i) => return Some(indexed_rgb(i)),
+        Color::Reset => return None,
     })
+}
+
+fn indexed_rgb(i: u8) -> [u8; 3] {
+    const CUBE: [u8; 6] = [0, 95, 135, 175, 215, 255];
+    match i {
+        0..=15 => {
+            let named = [
+                Color::Black,
+                Color::Red,
+                Color::Green,
+                Color::Yellow,
+                Color::Blue,
+                Color::Magenta,
+                Color::Cyan,
+                Color::Gray,
+                Color::DarkGray,
+                Color::LightRed,
+                Color::LightGreen,
+                Color::LightYellow,
+                Color::LightBlue,
+                Color::LightMagenta,
+                Color::LightCyan,
+                Color::White,
+            ];
+            rgb_of(named[usize::from(i)]).unwrap_or([0, 0, 0])
+        }
+        16..=231 => {
+            let k = usize::from(i) - 16;
+            [CUBE[k / 36], CUBE[k / 6 % 6], CUBE[k % 6]]
+        }
+        _ => {
+            let v = 8 + 10 * (i - 232);
+            [v, v, v]
+        }
+    }
 }
 
 fn lum(c: [u8; 3]) -> f64 {
@@ -254,7 +303,12 @@ fn ratio(a: [u8; 3], b: [u8; 3]) -> f64 {
 /// Text cells (not blank, not box drawing or block characters) whose
 /// foreground is explicit: against an explicit background, or, with the
 /// terminal's own background, against black and against white.
-fn collect_pairs(buf: &Buffer, at: &str, pairs: &mut BTreeMap<(String, String), String>) {
+fn collect_pairs(
+    buf: &Buffer,
+    light: bool,
+    at: &str,
+    pairs: &mut BTreeMap<(String, String), String>,
+) {
     let a = buf.area;
     for y in 0..a.height {
         for x in 0..a.width {
@@ -272,15 +326,24 @@ fn collect_pairs(buf: &Buffer, at: &str, pairs: &mut BTreeMap<(String, String), 
             let backs: Vec<(&str, [u8; 3])> = match rgb_of(c.bg) {
                 Some(bg) => vec![("its background", bg)],
                 None if c.bg == Color::Reset => {
-                    vec![("black terminal", [0, 0, 0]), ("white terminal", [255, 255, 255])]
+                    if light {
+                        vec![("white terminal", [255, 255, 255])]
+                    } else {
+                        vec![("black terminal", [0, 0, 0])]
+                    }
                 }
                 None => continue,
             };
             for (what, bg) in backs {
                 let r = ratio(fg, bg);
                 if r < 4.5 {
-                    let key = (format!("{:?} on {:?} ({what})", c.fg, c.bg), format!("{r:.2}:1"));
-                    pairs.entry(key).or_insert_with(|| format!("{at}, e.g. {s:?} at {x},{y}"));
+                    let key = (
+                        format!("{:?} on {:?} ({what})", c.fg, c.bg),
+                        format!("{r:.2}:1"),
+                    );
+                    pairs
+                        .entry(key)
+                        .or_insert_with(|| format!("{at}, e.g. {s:?} at {x},{y}"));
                 }
             }
         }
@@ -310,11 +373,12 @@ fn main_screens(s: &mut Shots, d: &mut Driver, tag: &str) {
     go(d, Screen::Map);
 }
 
-fn sweep(mode: &'static str, color: ColorMode) {
+fn sweep(mode: &'static str, color: ColorMode, background: Background) {
+    set_theme(background, color);
     let dir = fresh_config(&format!("screens_{mode}"));
     let mut d = Driver::start(dir, Vec::new(), color).unwrap_or_else(|e| panic!("start: {e}"));
     d.freeze_clock(0.0);
-    let mut s = Shots::new(mode);
+    let mut s = Shots::new(mode, background == Background::Light);
 
     // The window before the world has published anything.
     let mut early = Driver::start(
@@ -350,12 +414,19 @@ fn sweep(mode: &'static str, color: ColorMode) {
     settle(&mut d);
     s.shot(&mut d, "stepped-map");
     d.app.perform(Action::RunPause, false);
-    wait(&mut d, "update 40", |d| d.app.current_update().unwrap_or(0) >= 40);
+    wait(&mut d, "update 40", |d| {
+        d.app.current_update().unwrap_or(0) >= 40
+    });
     d.app.perform(Action::RunPause, false);
     wait(&mut d, "pause", |d| d.app.run_state() == RunState::Paused);
     settle(&mut d);
-    d.app.select(Some(1830));
+    d.app.perform(Action::ChooseNext, false);
+    d.pump();
     settle(&mut d);
+    assert!(
+        d.app.frame.as_ref().is_some_and(|f| f.inspect.is_some()),
+        "an organism is inspected"
+    );
     main_screens(&mut s, &mut d, "paused");
 
     // Map layers, scale, zoom.
@@ -487,9 +558,15 @@ fn sweep(mode: &'static str, color: ColorMode) {
     d.app.confirm_quit = true;
     s.shot(&mut d, "confirm-quit");
     d.app.confirm_quit = false;
-    d.app.notify(avida_tui::app::ToastKind::Success, "Population saved to /tmp/example/detail.spop".into());
+    d.app.notify(
+        avida_tui::app::ToastKind::Success,
+        "Population saved to /tmp/example/detail.spop".into(),
+    );
     s.shot(&mut d, "toast-success");
-    d.app.notify(avida_tui::app::ToastKind::Error, "Cannot write /tmp/example: permission denied".into());
+    d.app.notify(
+        avida_tui::app::ToastKind::Error,
+        "Cannot write /tmp/example: permission denied".into(),
+    );
     s.shot(&mut d, "toast-error");
     d.app.toasts.clear();
 
@@ -516,7 +593,9 @@ fn sweep(mode: &'static str, color: ColorMode) {
         d.app.perform(Action::Faster, false);
     }
     d.app.perform(Action::RunPause, false);
-    wait(&mut d, "the run to finish", |d| d.app.run_state() == RunState::Finished);
+    wait(&mut d, "the run to finish", |d| {
+        d.app.run_state() == RunState::Finished
+    });
     settle(&mut d);
     main_screens(&mut s, &mut d, "finished");
     d.app.perform(Action::RunPause, false);
@@ -537,15 +616,15 @@ fn sweep(mode: &'static str, color: ColorMode) {
 
     d.shutdown(Duration::from_secs(5));
 
-    if mode == "truecolor" {
+    if mode != "mono" {
         let mut text = String::from(
             "Pairs of explicit colours whose contrast is below 4.5:1 (named colours at their xterm values).\n\
-             Terminal-default backgrounds are tested against black and white.\n\n",
+             Terminal-default backgrounds are tested against black (dark modes) or white (light modes).\n\n",
         );
         for ((pair, r), at) in &s.pairs {
             let _ = writeln!(text, "{r:>8}  {pair}  {at}");
         }
-        fs::write(out_dir().join("contrast.txt"), text).unwrap();
+        fs::write(out_dir().join(format!("contrast-{mode}.txt")), text).unwrap();
     }
 }
 
@@ -554,8 +633,8 @@ fn sweep(mode: &'static str, color: ColorMode) {
 fn every_screen_in_every_colour_mode_and_size() {
     let _ = fs::remove_dir_all(out_dir());
     fs::create_dir_all(out_dir()).unwrap();
-    for (name, mode) in MODES {
-        sweep(name, mode);
+    for (name, mode, background) in MODES {
+        sweep(name, mode, background);
     }
     eprintln!("wrote {}", out_dir().display());
 }

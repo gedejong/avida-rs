@@ -1254,6 +1254,11 @@ impl Hardware for HardwareTransSmt {
             }
         }
 
+        // A gradient habitat's `SetToDie` of this organism (see
+        // `OrgInterface::take_habitat_to_die`).
+        if world.take_habitat_to_die() {
+            org.phenotype.to_die = true;
+        }
         let max_executed = org.max_executed;
         if (max_executed > 0 && org.phenotype.time_used >= max_executed) || org.phenotype.to_die {
             org.die(world);

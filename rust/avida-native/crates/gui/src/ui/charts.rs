@@ -124,9 +124,12 @@ fn run_plot<'a>(ui: &Ui, id: impl std::hash::Hash + std::fmt::Debug, whole: bool
         .x_grid_spacer(round_marks(true, 2.5))
         .y_grid_spacer(round_marks(whole, 1.0))
         .x_axis_formatter(|mark, range| {
-            // A label at the right edge would be cut in half.
+            // A label at the right edge would be cut in half, and one at the
+            // left edge sits under the value axis's bottom label (two
+            // zeros on top of each other).
             let span = range.end() - range.start();
-            if mark.value > range.end() - span * 0.025 {
+            if mark.value > range.end() - span * 0.025 || mark.value < range.start() + span * 0.025
+            {
                 String::new()
             } else {
                 format::compact(mark.value)

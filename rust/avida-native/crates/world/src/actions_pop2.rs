@@ -15,13 +15,12 @@
 //!   `FlushTopNavTrace` are in mini_trace.rs.
 
 use std::cell::Cell;
-use std::sync::Arc;
 
 use avida_apto::fmt::fmt_double;
 use avida_config::feedback::Feedback;
 use avida_config::string_util::{as_double, as_int, pop_word};
 use avida_genome::genome::{setup_property_map, PropertyMap};
-use avida_genome::{Genome, InstSet, InstructionSequence};
+use avida_genome::{Genome, InstructionSequence};
 use avida_hardware::organism::{transmission, OrgSource};
 use avida_phenotype::MutationRates;
 
@@ -1534,8 +1533,9 @@ impl World {
 
     /// `cActionSetRedundancy::Process` / `cActionSetProbFail::Process` on
     /// `GetInstSet("(default)")`. The C++ hardware shares the instruction
-    /// set by reference, so every organism sees the change; here each
-    /// organism's hardware hands its handle back while the set is changed.
+    /// set by reference, so every organism (parasites included) sees the
+    /// change; here they share it through an `Arc`, and the two setters
+    /// work through `&self`.
     fn pop2_set_inst_property(
         &mut self,
         prob_fail: bool,
@@ -1556,54 +1556,14 @@ impl World {
                 return Ok(());
             }
         };
-        let placeholder = Arc::new(InstSet::new(
-            "",
-            shared.hardware_type(),
-            shared.inst_lib().clone(),
-            0,
-            0,
-        ));
-        let mut holders = Vec::new();
-        for (c, slot) in self.pop.orgs.iter_mut().enumerate() {
-            if let Some(org) = slot.as_mut() {
-                let base = org.hardware.base_mut();
-                if Arc::ptr_eq(&base.inst_set, &shared) {
-                    base.inst_set = placeholder.clone();
-                    holders.push(c);
-                }
-            }
-        }
-        drop(shared);
-        let changed = match self.hw.registry_mut().get_inst_set_mut("(default)") {
-            Some(is) => {
-                if prob_fail {
-                    is.set_prob_fail(inst, f64::from(value));
-                } else {
-                    is.set_redundancy(inst, value);
-                }
-                true
-            }
-            None => false,
-        };
-        let shared = self
-            .hw
-            .registry()
-            .shared_inst_set(0)
-            .ok_or("SetRedundancy: no instruction set")?;
-        for c in holders {
-            if let Some(org) = self.pop.orgs[c].as_mut() {
-                org.hardware.base_mut().inst_set = shared.clone();
-            }
-        }
-        if changed {
-            Ok(())
+        // The one shared `cInstSet` (`GetInstSet("(default)")`): every
+        // hardware, the parasites' included, holds this `Arc`.
+        if prob_fail {
+            shared.set_prob_fail(inst, f64::from(value));
         } else {
-            Err(
-                "unsupported: SetRedundancy/SetProbFail while organisms outside the cells \
-                 hold the instruction set (C++: shared cInstSet)"
-                    .to_string(),
-            )
+            shared.set_redundancy(inst, value);
         }
+        Ok(())
     }
 }
 

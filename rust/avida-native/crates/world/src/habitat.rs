@@ -28,15 +28,18 @@
 //!   whose caller does not hand the world the organism's state (the injury
 //!   changes merit, bonus and resource bins that the same instruction may
 //!   go on to use). The `OrgInterface` resource reads and writes take the
-//!   running organism's state, as do `MoveOrganisms` and
-//!   `PushToleranceInstExe`, and injure it in place, as the C++ does; what
-//!   remains are world-side reads during a step without it (the group count
-//!   of `JoinGroup` and friends, HGT fragment metabolism). A deadly
-//!   or predatory hit on the running organism only sets `to_die`, which
-//!   nothing reads before the end of its `SingleProcess`, so it is applied
-//!   when the step returns (`World::apply_running_to_die`), except with
-//!   implicit reproduction on or during a speculative instruction, which
-//!   stop.
+//!   running organism's state, as do `MoveOrganisms`,
+//!   `PushToleranceInstExe`, `UpdateRandomResources` and the group count of
+//!   an offspring's group placement (`AttemptOffspringParentGroup`,
+//!   `AttemptOffspringGroup`), and injure it in place, as the C++ does; what
+//!   remains is the HGT fragment metabolism (`AdjustHGTResource`), whose
+//!   callers are deep in the birth and kill paths. A deadly or predatory
+//!   hit on the running organism only sets `to_die`, which nothing reads
+//!   before the end of its `SingleProcess`: the hardware takes it from
+//!   `OrgInterface::take_habitat_to_die` there, before the `Die` that
+//!   precedes `CheckImplicitRepro` (a speculative instruction sets
+//!   `m_spec_die` instead), so implicit reproduction and speculative
+//!   execution follow the C++.
 //! - a damaging resource driving an organism's merit to 0: the C++ kills it
 //!   in the middle of the resource update and goes on using it.
 //! - a kill of an organism that is not running with `ENABLE_HGT` and
@@ -398,42 +401,14 @@ impl World {
         }
     }
 
-    /// A deadly or predatory gradient hit the running organism during its
-    /// step (`SetToDie`); the C++ kills it at the end of `SingleProcess`.
-    /// True when the organism died here.
-    pub(crate) fn apply_running_to_die(&mut self, org: &mut OrgState) -> bool {
-        if !std::mem::take(&mut self.res_env.habitat.running_to_die) {
-            return false;
+    /// A deadly or predatory gradient hit the running organism
+    /// (`SetToDie`) and nothing has read it yet: the C++ flag stays in the
+    /// phenotype, so set it there. The hardware normally reads it first, at
+    /// the end of `SingleProcess` (`OrgInterface::take_habitat_to_die`).
+    pub(crate) fn settle_habitat_to_die(&mut self, org: &mut OrgState) {
+        if std::mem::take(&mut self.res_env.habitat.running_to_die) {
+            org.phenotype.to_die = true;
         }
-        // The organism may have moved during its step.
-        let Some(cell_id) = self
-            .pop
-            .running
-            .as_ref()
-            .filter(|r| !r.removed)
-            .map(|r| r.cell_id)
-        else {
-            return false;
-        };
-        let c = &self.cfg;
-        if c.implicit_repro_time != 0
-            || c.implicit_repro_cpu_cycles != 0
-            || c.implicit_repro_bonus != 0
-            || c.implicit_repro_end != 0
-            || c.implicit_repro_energy != 0.0
-        {
-            // The C++ dies before `CheckImplicitRepro`, which then skips the
-            // dead organism; the step has already run it here.
-            self.set_fatal(
-                "unsupported: a deadly or predatory gradient killed the running organism with implicit \
-                 reproduction on (C++: Die before CheckImplicitRepro in SingleProcess)",
-            );
-            return false;
-        }
-        org.phenotype.to_die = true;
-        let mut iface = crate::pop_interface::PopulationInterface { w: self, cell_id };
-        org.die(&mut iface);
-        true
     }
 }
 

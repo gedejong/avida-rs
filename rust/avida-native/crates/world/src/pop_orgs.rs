@@ -289,13 +289,14 @@ impl World {
                 state.phenotype.to_delete = true;
                 notified = true;
                 self.deme_organism_death(cell, Some(&*state));
-                self.hgt_organism_killed(cell, state.uid, Some(state.genome().representation()));
+                let uid = state.uid;
+                self.hgt_organism_killed(cell, uid, None, Some(&mut *state));
                 // `in_cell.RemoveOrganism(ctx)`
                 self.cell_remove_energy(cell, state.phenotype.energy_store);
             } else {
                 self.deme_organism_death(cell, None);
                 let uid = self.pop.running.as_ref().map(|r| r.uid).unwrap_or_default();
-                self.hgt_organism_killed(cell, uid, None);
+                self.hgt_organism_killed(cell, uid, None, None);
                 if self.cfg.energy_enabled && self.cfg.frac_energy_transfer > 0.0 {
                     self.set_fatal(
                         "unsupported: FRAC_ENERGY_TRANSFER when the running organism is killed \
@@ -324,6 +325,7 @@ impl World {
                 cell,
                 org.state.uid,
                 Some(org.state.genome().representation()),
+                running,
             );
             // `in_cell.RemoveOrganism(ctx)`
             self.cell_remove_energy(cell, org.state.phenotype.energy_store);
@@ -1291,33 +1293,24 @@ impl World {
             if !speculative {
                 let r = org.single_process(&mut iface, false).map(|_| ());
                 // A gradient habitat's `SetToDie` (see crate::habitat).
-                iface.w.apply_running_to_die(&mut org.state);
+                iface.w.settle_habitat_to_die(&mut org.state);
                 r
             } else if iface.w.pop.spec_state[c] > 0 {
                 iface.w.pop.spec_state[c] -= 1;
                 Ok(())
             } else {
                 let first = org.single_process(&mut iface, false);
-                // A gradient habitat's `SetToDie`: the C++ dies at the end of
-                // this call and returns false (see crate::habitat).
-                let first = match first {
-                    Ok(_) if iface.w.apply_running_to_die(&mut org.state) => Ok(false),
-                    other => other,
-                };
+                // A gradient habitat's `SetToDie` was read by the hardware at
+                // the end of the call, which died and returned false (see
+                // crate::habitat).
+                iface.w.settle_habitat_to_die(&mut org.state);
                 match first {
                     Ok(true) => {
                         let mut spec_count = 0;
                         let mut res = Ok(());
                         while spec_count < 32 {
                             let r = org.single_process(&mut iface, true);
-                            if iface.w.res_env.habitat.running_to_die {
-                                iface.w.set_fatal(
-                                    "unsupported: a deadly or predatory gradient hit an organism during \
-                                     speculative execution (C++: SetToDie read by a later \
-                                     SingleProcess)",
-                                );
-                                break;
-                            }
+                            iface.w.settle_habitat_to_die(&mut org.state);
                             match r {
                                 Ok(true) => spec_count += 1,
                                 Ok(false) => break,

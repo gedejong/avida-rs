@@ -1,0 +1,60 @@
+# Avida count data
+# Thu Nov 12 23:41:32 2026
+#  1: update
+#  2: number of insts executed this update
+#  3: number of organisms
+#  4: number of different genotypes
+#  5: number of different threshold genotypes
+#  6: (deprecated) number of different species
+#  7: (deprecated) number of different threshold species
+#  8: (deprecated) number of different lineages
+#  9: number of births in this update
+# 10: number of deaths in this update
+# 11: number of breed true
+# 12: number of breed true organisms?
+# 13: number of no-birth organisms
+# 14: number of single-threaded organisms
+# 15: number of multi-threaded organisms
+# 16: number of modified organisms
+
+0 300 10 4 2 0 0 0 10 0 10 10 10 10 0 0 
+1 300 10 4 2 0 0 0 0 0 0 10 10 10 0 0 
+2 300 10 4 2 0 0 0 0 0 0 10 10 10 0 0 
+3 300 9 4 2 0 0 0 0 1 0 9 9 9 0 0 
+4 270 8 4 2 0 0 0 0 1 0 8 8 8 0 0 
+5 240 7 3 2 0 0 0 0 1 0 7 7 7 0 0 
+6 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+7 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+8 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+9 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+10 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+11 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+12 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+13 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+14 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+15 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+16 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+17 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+18 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+19 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+20 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+21 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+22 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+23 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+24 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+25 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+26 210 7 3 2 0 0 0 0 0 0 7 7 7 0 0 
+27 210 6 3 2 0 0 0 0 1 0 6 6 6 0 0 
+28 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+29 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+30 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+31 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+32 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+33 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+34 180 6 3 2 0 0 0 0 0 0 6 6 6 0 0 
+35 180 5 2 1 0 0 0 0 1 0 5 5 5 0 0 
+36 150 5 2 1 0 0 0 0 0 0 5 5 5 0 0 
+37 150 5 2 1 0 0 0 0 0 0 5 5 5 0 0 
+38 150 5 2 1 0 0 0 0 0 0 5 5 5 0 0 
+39 150 5 2 1 0 0 0 0 0 0 5 5 5 0 0 
+40 150 5 2 1 0 0 0 0 0 0 5 5 5 0 0 

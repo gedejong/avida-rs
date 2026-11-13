@@ -1973,17 +1973,16 @@ impl HardwareBcr {
         if let Some(c) = org.phenotype.cur_inst_count.get_mut(op as usize) {
             *c = c.wrapping_add(1);
         }
-        let f = self
+        // Every instruction of the set has a handler: `HardwareManager::create`
+        // refuses a set with an unported one (`check_inst_set_ported`).
+        let Some(f) = self
             .functions
             .get(inst_idx.max(0) as usize)
             .copied()
             .flatten()
-            .ok_or_else(|| {
-                format!(
-                    "unsupported: instruction '{}' (C++: cHardwareBCR.cc)",
-                    self.base.inst_set.name_of(cur_inst)
-                )
-            })?;
+        else {
+            return Ok(false);
+        };
         let exec_success = f(self, org, world)?;
         if !exec_success {
             if let Some(c) = org.phenotype.cur_inst_count.get_mut(op as usize) {
@@ -2227,6 +2226,11 @@ impl Hardware for HardwareBcr {
             self.core.cur_uop = (self.core.cur_uop + 1) & 0xFF;
         }
 
+        // A gradient habitat's `SetToDie` of this organism (see
+        // `OrgInterface::take_habitat_to_die`).
+        if world.take_habitat_to_die() {
+            org.phenotype.to_die = true;
+        }
         let max_executed = org.max_executed;
         if (max_executed > 0 && org.phenotype.time_used >= max_executed) || org.phenotype.to_die {
             if speculative {

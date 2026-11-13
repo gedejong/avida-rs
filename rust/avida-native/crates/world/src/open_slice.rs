@@ -119,10 +119,7 @@ impl World {
             r
         };
         // A gradient habitat's `SetToDie` (as in `process_step`).
-        let first = match first {
-            Ok(_) if self.apply_running_to_die(&mut org.state) => Ok(false),
-            other => other,
-        };
+        self.settle_habitat_to_die(&mut org.state);
         match first {
             Ok(true) => self.burst_goes_on(org, slice),
             Ok(false) => self.end_slice(org, slice, false, Ok(())),
@@ -184,14 +181,8 @@ impl World {
         };
         let r = org.single_process(&mut iface, true);
         slice.iface_cell = iface.cell_id;
-        if self.res_env.habitat.running_to_die {
-            // As in `process_step`.
-            return Err(
-                "unsupported: a deadly or predatory gradient hit an organism during \
-                        speculative execution (C++: SetToDie read by a later SingleProcess)"
-                    .to_string(),
-            );
-        }
+        // A gradient habitat's `SetToDie` (as in `process_step`).
+        self.settle_habitat_to_die(&mut org.state);
         r
     }
 

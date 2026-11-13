@@ -44,6 +44,8 @@ pub(crate) struct CloneOrigin {
     pub parent_group: i32,
     pub parent_teacher: bool,
     pub parent_ft: i32,
+    /// The original organism, whose avatar `PlaceAvatar` reads.
+    pub uid: avida_hardware::organism::OrgUid,
 }
 
 impl CloneOrigin {
@@ -57,6 +59,7 @@ impl CloneOrigin {
             parent_group: s.parent_group,
             parent_teacher: s.parent_teacher,
             parent_ft: s.parent_ft,
+            uid: s.uid,
         }
     }
 }
@@ -527,10 +530,14 @@ impl World {
         if cell_id < 0 || cell_id as usize >= self.pop.cells.len() {
             return Err("InjectClone into nonexistent cell (C++: assert)".to_string());
         }
-        if self.cfg.use_avatars != 0 {
-            return Err("unsupported: InjectClone with USE_AVATARS (C++: \
-                        cPopulation::PlaceAvatar for the clone)"
-                .to_string());
+        if self.cfg.use_avatars != 0 && orig_cell == cell_id && self.is_occupied(cell_id) {
+            return Err(
+                "unsupported: InjectClone over its own original with USE_AVATARS \
+                        (C++: cPopulation::PlaceAvatar reads the original organism after \
+                        ActivateOrganism has deleted it; the reference binary crashes \
+                        with SIGSEGV in ResetDemes)"
+                    .to_string(),
+            );
         }
         let orig = self.pop.orgs[orig_cell as usize]
             .as_ref()
@@ -557,6 +564,7 @@ impl World {
             parent_group: orig_parent_group,
             parent_teacher: orig_parent_teacher,
             parent_ft: orig_parent_ft,
+            uid: orig_uid,
         } = origin;
 
         let mut org = Organism::new(self, &genome, orig_generation, src)?;
@@ -609,7 +617,9 @@ impl World {
         org.state.parent_ft = orig_parent_ft;
 
         // Activate the organism in the population...
-        self.activate_organism(org, membership, cell_id, true, true, None);
+        let org_survived = self.activate_organism(org, membership, cell_id, true, true, None);
+        // only assign an avatar cell if the org lived through birth
+        self.place_offspring_avatar(cell_id, org_survived, orig_uid);
         if let Some(f) = self.fatal.borrow_mut().take() {
             return Err(f);
         }

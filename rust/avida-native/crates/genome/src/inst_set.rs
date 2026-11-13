@@ -11,7 +11,8 @@ use crate::instruction::Instruction;
 use crate::sequence::InstructionSequence;
 use crate::weighted_index::OrderedWeightedIndex;
 use avida_apto::AvidaRng;
-use std::sync::Arc;
+use std::sync::atomic::{AtomicI32, AtomicU64, Ordering};
+use std::sync::{Arc, OnceLock, RwLock, RwLockReadGuard};
 
 /// `MAX_INSTSET_SIZE`
 pub const MAX_INSTSET_SIZE: i32 = 255;
@@ -72,6 +73,17 @@ pub struct InstEntry {
     pub bonus_cost: f64,
 }
 
+/// The two per-instruction values a run may change through the shared
+/// `cInstSet` (`cActionSetRedundancy`, `cActionSetProbFail` mutate the default
+/// instruction set that every hardware, parasites included, points to), by
+/// opcode. Atomics let an `Arc<InstSet>` held by any number of hardware
+/// instances see the change, as the C++ pointer does.
+#[derive(Debug)]
+struct Dynamic {
+    prob_fail: Vec<AtomicU64>,
+    redundancy: Vec<AtomicI32>,
+}
+
 /// `cInstSet`.
 ///
 /// Not `Clone`: the C++ copy constructor and assignment operator drop the
@@ -85,7 +97,11 @@ pub struct InstSet {
     inst_lib: Arc<InstLib>,
     lib_name_map: Vec<InstEntry>,
     lib_nopmod_map: Vec<i32>,
-    mutation_index: OrderedWeightedIndex,
+    /// `m_mutation_index`. Behind a lock because `SetRedundancy` changes the
+    /// set that every organism's hardware shares (see [`Dynamic`]).
+    mutation_index: RwLock<OrderedWeightedIndex>,
+    /// What `SetRedundancy` and `SetProbFail` changed, once either ran.
+    dynamic: OnceLock<Dynamic>,
     has_costs: bool,
     has_ft_costs: bool,
     has_energy_costs: bool,
@@ -114,7 +130,8 @@ impl InstSet {
             inst_lib,
             lib_name_map: Vec::new(),
             lib_nopmod_map: Vec::new(),
-            mutation_index: OrderedWeightedIndex::new(),
+            mutation_index: RwLock::new(OrderedWeightedIndex::new()),
+            dynamic: OnceLock::new(),
             has_costs: false,
             has_ft_costs: false,
             has_energy_costs: false,
@@ -165,9 +182,16 @@ impl InstSet {
             name: self.name.clone(),
             hw_type: self.hw_type,
             inst_lib: Arc::clone(&self.inst_lib),
-            lib_name_map: self.lib_name_map.clone(),
+            lib_name_map: (0..self.lib_name_map.len() as i32)
+                .map(|id| InstEntry {
+                    redundancy: self.redundancy(Instruction::new(id)),
+                    prob_fail: self.prob_fail(Instruction::new(id)),
+                    ..self.lib_name_map[id as usize]
+                })
+                .collect(),
             lib_nopmod_map: Vec::new(),
-            mutation_index: self.mutation_index.clone(),
+            mutation_index: RwLock::new(self.mutation_index().clone()),
+            dynamic: OnceLock::new(),
             has_costs: self.has_costs,
             has_ft_costs: self.has_ft_costs,
             has_energy_costs: self.has_energy_costs,
@@ -197,9 +221,14 @@ impl InstSet {
         &self.inst_lib
     }
 
-    /// The entry of opcode `id` (`m_lib_name_map[id]`).
-    pub fn entry(&self, id: i32) -> &InstEntry {
-        &self.lib_name_map[id as usize]
+    /// The entry of opcode `id` (`m_lib_name_map[id]`), with the
+    /// redundancy and failure probability a run may have set.
+    pub fn entry(&self, id: i32) -> InstEntry {
+        InstEntry {
+            redundancy: self.redundancy(Instruction::new(id)),
+            prob_fail: self.prob_fail(Instruction::new(id)),
+            ..self.lib_name_map[id as usize]
+        }
     }
 
     fn e(&self, inst: Instruction) -> &InstEntry {
@@ -219,7 +248,14 @@ impl InstSet {
 
     /// `GetRedundancy(inst)`
     pub fn redundancy(&self, inst: Instruction) -> i32 {
-        self.e(inst).redundancy
+        match self
+            .dynamic
+            .get()
+            .and_then(|d| d.redundancy.get(inst.op() as usize))
+        {
+            Some(r) => r.load(Ordering::Relaxed),
+            None => self.e(inst).redundancy,
+        }
     }
     /// `GetCost(inst)`
     pub fn cost(&self, inst: Instruction) -> i32 {
@@ -235,7 +271,14 @@ impl InstSet {
     }
     /// `GetProbFail(inst)`
     pub fn prob_fail(&self, inst: Instruction) -> f64 {
-        self.e(inst).prob_fail
+        match self
+            .dynamic
+            .get()
+            .and_then(|d| d.prob_fail.get(inst.op() as usize))
+        {
+            Some(p) => f64::from_bits(p.load(Ordering::Relaxed)),
+            None => self.e(inst).prob_fail,
+        }
     }
     /// `GetAddlTimeCost(inst)`
     pub fn addl_time_cost(&self, inst: Instruction) -> i32 {
@@ -286,8 +329,9 @@ impl InstSet {
     /// redundancy-weighted lookup. QUIRK: a failed lookup (-1) wraps to
     /// opcode 255.
     pub fn random_inst(&self, rng: &mut AvidaRng) -> Instruction {
-        let weight = rng.get_double_max(self.mutation_index.total_weight());
-        let inst_ndx = self.mutation_index.find_position(weight);
+        let index = self.mutation_index();
+        let weight = rng.get_double_max(index.total_weight());
+        let inst_ndx = index.find_position(weight);
         Instruction::new(inst_ndx)
     }
 
@@ -408,24 +452,52 @@ impl InstSet {
             lib_fun_id: null_fun_id,
             ..InstEntry::default()
         });
+        if let Some(d) = self.dynamic.get_mut() {
+            d.prob_fail.push(AtomicU64::new(0.0f64.to_bits()));
+            d.redundancy.push(AtomicI32::new(0));
+        }
         Instruction::new(inst_id)
     }
 
-    /// `SetProbFail(inst, p)`.
-    pub fn set_prob_fail(&mut self, inst: Instruction, prob_fail: f64) {
-        self.lib_name_map[inst.op() as usize].prob_fail = prob_fail;
+    /// The values a run changed, created from the entries on first use.
+    fn dynamic(&self) -> &Dynamic {
+        self.dynamic.get_or_init(|| Dynamic {
+            prob_fail: self
+                .lib_name_map
+                .iter()
+                .map(|e| AtomicU64::new(e.prob_fail.to_bits()))
+                .collect(),
+            redundancy: self
+                .lib_name_map
+                .iter()
+                .map(|e| AtomicI32::new(e.redundancy))
+                .collect(),
+        })
+    }
+
+    /// `SetProbFail(inst, p)`. Takes `&self`: the C++ changes the one
+    /// `cInstSet` all hardware share, and in this port the hardware share
+    /// it through an `Arc`.
+    pub fn set_prob_fail(&self, inst: Instruction, prob_fail: f64) {
+        self.dynamic().prob_fail[inst.op() as usize].store(prob_fail.to_bits(), Ordering::Relaxed);
     }
 
     /// `SetRedundancy(inst, r)`. QUIRK: adds a further mutation-index item
-    /// for the opcode instead of replacing its weight.
-    pub fn set_redundancy(&mut self, inst: Instruction, redundancy: i32) {
-        self.lib_name_map[inst.op() as usize].redundancy = redundancy;
-        self.mutation_index.set_weight(inst.op(), redundancy as f64);
+    /// for the opcode instead of replacing its weight. Takes `&self` like
+    /// [`InstSet::set_prob_fail`].
+    pub fn set_redundancy(&self, inst: Instruction, redundancy: i32) {
+        self.dynamic().redundancy[inst.op() as usize].store(redundancy, Ordering::Relaxed);
+        self.mutation_index
+            .write()
+            .unwrap_or_else(|e| e.into_inner())
+            .set_weight(inst.op(), redundancy as f64);
     }
 
     /// The redundancy-weighted index used by `random_inst`.
-    pub fn mutation_index(&self) -> &OrderedWeightedIndex {
-        &self.mutation_index
+    pub fn mutation_index(&self) -> RwLockReadGuard<'_, OrderedWeightedIndex> {
+        self.mutation_index
+            .read()
+            .unwrap_or_else(|e| e.into_inner())
     }
 
     /// `GetInst(name)`: the opcode whose library name is `name`.
@@ -660,14 +732,16 @@ impl InstSet {
         }
 
         // Setup mutation indexing based on redundancies
-        self.mutation_index = OrderedWeightedIndex::new();
+        let mut index = OrderedWeightedIndex::new();
         for (id, e) in self.lib_name_map.iter().enumerate() {
             let red = e.redundancy as f64;
             if red == 0.0 {
                 continue;
             }
-            self.mutation_index.set_weight(id as i32, red);
+            index.set_weight(id as i32, red);
         }
+        self.mutation_index = RwLock::new(index);
+        self.dynamic = OnceLock::new();
         success
     }
 

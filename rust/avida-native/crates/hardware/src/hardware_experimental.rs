@@ -1519,17 +1519,16 @@ impl HardwareExperimental {
         }
         self.from_sensor = false;
         self.from_message = false;
-        let f = self
+        // Every instruction of the set has a handler: `HardwareManager::create`
+        // refuses a set with an unported one (`check_inst_set_ported`).
+        let Some(f) = self
             .functions
             .get(inst_idx.max(0) as usize)
             .copied()
             .flatten()
-            .ok_or_else(|| {
-                format!(
-                    "unsupported: instruction '{}' (C++: cHardwareExperimental.cc)",
-                    self.base.inst_set.name_of(cur_inst)
-                )
-            })?;
+        else {
+            return Ok(false);
+        };
         let exec_success = f(self, org, world)?;
 
         if exec_success {
@@ -1939,6 +1938,11 @@ impl Hardware for HardwareExperimental {
             i += 1;
         }
 
+        // A gradient habitat's `SetToDie` of this organism (see
+        // `OrgInterface::take_habitat_to_die`).
+        if world.take_habitat_to_die() {
+            org.phenotype.to_die = true;
+        }
         let max_executed = org.max_executed;
         if (max_executed > 0 && org.phenotype.time_used >= max_executed) || org.phenotype.to_die {
             if speculative {

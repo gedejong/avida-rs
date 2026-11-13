@@ -1,0 +1,2 @@
+base heads_default_100u
+args -set USE_AVATARS 1 -set AVATAR_BIRTH 1

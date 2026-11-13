@@ -7,7 +7,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Clear, Paragraph};
 use ratatui::Frame;
 
-use super::util::{block, centered, trunc, ACCENT, DIM};
+use super::util::{accent, block, centered, trunc, DIM};
 use crate::actions::PaletteState;
 use crate::app::App;
 
@@ -24,7 +24,7 @@ pub fn draw(f: &mut Frame, app: &App, p: &PaletteState, area: Rect) {
         return;
     }
     let prompt = Line::from(vec![
-        Span::styled("> ", ACCENT.add_modifier(Modifier::BOLD)),
+        Span::styled("> ", accent().add_modifier(Modifier::BOLD)),
         Span::raw(p.query.clone()),
         Span::styled("_", DIM),
     ]);

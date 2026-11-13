@@ -1,0 +1,8 @@
+# All pairs edit distance
+# 1: Num organism pairs
+# 2: Mean distance computed using (n*(n-1)/2) as all pairs.
+# 3: Mean distance
+# 4: Max distance
+# 5: Frac distances above threshold (5)
+
+13530 7898.1 12.2587 18 0.824686 

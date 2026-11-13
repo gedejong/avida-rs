@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use crate::color::ColorMode;
+use crate::color::{Background, ColorMode};
 
 pub const HELP: &str = "\
 avida-tui: terminal front end for the native Avida port
@@ -15,8 +15,11 @@ environment file); it defaults to the current directory. Everything after it
 is passed to the avida command line (for example: -s 7 -set WORLD_X 30).
 
 OPTIONS (before CONFIG_DIR):
-    --colors MODE   auto (default), truecolor, 256 or none (NO_COLOR also
+    --colors MODE   auto (default), truecolor, 256, 16 or none (NO_COLOR also
                     turns colour off; this option wins over it)
+    --theme NAME    auto (default), dark or light: the terminal background
+                    the colours are chosen for. auto reads AVIDA_TUI_THEME,
+                    then COLORFGBG, and assumes dark
     --help          show this text
     --version       show the version
 
@@ -31,6 +34,7 @@ pub struct Cli {
     pub work_dir: PathBuf,
     pub args: Vec<String>,
     pub colors: Option<ColorMode>,
+    pub theme: Option<Background>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -45,6 +49,7 @@ pub enum Parsed {
 pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
     let mut it = args.into_iter().peekable();
     let mut colors = None;
+    let mut theme = None;
     while let Some(a) = it.peek().cloned() {
         match a.as_str() {
             "--help" => return Parsed::Help,
@@ -52,10 +57,27 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
             "--colors" => {
                 it.next();
                 let Some(v) = it.next() else {
-                    return Parsed::Error("--colors needs auto, truecolor, 256 or none".into());
+                    return Parsed::Error("--colors needs auto, truecolor, 256, 16 or none".into());
                 };
                 match parse_colors(&v) {
                     Ok(c) => colors = c,
+                    Err(e) => return Parsed::Error(e),
+                }
+            }
+            "--theme" => {
+                it.next();
+                let Some(v) = it.next() else {
+                    return Parsed::Error("--theme needs auto, dark or light".into());
+                };
+                match parse_theme(&v) {
+                    Ok(t) => theme = t,
+                    Err(e) => return Parsed::Error(e),
+                }
+            }
+            s if s.starts_with("--theme=") => {
+                it.next();
+                match parse_theme(&s["--theme=".len()..]) {
+                    Ok(t) => theme = t,
                     Err(e) => return Parsed::Error(e),
                 }
             }
@@ -80,6 +102,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
         work_dir,
         args: it.collect(),
         colors,
+        theme,
     })
 }
 
@@ -88,9 +111,21 @@ fn parse_colors(v: &str) -> Result<Option<ColorMode>, String> {
         "auto" => Ok(None),
         "truecolor" | "24bit" => Ok(Some(ColorMode::TrueColor)),
         "256" => Ok(Some(ColorMode::Indexed256)),
+        "16" => Ok(Some(ColorMode::Ansi16)),
         "none" | "mono" => Ok(Some(ColorMode::Mono)),
         other => Err(format!(
-            "--colors: unknown mode {other:?} (auto, truecolor, 256, none)"
+            "--colors: unknown mode {other:?} (auto, truecolor, 256, 16, none)"
+        )),
+    }
+}
+
+fn parse_theme(v: &str) -> Result<Option<Background>, String> {
+    match v {
+        "auto" => Ok(None),
+        "dark" => Ok(Some(Background::Dark)),
+        "light" => Ok(Some(Background::Light)),
+        other => Err(format!(
+            "--theme: unknown theme {other:?} (auto, dark, light)"
         )),
     }
 }
@@ -146,6 +181,20 @@ mod tests {
         assert_eq!(c.colors, Some(ColorMode::Mono));
         assert!(matches!(p(&["--colors=7"]), Parsed::Error(_)));
         assert!(matches!(p(&["--colors"]), Parsed::Error(_)));
+    }
+
+    #[test]
+    fn theme_flag() {
+        let Parsed::Run(c) = p(&["--theme", "light", "/"]) else {
+            panic!()
+        };
+        assert_eq!(c.theme, Some(Background::Light));
+        let Parsed::Run(c) = p(&["--theme=dark", "--colors", "16"]) else {
+            panic!()
+        };
+        assert_eq!(c.theme, Some(Background::Dark));
+        assert_eq!(c.colors, Some(ColorMode::Ansi16));
+        assert!(matches!(p(&["--theme=blue"]), Parsed::Error(_)));
     }
 
     #[test]

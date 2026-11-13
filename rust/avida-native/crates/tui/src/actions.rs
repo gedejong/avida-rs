@@ -621,7 +621,7 @@ pub static BINDINGS: &[Binding] = &[
     row(
         Action::DebugCycleSpace,
         "Debug",
-        "List the next memory space (host, offspring, parasite)",
+        "Show the next memory space",
         &[c('y'), c('Y')],
         DEBUG,
         true,

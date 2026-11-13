@@ -180,14 +180,6 @@ pub fn check_parallel_supported(cfg: &Config) -> Result<(), String> {
             ))
         }
     }
-    if cfg.num_demes > 1 {
-        return Err(format!(
-            "unsupported in EXECUTION_MODE 1: NUM_DEMES {} (every time slice updates the \
-             deme clocks and the time used of the running organism's deme and may replicate \
-             the deme; the parallel mode has no per-slice deme bookkeeping)",
-            cfg.num_demes
-        ));
-    }
     Ok(())
 }
 
@@ -261,6 +253,20 @@ impl ParallelStats {
     }
 }
 
+/// One burst of a parallel phase in a world with demes: what the deme
+/// bookkeeping of its time slices needs.
+#[derive(Clone, Copy, Debug)]
+struct DemeBurst {
+    cell: i32,
+    /// Instructions the burst executed.
+    executed: u32,
+    /// The organism's merit after the burst.
+    merit: f64,
+    /// The organism's update clock before and after the burst.
+    start: f64,
+    clock: f64,
+}
+
 /// The state of the parallel mode a [`crate::run::Stepper`] keeps.
 #[derive(Clone)]
 pub struct ParallelExec {
@@ -294,6 +300,9 @@ pub struct ParallelExec {
     /// `first..=last`, and the update clock of the organism whose step
     /// created them.
     births: Vec<(u64, u64, f64)>,
+    /// The bursts of the last parallel phase, kept (with demes only) for
+    /// the deme bookkeeping at the start of the sequential phase.
+    deme_bursts: Vec<DemeBurst>,
     /// Performance counters.
     pub stats: ParallelStats,
 }
@@ -340,6 +349,7 @@ impl ParallelExec {
             target: 0.0,
             weight_sum: 0.0,
             births: Vec::new(),
+            deme_bursts: Vec::new(),
             stats: ParallelStats::default(),
         })
     }
@@ -652,7 +662,23 @@ impl ParallelExec {
         }
         let mut executed: u64 = 0;
         let mut error = None;
+        let demes = w.pop.demes.len() > 1;
         for (c, org, out) in work {
+            if demes && out.executed > 0 {
+                // What the deme half of each of these time slices does is
+                // done for the whole burst at the start of the sequential
+                // phase (`settle_deme_bursts`).
+                let p = &org.state.parallel;
+                let clock = Self::clock(p);
+                let spent = f64::from(out.executed) / f64::from(p.granted.max(1));
+                self.deme_bursts.push(DemeBurst {
+                    cell: c,
+                    executed: out.executed,
+                    merit: org.state.phenotype.merit.get_double(),
+                    start: (clock - (1.0 - p.t0) * spent).max(p.t0),
+                    clock,
+                });
+            }
             w.pop.orgs[c as usize] = Some(org);
             executed += u64::from(out.executed);
             if out.needs_world {
@@ -667,6 +693,10 @@ impl ParallelExec {
         // the deme part, so these do too).
         w.stats.num_executed = w.stats.num_executed.wrapping_add(executed as i32);
         w.pop.resource_count.update(step_size * executed as f64);
+        // As in the exact mode, also with a single deme.
+        for deme in &mut w.pop.demes {
+            deme.resource_count.update(step_size * executed as f64);
+        }
         match error {
             Some(e) => Err(e),
             None => Ok(executed),
@@ -695,6 +725,7 @@ impl ParallelExec {
         // ARCHITECTURE.md.)
         stopped.sort_unstable_by_key(|&c| rank[c as usize]);
         self.births.clear();
+        self.settle_deme_bursts(w)?;
         let mut ran = 0;
         for &c in stopped.iter() {
             // Earlier steps of this phase may have killed, replaced or
@@ -751,6 +782,78 @@ impl ParallelExec {
         next.sort_unstable();
         next.dedup();
         Ok(ran)
+    }
+
+    /// The deme half of the time slices the bursts of the last parallel
+    /// phase ran (`World::demes_after_step` in the exact mode): each burst
+    /// adds its instructions to the time used of its organism's deme, and
+    /// then every deme a burst ran in is checked for implicit replication,
+    /// once and in deme order. The exact mode checks after every
+    /// instruction, so there a deme replicates at the instruction that
+    /// crosses its threshold and here at the end of the round in which a
+    /// burst crossed it. The organisms a replication creates are granted
+    /// their budgets with the newborns of the sequential phase, from the
+    /// update clock at which the deme's bursts crossed the threshold
+    /// (interpolated between the earliest start and the latest end of
+    /// those bursts by the share of their instructions the threshold was
+    /// short of), which is the part of the update the exact mode leaves
+    /// the founders.
+    fn settle_deme_bursts(&mut self, w: &mut World) -> Result<(), String> {
+        if self.deme_bursts.is_empty() {
+            return Ok(());
+        }
+        let bursts = std::mem::take(&mut self.deme_bursts);
+        // Per deme with bursts: its time used and normalized time used
+        // before them, and the clock window of the bursts.
+        let mut rounds: Vec<Option<(f64, f64, f64, f64)>> = vec![None; w.pop.demes.len()];
+        for b in &bursts {
+            let d = w.deme_of(b.cell);
+            let deme = &mut w.pop.demes[d];
+            let round = rounds[d].get_or_insert((
+                f64::from(deme.time_used),
+                deme.cur_normalized_time_used,
+                b.start,
+                b.clock,
+            ));
+            round.2 = round.2.min(b.start);
+            round.3 = round.3.max(b.clock);
+            deme.time_used += b.executed as i32;
+            deme.cur_normalized_time_used +=
+                f64::from(b.executed) / b.merit / f64::from(deme.cur_org_count);
+        }
+        let cycles = w.cfg.demes_replicate_cpu_cycles;
+        let time = w.cfg.demes_replicate_time;
+        for (d, round) in rounds.into_iter().enumerate() {
+            let Some((used, normalized, start, end)) = round else {
+                continue;
+            };
+            let deme = &w.pop.demes[d];
+            // The share of the round's instructions the first threshold
+            // crossed was short of (1 when none was crossed).
+            let short = |limit: f64, before: f64, after: f64| {
+                if limit != 0.0 && after >= limit && after > before {
+                    ((limit - before) / (after - before)).clamp(0.0, 1.0)
+                } else {
+                    1.0
+                }
+            };
+            let share = short(cycles, used, f64::from(deme.time_used)).min(short(
+                time,
+                normalized,
+                deme.cur_normalized_time_used,
+            ));
+            let clock = start + share * (end - start);
+            let last_uid = w.pop.last_org_uid;
+            w.check_implicit_deme_repro(d);
+            w.check_fatal()?;
+            if w.pop.last_org_uid > last_uid {
+                self.births.push((last_uid + 1, w.pop.last_org_uid, clock));
+            }
+        }
+        let mut bursts = bursts;
+        bursts.clear();
+        self.deme_bursts = bursts;
+        Ok(())
     }
 
     /// The update clock of an organism: how far through the update (from

@@ -207,7 +207,7 @@ fn editing_the_config_restarts_the_run_with_the_overrides() {
         Step::Keys("F"),
         Step::Check(Box::new(|_, t| {
             has(t, "WORLD_X");
-            has(t, "restart runs: -s 7");
+            has(t, "A restart would run with: -s 7");
         })),
         Step::Snap("config".into()),
         Step::Keys("/world_x"),
@@ -228,7 +228,10 @@ fn editing_the_config_restarts_the_run_with_the_overrides() {
         Step::Event(key(KeyCode::Enter)),
         Step::Check(Box::new(|a, t| {
             assert_eq!(a.config.overrides.len(), 2);
-            has(t, "restart runs: -s 7 -set WORLD_X 20 -set WORLD_Y 20");
+            has(
+                t,
+                "A restart would run with: -s 7 -set WORLD_X 20 -set WORLD_Y 20",
+            );
         })),
         Step::Keys("R"),
         Step::Check(Box::new(|_, t| {

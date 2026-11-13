@@ -3,13 +3,14 @@
 
 use avida_viewmodel::format_number;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::style::{Color, Style};
+use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
-use super::util::{block, clip_lines, thousands, trunc, DIM, HEADING};
+use super::util::{block, born_at, clip_lines, heading, thousands, trunc, DIM};
 use crate::app::App;
+use crate::color::{hue, Hue};
 use crate::metrics::{hbar, sparkline, Metric};
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
@@ -31,20 +32,20 @@ fn draw_population(f: &mut Frame, app: &App, area: Rect) {
         let r = &d.row;
         lines.push(Line::from(vec![
             Span::styled("dominant ", DIM),
-            Span::styled(r.name.clone(), HEADING),
+            Span::styled(r.name.clone(), heading()),
             Span::raw(format!(
-                "  x{}  length {}  fitness {}  born u{}",
+                "  x{}  length {}  fitness {}  born {}",
                 r.abundance,
                 r.genome_len,
                 format_number(r.ave_fitness),
-                r.update_born
+                born_at(r.update_born)
             )),
         ]));
     }
 
     let label_w = 20usize;
     let val_w = 11usize;
-    let spark_w = inner_w.saturating_sub(label_w + val_w + 2);
+    let spark_w = inner_w.saturating_sub(label_w + val_w + 3);
     let rows = app.history.rows();
     let latest = app.latest_stats();
     for m in Metric::STATS {
@@ -57,7 +58,7 @@ fn draw_population(f: &mut Frame, app: &App, area: Rect) {
                 Style::new().add_modifier(ratatui::style::Modifier::BOLD),
             ),
             Span::raw("  "),
-            Span::styled(sparkline(&series, spark_w), Style::new().fg(Color::Cyan)),
+            Span::styled(sparkline(&series, spark_w), Style::new().fg(hue(Hue::Cyan))),
         ]));
     }
     f.render_widget(
@@ -72,22 +73,32 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
         return;
     };
     let orgs = app.latest_stats().map_or(0, |r| r.orgs).max(1);
+    let n = env.tasks.len();
+    let inner_w = area.width.saturating_sub(2);
+    // As many columns of at least 30 cells as fit; the columns share the
+    // width, and the rows are only as many as the tasks need, so a short list
+    // does not sit in a tall empty box.
+    let cols = (inner_w / 30).max(1);
+    let wanted = n.div_ceil(usize::from(cols)).max(1);
+    let rows = wanted.min(usize::from(area.height.saturating_sub(2)).max(1));
+    let area = Rect {
+        height: (rows as u16 + 2).min(area.height),
+        ..area
+    };
     let inner = Rect {
         x: area.x + 1,
         y: area.y + 1,
-        width: area.width.saturating_sub(2),
+        width: inner_w,
         height: area.height.saturating_sub(2),
     };
-    let col_w: u16 = 30;
-    let cols = (inner.width / col_w).max(1);
-    let per_page = usize::from(cols) * usize::from(inner.height.max(1));
-    let n = env.tasks.len();
+    let col_w = (inner.width / cols).clamp(1, 48);
+    let per_page = usize::from(cols) * rows;
     let offset = app.stats_task_offset.min(n.saturating_sub(1));
     let title = if n == 0 {
         "Tasks (none defined)".to_string()
     } else if n > per_page {
         format!(
-            "Tasks {}-{} of {}  (Left/Right pages)",
+            "Tasks {}-{} of {}  (Left and Right turn the page)",
             offset + 1,
             (offset + per_page).min(n),
             n
@@ -96,11 +107,12 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
         "Tasks".to_string()
     };
     f.render_widget(block(&title), area);
-    let name_w = usize::from(col_w).saturating_sub(15);
+    let name_w = usize::from(col_w).saturating_sub(15).max(4);
+    let bar_w = usize::from(col_w).saturating_sub(name_w + 9).clamp(6, 24);
     for (i, t) in env.tasks.iter().enumerate().skip(offset).take(per_page) {
         let k = i - offset;
-        let col = (k / usize::from(inner.height.max(1))) as u16;
-        let row = (k % usize::from(inner.height.max(1))) as u16;
+        let col = (k / rows) as u16;
+        let row = (k % rows) as u16;
         let r = Rect {
             x: inner.x + col * col_w,
             y: inner.y + row,
@@ -115,7 +127,7 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
                 Style::new().add_modifier(ratatui::style::Modifier::BOLD),
             ),
             Span::raw(" "),
-            Span::styled(hbar(frac, 6), Style::new().fg(Color::Green)),
+            Span::styled(hbar(frac, bar_w), Style::new().fg(hue(Hue::Green))),
         ]);
         f.render_widget(Paragraph::new(line), r);
     }

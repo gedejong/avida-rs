@@ -62,6 +62,21 @@ pub trait TestCpuHost: OutputHost {
     /// the relinquish-energy instructions add to the world's statistics
     /// from a test CPU too.
     fn stats_add_energy_testament(&mut self, _target: TestamentTarget, _amount: f64) {}
+    /// A live population organism dies while the test runs
+    /// (`Inst_SetRandPFTOnce` under `MAX_PREY_BT`). The default refuses.
+    fn kill_population_org(&mut self, _uid: OrgUid, _cell: i32) -> Result<(), String> {
+        Err(
+            "unsupported: a MAX_PREY_BT kill of a population organism from a test CPU \
+             (C++: cHardwareExperimental.cc:cHardwareExperimental::Inst_SetRandPFTOnce)"
+                .to_string(),
+        )
+    }
+    /// Whether [`Self::kill_population_org`] has queued a kill that the
+    /// world has not carried out yet: the population this test world
+    /// snapshotted is then no longer the C++'s.
+    fn population_kill_pending(&self) -> bool {
+        false
+    }
     /// `std::cout` (or the driver's `Feedback()`, which prints there) from
     /// a test CPU; a population run keeps it in order with its own output.
     fn cout(&mut self, text: &str) {
@@ -831,6 +846,22 @@ impl<'a> TestCpuInterface<'a> {
     }
 }
 
+impl TestCpuInterface<'_> {
+    /// The counts this world snapshotted are the C++'s only while no
+    /// population organism has died during the run.
+    fn population_counts_current(&self) -> Result<(), String> {
+        if self.host.inner.population_kill_pending() {
+            return Err(
+                "unsupported: the predator or prey count read after a MAX_PREY_BT kill from the \
+                 same test CPU run (C++: cStats::GetNumPreyCreatures asks the population, which \
+                 has lost the organism the kill took)"
+                    .to_string(),
+            );
+        }
+        Ok(())
+    }
+}
+
 impl WorldServices for TestCpuInterface<'_> {
     fn config(&self) -> &Config {
         self.config
@@ -932,6 +963,14 @@ impl OrgInterface for TestCpuInterface<'_> {
     /// it for the test. The organism whose step runs the test is out of
     /// reach; so is the population when nothing was gathered.
     fn live_org_forage_targets(&self) -> Result<Vec<(OrgUid, i32, Option<i32>)>, String> {
+        if self.host.inner.population_kill_pending() {
+            return Err(
+                "unsupported: a second read of the live organisms after a MAX_PREY_BT kill from \
+                 the same test CPU run (C++: cHardwareExperimental.cc:cHardwareExperimental::\
+                 Inst_SetRandPFTOnce; the list the test world holds is the one before the kill)"
+                    .to_string(),
+            );
+        }
         match self.live_orgs {
             Some(orgs) if orgs.iter().all(|o| o.2.is_some()) => Ok(orgs.to_vec()),
             _ => Err(
@@ -1118,13 +1157,16 @@ impl OrgInterface for TestCpuInterface<'_> {
     fn update_resources(&mut self, _org: &mut OrgState, res_change: &[f64]) {
         self.io_mut().modify_resources(res_change);
     }
-    fn update_random_resources(&mut self, res_change: &[f64]) {
+    fn update_random_resources(&mut self, _org: &mut OrgState, res_change: &[f64]) {
         self.io_mut().modify_resources(res_change);
     }
     fn update_deme_resources(&mut self, _res_change: &[f64]) {}
 
     fn die(&mut self, _org: &mut OrgState) {}
     fn kill_cell_id(&mut self, _org: &mut OrgState, _target: i32) {}
+    fn kill_population_org(&mut self, uid: OrgUid, cell: i32) -> Result<(), String> {
+        self.host.inner.kill_population_org(uid, cell)
+    }
     fn kaboom(&mut self, _org: &mut OrgState, _distance: i32) {}
     fn kaboom_effect(&mut self, _org: &mut OrgState, _distance: i32, _effect: f64) {}
     fn spawn_deme(&mut self, _org: &mut OrgState) {}
@@ -1208,16 +1250,12 @@ impl OrgInterface for TestCpuInterface<'_> {
     fn do_deme_input(&mut self, _value: i32) {}
     fn do_deme_output(&mut self, _value: i32) {}
 
-    fn do_hgt_donation(&mut self, _org: &mut OrgState) {}
-    fn do_hgt_conjugation(&mut self, _org: &mut OrgState) {}
     fn do_hgt_mutation(&mut self, _org: &mut OrgState) {}
     fn receive_hgt_donation(&mut self, _fragment: &InstructionSequence) {}
 
     fn move_org(&mut self, _org: &mut OrgState, _src_id: i32, _dest_id: i32) -> bool {
         false
     }
-    fn add_live_org(&mut self) {}
-    fn remove_live_org(&mut self) {}
 
     fn has_opinion(&self, _org: &OrgState) -> bool {
         false
@@ -1518,14 +1556,17 @@ impl OrgInterface for TestCpuInterface<'_> {
     /// The C++ test CPU reads the world's statistics, which ask the
     /// population (empty in analyze mode).
     fn stats_num_prey_creatures(&self) -> Result<i32, String> {
+        self.population_counts_current()?;
         Ok(self.counts.num_prey)
     }
     /// As [`Self::stats_num_prey_creatures`]: top predators plus predators.
     fn stats_num_total_pred_creatures(&self) -> Result<i32, String> {
+        self.population_counts_current()?;
         Ok(self.counts.num_top_pred + self.counts.num_pred)
     }
     /// As [`Self::stats_num_prey_creatures`]: predators, not top predators.
     fn stats_num_pred_creatures(&self) -> Result<i32, String> {
+        self.population_counts_current()?;
         Ok(self.counts.num_pred)
     }
 }

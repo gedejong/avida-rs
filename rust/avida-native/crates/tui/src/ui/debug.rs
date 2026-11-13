@@ -9,19 +9,22 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Paragraph, Wrap};
 use ratatui::Frame;
 
-use super::util::{block, clip_line, clip_lines, trunc, ACCENT, BOLD, DIM};
+use super::util::{accent, block, clip_line, clip_lines, trunc, BOLD, DIM};
 use super::zoom::{flag_char, nums};
 use crate::app::App;
+use crate::color::{hue, Hue};
 use crate::debugger::{Debugger, Fate};
 
-const CHANGED: Style = Style::new().fg(Color::Magenta).add_modifier(Modifier::BOLD);
+/// A value that changed since the last step.
+fn changed_style() -> Style {
+    Style::new()
+        .fg(hue(Hue::Magenta))
+        .add_modifier(Modifier::BOLD)
+}
 
 pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     if app.frame.is_none() {
-        f.render_widget(
-            Paragraph::new(" Waiting for the first frame...").style(DIM),
-            area,
-        );
+        f.render_widget(Paragraph::new(super::FIRST_FRAME).style(DIM), area);
         return;
     }
     if app.debugger.current.is_none() {
@@ -49,7 +52,11 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         Layout::vertical([Constraint::Min(4), Constraint::Length(status_h)]).areas(area);
     let wide = main.width >= 72;
     let (cpu_area, mem_area) = if wide {
-        let [l, r] = Layout::horizontal([Constraint::Length(34), Constraint::Min(30)]).areas(main);
+        // Wider terminals give the registers more room, so the stacks are
+        // listed in full instead of cut at the edge.
+        let left_w = if main.width >= 140 { 52 } else { 34 };
+        let [l, r] =
+            Layout::horizontal([Constraint::Length(left_w), Constraint::Min(30)]).areas(main);
         (l, r)
     } else {
         let h = if main.height >= 12 {
@@ -109,7 +116,7 @@ fn head_lines(d: &Debugger, t: &ThreadView) -> Vec<Line<'static>> {
                 format!("{}:{}", h.mem_space, h.pos)
             };
             let style = if moved.get(i).copied().unwrap_or(false) {
-                CHANGED
+                changed_style()
             } else {
                 Style::new()
             };
@@ -133,7 +140,7 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
                 spans.push(Span::styled(format!("{name}X "), DIM));
                 spans.push(Span::styled(
                     format!("{r}{} ", mark(ch)),
-                    if ch { CHANGED } else { BOLD },
+                    if ch { changed_style() } else { BOLD },
                 ));
             }
             if let Some(h) = t.heads.first() {
@@ -153,6 +160,8 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
     }
     let mut lines: Vec<Line> = Vec::new();
     let w = usize::from(area.width.saturating_sub(2));
+    // About three columns for each value fit next to "stk A* ".
+    let stack_items = (w.saturating_sub(8) / 3).max(3);
     let alive = match &d.fate {
         Fate::Alive => String::new(),
         Fate::Died { update } => format!("  DIED u{update}"),
@@ -166,10 +175,10 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
                 } else {
                     o.genotype_name.clone()
                 },
-                BOLD.fg(Color::Magenta),
+                BOLD.fg(hue(Hue::Magenta)),
             ),
             Span::styled(format!(" #{}", o.org_id), DIM),
-            Span::styled(alive, Style::new().fg(Color::Red)),
+            Span::styled(alive, Style::new().fg(hue(Hue::Red))),
         ]));
         lines.push(Line::styled(
             format!("age {}  gen {}", o.phenotype.age, o.phenotype.generation),
@@ -195,8 +204,8 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
                     let ch = changed.get(i).copied().unwrap_or(false);
                     lines.push(Line::from(vec![
                         Span::styled(format!("{name}X "), DIM),
-                        Span::styled(format!("{r:>12}"), if ch { CHANGED } else { BOLD }),
-                        Span::styled(mark(ch), CHANGED),
+                        Span::styled(format!("{r:>12}"), if ch { changed_style() } else { BOLD }),
+                        Span::styled(mark(ch), changed_style()),
                     ]));
                 }
             } else {
@@ -216,7 +225,7 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
                         spans.push(Span::styled(format!("{name}X "), DIM));
                         spans.push(Span::styled(
                             format!("{r}{} ", mark(ch)),
-                            if ch { CHANGED } else { BOLD },
+                            if ch { changed_style() } else { BOLD },
                         ));
                     }
                     lines.push(Line::from(spans));
@@ -271,14 +280,20 @@ fn draw_cpu(f: &mut Frame, d: &Debugger, o: &OrganismView, area: Rect, wide: boo
                 };
                 lines.push(Line::raw(format!(
                     "stk {name}{act} {}",
-                    nums(&t.stacks[si], if wide { 5 } else { 8 })
+                    nums(&t.stacks[si], stack_items)
                 )));
             }
         }
     }
     if wide {
-        lines.push(Line::raw(format!("in  {}", nums(&o.input_buf, 4))));
-        lines.push(Line::raw(format!("out {}", nums(&o.output_buf, 4))));
+        lines.push(Line::raw(format!(
+            "in  {}",
+            nums(&o.input_buf, stack_items)
+        )));
+        lines.push(Line::raw(format!(
+            "out {}",
+            nums(&o.output_buf, stack_items)
+        )));
     }
     let title = format!(
         "{} thread {}/{} (t)",
@@ -353,9 +368,9 @@ fn draw_status(f: &mut Frame, app: &App, area: Rect) {
         },
     };
     let style = if d.last_stop.as_ref().is_some_and(|n| n.is_problem()) || d.fate != Fate::Alive {
-        Style::new().fg(Color::Red)
+        Style::new().fg(hue(Hue::Red))
     } else {
-        ACCENT
+        accent()
     };
     f.render_widget(
         Paragraph::new(vec![
@@ -446,12 +461,12 @@ fn draw_memory(f: &mut Frame, app: &mut App, area: Rect) {
             style = DIM;
         }
         if d.memory_changed(pos) {
-            style = CHANGED;
+            style = changed_style();
         } else if fcol != Color::Reset && pos < genome_len {
             style = style.fg(fcol);
         }
         if heads[0] == Some(pos) {
-            style = style.add_modifier(Modifier::BOLD).fg(Color::Green);
+            style = style.add_modifier(Modifier::BOLD).fg(hue(Hue::Green));
         }
         if pos == sel {
             style = style.add_modifier(Modifier::REVERSED);

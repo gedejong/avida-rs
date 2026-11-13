@@ -1,0 +1,17 @@
+# Avida reaction data
+# Thu Nov 12 23:41:33 2026
+# First column gives the current update, all further columns give the number
+# of currently living organisms each reaction has affected.
+#  1: Update
+#  2: ECHO
+#  3: eat0
+#  4: eat1
+#  5: eat2
+
+0 0 0 0 0 
+1 0 0 0 0 
+2 0 0 0 0 
+3 0 0 0 0 
+4 0 0 0 0 
+5 0 0 0 0 
+6 0 0 0 0 

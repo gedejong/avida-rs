@@ -1,0 +1,39 @@
+# Horizontal gene transfer statistics
+# Fri Nov 13 04:26:33 2026
+#  1: Update [update]
+#  2: Total count of metabolized genome fragments [metcount]
+#  3: Total size of metabolized genome fragments [metsize]
+#  4: Total count of insertion events [inscount]
+#  5: Total size of insertion events [inssize]
+
+0 0 0 0 0 
+10 0 0 0 0 
+20 0 0 0 0 
+30 2 19 2 20 
+40 2 15 0 0 
+50 1 10 0 0 
+60 7 65 4 38 
+70 10 93 9 81 
+80 15 152 4 42 
+90 19 176 8 76 
+100 22 190 4 36 
+110 20 184 6 51 
+120 43 391 6 46 
+130 36 329 12 116 
+140 36 331 5 45 
+150 53 497 12 109 
+160 50 479 10 87 
+170 45 418 11 102 
+180 74 690 9 89 
+190 62 601 13 133 
+200 59 548 9 88 
+210 87 801 8 66 
+220 53 511 13 118 
+230 63 569 11 99 
+240 81 745 14 140 
+250 61 578 15 132 
+260 127 1190 11 96 
+270 120 1113 14 131 
+280 231 2184 13 126 
+290 98 906 8 78 
+300 155 1424 14 140 

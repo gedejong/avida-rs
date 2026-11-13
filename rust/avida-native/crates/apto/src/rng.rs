@@ -32,7 +32,7 @@ const BINOMIAL_TO_POISSON: u32 = 1000;
 // ---------------------------------------------------------------------------
 
 /// Rust-native Avida RNG matching the `Apto::RNG::AvidaRNG` algorithm bit-for-bit.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AvidaRng {
     m_inext: i32,
     m_inextp: i32,

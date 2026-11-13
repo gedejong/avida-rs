@@ -126,13 +126,13 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
             }
         }
         if state.run_state() != Some(RunState::Failed) {
-            v.push(item(Action::SavePopulation, "Run", "Save population").key("Cmd S"));
+            v.push(item(Action::SavePopulation, "Experiment", "Save population").key("Cmd S"));
         }
         if can && state.debugger.is_alive() && state.selection.is_some() {
             v.push(
                 item(
                     Action::StepOrganism,
-                    "Debugger",
+                    "Organism",
                     "Step the watched organism",
                 )
                 .key("I")
@@ -140,7 +140,7 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
             );
             if !state.debugger.breakpoints.is_empty() {
                 v.push(
-                    item(Action::RunToBreakpoint, "Debugger", "Run to breakpoint")
+                    item(Action::RunToBreakpoint, "Organism", "Run to breakpoint")
                         .key("B")
                         .words("debug continue"),
                 );
@@ -151,7 +151,7 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
             v.push(
                 item(
                     Action::FollowOffspring(!on),
-                    "Debugger",
+                    "Organism",
                     if on {
                         "Stop following offspring"
                     } else {
@@ -164,7 +164,7 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
         if !state.debugger.breakpoints.is_empty() {
             v.push(item(
                 Action::ClearBreakpoints,
-                "Debugger",
+                "Organism",
                 "Clear breakpoints",
             ));
         }

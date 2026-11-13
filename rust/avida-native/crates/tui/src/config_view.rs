@@ -36,7 +36,14 @@ pub struct ConfigState {
 impl ConfigState {
     /// Indices into `setup.settings` that pass the filter.
     pub fn visible(&self, setup: &ExperimentSetup) -> Vec<usize> {
-        filter_settings(&setup.settings, &self.query, self.changed_only)
+        // "Changed" includes a setting with an override waiting for a restart.
+        filter_settings(&setup.settings, &self.query, false)
+            .into_iter()
+            .filter(|&i| {
+                let s = &setup.settings[i];
+                !self.changed_only || s.is_changed() || self.override_of(s.name).is_some()
+            })
+            .collect()
     }
 
     pub fn override_of(&self, name: &str) -> Option<&str> {

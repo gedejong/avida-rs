@@ -168,24 +168,38 @@ fn content(
     }
 
     ui.add_space(14.0);
-    ui.horizontal_wrapped(|ui| {
-        ui.spacing_mut().item_spacing.x = 4.0;
-        let plain = |s: &str| RichText::new(s).color(t.text_weak);
-        // Commands stay on one line.
-        let code = |ui: &mut Ui, s: &str| {
-            ui.add(
-                egui::Label::new(RichText::new(s).monospace().size(12.0).color(t.text))
-                    .wrap_mode(egui::TextWrapMode::Extend),
-            );
-        };
-        ui.label(plain("From a terminal,"));
-        code(ui, "avida-gui <folder> [avida options]");
-        ui.label(plain("opens a folder directly. Options such as"));
-        code(ui, "-s 7");
-        ui.label(plain("or"));
-        code(ui, "-set WORLD_X 30");
-        ui.label(plain("are passed on to Avida."));
-    });
+    // One galley for the whole paragraph, so that every line has the same
+    // height whatever mixes of text and commands it holds (separate labels
+    // in a wrapping row get taller rows where the font changes).
+    let line_height = 20.0;
+    let format = |font_id: egui::FontId, color: egui::Color32| egui::TextFormat {
+        font_id,
+        color,
+        line_height: Some(line_height),
+        valign: Align::Center,
+        ..Default::default()
+    };
+    let plain = format(egui::TextStyle::Body.resolve(ui.style()), t.text_weak);
+    let code = format(egui::FontId::monospace(12.0), t.text);
+    let mut job = egui::text::LayoutJob::default();
+    // Non-breaking spaces keep each command on one line.
+    let command = |s: &str| s.replace(' ', "\u{a0}");
+    job.append("From a terminal, ", 0.0, plain.clone());
+    job.append(
+        &command("avida-gui <folder> [avida options]"),
+        0.0,
+        code.clone(),
+    );
+    job.append(
+        " opens a folder directly. Options such as ",
+        0.0,
+        plain.clone(),
+    );
+    job.append(&command("-s 7"), 0.0, code.clone());
+    job.append(" or ", 0.0, plain.clone());
+    job.append(&command("-set WORLD_X 30"), 0.0, code);
+    job.append(" are passed on to Avida.", 0.0, plain);
+    ui.add(egui::Label::new(job));
 }
 
 /// One of the two ways in: an icon, a title, what it does, its actions.

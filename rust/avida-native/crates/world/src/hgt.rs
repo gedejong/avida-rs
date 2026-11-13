@@ -181,7 +181,11 @@ impl World {
     /// `cPopulation::AdjustHGTResource(ctx, delta)`: `resource_count.
     /// Modify(ctx, m_hgt_resid, delta)`. QUIRK: `m_hgt_resid` is the index
     /// in the resource library, used as an index into the global counts.
-    pub(crate) fn adjust_hgt_resource(&mut self, delta: f64) {
+    ///
+    /// `running` is the running organism's state when the caller holds it:
+    /// a damaging gradient that the resource update moves onto its cell
+    /// injures it, as it does the live organism in the C++.
+    pub(crate) fn adjust_hgt_resource(&mut self, running: Option<&mut OrgState>, delta: f64) {
         let Ok(id) = usize::try_from(self.pop.hgt_resid) else {
             return;
         };
@@ -192,15 +196,20 @@ impl World {
             );
             return;
         }
-        self.with_pop_resources(|rc, rng, env| rc.modify_one(rng, env, id, delta));
+        self.with_pop_resources_for(running, |rc, rng, env| rc.modify_one(rng, env, id, delta));
     }
 
     /// `cPopulationCell::AddGenomeFragments(ctx, genome)`
-    fn add_genome_fragments(&mut self, cell_id: i32, genome: &InstructionSequence) {
+    fn add_genome_fragments(
+        &mut self,
+        cell_id: i32,
+        genome: &InstructionSequence,
+        mut running: Option<&mut OrgState>,
+    ) {
         let Ok(c) = usize::try_from(cell_id) else {
             return;
         };
-        self.adjust_hgt_resource(f64::from(genome.size()));
+        self.adjust_hgt_resource(running.as_deref_mut(), f64::from(genome.size()));
         let mut frags = FragmentList::new();
         if !self.hgt_split(genome, &mut frags) {
             return;
@@ -213,18 +222,18 @@ impl World {
             let Some(front) = self.host.hgt.cell_mut(c).pop_front() else {
                 break;
             };
-            self.adjust_hgt_resource(-f64::from(front.size()));
+            self.adjust_hgt_resource(running.as_deref_mut(), -f64::from(front.size()));
         }
     }
 
     /// `cPopulationCell::ClearFragments(ctx)`
-    fn clear_fragments(&mut self, cell_id: i32) {
+    fn clear_fragments(&mut self, cell_id: i32, mut running: Option<&mut OrgState>) {
         let Ok(c) = usize::try_from(cell_id) else {
             return;
         };
         let frags = std::mem::take(self.host.hgt.cell_mut(c));
         for f in &frags {
-            self.adjust_hgt_resource(-f64::from(f.size()));
+            self.adjust_hgt_resource(running.as_deref_mut(), -f64::from(f.size()));
         }
     }
 
@@ -250,13 +259,17 @@ impl World {
     /// The HGT part of `KillOrganism(cell)`: with natural competence
     /// possible, the dead organism's genome is split into the cell
     /// (`AddGenomeFragments`); its pending fragments die with its
-    /// interface. `genome` is `None` for the running organism when the
-    /// caller does not hold its state.
+    /// interface. `genome` is `None` for the running organism, whose
+    /// genome is then read from `running` (its state, when the caller holds
+    /// it, which the dying organism itself may be) or from the copy its step
+    /// recorded. `running` is also what a damaging gradient injures during
+    /// the resource update of `AddGenomeFragments`.
     pub(crate) fn hgt_organism_killed(
         &mut self,
         cell_id: i32,
         uid: OrgUid,
         genome: Option<&InstructionSequence>,
+        mut running: Option<&mut OrgState>,
     ) {
         if self.cfg.enable_hgt == 0 {
             return;
@@ -266,11 +279,15 @@ impl World {
             return;
         }
         if let Some(g) = genome {
-            self.add_genome_fragments(cell_id, g);
+            self.add_genome_fragments(cell_id, g, running);
             return;
         }
-        match self.host.hgt.running_genome_for(uid).cloned() {
-            Some(g) => self.add_genome_fragments(cell_id, &g),
+        let from_state = running
+            .as_deref_mut()
+            .filter(|s| s.uid == uid)
+            .map(|s| s.genome().representation().clone());
+        match from_state.or_else(|| self.host.hgt.running_genome_for(uid).cloned()) {
+            Some(g) => self.add_genome_fragments(cell_id, &g, running),
             None => self.set_fatal(
                 "unsupported: KillOrganism with HGT of an organism whose genome is not at hand",
             ),
@@ -394,14 +411,19 @@ impl World {
 
     /// `cPopulationInterface::DoHGTMutation(ctx, offspring)` of the
     /// organism `parent` dividing in `cell_id`.
-    pub(crate) fn hgt_mutation(&mut self, cell_id: i32, parent: &OrgState, offspring: &mut Genome) {
+    pub(crate) fn hgt_mutation(
+        &mut self,
+        cell_id: i32,
+        parent: &mut OrgState,
+        offspring: &mut Genome,
+    ) {
         let uid = parent.uid;
         // first, gather up all the fragments that we're going to be
         // inserting into this offspring: these come from a per-replication
         // conjugational event:
         let conjugation_p = self.cfg.hgt_conjugation_p;
         if conjugation_p > 0.0 && self.rng.p(conjugation_p) {
-            self.hgt_conjugation(cell_id, parent);
+            self.hgt_conjugation(cell_id, &*parent);
         }
         if self.fatal.borrow().is_some() {
             return;
@@ -419,11 +441,11 @@ impl World {
                 0 => {}
                 // source is the parent (a control)
                 1 => {
-                    self.clear_fragments(cell_id);
-                    let Some(genome) = self.hgt_genome_in(cell_id, Some(parent)) else {
+                    self.clear_fragments(cell_id, Some(&mut *parent));
+                    let Some(genome) = self.hgt_genome_in(cell_id, Some(&*parent)) else {
                         return;
                     };
-                    self.add_genome_fragments(cell_id, &genome);
+                    self.add_genome_fragments(cell_id, &genome, Some(&mut *parent));
                 }
                 _ => {
                     self.abort_run(
@@ -447,7 +469,7 @@ impl World {
                 if let Some(selected) = self.host.hgt.cell_mut(cell_id as usize).remove(idx) {
                     let size = selected.size();
                     fragments.push_back(selected);
-                    self.adjust_hgt_resource(-f64::from(size));
+                    self.adjust_hgt_resource(Some(&mut *parent), -f64::from(size));
                 }
             }
         }

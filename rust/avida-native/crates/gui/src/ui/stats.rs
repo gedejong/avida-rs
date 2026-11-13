@@ -66,7 +66,7 @@ pub fn show(ui: &mut Ui, state: &AppState) {
         ui.horizontal(|ui| {
             ui.spacing_mut().item_spacing.x = gap;
             for &m in pair {
-                stat_card(ui, &t, m, m.value(&latest), rows, card_w);
+                stat_card(ui, &t, m, latest.update, m.value(&latest), rows, card_w);
             }
         });
         ui.add_space(gap - ui.spacing().item_spacing.y);
@@ -82,6 +82,7 @@ fn stat_card(
     ui: &mut Ui,
     t: &Tokens,
     m: Metric,
+    latest_update: i32,
     value: f64,
     rows: &[avida_session::UpdateRow],
     width: f32,
@@ -95,8 +96,15 @@ fn stat_card(
                 ui.set_width(inner_w);
                 ui.spacing_mut().item_spacing.y = 2.0;
                 widgets::caption(ui, m.short());
+                // Before the first update the averages are not zero, they do
+                // not exist yet.
+                let shown = if latest_update < 0 && !m.is_count() {
+                    "–".to_string()
+                } else {
+                    format::metric(value, m.is_count())
+                };
                 ui.label(
-                    RichText::new(format::metric(value, m.is_count()))
+                    RichText::new(shown)
                         .text_style(metric_style())
                         .color(t.text),
                 );

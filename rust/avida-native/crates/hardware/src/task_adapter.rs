@@ -132,6 +132,13 @@ pub struct PlasticityTest<'a> {
     pub stats: &'a mut dyn PhenotypeStats,
     /// `GetForageTarget()` of the organism whose output is tested.
     pub forage_target: i32,
+    /// `GetPhenotype().GetKaboomExecuted()` of the organism whose output is
+    /// tested, at the moment of the call. The organism is out of its cell
+    /// while it runs, and `Task_ConsumePublicGood` in the plasticity test
+    /// reads (and may clear) the live organism's flag when its cell is among
+    /// the cells the test organism (cell -1) visits; the host writes back
+    /// the cleared flag.
+    pub own_kaboom: &'a mut bool,
     /// See [`PlasticityServices`].
     pub services: Option<&'a PlasticityServices<'a>>,
 }
@@ -415,15 +422,21 @@ impl TaskEvaluator<TaskLibRegistry> for OrgTaskEvaluator<'_> {
     }
 
     fn task_probability(&mut self, env: &mut Env, rng: &mut AvidaRng, task_id: i32) -> f64 {
+        let mut own_kaboom = self.world.org.kaboom_executed;
         let test = PlasticityTest {
             environment: env,
             config: self.config,
             rng,
             stats: &mut *self.stats,
             forage_target: self.world.org.forage_target,
+            own_kaboom: &mut own_kaboom,
             services: self.plasticity.as_ref(),
         };
-        self.world.host.task_probability(test, task_id)
+        let probability = self.world.host.task_probability(test, task_id);
+        // `ClearKaboomExecuted()` on the live organism by a test CPU's
+        // `consume-public-good`.
+        self.world.org.kaboom_executed = own_kaboom;
+        probability
     }
 
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32> {

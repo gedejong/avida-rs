@@ -27,6 +27,7 @@ use ratatui::Frame;
 
 use crate::actions::{first_key, Action};
 use crate::app::{App, Screen, ToastKind};
+use crate::color::{hue, Hue};
 use util::{trunc, BOLD, DIM};
 
 /// The smallest terminal the screens are laid out for.
@@ -64,7 +65,12 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     draw_tabs(f, app, tabs);
     if let Some(e) = &app.fatal {
         let first = e.lines().next().unwrap_or("");
-        let text = format!(" STOPPED: {first}  (last frame kept; D shows the log)");
+        // The pointer to the log comes last in the sentence but is never the
+        // part that is cut.
+        let tail = format!("  Press {} for the log.", Screen::Log.key());
+        let head = format!(" The run stopped: {first}");
+        let room = usize::from(banner.width).saturating_sub(tail.chars().count());
+        let text = format!("{}{tail}", pad_to(&trunc(&head, room), room));
         f.render_widget(
             Paragraph::new(trunc(&text, usize::from(banner.width))).style(
                 Style::new()
@@ -122,6 +128,12 @@ pub fn strip_colors(buf: &mut ratatui::buffer::Buffer) {
     }
 }
 
+/// `s` followed by spaces up to `w` columns.
+fn pad_to(s: &str, w: usize) -> String {
+    let n = s.chars().count();
+    format!("{s}{}", " ".repeat(w.saturating_sub(n)))
+}
+
 /// The text and colours of the state badge.
 pub fn badge(state: RunState) -> (&'static str, Color, Color) {
     match state {
@@ -133,7 +145,13 @@ pub fn badge(state: RunState) -> (&'static str, Color, Color) {
 }
 
 fn draw_header(f: &mut Frame, app: &App, area: Rect) {
-    let (text, fg, bg) = badge(app.run_state());
+    // Until the simulation has reported anything the run is not paused, it
+    // has not started.
+    let (text, fg, bg) = if app.status.is_none() && app.frame.is_none() && app.fatal.is_none() {
+        (" STARTING ", Color::Black, Color::Gray)
+    } else {
+        badge(app.run_state())
+    };
     let width = usize::from(area.width);
 
     // The right-hand items with their drop order: when the line is too
@@ -146,7 +164,10 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
             Span::styled(s, Style::new().add_modifier(Modifier::BOLD)),
         ));
         if let Some((done, total)) = app.status.as_ref().and_then(|s| s.slice) {
-            items.push((5, Span::styled(format!(" ({done}/{total})"), Style::new())));
+            items.push((
+                5,
+                Span::styled(format!(" (slice {done}/{total})"), Style::new()),
+            ));
         }
     }
     if let Some(r) = app.latest_stats() {
@@ -165,7 +186,7 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
             "  {problems} warning{}",
             if problems == 1 { "" } else { "s" }
         );
-        items.push((1, Span::styled(s, Style::new().fg(Color::Magenta))));
+        items.push((1, Span::styled(s, Style::new().fg(hue(Hue::Magenta)))));
     }
     let badge_w = text.chars().count();
     let right_len = |items: &[(u8, Span)]| -> usize {
@@ -291,10 +312,7 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (CycleThread, "thread"),
             (DebugCycleSpace, "space"),
         ],
-        Screen::Environment => &[
-            (Dir(1, 0), "resources/reactions/tasks"),
-            (Dir(0, 1), "scroll"),
-        ],
+        Screen::Environment => &[(Dir(1, 0), "switch list"), (Dir(0, 1), "scroll")],
         Screen::Histogram => &[
             (NextLayer, "layer"),
             (ToggleScale, "scale"),
@@ -316,7 +334,7 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
         Screen::Options => &[
             (Faster, "speed"),
             (CyclePalette, "palette"),
-            (SavePopulation, "save"),
+            (SavePopulation, "save population"),
         ],
         Screen::Blank => &[(Goto(Screen::Map), "map"), (Goto(Screen::Stats), "stats")],
     }
@@ -324,11 +342,21 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
 
 /// The footer's key hints as (key, word) pairs: the screen's own, then
 /// the palette and help.
-fn hints(screen: Screen) -> Vec<(String, String)> {
-    let mut out: Vec<(String, String)> = hint_actions(screen)
-        .iter()
-        .map(|&(a, word)| (first_key(a, screen), word.to_string()))
-        .collect();
+fn hints(screen: Screen, can_advance: bool) -> Vec<(String, String)> {
+    let mut out: Vec<(String, String)> = Vec::new();
+    if !can_advance {
+        // A finished or failed run cannot run on; the useful key is restart.
+        out.push((first_key(Action::Restart, screen), "restart".to_string()));
+    }
+    out.extend(
+        hint_actions(screen)
+            .iter()
+            .filter(|(a, _)| {
+                can_advance
+                    || !matches!(a, Action::RunPause | Action::StepUpdate | Action::StepSlice)
+            })
+            .map(|&(a, word)| (first_key(a, screen), word.to_string())),
+    );
     out.push((
         first_key(Action::OpenPalette, screen),
         "commands".to_string(),
@@ -340,8 +368,8 @@ fn hints(screen: Screen) -> Vec<(String, String)> {
 /// The hints that fit in `w` columns, as spans (keys bold). Whole hints are
 /// dropped from the end of the screen's own list, never cut in half; help
 /// stays as long as anything does.
-fn hint_spans(screen: Screen, w: usize) -> Vec<Span<'static>> {
-    let mut hints = hints(screen);
+fn hint_spans(screen: Screen, can_advance: bool, w: usize) -> Vec<Span<'static>> {
+    let mut hints = hints(screen, can_advance);
     let width = |h: &[(String, String)]| -> usize {
         1 + h
             .iter()
@@ -397,9 +425,9 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
     }
     if let Some(t) = app.toasts.last() {
         let style = match t.kind {
-            ToastKind::Info => Style::new().fg(Color::Cyan),
-            ToastKind::Success => Style::new().fg(Color::Green),
-            ToastKind::Error => Style::new().fg(Color::Red),
+            ToastKind::Info => Style::new().fg(hue(Hue::Cyan)),
+            ToastKind::Success => Style::new().fg(hue(Hue::Green)),
+            ToastKind::Error => Style::new().fg(hue(Hue::Red)),
         };
         f.render_widget(
             Paragraph::new(trunc(&format!(" {}", t.text), w)).style(style),
@@ -407,8 +435,15 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
         );
         return;
     }
-    f.render_widget(Paragraph::new(Line::from(hint_spans(app.screen, w))), area);
+    f.render_widget(
+        Paragraph::new(Line::from(hint_spans(app.screen, app.can_advance(), w))),
+        area,
+    );
 }
+
+/// What a screen says before the simulation has published its first view.
+pub(crate) const FIRST_FRAME: &str =
+    " Starting the simulation. The first view appears in a moment.";
 
 /// Clears `area` and draws a centred message (used by screens that need a
 /// frame before they can show anything).

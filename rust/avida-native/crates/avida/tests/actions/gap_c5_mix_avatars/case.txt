@@ -1,0 +1,2 @@
+base avatars
+args -s 4 -set WORLD_X 6 -set WORLD_Y 6 -set REQUIRED_BONUS 0

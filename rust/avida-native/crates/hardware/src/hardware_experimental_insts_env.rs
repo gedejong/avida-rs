@@ -1852,15 +1852,11 @@ fn inst_set_rand_pft_once(hw: &mut Hw, org: &mut OrgState, w: W<'_>) -> R {
             .collect();
         let in_use = orgs.len() as i32;
         if in_use >= max_prey_bt {
-            if w.test_mode() {
-                return Err(unsupported(
-                    "a MAX_PREY_BT kill of a population organism from a test CPU",
-                    "Inst_SetRandPFTOnce",
-                ));
-            }
             let pick = w.rng().get_uint_range(0, in_use as u32) as usize;
             // `orgs[pick]->Die(ctx)`
             match orgs.get(pick) {
+                // The test organism is none of the live organisms.
+                Some(&(uid, cell)) if w.test_mode() => w.kill_population_org(uid, cell)?,
                 Some(&(uid, _)) if uid == org.uid => org.die(w),
                 Some(&(_, cell)) => w.kill_cell_id(org, cell),
                 None => {
@@ -2393,6 +2389,7 @@ fn org_send_message(
     if w.config().check_task_on_send {
         hw.org_do_output(org, w, Some(msg.data as i32), false)?;
     }
+    w.set_sender_recv_len(org.msg_received.len());
     let sent = w.send_message(msg);
     deliver_to_self(hw, org, w)?;
     if sent {

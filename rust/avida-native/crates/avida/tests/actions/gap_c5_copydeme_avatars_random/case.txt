@@ -1,0 +1,2 @@
+base avatars
+args -s 6 -set WORLD_X 6 -set WORLD_Y 6 -set NUM_DEMES 2 -set REQUIRED_BONUS 0 -set AVATAR_BIRTH 1 -set AVATAR_BIRTH_FACING 1

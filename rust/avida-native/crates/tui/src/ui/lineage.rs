@@ -2,27 +2,29 @@
 
 use avida_viewmodel::format_number;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::text::Line;
-use ratatui::widgets::{Cell, Paragraph, Row, Table, TableState};
+use ratatui::widgets::{Cell, Paragraph, Row, Table, TableState, Wrap};
 use ratatui::Frame;
 
-use super::util::{block, trunc, BOLD, DIM};
+use super::util::{block, born_at, trunc, BOLD, DIM};
 use super::waiting;
 use crate::app::App;
+use crate::color::{hue, Hue};
 use crate::metrics::sparkline;
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     if app.frame.is_none() {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     };
     let rows = app.lineage_rows();
     let Some(traced) = app.highlight else {
         f.render_widget(
             Paragraph::new(
-                " No lineage traced. Press v to go back to the table, select a genotype and press l.",
+                " No lineage traced yet. Press v to go back to the table, select a genotype and press l.",
             )
+            .wrap(Wrap { trim: false })
             .style(DIM)
             .block(block("Lineage")),
             area,
@@ -61,12 +63,12 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
         Line::styled(
             trunc(
                 &format!(
-                    " {} #{}: {} genotype{} back to the founder, born u{}",
+                    " {} #{}: {} genotype{} back to the founder, born {}",
                     last.name,
                     last.id,
                     rows.len(),
                     if rows.len() == 1 { "" } else { "s" },
-                    first.update_born
+                    born_at(first.update_born)
                 ),
                 w,
             ),
@@ -96,7 +98,11 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(lines), sum);
 
     let header = Row::new(["depth", "name", "born", "len", "fitness", "alive"].map(Cell::from))
-        .style(Style::new().add_modifier(Modifier::BOLD).fg(Color::Magenta));
+        .style(
+            Style::new()
+                .add_modifier(Modifier::BOLD)
+                .fg(hue(Hue::Magenta)),
+        );
     let body: Vec<Row> = rows
         .iter()
         .map(|g| {
@@ -108,7 +114,7 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
             Row::new([
                 Cell::from(g.depth.to_string()),
                 Cell::from(g.name.clone()),
-                Cell::from(format!("u{}", g.update_born)),
+                Cell::from(born_at(g.update_born)),
                 Cell::from(g.genome_len.to_string()),
                 Cell::from(format_number(g.ave_fitness)),
                 Cell::from(alive),

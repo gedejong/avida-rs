@@ -460,7 +460,7 @@ impl World {
     }
 
     /// `CheckImplicitDemeRepro(deme, ctx)`
-    fn check_implicit_deme_repro(&mut self, d: usize) {
+    pub(crate) fn check_implicit_deme_repro(&mut self, d: usize) {
         if self.pop.demes.len() <= 1 {
             return;
         }

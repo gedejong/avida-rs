@@ -1,7 +1,7 @@
 //! The plottable columns of an [`UpdateRow`] and small text graphics.
 
 use avida_session::UpdateRow;
-use avida_viewmodel::{decimate_min_max, format_number};
+use avida_viewmodel::format_number;
 
 /// A statistic recorded once per update.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -115,25 +115,28 @@ impl Metric {
 
 const BARS: [char; 8] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
-/// Samples `values` down to `width` points (min/max decimation keeps
-/// spikes) and draws them as block characters scaled between their own
-/// minimum and maximum. A flat series is a row of low bars.
+/// Samples `values` down to at most `width` points (each point is the
+/// largest value of an even share of the series, so spikes survive and the
+/// order of the points is never scrambled) and draws them as block
+/// characters scaled between their own minimum and maximum. A flat series
+/// is a row of low bars.
 pub fn sparkline(values: &[f64], width: usize) -> String {
-    if width == 0 {
+    if width == 0 || values.is_empty() {
         return String::new();
     }
-    let xs: Vec<f64> = (0..values.len()).map(|i| i as f64).collect();
-    let pts = decimate_min_max(&xs, values, width);
-    // decimate_min_max can return up to `width` points; resample evenly
-    // when it returned fewer or more than we have columns for.
-    let ys: Vec<f64> = pts.iter().map(|p| p.1).collect();
-    if ys.is_empty() {
-        return String::new();
-    }
-    let cols: Vec<f64> = if ys.len() <= width {
-        ys
+    let cols: Vec<f64> = if values.len() <= width {
+        values.to_vec()
     } else {
-        (0..width).map(|i| ys[i * ys.len() / width]).collect()
+        (0..width)
+            .map(|i| {
+                let from = i * values.len() / width;
+                let to = ((i + 1) * values.len() / width).max(from + 1);
+                values[from..to]
+                    .iter()
+                    .copied()
+                    .fold(f64::NEG_INFINITY, f64::max)
+            })
+            .collect()
     };
     let lo = cols.iter().copied().fold(f64::INFINITY, f64::min);
     let hi = cols.iter().copied().fold(f64::NEG_INFINITY, f64::max);
@@ -185,6 +188,11 @@ mod tests {
                 .count()
                 <= 20
         );
+        // Down-sampling keeps the order: a rising series never falls.
+        let rising: Vec<f64> = (0..57).map(f64::from).collect();
+        let s: Vec<char> = sparkline(&rising, 44).chars().collect();
+        assert_eq!(s.len(), 44);
+        assert!(s.windows(2).all(|w| w[0] <= w[1]), "{s:?}");
         assert_eq!(sparkline(&[1.0], 0), "");
         assert_eq!(sparkline(&[], 4), "");
     }

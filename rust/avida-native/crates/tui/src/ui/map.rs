@@ -11,7 +11,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
-use super::util::{block, clip_lines, kv, trunc, DIM, HEADING};
+use super::util::{block, clip_lines, heading, kv, trunc, DIM};
 use super::waiting;
 use crate::app::{layer_title, App, MapCache, MapGeom};
 use crate::color::{contrast, luminance};
@@ -27,7 +27,7 @@ const SIDE_W: u16 = 36;
 
 pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     if app.frame.as_ref().and_then(|f| f.map.as_ref()).is_none() {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     }
     let (main, side) = if area.width >= WIDE {
@@ -49,8 +49,33 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         Paragraph::new(Line::from(map_legend_spans(app, usize::from(legend.width)))),
         legend,
     );
+    // When the world is larger than the window, say which part is shown,
+    // if the line has room for it next to the cell's description.
+    let summary = cell_summary(app);
+    let part = match (app.geom, app.world_size()) {
+        (Some(g), Some((ww, wh))) if g.vis_w < ww || g.vis_h < wh => format!(
+            "view x {}-{}, y {}-{} of {ww}x{wh} ",
+            g.ox,
+            g.ox + g.vis_w - 1,
+            g.oy,
+            g.oy + g.vis_h - 1
+        ),
+        _ => String::new(),
+    };
+    let width = usize::from(info.width);
+    let part = if summary.chars().count() + part.chars().count() < width {
+        part
+    } else {
+        String::new()
+    };
+    let summary = trunc(&summary, width.saturating_sub(part.chars().count()));
+    let gap = width.saturating_sub(summary.chars().count() + part.chars().count());
     f.render_widget(
-        Paragraph::new(trunc(&cell_summary(app), usize::from(info.width))).style(Style::new()),
+        Paragraph::new(Line::from(vec![
+            Span::styled(summary, Style::new()),
+            Span::raw(" ".repeat(gap)),
+            Span::styled(part, DIM),
+        ])),
         info,
     );
     if let Some(side) = side {
@@ -192,11 +217,8 @@ fn draw_grid(f: &mut Frame, app: &mut App, area: Rect) {
                 // An empty cell keeps the terminal's own colours (a dim dot),
                 // so it reads on dark and light backgrounds.
                 let empty_plain = !occupied && !is_cursor;
-                let (fg, bg) = if is_cursor {
-                    (rgb, contrast(rgb))
-                } else {
-                    (contrast(rgb), rgb)
-                };
+                let ink = mode.quantised(contrast(mode.quantised(rgb)));
+                let (fg, bg) = if is_cursor { (rgb, ink) } else { (ink, rgb) };
                 for k in 0..2u16 {
                     let c = buf.cell_mut((rect.x + col as u16 * 2 + k, rect.y + row));
                     if let Some(c) = c {
@@ -245,7 +267,11 @@ fn draw_grid(f: &mut Frame, app: &mut App, area: Rect) {
                     }
                     let (rgb, occupied) = at(x, y);
                     if (x, y) == app.cursor {
-                        Some(if occupied { contrast(rgb) } else { rgb })
+                        Some(if occupied {
+                            mode.quantised(contrast(mode.quantised(rgb)))
+                        } else {
+                            rgb
+                        })
                     } else {
                         occupied.then_some(rgb)
                     }
@@ -278,7 +304,7 @@ pub fn map_legend_spans(app: &App, width: usize) -> Vec<Span<'static>> {
     let env = app.env();
     let title = layer_title(env, app.layer);
     let mode = app.color_mode;
-    let mut spans = vec![Span::styled(format!(" {title}"), HEADING)];
+    let mut spans = vec![Span::styled(format!(" {title}"), heading())];
     if app.mono_letters() {
         spans.push(Span::styled(" (a letter per genotype, · empty)", DIM));
     }

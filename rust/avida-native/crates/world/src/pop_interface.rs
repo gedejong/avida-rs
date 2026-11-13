@@ -204,6 +204,9 @@ fn prune_phenplast(w: &mut World) {
 }
 
 impl OrgInterface for PopulationInterface<'_> {
+    fn take_habitat_to_die(&mut self) -> bool {
+        std::mem::take(&mut self.w.res_env.habitat.running_to_die)
+    }
     fn output_services(&mut self) -> OutputServices<'_> {
         let c = self.cell();
         let cell_id = self.cell_id;
@@ -320,7 +323,9 @@ impl OrgInterface for PopulationInterface<'_> {
             return 0.0;
         };
         self.w.host.running_forage_target = Some((org.uid, org.forage_target));
+        self.w.host.kill_in_test_ok = true;
         let fitness = self.w.genome_test_metrics(g).map_or(0.0, |m| m.fitness);
+        self.w.host.kill_in_test_ok = false;
         self.w.host.running_forage_target = None;
         fitness
     }
@@ -346,6 +351,7 @@ impl OrgInterface for PopulationInterface<'_> {
     fn test_offspring(&mut self, parent: &OrgState, genome: &Genome) -> OffspringTest {
         let w = &mut *self.w;
         w.host.running_forage_target = Some((parent.uid, parent.forage_target));
+        w.host.kill_in_test_ok = true;
         let result = {
             let mut tw = make_test_world(
                 &w.cfg,
@@ -360,6 +366,7 @@ impl OrgInterface for PopulationInterface<'_> {
             );
             test_cpu::test_offspring(&mut tw, genome)
         };
+        w.host.kill_in_test_ok = false;
         w.host.running_forage_target = None;
         w.flush_host();
         match result {
@@ -818,14 +825,6 @@ impl OrgInterface for PopulationInterface<'_> {
         }
         sg
     }
-    /// `AddLiveOrg()` / `RemoveLiveOrg()`: only the avatar and movement
-    /// code call these; the population keeps the list itself.
-    fn add_live_org(&mut self) {
-        self.unsupported("AddLiveOrg");
-    }
-    fn remove_live_org(&mut self) {
-        self.unsupported("RemoveLiveOrg");
-    }
 
     fn has_opinion(&self, org: &OrgState) -> bool {
         org.opinions.as_ref().is_some_and(|o| !o.is_empty())
@@ -872,16 +871,16 @@ impl OrgInterface for PopulationInterface<'_> {
     }
     /// `UpdateRandomResources(ctx, res_change)`: `UpdateCellResources` at
     /// `rand() % (WORLD_X * WORLD_Y)`, drawn from the C library generator.
-    /// The running organism's state is not passed in, so a damaging
-    /// gradient that injures it here stops the run.
-    fn update_random_resources(&mut self, res_change: &[f64]) {
+    /// The running organism's state is passed in: a damaging gradient may
+    /// injure it during the read (crate::habitat).
+    fn update_random_resources(&mut self, org: &mut OrgState, res_change: &[f64]) {
         let size = self.w.cfg.world_x * self.w.cfg.world_y;
         if size <= 0 {
             self.unsupported("UpdateRandomResources in an empty world (C++: rand() % 0)");
             return;
         }
         let random_id = self.w.host.libc_rand.next_value() % size;
-        self.w.with_pop_resources(|rc, rng, env| {
+        self.w.with_pop_resources_for(Some(org), |rc, rng, env| {
             rc.modify_cell(rng, env, res_change, random_id);
         });
     }
@@ -945,11 +944,18 @@ impl OrgInterface for PopulationInterface<'_> {
         }
     }
     /// Messaging: see messaging.rs.
+    fn set_sender_recv_len(&mut self, len: usize) {
+        self.w.messaging.running_recv_len = Some(len);
+    }
     fn send_message(&mut self, msg: &mut OrgMessage) -> bool {
-        self.w.send_message(self.cell_id, msg)
+        let sent = self.w.send_message(self.cell_id, msg);
+        self.w.messaging.running_recv_len = None;
+        sent
     }
     fn broadcast_message(&mut self, msg: &mut OrgMessage, depth: i32) -> bool {
-        self.w.broadcast_message(self.cell_id, msg, depth)
+        let sent = self.w.broadcast_message(self.cell_id, msg, depth);
+        self.w.messaging.running_recv_len = None;
+        sent
     }
     fn bcast_alarm(&mut self, jump_label: i32, bcast_range: i32) -> bool {
         self.w.bcast_alarm(self.cell_id, jump_label, bcast_range)
@@ -1037,12 +1043,6 @@ impl OrgInterface for PopulationInterface<'_> {
     }
     fn do_deme_input(&mut self, _value: i32) {}
     fn do_deme_output(&mut self, _value: i32) {}
-    fn do_hgt_donation(&mut self, _org: &mut OrgState) {
-        self.unsupported("do_hgt_donation");
-    }
-    fn do_hgt_conjugation(&mut self, _org: &mut OrgState) {
-        self.unsupported("do_hgt_conjugation");
-    }
     /// `DoHGTMutation(ctx, offspring)` (crate::hgt)
     fn do_hgt_mutation(&mut self, org: &mut OrgState) {
         let mut offspring = std::mem::take(&mut org.offspring_genome);
@@ -1669,16 +1669,12 @@ impl OrgInterface for PopulationInterface<'_> {
         rc.modify_cell(&mut w.rng, &mut w.res_env, &cell_resources, rel);
     }
     fn deme_cell_position(&self, deme_id: i32, cell_id: i32) -> (i32, i32) {
-        match usize::try_from(deme_id)
+        // Every caller passes its cell's own deme id (>= 0), and every
+        // cell belongs to one of the demes `Population` builds.
+        usize::try_from(deme_id)
             .ok()
             .and_then(|d| self.w.pop.demes.get(d))
-        {
-            Some(deme) => deme.cell_position(cell_id),
-            None => {
-                self.unsupported("cDeme::GetCellPosition of a missing deme");
-                (0, 0)
-            }
-        }
+            .map_or((0, 0), |deme| deme.cell_position(cell_id))
     }
     /// `cPopulation::UpdateCellResources(ctx, res_change, cell_id)`
     fn update_cell_resources(&mut self, org: &mut OrgState, res_change: &[f64], cell_id: i32) {
@@ -1749,7 +1745,7 @@ impl OrgInterface for PopulationInterface<'_> {
             .ok()
             .filter(|&d| d < self.w.pop.demes.len())
         else {
-            self.unsupported("cDeme::KillCellEvent of a missing deme");
+            // Dead: the caller passes its cell's own deme id (>= 0).
             return false;
         };
         let running = self
@@ -1808,15 +1804,13 @@ impl OrgInterface for PopulationInterface<'_> {
         self.w.pop.demes[d].sleeping_count += 1;
     }
     fn deme_record_suicide(&mut self, deme_id: i32, points: i32) {
-        match usize::try_from(deme_id)
+        // Dead else: the caller passes its cell's own deme id (>= 0).
+        if let Some(deme) = usize::try_from(deme_id)
             .ok()
             .and_then(|d| self.w.pop.demes.get_mut(d))
         {
-            Some(deme) => {
-                deme.points += f64::from(points);
-                deme.suicides += 1;
-            }
-            None => self.unsupported("cDeme::AddSuicide of a missing deme"),
+            deme.points += f64::from(points);
+            deme.suicides += 1;
         }
     }
     fn deme_increase_total_energy_testament(&mut self, deme_id: i32, amount: f64) {

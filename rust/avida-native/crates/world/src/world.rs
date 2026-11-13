@@ -462,6 +462,9 @@ impl World {
                         let tot = stats.tot_organisms;
                         events.add_event(spec, action, |t| trigger_value(t, update, ave_gen, tot));
                     }
+                    // `cerr << ...; exit(1);` in the constructor: nothing
+                    // else is printed.
+                    Err(msg) if msg.starts_with(actions::CERR_EXIT_MARK) => return Err(msg),
                     Err(msg) => {
                         report.stderr.push_str(&format!("error: {msg}\n"));
                         events_ok = false;
@@ -579,6 +582,7 @@ impl World {
                         *slot += 1;
                     }
                 }
+                HostOp::KillCell(cell, uid) => self.kill_for_test_cpu(cell, uid),
                 HostOp::ClearKaboom(cell) => {
                     if let Some(o) = usize::try_from(cell)
                         .ok()
@@ -589,6 +593,32 @@ impl World {
                     }
                 }
             }
+        }
+    }
+
+    /// The kill a test CPU asked for (`HostOp::KillCell`), carried out when
+    /// the test has ended. The C++ makes it in the middle of the test; that
+    /// order only matters if the kill draws random numbers, which this
+    /// checks.
+    fn kill_for_test_cpu(&mut self, cell: i32, uid: avida_hardware::organism::OrgUid) {
+        let still_there = usize::try_from(cell)
+            .ok()
+            .and_then(|c| self.pop.orgs.get(c))
+            .and_then(Option::as_ref)
+            .is_some_and(|o| o.state.uid == uid);
+        if !still_there {
+            self.set_fatal(
+                "internal: the organism a test CPU's MAX_PREY_BT kill chose is not in its cell",
+            );
+            return;
+        }
+        let before = self.rng.clone();
+        self.kill_organism(cell, None);
+        if self.rng != before {
+            self.set_fatal(
+                "unsupported: a MAX_PREY_BT kill from a test CPU that draws random numbers (C++: \
+                 the kill happens in the middle of the test, before its later draws)",
+            );
         }
     }
 

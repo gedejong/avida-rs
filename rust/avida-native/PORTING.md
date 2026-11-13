@@ -172,6 +172,29 @@ that does not name them.
   nothing, once two inputs have been read. With a small negative reaction
   value it makes wrong outputs cost merit; without it, populations in the lab
   pilot put out values in a loop until one agreed by chance.
+- `add_lowbits4`, `add_miss4` (2026-11-13): the same two with a minimum of 4
+  right low bits. With 8, the XOR of the inputs paid about as rarely as a
+  guess did, so a penalty on misses could not tell them apart.
+- `inc_lowbits`, `dec_lowbits`, `arith_miss` (2026-11-13): the increment
+  and the decrement of an input with the same partial credit (minimum 6
+  right low bits; only inputs whose lowest bit makes the step carry count,
+  because flipping the lowest bit of any input is its increment or its
+  decrement), as stepping stones to `add`, and one miss task for
+  environments that reward them together with `add_lowbits4`.
+
+## A test CPU's `MAX_PREY_BT` kill is carried out after the test (2026-11-13)
+
+`Inst_SetRandPFTOnce` in a test CPU that a dividing organism runs can kill
+a prey organism of the population (`MAX_PREY_BT`). The C++ kills in the
+middle of the test; the port queues the kill (`HostOp::KillCell`) and
+`World::flush_host` carries it out when the test ends. The output is the
+same because nothing between the two points may depend on the kill, and
+the port stops with `unsupported:` where something would: a kill that draws
+random numbers, a later read of the live list or of the prey and predator
+counts in the same test run, a second kill, a pick of the dividing parent,
+and a kill from a plasticity test or an event-time test.
+`crates/avida/tests/actions/gap_exp_max_prey_bt_test_cpu` pins it against
+the reference binary. The maintainer accepted this ordering on 2026-11-13.
 
 ## `Task_Optimize` follows the reference binary's helper (2026-11-12)
 

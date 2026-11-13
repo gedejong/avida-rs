@@ -51,6 +51,9 @@ pub enum HostOp {
     /// `ClearKaboomExecuted()` of the resting organism in this cell
     /// (`Task_ConsumePublicGood` picked it).
     ClearKaboom(i32),
+    /// `orgs[i]->Die(ctx)` of `Inst_SetRandPFTOnce` run by a test CPU: the
+    /// population organism `uid` in this cell dies.
+    KillCell(i32, avida_hardware::organism::OrgUid),
 }
 
 /// See the module docs.
@@ -112,6 +115,10 @@ pub struct WorldHost {
     /// may run a test CPU (a divide, a fitness test) has its state at hand:
     /// the test CPU's view of the live organisms needs it.
     pub running_forage_target: Option<(avida_hardware::organism::OrgUid, i32)>,
+    /// Set while a test CPU runs that the world flushes at once
+    /// (`flush_host`, right after the divide-time tests), so that a kill the
+    /// test asks for can wait until it ends.
+    pub kill_in_test_ok: bool,
     /// The C library's `rand()`, shared by the whole process
     /// (`Task_ConsumePublicGood`, `UpdateRandomResources`).
     pub libc_rand: avida_tasks::LibcRand,
@@ -149,7 +156,9 @@ enum KaboomCell {
     /// `GetOrganism()->GetPhenotype().GetKaboomExecuted()`
     Occupied(bool),
     /// The running organism's cell seen from a test CPU: its phenotype is
-    /// not at hand.
+    /// not at hand when the snapshot is taken. A plasticity test replaces it
+    /// with the organism's flag as it stands (`PlasticityTest::own_kaboom`);
+    /// any other test CPU still stops on it.
     Running,
     /// An index outside the grid (`GetCell` out of bounds, possible only
     /// in a world one cell wide).
@@ -325,13 +334,22 @@ impl WorldHost {
             // Only the tested organism is out of the world's reach.
             org.2.get_or_insert(test.forage_target);
         }
+        let saved_cell = self.cur_cell;
+        // The tested organism's cell, when the test organism visits it: the
+        // live organism's flag as it stands now.
+        let own_kaboom_before = *test.own_kaboom;
+        for entry in &mut self.plast_kaboom_cells {
+            if entry.0 == saved_cell && entry.1 == KaboomCell::Running {
+                entry.1 = KaboomCell::Occupied(own_kaboom_before);
+            }
+        }
         let from = self.plast_pending_from.min(self.pending.len());
         Self::apply_cleared_kaboom(&mut self.plast_kaboom_cells, &self.pending[from..]);
-        let saved_cell = self.cur_cell;
         std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
         let first_op = self.pending.len();
         self.cur_cell = -1;
         let trials = test.config.genotype_phenplast_calc;
+        let own_kaboom = test.own_kaboom;
         let result = {
             let mut tw = TestWorld {
                 config: test.config,
@@ -355,6 +373,17 @@ impl WorldHost {
             PhenPlastGenotype::new(&mut tw, &svc.genome, trials, &mut info).map(|pp| pp.summary())
         };
         self.cur_cell = saved_cell;
+        // A `consume-public-good` of a test CPU cleared the tested
+        // organism's own flag (`ClearKaboomExecuted()` on the live
+        // organism); the evaluator writes it back.
+        if own_kaboom_before
+            && self
+                .kaboom_cells
+                .iter()
+                .any(|&(c, k)| c == saved_cell && k == KaboomCell::Occupied(false))
+        {
+            *own_kaboom = false;
+        }
         std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
         Self::apply_cleared_kaboom(&mut self.kaboom_cells, &self.pending[first_op..]);
         match result {
@@ -645,7 +674,9 @@ impl OutputHost for WorldHost {
             self.unsupported(
                 "phenplastbonus for an organism without a genotype (C++: \
                  main/cEnvironment.cc:cEnvironment::GetTaskProbability passes a NULL \
-                 Systematics::GroupPtr to cPhenPlastUtil::GetTaskProbability)",
+                 Systematics::GroupPtr to cPhenPlastUtil::GetTaskProbability, \
+                 whose bg->GetData<cPhenPlastSummary>() then dereferences a null pointer: \
+                 a crash in the reference binary, not a defined behaviour)",
             );
             return 0.0;
         };
@@ -674,6 +705,38 @@ impl OutputHost for WorldHost {
 }
 
 impl TestCpuHost for WorldHost {
+    fn kill_population_org(
+        &mut self,
+        uid: avida_hardware::organism::OrgUid,
+        cell: i32,
+    ) -> Result<(), String> {
+        const WHERE: &str = "(C++: cHardwareExperimental.cc:cHardwareExperimental::\
+                             Inst_SetRandPFTOnce)";
+        if !self.kill_in_test_ok {
+            return Err(format!(
+                "unsupported: a MAX_PREY_BT kill of a population organism from a test CPU \
+                 outside a divide-time test {WHERE}"
+            ));
+        }
+        if self.running_forage_target.is_some_and(|(u, _)| u == uid) {
+            return Err(format!(
+                "unsupported: a MAX_PREY_BT kill of the dividing organism from its own \
+                 divide-time test {WHERE}"
+            ));
+        }
+        if self.population_kill_pending() {
+            return Err(format!(
+                "unsupported: a second MAX_PREY_BT kill from one test CPU run {WHERE}"
+            ));
+        }
+        self.pending.push(HostOp::KillCell(cell, uid));
+        Ok(())
+    }
+    fn population_kill_pending(&self) -> bool {
+        self.pending
+            .iter()
+            .any(|op| matches!(op, HostOp::KillCell(..)))
+    }
     fn stats_inc_resamplings(&mut self) {
         self.pending.push(HostOp::IncResamplings);
     }

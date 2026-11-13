@@ -1,0 +1,33 @@
+# Fri Nov 13 04:32:46 2026
+# Update Born: 0
+# Org ID: 0
+# Genotype ID: 1
+# Genotype: 
+# Genome Length: 23
+#  
+# Exec Stats Columns:
+# CPU Cycle
+# Current Update
+# Register Contents (CPU Cycle Origin of Contents)
+# Current Thread
+# IP Position
+# RH Position
+# WH Position
+# FH Position
+# CPU Cycle of Last Output
+# Current Merit
+# Current Bonus
+# Forager Type
+# Group ID (opinion)
+# Current Cell
+# Avatar Cell
+# Faced Direction
+# Faced Cell Occupied?
+# Faced Cell Has Hill?
+# Faced Cell Has Wall?
+# Queued Instruction
+# Trailing NOPs
+# Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)
+
+
+1 0 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 (0) 0 0 0 0 0 0 1400 1 -1 0 22 6 0 0 0 set-rand-p-ft-once NoMods 1

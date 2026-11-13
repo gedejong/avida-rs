@@ -367,11 +367,6 @@ impl World {
                 "unsupported: InjectClone into a nonexistent cell (C++: assert)".to_string(),
             );
         }
-        if self.cfg.use_avatars != 0 {
-            return Err("unsupported: InjectClone with USE_AVATARS (C++: \
-                        cPopulation::PlaceAvatar for the clone)"
-                .to_string());
-        }
         self.inject_clone_from(
             cell2_id,
             origin,

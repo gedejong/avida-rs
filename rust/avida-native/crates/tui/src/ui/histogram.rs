@@ -5,7 +5,7 @@ use avida_session::LayerId;
 use avida_viewmodel::text::genotype_char;
 use avida_viewmodel::{format_number, Histogram, Palette};
 use ratatui::layout::Rect;
-use ratatui::style::{Color, Style};
+use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
@@ -13,6 +13,7 @@ use ratatui::Frame;
 use super::util::{block, clip_lines, thousands, trunc, DIM};
 use super::waiting;
 use crate::app::{layer_title, App};
+use crate::color::{hue, Hue};
 use crate::metrics::hbar;
 
 /// Bins that fit a body of `height` rows.
@@ -22,11 +23,11 @@ pub fn histogram_bins(height: u16) -> usize {
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let Some(frame) = app.frame.as_ref() else {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     };
     let Some(map) = frame.map.as_ref() else {
-        waiting(f, area, " Waiting for the first frame...");
+        waiting(f, area, super::FIRST_FRAME);
         return;
     };
     let title = layer_title(app.env(), app.layer);
@@ -38,22 +39,32 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
         let max = frame.genotypes.first().map_or(1, |g| g.abundance).max(1);
         let label_w = 22usize;
         let bar_w = inner_w.saturating_sub(label_w + 8).max(4);
-        let per = ((max + bar_w as i32 - 1) / bar_w as i32).max(1);
+        // Bars are to scale; a small population does not stretch across a
+        // wide terminal, eight cells per organism at most.
+        let full = bar_w.min(usize::try_from(max).unwrap_or(1) * 8);
         for g in frame.genotypes.iter().take(rows) {
             let slot = map.genotype_slot(g.id);
             let col = Palette::OkabeIto.category(slot);
+            let bar = hbar(f64::from(g.abundance) / f64::from(max), full);
             lines.push(Line::from(vec![
                 Span::styled(
-                    format!("{} ", genotype_char(map, g.id)),
-                    Style::new().fg(app.color_mode.color([col[0], col[1], col[2]])),
+                    genotype_char(map, g.id).to_string(),
+                    Style::new()
+                        .fg(app.color_mode.ink_on([col[0], col[1], col[2]]))
+                        .bg(app.color_mode.color([col[0], col[1], col[2]])),
                 ),
+                Span::raw(" "),
                 Span::raw(format!(
                     "{:<w$}",
                     trunc(&g.name, label_w - 2),
                     w = label_w - 2
                 )),
                 Span::styled(
-                    "#".repeat((g.abundance / per).max(1) as usize),
+                    if bar.is_empty() {
+                        "▏".to_string()
+                    } else {
+                        bar
+                    },
                     Style::new().fg(app.color_mode.color([col[0], col[1], col[2]])),
                 ),
                 Span::raw(format!(" {}", thousands(i64::from(g.abundance)))),
@@ -62,8 +73,9 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
         lines.push(Line::raw(""));
         lines.push(Line::styled(
             format!(
-                "Each '#' = {per} organism{}",
-                if per == 1 { "" } else { "s" }
+                "Bars are drawn to scale. The longest stands for {} organism{}.",
+                thousands(i64::from(max)),
+                if max == 1 { "" } else { "s" }
             ),
             DIM,
         ));
@@ -105,7 +117,7 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
             ),
             Span::styled(
                 hbar(f64::from(c) / f64::from(max), bar_w),
-                Style::new().fg(Color::Cyan),
+                Style::new().fg(hue(Hue::Cyan)),
             ),
             Span::raw(format!(" {}", thousands(i64::from(c)))),
         ]));

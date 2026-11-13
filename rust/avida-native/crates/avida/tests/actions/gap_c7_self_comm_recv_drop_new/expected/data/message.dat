@@ -1,0 +1,11 @@
+# Number of organism to organism messages
+
+#  1: update
+#  2: Sent successfully
+#  3: Dropped
+#  4: Failed
+
+0 27 0 62 
+2 30 0 192 
+4 59 0 378 
+6 94 0 682 

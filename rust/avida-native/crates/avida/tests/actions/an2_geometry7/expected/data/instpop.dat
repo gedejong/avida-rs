@@ -1,0 +1,2 @@
+a:nop-A b:nop-B c:nop-C d:if-n-equ e:if-less f:pop g:push h:swap-stk i:swap j:shift-r k:shift-l l:inc m:dec n:add o:sub p:nand q:IO r:h-alloc s:h-divide t:h-copy u:h-search v:mov-head w:jmp-head x:get-head y:if-label z:set-flow 
+0.043 0.022 0.190 0.013 0.009 0.017 0.028 0.021 0.022 0.002 0.002 0.017 0.006 0.019 0.063 0.102 0.181 0.024 0.026 0.093 0.015 0.030 0.000 0.000 0.030 0.024 

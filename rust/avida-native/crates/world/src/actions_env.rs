@@ -1181,31 +1181,68 @@ impl World {
     fn env_update_resource_count(&mut self) -> Result<(), String> {
         let resources = self.env.resource_lib().resources().to_vec();
         let num_deme_res = resources.iter().filter(|r| r.deme_resource).count();
-        if num_deme_res > 0 {
-            // The fresh `cResourceCount(num_deme_res)` the C++ hands each
-            // deme has unsized spatial grids that `Setup` then reads.
-            return Err("unsupported: ChangeEnvironment with deme resources (C++: \
-                 cPopulation::UpdateResourceCount sets up unsized deme grids)"
-                .to_string());
+        // The fresh `cResourceCount(num_deme_res)` the C++ hands each deme
+        // has empty spatial grids that `Setup` then reads (`GetX()`,
+        // `GetY()`, the cell list): a global geometry never uses them, a grid,
+        // torus or partial deme resource reads the unsized grid.
+        if let Some(r) = resources.iter().find(|r| {
+            r.deme_resource && r.geometry != avida_environment::resource::geometry::GLOBAL
+        }) {
+            return Err(format!(
+                "unsupported: ChangeEnvironment with the spatial deme resource '{}' (C++: \
+                 cPopulation::UpdateResourceCount sets up unsized deme grids)",
+                r.name()
+            ));
         }
         for deme in &mut self.pop.demes {
-            deme.resource_count = ResourceCount::new(0);
+            deme.resource_count = ResourceCount::new(num_deme_res);
         }
         let verbosity = self.cfg.verbosity;
-        for (global_res_index, res) in resources.iter().enumerate() {
-            if global_res_index >= self.pop.resource_count.size() {
-                return Err(format!(
-                    "unsupported: ChangeEnvironment adding resource '{}' (C++: out-of-bounds \
-                     cResourceCount::Setup)",
-                    res.name()
-                ));
-            }
-            let setup = resource_setup_from(res, verbosity);
-            let lines = self
-                .with_pop_resources(|rc, rng, env| rc.setup(global_res_index, &setup, rng, env))?;
-            for line in lines {
-                self.action_state.stdout.push_str(&line);
-                self.action_state.stdout.push('\n');
+        let mut global_res_index = 0;
+        let mut deme_res_index = 0;
+        for res in &resources {
+            if !res.deme_resource {
+                if global_res_index >= self.pop.resource_count.size() {
+                    return Err(format!(
+                        "unsupported: ChangeEnvironment adding resource '{}' (C++: \
+                         out-of-bounds cResourceCount::Setup)",
+                        res.name()
+                    ));
+                }
+                let setup = resource_setup_from(res, verbosity);
+                let lines = self.with_pop_resources(|rc, rng, env| {
+                    rc.setup(global_res_index, &setup, rng, env)
+                })?;
+                for line in lines {
+                    self.action_state.stdout.push_str(&line);
+                    self.action_state.stdout.push('\n');
+                }
+                global_res_index += 1;
+            } else {
+                // `cDeme::SetupDemeRes` for every deme. QUIRK: it passes
+                // `GetMaxX(), GetMaxY(), GetMinX(), GetMinY()` where
+                // `cResourceCount::Setup` takes max_x, min_x, max_y, min_y
+                // (only gradients read them). `energy_res_ids` is not
+                // cleared, so each call adds the id again.
+                let mut setup = resource_setup_from(res, verbosity);
+                setup.gradient.min_x = res.max_y;
+                setup.gradient.max_y = res.min_x;
+                for deme in &mut self.pop.demes {
+                    let lines = deme.resource_count.setup(
+                        deme_res_index,
+                        &setup,
+                        &mut self.rng,
+                        &mut self.res_env,
+                    )?;
+                    for line in lines {
+                        self.action_state.stdout.push_str(&line);
+                        self.action_state.stdout.push('\n');
+                    }
+                    if res.energy_resource {
+                        deme.energy_res_ids.push(deme_res_index);
+                    }
+                }
+                deme_res_index += 1;
             }
         }
         Ok(())

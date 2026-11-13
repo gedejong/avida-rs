@@ -195,10 +195,11 @@ fn visuals(t: &Tokens) -> Visuals {
         color: t.shadow,
     };
     v.faint_bg_color = t.control;
-    // Fields are inset: darker than the surface they sit on in both themes
-    // (a white field on a white bar would vanish in light mode).
+    // Fields are inset in light mode (a white field on a white bar would
+    // vanish). In dark mode the canvas colour is 1.04:1 against the panel,
+    // so a field would have no visible edge; it takes the control fill.
     v.extreme_bg_color = if t.dark { t.canvas } else { t.control };
-    v.text_edit_bg_color = Some(if t.dark { t.canvas } else { t.control });
+    v.text_edit_bg_color = Some(t.control);
     v.code_bg_color = t.control;
     v.hyperlink_color = t.accent;
     v.warn_fg_color = t.warning;

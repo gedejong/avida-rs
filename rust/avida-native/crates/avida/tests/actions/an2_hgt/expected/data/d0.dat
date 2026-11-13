@@ -1,0 +1,38 @@
+#filetype genotype_data
+#format id num_cpus length merit fitness gest_time efficiency task task task task task task task task task sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Number of CPUs
+# 3: Genome Length
+# 4: Merit
+# 5: Fitness
+# 6: Gestation Time
+# 7: Rep. Efficiency
+# 8: Not
+# 9: Nand
+# 10: And
+# 11: OrNot
+# 12: Or
+# 13: AndNot
+# 14: Nor
+# 15: Xor
+# 16: Equals
+# 17: Genome Sequence
+
+10690282 30 66 1.38412e+08 1.07296e+06 129 0.511628 1 1 1 1 1 1 1 0 1 qcepocqpqzprqcocpizaqckaqqgpncsqglcoqgcyvcsqcqpbpbfcoquttttttycsva 
+10641910 24 65 1.36315e+08 1.02492e+06 133 0.488722 1 1 1 1 1 1 1 0 1 qcepoccqpqzprqcocpizaqifaqqhpncqblcoqogcvciqcqpipbfcoqutttttycsva 
+10713761 23 67 1.40509e+08 1.06446e+06 132 0.507576 1 1 1 1 1 1 1 0 1 qcbpochqpqrphqcocphzaqcygqqdpnccqlcoqgcnvcyqcqtpdpyfcoquttttttycsva 
+10598744 23 66 1.38412e+08 1.06471e+06 130 0.507692 1 1 1 1 1 1 1 0 1 qcemocmqpqgrpdqcocpszaibqcqqhpncqslcoqgcvcaqcqprprfcoquttttttycsva 
+10689390 22 66 1.38412e+08 1.07296e+06 129 0.511628 1 1 1 1 1 1 1 0 1 qcemocaqpqgrpdqcocpbzaisqcqqhpncqblcoqgcvcbqcqpipdfcoquttttttycsva 
+10677194 22 66 1.38412e+08 1.05658e+06 131 0.503817 1 1 1 1 1 1 1 0 1 qccpoccqpqzprqcocpizaqilaqqhpncqylcoqgcavccqcqpzprfcoquttttttycsva 
+10627940 21 67 1.40509e+08 1.06446e+06 132 0.507576 1 1 1 1 1 1 1 0 1 qcbpochqpqrprqcocphzaqcygqqhpnccqlcoqgcnvcjqcqtpdpyfcoquttttttycsva 
+10688769 19 66 1.38412e+08 1.06471e+06 130 0.507692 1 1 1 1 1 1 1 0 1 qcrmoclqpqgrpdqcocpbzarbqcqqhpncqglcoqgcvcyqcqpspxfcoquttttttycsva 
+10682641 18 65 1.36315e+08 1.03269e+06 132 0.492424 1 1 1 1 1 1 1 0 1 qcrpochqpqgpgqcocpizaqbihaqqhpncqblcoqgcovclqcqppbfcoqutttttycsva 
+10696168 18 65 1.36315e+08 1.02492e+06 133 0.488722 1 1 1 1 1 1 1 0 1 qcepoccqpqzprqcocpizaqifaqqhpncqblcoqsgcvciqcqpipbfcoqutttttycsva 
+10705375 17 66 1.38412e+08 1.03293e+06 134 0.492537 1 1 1 1 1 1 1 0 1 qcsmocbqpqzrpdqcocpzzaqcbsqqrpncqglcoqgcvclqcqpipzfcoquttttttyceva 
+10692280 17 66 1.38412e+08 1.03293e+06 134 0.492537 1 1 1 1 1 1 1 0 1 qcsmocbqpqrrpdqcocpzzaqcbsqqrpncqglcoqgcvclqcqpipzfcoquttttttyceva 
+10657070 17 66 1.38412e+08 1.05658e+06 131 0.503817 1 1 1 1 1 1 1 0 1 qcjmocbqpqrrpdqcocpqzaqcbsqqrpncqglcoqgcvcoqcqpipzfcoquttttttycsva 
+10662824 16 67 1.40509e+08 1.05646e+06 133 0.503759 1 1 1 1 1 1 1 0 1 qcbpoirqpqrpsqcocpszaqccgqqgpnccqlcoqgcnvcoqcqtpdpyfcoquttttttycsva 
+10670432 16 66 1.38412e+08 1.03293e+06 134 0.492537 1 1 1 1 1 1 1 0 1 qcrmocrqpqhrpgqcocpszadgqcqqgpncqslcoqgcvcpqcqpbpztfcoqutttttycsva 
+10720273 16 66 1.38412e+08 1.06471e+06 130 0.507692 1 1 1 1 1 1 1 0 1 qcepocdqpqzprqcocpizaqilaqqhpncqblcoqgcpvccqcqpzpyfcoquttttttycsva 

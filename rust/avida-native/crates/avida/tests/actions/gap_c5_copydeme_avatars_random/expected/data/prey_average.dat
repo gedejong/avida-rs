@@ -1,0 +1,16 @@
+# Prey Average Data
+# Thu Nov 12 23:46:25 2026
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+#  8: Total Prey Genotypic Entropy
+
+0 0 125 100 1 0 0 0 
+5 0.8 125 100 2.25 1 0 0 
+10 0.801867 124.722 100 2.80556 1.75 0 0 
+15 0.80243 124.639 100 2.69444 2.77778 0 0 
+20 0.803819 124.417 100 2.58333 3.61111 0 0 

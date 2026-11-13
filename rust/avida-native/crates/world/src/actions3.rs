@@ -1394,15 +1394,9 @@ impl World {
     /// speculative waste, keeps its previously-seen cell, and the
     /// scheduler is told the new merit (0 for an empty cell). Nothing else
     /// moves with it: cell inputs, visits and the demes' organism counts
-    /// stay as they were.
+    /// stay as they were; with `USE_AVATARS` the avatars stay in their
+    /// cells (they belong to the organisms, not to the cells' occupants).
     pub fn mix_population(&mut self) -> Result<(), String> {
-        if self.cfg.use_avatars != 0 {
-            return Err(
-                "unsupported: MixPopulation with USE_AVATARS (C++: the avatars stay \
-                        in their cells while the organisms move)"
-                    .to_string(),
-            );
-        }
         let n = self.pop.cells.len();
         // `population[i]` came from cell `perm[i]`.
         let mut perm: Vec<usize> = (0..n).collect();

@@ -14,9 +14,15 @@
 //! `cPopulation` constructor and `cMigrationMatrix::Load` belong to the
 //! layer above this crate; [`AnalyzeWorld::initialize_with`] runs them
 //! through [`SetupHooks`], so every setting a population run accepts sets
-//! up here the same way. Without hooks ([`AnalyzeWorld::initialize`]) this
-//! module sets up the settings whose population set-up it reproduces
-//! itself and stops with [`AnalyzeError::Unsupported`] on the others:
+//! up here the same way; `avida -a` always passes the hooks of the `world`
+//! crate (`analyze_setup.rs`), which run the one implementation of the
+//! topology builders, deme set-up, deme/gradient/HGT resource set-up and
+//! migration matrix, and `crates/avida/tests/actions/an2_*` pin that
+//! against the reference binary. Without hooks ([`AnalyzeWorld::initialize`],
+//! the library entry point of this crate's own tests) this module sets up
+//! the settings whose population set-up it reproduces itself and stops with
+//! [`AnalyzeError::Unsupported`] on the others, which a hook-less embedder
+//! cannot get (the layering rule keeps `world` out of this crate):
 //! `WORLD_GEOMETRY` 7/8 (random and scale-free topologies), `NUM_DEMES > 1`,
 //! deme resources, gradient resources, `DEMES_MIGRATION_METHOD 4`,
 //! `ENABLE_HGT`, HGT resources.
@@ -579,7 +585,7 @@ impl AnalyzeWorld {
                 None => {
                     return Err(AnalyzeError::unsupported(
                         "DEMES_MIGRATION_METHOD 4",
-                        "cMigrationMatrix::Load (cWorld::setup)",
+                        "cMigrationMatrix::Load (cWorld::setup); needs SetupHooks, as `avida -a` supplies",
                     ))
                 }
             }
@@ -753,7 +759,7 @@ impl AnalyzeWorld {
         if num_demes > 1 {
             return Err(AnalyzeError::unsupported(
                 format!("NUM_DEMES {num_demes}"),
-                "cDeme::Setup (cPopulation::SetupCellGrid)",
+                "cDeme::Setup (cPopulation::SetupCellGrid); needs SetupHooks, as `avida -a` supplies",
             ));
         }
         match config.world_geometry {
@@ -765,13 +771,13 @@ impl AnalyzeWorld {
             geometry::RANDOM_CONNECTED => {
                 return Err(AnalyzeError::unsupported(
                     "WORLD_GEOMETRY 7",
-                    "build_random_connected_network (cPopulation::SetupCellGrid)",
+                    "build_random_connected_network (cPopulation::SetupCellGrid); needs SetupHooks, as `avida -a` supplies",
                 ))
             }
             geometry::SCALE_FREE => {
                 return Err(AnalyzeError::unsupported(
                     "WORLD_GEOMETRY 8",
-                    "build_scale_free (cPopulation::SetupCellGrid)",
+                    "build_scale_free (cPopulation::SetupCellGrid); needs SetupHooks, as `avida -a` supplies",
                 ))
             }
             g => {
@@ -789,14 +795,14 @@ impl AnalyzeWorld {
         if resources.iter().any(|r| r.deme_resource) {
             return Err(AnalyzeError::unsupported(
                 "deme resources",
-                "cDeme::SetupDemeRes (cPopulation::SetupCellGrid)",
+                "cDeme::SetupDemeRes (cPopulation::SetupCellGrid); needs SetupHooks, as `avida -a` supplies",
             ));
         }
         for res in resources {
             if res.hgt_metabolize {
                 return Err(AnalyzeError::unsupported(
                     "HGT resources",
-                    "cPopulation::SetupCellGrid (m_hgt_resid)",
+                    "cPopulation::SetupCellGrid (m_hgt_resid); needs SetupHooks, as `avida -a` supplies",
                 ));
             }
             // cResourceCount::Setup
@@ -815,7 +821,7 @@ impl AnalyzeWorld {
             {
                 return Err(AnalyzeError::unsupported(
                     format!("gradient resource '{}'", res.name()),
-                    "cGradientCount (cResourceCount::Setup draws from the world RNG)",
+                    "cGradientCount (cResourceCount::Setup draws from the world RNG); needs SetupHooks, as `avida -a` supplies",
                 ));
             }
             if config.verbosity > VERBOSE_NORMAL {
@@ -850,7 +856,7 @@ impl AnalyzeWorld {
         if config.enable_hgt != 0 {
             return Err(AnalyzeError::unsupported(
                 "ENABLE_HGT",
-                "cPopulation::SetupCellGrid (HGT resource check)",
+                "cPopulation::SetupCellGrid (HGT resource check); needs SetupHooks, as `avida -a` supplies",
             ));
         }
         Ok(None)
