@@ -1,0 +1,16 @@
+<!-- GitHub Pages does not draw Mermaid diagrams itself (github.com does), so
+     the fenced "mermaid" blocks are handed to the Mermaid library here. -->
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+  const blocks = document.querySelectorAll("div.language-mermaid, pre > code.language-mermaid");
+  for (const block of blocks) {
+    const holder = block.matches("code") ? block.parentElement : block;
+    const figure = document.createElement("div");
+    figure.className = "mermaid";
+    figure.textContent = block.textContent;
+    holder.replaceWith(figure);
+  }
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+  await mermaid.run({ querySelector: "div.mermaid" });
+</script>

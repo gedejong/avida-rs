@@ -71,8 +71,16 @@ whole suite, byte for byte; it needs a binary built from the tag cpp-final.
 V. DOCUMENTATION
 --------------------------------------------------------------------------------
 
+The user documentation is in docs/ (start at docs/index.md) and is published at
+https://gedejong.github.io/avida-rs/. It covers installation, a first run, the
+three front ends, the concepts, a reference of every setting and action, and
+worked tutorials.
+
+  docs/                               user documentation
   rust/avida-native/ARCHITECTURE.md   crates, layering, status, what is left
   rust/avida-native/PORTING.md        how parity with the C++ is kept
-  documentation/                      the Avida wiki (git submodule)
+  documentation/                      the wiki of the C++ program (git submodule),
+                                      kept until docs/ has taken over all of it;
+                                      docs/migration/wiki-map.md says what moved where
 
-Revised 2026-11-12
+Revised 2026-11-13

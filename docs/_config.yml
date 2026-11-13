@@ -1,0 +1,21 @@
+# Minimal GitHub Pages configuration. No custom build step: GitHub's own
+# Jekyll build renders these Markdown files with a stock theme.
+title: Avida documentation
+description: User documentation for the native Rust port of Avida, a digital evolution platform.
+theme: jekyll-theme-minimal
+markdown: kramdown
+kramdown:
+  input: GFM
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-titles-from-headings
+relative_links:
+  enabled: true
+  collections: false
+optional_front_matter:
+  remove_originals: true
+titles_from_headings:
+  enabled: true
+  strip_title: false
+  collections: false
