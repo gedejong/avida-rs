@@ -203,10 +203,10 @@ fn toolbar(ui: &mut Ui, state: &mut AppState, image: Option<&MapImage>, t: &Toke
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = if narrow { 6.0 } else { 8.0 };
         layer_picker(ui, state, t, if narrow { 150.0 } else { 210.0 });
-        let continuous = layer != LayerId::Genotype;
+        let continuous = !layer.is_categorical();
         ui.add_enabled_ui(continuous, |ui| palette_picker(ui, state, t, if narrow { 100.0 } else { 130.0 }))
             .response
-            .on_disabled_hover_text("The genotype layer always uses the colour-blind-safe Okabe–Ito palette.");
+            .on_disabled_hover_text("This layer always uses the colour-blind-safe Okabe–Ito palette.");
         let applies = MapSettings::scale_applies(layer);
         ui.add_enabled_ui(applies, |ui| {
             let mut scale = state.map.scale(layer);
@@ -796,7 +796,20 @@ fn tooltip(ui: &mut Ui, info: &crate::model::layers::CellInfo, layer: LayerId, l
             ui.label(RichText::new("Empty").color(t.text_weak));
         }
     }
-    if layer != LayerId::Genotype {
+    if layer == LayerId::Ancestry {
+        let text = match info.family {
+            Some(f) => format!(
+                "Family #{} ({} organisms)",
+                f.root,
+                format::count(i64::from(f.organisms))
+            ),
+            None if info.genotype.is_some() => "Outside the families".to_string(),
+            None => String::new(),
+        };
+        if !text.is_empty() {
+            ui.label(RichText::new(text).color(t.text_weak));
+        }
+    } else if layer != LayerId::Genotype {
         let value = info.value.map_or("–".to_string(), format::real);
         ui.label(RichText::new(format!("{layer_name}: {value}")).color(t.text_weak));
     }

@@ -36,13 +36,13 @@ pub fn show(ui: &mut Ui, state: &mut AppState, image: Option<&MapImage>) {
                     .family(semibold())
                     .color(t.text),
             );
-            if layer != LayerId::Genotype && state.map.is_locked(layer) {
+            if !layer.is_categorical() && state.map.is_locked(layer) {
                 ui.label(icons::ICON_LOCK.rich_text().size(14.0).color(t.text_weak))
                     .on_hover_text("The colour range is locked.");
             }
             let log =
                 image.is_some_and(|img| img.legend.as_ref().is_some_and(|l| l.scale == Scale::Log));
-            if log && layer != LayerId::Genotype {
+            if log && !layer.is_categorical() {
                 ui.label(RichText::new("log scale").small().color(t.text_weak));
             }
             if state.map.vision != ColorVision::Normal {
@@ -56,6 +56,8 @@ pub fn show(ui: &mut Ui, state: &mut AppState, image: Option<&MapImage>) {
         });
         if layer == LayerId::Genotype {
             genotype_chips(ui, state, &frame, &t);
+        } else if layer == LayerId::Ancestry {
+            family_chips(ui, state, &frame, &t);
         } else {
             match image
                 .filter(|i| i.layer == layer)
@@ -265,5 +267,48 @@ fn genotype_chips(ui: &mut Ui, state: &mut AppState, frame: &avida_viewmodel::Fr
     }
     if let Some(gid) = toggle {
         state.toggle_highlight(gid);
+    }
+}
+
+/// One chip per family of the ancestry layer, largest first, each in the
+/// colour it has on the map.
+fn family_chips(ui: &mut Ui, state: &AppState, frame: &avida_viewmodel::Frame, t: &Tokens) {
+    let Some(map) = frame.map.as_ref().filter(|m| !m.families.is_empty()) else {
+        ui.label(RichText::new("No values yet").color(t.text_weak));
+        return;
+    };
+    let vision = state.map.vision;
+    let mut in_families = 0usize;
+    for f in map.families.iter() {
+        let name = format!("Family #{}", f.root);
+        let n = f.organisms as usize;
+        in_families += n;
+        chip(
+            ui,
+            t,
+            slot_color(vision, Some(f.slot)),
+            &name,
+            n,
+            false,
+            false,
+        )
+        .on_hover_text(format!(
+            "The descendants of genotype #{} that are not in a family of their own: {} organisms",
+            f.root,
+            format::count(n as i64)
+        ));
+    }
+    let others = map.occupied().saturating_sub(in_families);
+    if others > 0 {
+        let [r, g, b] = vision.simulate(OTHER_GREY);
+        chip(
+            ui,
+            t,
+            Color32::from_rgb(r, g, b),
+            "Other founders",
+            others,
+            false,
+            false,
+        );
     }
 }

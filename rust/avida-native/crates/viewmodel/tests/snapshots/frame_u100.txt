@@ -1,6 +1,6 @@
 frame update=100
 world 60x60 seed=101 inst_set=heads_default done=true
-progress in_update=false slices=0/0 last_finished=100 layers=21 inst_names=[nop-A,nop-B,nop-C,if-n-equ,if-less,pop,push,swap-stk,swap,shift-r,shift-l,inc,dec,add,sub,nand,IO,h-alloc,h-divide,h-copy,h-search,mov-head,jmp-head,get-head,if-label,set-flow]
+progress in_update=false slices=0/0 last_finished=100 layers=22 inst_names=[nop-A,nop-B,nop-C,if-n-equ,if-less,pop,push,swap-stk,swap,shift-r,shift-l,inc,dec,add,sub,nand,IO,h-alloc,h-divide,h-copy,h-search,mov-head,jmp-head,get-head,if-label,set-flow]
 pop orgs=53 genotypes=32 threshold=4 births=1 deaths=1 breed_true=0 executed=1590 threads=53 tot_orgs=66
 ave fitness=0.237699 merit=91.0189 gestation=381 generation=7.01887 age=9.96226 mem_size=279.943
 max fitness=0.251948 merit=97
@@ -110,6 +110,7 @@ layer breed_true n=53 min=0 max=1 mean=0.433962 fnv=fed349e9df664d65
 layer modified n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
 layer threads n=53 min=1 max=1 mean=1 fnv=039c7b16717e87a5
 layer task_count n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
+layer ancestry n=53 min=0 max=6.875 mean=2.6476 fnv=8602bbfac94d0285
 layer task not n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
 layer task nand n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948
 layer task and n=53 min=0 max=0 mean=0 fnv=3bf72b61330ae948

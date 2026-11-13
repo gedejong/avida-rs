@@ -712,6 +712,40 @@ fn histogram(ui: &mut Ui, state: &mut AppState) {
                     .show(ui, |p| p.bar_chart(BarChart::new("abundance", bars)));
                 return;
             }
+            if layer == LayerId::Ancestry {
+                ui.label(RichText::new("Organisms in each family").color(t.text_weak));
+                let bars: Vec<Bar> = map
+                    .families
+                    .iter()
+                    .enumerate()
+                    .map(|(i, f)| {
+                        Bar::new(i as f64, f64::from(f.organisms))
+                            .width(0.8)
+                            .name(format!("Family #{}", f.root))
+                            .fill(rgba(Palette::OkabeIto.category(Some(f.slot))))
+                    })
+                    .collect();
+                let names: Vec<String> = map
+                    .families
+                    .iter()
+                    .map(|f| format!("#{}", f.root))
+                    .collect();
+                static_plot(ui, "family-bars")
+                    .height(height)
+                    .show_grid([false, true])
+                    .y_axis_min_width(40.0)
+                    .x_axis_label("Family (the genotype at its root)")
+                    .x_axis_formatter(move |mark, _| {
+                        let i = mark.value.round();
+                        if (mark.value - i).abs() < 1e-6 && i >= 0.0 {
+                            names.get(i as usize).cloned().unwrap_or_default()
+                        } else {
+                            String::new()
+                        }
+                    })
+                    .show(ui, |p| p.bar_chart(BarChart::new("organisms", bars)));
+                return;
+            }
             let Some(values) = map.layer(layer) else {
                 ui.label(RichText::new("Waiting for this layer's values.").color(t.text_weak));
                 return;

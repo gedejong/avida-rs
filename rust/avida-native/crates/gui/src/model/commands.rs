@@ -186,7 +186,7 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
             }
             v.push(it);
         }
-        if state.map.layer != LayerId::Genotype {
+        if !state.map.layer.is_categorical() {
             for p in [Palette::Viridis, Palette::Cividis, Palette::OkabeIto] {
                 v.push(
                     item(

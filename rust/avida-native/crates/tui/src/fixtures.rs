@@ -43,6 +43,7 @@ pub fn frame_with_map() -> Frame {
         task_bits: vec![1, 0, 0, 0, 0, 0].into(),
         words_per_cell: 1,
         top_counts: vec![2, 1].into(),
+        families: Arc::from(Vec::new()),
         genotype_cells: vec![
             GenotypeCells {
                 id: 7,

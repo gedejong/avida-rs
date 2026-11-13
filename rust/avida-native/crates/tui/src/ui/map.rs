@@ -343,6 +343,29 @@ pub fn map_legend_spans(app: &App, width: usize) -> Vec<Span<'static>> {
         }
         return spans;
     }
+    if app.layer == LayerId::Ancestry {
+        if map.families.is_empty() {
+            spans.push(Span::styled("  no values yet", DIM));
+            return spans;
+        }
+        spans.push(Span::raw("  "));
+        let mut used: usize = spans.iter().map(|s| s.content.chars().count()).sum();
+        for fam in map.families.iter() {
+            let label = format!(" family #{} {}  ", fam.root, fam.organisms);
+            let need = 1 + label.chars().count();
+            if used + need > width {
+                break;
+            }
+            let c = Palette::OkabeIto.category(Some(fam.slot));
+            spans.push(Span::styled(
+                "█",
+                Style::new().fg(mode.color([c[0], c[1], c[2]])),
+            ));
+            spans.push(Span::raw(label));
+            used += need;
+        }
+        return spans;
+    }
     let scale = app.scale();
     let legend = app
         .map_cache
@@ -415,7 +438,12 @@ pub fn cell_summary(app: &App) -> String {
             .find(|g| g.id == id)
             .map_or_else(|| format!("#{id}"), |g| g.name.clone());
         s.push_str(&format!("  {} {name}", genotype_char(map, id)));
-        if app.layer != LayerId::Genotype {
+        if app.layer == LayerId::Ancestry {
+            match layer_value(frame, app.layer, cell).and_then(|v| map.family_of_value(v)) {
+                Some(fam) => s.push_str(&format!("  family #{}", fam.root)),
+                None => s.push_str("  outside the families"),
+            }
+        } else if app.layer != LayerId::Genotype {
             if let Some(v) = layer_value(frame, app.layer, cell) {
                 s.push_str(&format!(
                     "  {} {}",

@@ -87,6 +87,44 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
         return;
     }
 
+    if app.layer == LayerId::Ancestry {
+        let max = map.families.first().map_or(1, |f| f.organisms).max(1);
+        let label_w = 22usize;
+        let bar_w = inner_w.saturating_sub(label_w + 8).max(4);
+        let full = bar_w.min(usize::try_from(max).unwrap_or(1) * 8);
+        for fam in map.families.iter() {
+            let col = Palette::OkabeIto.category(Some(fam.slot));
+            let bar = hbar(f64::from(fam.organisms) / f64::from(max), full);
+            lines.push(Line::from(vec![
+                Span::raw(format!(
+                    "{:<w$}",
+                    trunc(&format!("family #{}", fam.root), label_w - 2),
+                    w = label_w
+                )),
+                Span::styled(
+                    if bar.is_empty() {
+                        "▏".to_string()
+                    } else {
+                        bar
+                    },
+                    Style::new().fg(app.color_mode.color([col[0], col[1], col[2]])),
+                ),
+                Span::raw(format!(" {}", thousands(i64::from(fam.organisms)))),
+            ]));
+        }
+        lines.push(Line::raw(""));
+        lines.push(Line::styled(
+            "A family is named after the genotype at its root.",
+            DIM,
+        ));
+        f.render_widget(
+            Paragraph::new(clip_lines(lines, usize::from(area.width.saturating_sub(2))))
+                .block(block("Family sizes")),
+            area,
+        );
+        return;
+    }
+
     let Some(values) = map.layer(app.layer) else {
         waiting(f, area, " Waiting for the layer's values...");
         return;

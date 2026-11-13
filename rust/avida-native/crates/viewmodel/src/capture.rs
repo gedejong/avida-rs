@@ -17,7 +17,7 @@
 //! between updates they can lag by the inflow and decay of up to one update
 //! that no organism or print action has asked for yet.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use avida_genome::{CpuMemory, Genome};
@@ -32,6 +32,7 @@ use avida_systematics::unit::GroupRef;
 use avida_tasks::IoBuffer;
 use avida_world::world::World;
 
+use crate::ancestry::{layout, Family, Node};
 use crate::model::{
     CpuView, EnvView, Frame, GenotypeCells, GenotypeRow, GenotypeView, HeadView, Header, LayerId,
     MapFrame, MemCell, MemSpaceView, OrgProbe, OrganismView, PhenotypeView, ReactionView,
@@ -333,7 +334,7 @@ fn cell_genotype_id(w: &World, role: Option<usize>, cell: usize) -> i32 {
 fn org_value(org: &Organism, layer: LayerId) -> f32 {
     let ph = &org.state.phenotype;
     match layer {
-        LayerId::Genotype | LayerId::Resource(_) => f32::NAN,
+        LayerId::Genotype | LayerId::Ancestry | LayerId::Resource(_) => f32::NAN,
         LayerId::Fitness => ph.fitness as f32,
         LayerId::Merit => ph.merit.get_double() as f32,
         LayerId::Gestation => ph.gestation_time as f32,
@@ -377,7 +378,24 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
         }
     }
 
+    let mut where_: HashMap<i32, (i32, u32)> = HashMap::new();
+    for (c, &g) in genotype_id.iter().enumerate() {
+        if g != -1 {
+            where_.entry(g).or_insert((c as i32, 0)).1 += 1;
+        }
+    }
+    let mut genotype_cells: Vec<GenotypeCells> = where_
+        .into_iter()
+        .map(|(id, (first_cell, cells))| GenotypeCells {
+            id,
+            first_cell,
+            cells,
+        })
+        .collect();
+    genotype_cells.sort_unstable_by_key(|c| c.id);
+
     let mut out_layers: Vec<(LayerId, Arc<[f32]>)> = Vec::new();
+    let mut families: Vec<Family> = Vec::new();
     for &layer in layers {
         let valid = match layer {
             LayerId::Genotype => false,
@@ -392,6 +410,12 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
             LayerId::Resource(r) => (0..n)
                 .map(|c| rc.get_frozen_cell_res_val(c as i32, r) as f32)
                 .collect(),
+            LayerId::Ancestry => {
+                let tree = layout(&phylogeny(w, role, &genotype_cells));
+                let values = genotype_id.iter().map(|&g| tree.value(g)).collect();
+                families = tree.families;
+                values
+            }
             _ => w
                 .pop
                 .orgs
@@ -409,21 +433,6 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
         .take(CATEGORICAL_SLOTS)
         .collect();
 
-    let mut where_: HashMap<i32, (i32, u32)> = HashMap::new();
-    for (c, &g) in genotype_id.iter().enumerate() {
-        if g != -1 {
-            where_.entry(g).or_insert((c as i32, 0)).1 += 1;
-        }
-    }
-    let mut genotype_cells: Vec<GenotypeCells> = where_
-        .into_iter()
-        .map(|(id, (first_cell, cells))| GenotypeCells {
-            id,
-            first_cell,
-            cells,
-        })
-        .collect();
-    genotype_cells.sort_unstable_by_key(|c| c.id);
     let top_counts: Vec<u32> = top_genotypes
         .iter()
         .map(|g| {
@@ -444,7 +453,40 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
         words_per_cell,
         top_counts: top_counts.into(),
         genotype_cells: genotype_cells.into(),
+        families: families.into(),
     }
+}
+
+/// The genotypes on the map and their ancestors, for
+/// [`LayerId::Ancestry`]. Extinct ancestors stay in the systematics
+/// manager while they have living descendants.
+fn phylogeny(w: &World, role: Option<usize>, on_map: &[GenotypeCells]) -> Vec<Node> {
+    let mut nodes: Vec<Node> = Vec::with_capacity(on_map.len() * 2);
+    let mut seen: HashSet<i32> = on_map.iter().map(|g| g.id).collect();
+    let parent_of = |id: i32| {
+        role.and_then(|r| w.systematics.group(r, id))
+            .map_or(-1, |g| {
+                first_parent(&w.systematics.property(g, "parents").string_value())
+            })
+    };
+    for g in on_map {
+        let mut parent = parent_of(g.id);
+        nodes.push(Node {
+            id: g.id,
+            parent,
+            organisms: g.cells,
+        });
+        while parent >= 0 && seen.insert(parent) {
+            let id = parent;
+            parent = parent_of(id);
+            nodes.push(Node {
+                id,
+                parent,
+                organisms: 0,
+            });
+        }
+    }
+    nodes
 }
 
 /// A genotype's genome, parsed from its `genome` property the way

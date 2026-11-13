@@ -33,6 +33,7 @@
 //! quantities through `cPopulation`, `cOrganism`, `cPhenotype` and
 //! `cHardwareBase` while the world is paused between updates.
 
+pub mod ancestry;
 pub mod capture;
 pub mod legend;
 pub mod model;
@@ -42,6 +43,7 @@ pub mod render;
 pub mod series;
 pub mod text;
 
+pub use ancestry::{Family, FAMILY_SLOTS};
 pub use capture::{
     all_layers, capture, capture_with_progress, find_organism, ip_positions, ip_sites,
     newest_organism_since, probe, update_row, LINEAGE_MAX, UNCLASSIFIED,
@@ -53,6 +55,6 @@ pub use model::{
     ResourceView, Subscription, TaskView, ThreadView, UpdateProgress, UpdateRow,
 };
 pub use palette::{Palette, Rgba, CATEGORICAL_SLOTS, EMPTY, OKABE_ITO, OTHER_GREY};
-pub use render::{layer_legend, render_rgba, render_rgba_with_legend};
+pub use render::{family_color, layer_legend, render_rgba, render_rgba_with_legend};
 pub use series::{decimate_min_max, series_of, Histogram};
 pub use text::to_text;

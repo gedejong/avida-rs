@@ -660,7 +660,7 @@ impl App {
 
     /// The palette used for `layer` (the genotype layer is categorical).
     pub fn palette_for(&self, layer: LayerId) -> Palette {
-        if layer == LayerId::Genotype {
+        if layer.is_categorical() {
             Palette::OkabeIto
         } else {
             self.palette
@@ -677,12 +677,12 @@ impl App {
 
     /// No colour and a categorical layer: letters stand in for colours.
     pub fn mono_letters(&self) -> bool {
-        self.color_mode.is_mono() && self.palette_for(self.layer).is_categorical()
+        self.color_mode.is_mono() && self.layer == LayerId::Genotype
     }
 
     /// Whether the linear/log choice means anything for the layer.
     pub fn scale_applies(layer: LayerId) -> bool {
-        layer != LayerId::Genotype && !layer.is_boolean()
+        !layer.is_categorical() && !layer.is_boolean()
     }
 
     pub fn subscription(&self) -> Subscription {
@@ -1083,6 +1083,7 @@ pub fn layer_title(env: Option<&EnvView>, layer: LayerId) -> String {
         LayerId::Generation => "Generation",
         LayerId::GenomeLen => "Genome length",
         LayerId::Lineage => "Lineage label",
+        LayerId::Ancestry => "Ancestry",
         LayerId::BreedTrue => "Breeds true",
         LayerId::Modified => "Modified",
         LayerId::Threads => "Threads",

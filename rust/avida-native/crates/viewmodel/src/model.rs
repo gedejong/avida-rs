@@ -9,6 +9,7 @@
 
 use std::sync::Arc;
 
+use crate::ancestry::Family;
 use crate::legend::Scale;
 
 /// A per-cell quantity the map can show.
@@ -32,6 +33,11 @@ pub enum LayerId {
     GenomeLen,
     /// `cOrganism::GetLineageLabel()`
     Lineage,
+    /// The family the organism belongs to in the phylogeny of the living
+    /// population and its place within that family
+    /// ([`crate::ancestry::Layout::value`]); categorical, the families
+    /// are in [`MapFrame::families`].
+    Ancestry,
     /// `cPhenotype::ParentTrue()` as 0/1: the organism is an exact copy of
     /// its parent.
     BreedTrue,
@@ -51,7 +57,7 @@ pub enum LayerId {
 impl LayerId {
     /// The fixed per-organism layers, in display order (without the
     /// world-dependent [`LayerId::Task`] and [`LayerId::Resource`]).
-    pub const FIXED: [LayerId; 12] = [
+    pub const FIXED: [LayerId; 13] = [
         LayerId::Genotype,
         LayerId::Fitness,
         LayerId::Merit,
@@ -64,6 +70,7 @@ impl LayerId {
         LayerId::Modified,
         LayerId::Threads,
         LayerId::TaskCount,
+        LayerId::Ancestry,
     ];
 
     /// A short identifier (`fitness`, `task[3]`, `resource[0]`). Use
@@ -79,6 +86,7 @@ impl LayerId {
             LayerId::Generation => "generation".into(),
             LayerId::GenomeLen => "genome_len".into(),
             LayerId::Lineage => "lineage".into(),
+            LayerId::Ancestry => "ancestry".into(),
             LayerId::BreedTrue => "breed_true".into(),
             LayerId::Modified => "modified".into(),
             LayerId::Threads => "threads".into(),
@@ -86,6 +94,12 @@ impl LayerId {
             LayerId::Task(k) => format!("task[{k}]"),
             LayerId::Resource(r) => format!("resource[{r}]"),
         }
+    }
+
+    /// True for the layers that show classes, not magnitudes: they have
+    /// no value range, no scale and their own colours.
+    pub fn is_categorical(self) -> bool {
+        matches!(self, LayerId::Genotype | LayerId::Ancestry)
     }
 
     /// True for the 0/1 layers.
@@ -301,6 +315,9 @@ pub struct MapFrame {
     /// Every genotype with an organism on the map, by ascending id, with
     /// its first cell (in id order) and its number of cells.
     pub genotype_cells: Arc<[GenotypeCells]>,
+    /// The families of [`LayerId::Ancestry`], largest first; empty when
+    /// that layer was not captured.
+    pub families: Arc<[Family]>,
 }
 
 /// Where one genotype lives on the map.
@@ -348,6 +365,13 @@ impl MapFrame {
             return None;
         }
         self.top_genotypes.iter().position(|&g| g == genotype_id)
+    }
+
+    /// The family a [`LayerId::Ancestry`] value belongs to.
+    pub fn family_of_value(&self, value: f32) -> Option<Family> {
+        let (slot, _) = crate::ancestry::decode(value)?;
+        let slot = slot?;
+        self.families.iter().copied().find(|f| f.slot == slot)
     }
 
     /// Number of occupied cells.

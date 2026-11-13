@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 
 use avida_session::{Frame, LayerId};
 use avida_viewmodel::{
-    layer_legend, render_rgba, render_rgba_with_legend, EnvView, Legend, Palette, Scale,
+    layer_legend, render_rgba, render_rgba_with_legend, EnvView, Family, Legend, Palette, Scale,
     UNCLASSIFIED,
 };
 
@@ -23,6 +23,7 @@ pub fn layer_title(env: &EnvView, layer: LayerId) -> String {
         LayerId::Generation => "Generation",
         LayerId::GenomeLen => "Genome length",
         LayerId::Lineage => "Lineage label",
+        LayerId::Ancestry => "Ancestry",
         LayerId::BreedTrue => "Breeds true",
         LayerId::Modified => "Modified",
         LayerId::Threads => "Threads",
@@ -66,6 +67,7 @@ pub fn layer_description(layer: LayerId) -> &'static str {
         LayerId::Generation => "Ancestors between the founder and the organism.",
         LayerId::GenomeLen => "Instructions in the organism's genome.",
         LayerId::Lineage => "The lineage label inherited from the injected ancestor.",
+        LayerId::Ancestry => "The family each organism belongs to. The living population is split along its family tree into at most seven families, one colour each; within a family, branches differ in shade.",
         LayerId::BreedTrue => "1 when the organism is an exact copy of its parent.",
         LayerId::Modified => "1 when the organism's phenotype was modified.",
         LayerId::Threads => "CPU threads the organism runs.",
@@ -119,12 +121,12 @@ impl MapSettings {
 
     /// Whether the scale choice means anything for this layer.
     pub fn scale_applies(layer: LayerId) -> bool {
-        layer != LayerId::Genotype && !layer.is_boolean()
+        !layer.is_categorical() && !layer.is_boolean()
     }
 
     /// The palette used for `layer`.
     pub fn palette_for(&self, layer: LayerId) -> Palette {
-        if layer == LayerId::Genotype {
+        if layer.is_categorical() {
             Palette::OkabeIto
         } else {
             self.palette
@@ -230,9 +232,12 @@ pub struct CellInfo {
     pub y: usize,
     /// `None` for an empty cell.
     pub genotype: Option<GenotypeLabel>,
-    /// The selected layer's value (`None` for the genotype layer, empty
-    /// cells of per-organism layers, and layers not captured yet).
+    /// The selected layer's value (`None` for the categorical layers,
+    /// empty cells of per-organism layers, and layers not captured yet).
     pub value: Option<f64>,
+    /// On the ancestry layer, the occupant's family (`None` there for an
+    /// occupant outside the families).
+    pub family: Option<Family>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -252,7 +257,7 @@ pub fn cell_info(frame: &Frame, layer: LayerId, cell: usize) -> Option<CellInfo>
         name: genotype_name(frame, gid),
         slot: map.genotype_slot(gid),
     });
-    let value = if layer == LayerId::Genotype {
+    let value = if layer.is_categorical() {
         None
     } else {
         map.layer(layer)
@@ -260,7 +265,12 @@ pub fn cell_info(frame: &Frame, layer: LayerId, cell: usize) -> Option<CellInfo>
             .filter(|v| v.is_finite())
             .map(|&v| f64::from(v))
     };
+    let family = (layer == LayerId::Ancestry)
+        .then(|| map.layer(layer)?.get(cell).copied())
+        .flatten()
+        .and_then(|v| map.family_of_value(v));
     Some(CellInfo {
+        family,
         cell,
         x: cell % w,
         y: cell / w,

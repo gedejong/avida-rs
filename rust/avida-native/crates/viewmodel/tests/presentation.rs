@@ -366,6 +366,7 @@ fn test_map() -> MapFrame {
         task_bits: Arc::from(vec![0b01, 0b11, 0, 0, 0b10, 0]),
         words_per_cell: 1,
         top_counts: Arc::from(vec![2, 1]),
+        families: Arc::from(Vec::new()),
         genotype_cells: Arc::from(vec![
             GenotypeCells {
                 id: UNCLASSIFIED,

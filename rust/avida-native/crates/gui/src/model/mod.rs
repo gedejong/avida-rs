@@ -1419,6 +1419,8 @@ mod tests {
         s.set_layer_index(1);
         assert_eq!(s.map.layer, LayerId::Fitness);
         s.set_layer_index(12);
+        assert_eq!(s.map.layer, LayerId::Ancestry);
+        s.set_layer_index(13);
         assert_eq!(s.map.layer, LayerId::Task(0));
         s.set_layer_index(99);
         assert_eq!(s.map.layer, LayerId::Task(0));
