@@ -75,6 +75,14 @@ pub trait CellResources: Sync {
     /// `cResourceCount::GetCellResources` returns once the grids are up to
     /// date), into `out`.
     fn cell_levels(&self, cell: i32, out: &mut Vec<f64>);
+
+    /// The pending change (`cSpatialCountElem::delta`) of every resource in
+    /// `cell`, into `out`, which `ModifyCell` folds into the amount with the
+    /// organism's own change. The default is none (empty: all zero), which
+    /// is what a plain grid has between updates.
+    fn cell_deltas(&self, _cell: i32, out: &mut Vec<f64>) {
+        out.clear();
+    }
 }
 
 /// What an output test in a burst sees of the resources: the cell's
@@ -85,6 +93,10 @@ pub struct LocalResources<'a> {
     /// The organism's own copy of its cell's amounts; empty until the first
     /// output test of the burst reads them.
     pub levels: &'a mut Vec<f64>,
+    /// The pending change of each resource in the cell, as `view` had it
+    /// when the burst began (empty: none), until an output test changes the
+    /// cell and `ModifyCell` folds it in.
+    pub deltas: &'a mut Vec<f64>,
 }
 
 /// An output test the burst evaluated up to the processes that use the
@@ -98,6 +110,12 @@ pub struct PendingOutput {
     pub found: bool,
     /// The reactions whose processes wait, in library order.
     pub deferred: Vec<DeferredReaction>,
+    /// In a world with grids as well as pools: the cell's amounts as the
+    /// test read them, which the deferred processes read for the grids (a
+    /// reaction may take from a grid and give to a pool, or the other way
+    /// round); the pools' amounts are those of the settlement. Empty
+    /// otherwise.
+    pub grid_levels: Vec<f64>,
 }
 
 /// [`crate::parallel::ParallelOrgState`]'s slot for a [`PendingOutput`].
@@ -233,9 +251,10 @@ pub fn output_is_local_global(cfg: &Config, env: &Env) -> bool {
 /// `ResourceCount::grid_or_global_kinds`): the processes that use a grid
 /// run in the burst, those that use a pool wait for the sequential phase
 /// ([`PendingOutput`]). The conditions of [`output_is_local_global`], and
-/// one more: no reaction takes from or gives to both kinds, so that its
-/// processes are all in the burst or all after it, and what the pool's half
-/// needs of the grid half is the bonus alone.
+/// one more: a grid that a reaction waiting for the pools takes from is not
+/// taken from by a later reaction that does not wait (see the gate's
+/// comment). A reaction that uses both kinds waits as a whole, and reads the
+/// grids' amounts as the test saw them ([`PendingOutput::grid_levels`]).
 pub fn output_is_local_mixed(cfg: &Config, env: &Env, pools: &[bool]) -> bool {
     output_is_local_with(cfg, env, Pools::Mixed, pools)
 }
@@ -272,7 +291,10 @@ fn output_is_local_with(cfg: &Config, env: &Env, pools: Pools, is_pool: &[bool])
             if res.deme_resource
                 || res.energy_resource
                 || res.hgt_metabolize
-                || res.isgradient
+                // A gradient is read and changed like a plain grid; one
+                // whose update acts on organisms is left to the world (its
+                // flags are set at run time, `ResourceCount::are_cell_grids`).
+                || res.damage != 0.0
                 || res.deadly
                 || res.predator
             {
@@ -284,6 +306,10 @@ fn output_is_local_with(cfg: &Config, env: &Env, pools: Pools, is_pool: &[bool])
         return false;
     }
     let lib = env.reaction_lib();
+    // (grid, reaction index) for the reactions that wait and those that run
+    // in the burst, in a world of grids and pools.
+    let mut grid_taken_by_waiting: Vec<(usize, usize)> = Vec::new();
+    let mut grid_taken_by_running: Vec<(usize, usize)> = Vec::new();
     for i in 0..lib.size().max(0) as usize {
         let r = lib.reaction(i);
         if !r.active {
@@ -293,22 +319,41 @@ fn output_is_local_with(cfg: &Config, env: &Env, pools: Pools, is_pool: &[bool])
             return false;
         };
         if pools == Pools::Mixed {
-            // A reaction's processes are all for grids or all for pools.
-            let used = r
-                .processes
-                .iter()
-                .flat_map(|p| [p.resource, p.product])
-                .flatten();
-            let (mut grid, mut pool) = (false, false);
-            for i in used {
-                match is_pool.get(i) {
-                    Some(true) => pool = true,
-                    Some(false) => grid = true,
-                    None => return false,
-                }
+            // A reaction that takes from or gives to a pool waits for the
+            // sequential phase as a whole, and runs there after the
+            // reactions of the grids. The order of the exact mode is the
+            // library's, and it matters through what a process takes from
+            // a resource that an earlier reaction already took from
+            // (`DoProcesses` subtracts what the result holds), so a grid
+            // may not be taken from by a waiting reaction and then by a
+            // reaction that does not wait and comes later in the library.
+            let kind = |res: Option<usize>| match res {
+                None => Some(false),
+                Some(i) => is_pool.get(i).copied(),
+            };
+            let mut waits = false;
+            for p in &r.processes {
+                let (Some(a), Some(b)) = (kind(p.resource), kind(p.product)) else {
+                    return false;
+                };
+                waits |= a || b;
             }
-            if grid && pool {
-                return false;
+            if waits {
+                grid_taken_by_waiting.extend(
+                    r.processes
+                        .iter()
+                        .filter_map(|p| p.resource)
+                        .filter(|&g| is_pool.get(g) == Some(&false))
+                        .map(|g| (g, i)),
+                );
+            } else {
+                grid_taken_by_running.extend(
+                    r.processes
+                        .iter()
+                        .filter_map(|p| p.resource)
+                        .filter(|&g| is_pool.get(g) == Some(&false))
+                        .map(|g| (g, i)),
+                );
             }
         }
         if matches!(pools, Pools::Global | Pools::Mixed)
@@ -350,6 +395,17 @@ fn output_is_local_with(cfg: &Config, env: &Env, pools: Pools, is_pool: &[bool])
             if !plain {
                 return false;
             }
+        }
+    }
+    // A waiting reaction runs after every running one: a grid taken by a
+    // waiting reaction must not be taken by a running reaction of a higher
+    // index.
+    for &(g, w) in &grid_taken_by_waiting {
+        if grid_taken_by_running
+            .iter()
+            .any(|&(g2, r)| g2 == g && r > w)
+        {
+            return false;
         }
     }
     true
@@ -536,6 +592,7 @@ pub fn do_output_local(
     if let Some(r) = lo.resources.as_mut() {
         if r.levels.is_empty() {
             r.view.cell_levels(lo.cell_id, r.levels);
+            r.view.cell_deltas(lo.cell_id, r.deltas);
         }
         if r.levels.len() != org.phenotype_sizes.num_resources {
             return Err(format!(
@@ -610,6 +667,11 @@ pub fn do_output_local(
                 result,
                 found,
                 deferred,
+                grid_levels: if lo.pools.is_some() {
+                    levels.clone()
+                } else {
+                    Vec::new()
+                },
             }));
         } else {
             let mut stats = StatSink(&events);
@@ -645,8 +707,13 @@ pub fn do_output_local(
         if res_change.iter().any(|&c| c != 0.0) {
             // `cResourceCount::ModifyCell` on this cell: `Rate` adds the
             // change to the cell's pending change (0), `State` folds it in.
-            for (level, &change) in levels.iter_mut().zip(&res_change) {
-                *level += 0.0 + change;
+            // The cell's pending change (a gradient's) goes in with it.
+            r.deltas.resize(levels.len(), 0.0);
+            for ((level, delta), &change) in
+                levels.iter_mut().zip(r.deltas.iter_mut()).zip(&res_change)
+            {
+                *level += *delta + change;
+                *delta = 0.0;
             }
             lo.events
                 .push(OutEvent::ResourceChange(res_change.into_boxed_slice()));
@@ -691,6 +758,7 @@ pub fn finish_output_global(
         mut result,
         found,
         deferred,
+        grid_levels: _,
     } = pending;
     let events = RefCell::new(Vec::new());
     let mut res_change = vec![0.0; levels.len()];

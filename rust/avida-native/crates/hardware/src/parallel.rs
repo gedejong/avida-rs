@@ -704,6 +704,8 @@ pub struct LocalInterface<'a> {
     /// The organism's copy of its cell's resource amounts
     /// ([`LocalResources`]).
     levels: Vec<f64>,
+    /// The pending change of each of those amounts ([`LocalResources`]).
+    deltas: Vec<f64>,
     /// The output test whose pool processes wait for the world.
     pending_output: PendingOutputSlot,
     denied: Cell<Option<&'static str>>,
@@ -727,6 +729,7 @@ impl<'a> LocalInterface<'a> {
             pending,
             building: false,
             levels: Vec::new(),
+            deltas: Vec::new(),
             pending_output: PendingOutputSlot::default(),
             denied: Cell::new(None),
         }
@@ -840,6 +843,7 @@ impl OrgInterface for LocalInterface<'_> {
                 Some(view) => Some(LocalResources {
                     view,
                     levels: &mut self.levels,
+                    deltas: &mut self.deltas,
                 }),
                 None => None,
             },

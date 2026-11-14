@@ -748,26 +748,66 @@ impl ResourceCount {
             )
     }
 
-    /// Whether every resource is a global (well-mixed) pool: no grid, no
-    /// gradient and no `PARTIAL` list. Then what an organism reads and
-    /// changes of a resource is the one amount every organism shares. The
-    /// parallel execution mode settles the output tests of such worlds in
-    /// the sequential phase, in a fixed order, against that amount.
-    pub fn are_global_pools(&self) -> bool {
+    /// [`are_plain_cell_grids`](Self::are_plain_cell_grids) with gradient
+    /// resources allowed (a grid with a cell for each of `num_cells` cells
+    /// whose update does not act on organisms: no predatory, deadly or
+    /// damaging gradient, see [`GradientCount::acts_on_organisms`]). A
+    /// gradient moves, and its amounts change, only in the update of the
+    /// grids, which happens once per update of the world and before the
+    /// organisms' bursts; during the burst an organism reads and changes
+    /// its own cell as with a plain grid.
+    pub fn are_cell_grids(&self, num_cells: usize) -> bool {
         !self.resource_count.is_empty()
-            && self.geometry.iter().all(|&g| !is_spatial(g))
+            && self.geometry.iter().all(|&g| is_spatial(g))
             && self.cell_lists.iter().all(Vec::is_empty)
+            && self
+                .spatial_resource_count
+                .iter()
+                .all(|s| Self::is_quiet_cell_grid(s, num_cells))
     }
 
-    /// For a world whose resources are each either a plain per-cell grid
-    /// (a cell for each of `num_cells`) or a global pool, and no other kind
-    /// (no gradient, no `PARTIAL` list): for each resource, whether it is a
+    fn is_quiet_cell_grid(s: &SpatialResource, num_cells: usize) -> bool {
+        let big = s.base().size().max(0) as usize >= num_cells;
+        match s {
+            SpatialResource::Plain(_) => big,
+            SpatialResource::Gradient(g) => big && !g.acts_on_organisms(),
+        }
+    }
+
+    /// Whether every resource is a global (well-mixed) pool: no grid and no
+    /// gradient. A `PARTIAL` resource is one: it has the one amount every
+    /// organism shares, which an organism whose cell is not on the
+    /// resource's list reads as 0
+    /// ([`mask_partial`](Self::mask_partial)). Then what an organism reads
+    /// and changes of a resource is that amount. The parallel execution
+    /// mode settles the output tests of such worlds in the sequential phase,
+    /// in a fixed order, against that amount.
+    pub fn are_global_pools(&self) -> bool {
+        !self.resource_count.is_empty() && self.geometry.iter().all(|&g| !is_spatial(g))
+    }
+
+    /// What `cOrganism::doOutput` does to the amounts it read for an
+    /// organism in `cell_id`: a resource with a cell list (`PARTIAL`) that
+    /// does not contain the cell reads 0 there. `levels` holds one amount
+    /// per resource.
+    pub fn mask_partial(&self, cell_id: i32, levels: &mut [f64]) {
+        for (list, v) in self.cell_lists.iter().zip(levels.iter_mut()) {
+            if !list.is_empty() && !list.contains(&cell_id) {
+                *v = 0.0;
+            }
+        }
+    }
+
+    /// For a world whose resources are each either a per-cell grid (plain,
+    /// or a gradient that does not act on organisms,
+    /// [`are_cell_grids`](Self::are_cell_grids)) or a global pool (global or
+    /// `PARTIAL`), and no other kind: for each resource, whether it is a
     /// global pool. `None` for any other world. The parallel execution mode
     /// runs the output tests of a world with both kinds in the bursts:
     /// the grids are read and changed in the organism's own cell, and the
     /// processes that use a pool wait for the sequential phase.
     pub fn grid_or_global_kinds(&self, num_cells: usize) -> Option<Vec<bool>> {
-        if self.resource_count.is_empty() || !self.cell_lists.iter().all(Vec::is_empty) {
+        if self.resource_count.is_empty() {
             return None;
         }
         self.geometry
@@ -776,14 +816,39 @@ impl ResourceCount {
             .map(|(&g, s)| {
                 if !is_spatial(g) {
                     Some(true)
-                } else if matches!(s, SpatialResource::Plain(p) if p.size().max(0) as usize >= num_cells)
-                {
+                } else if Self::is_quiet_cell_grid(s, num_cells) {
                     Some(false)
                 } else {
                     None
                 }
             })
             .collect()
+    }
+
+    /// The pending change (`delta`) of every resource in `cell_id`, into
+    /// `out`: what `ModifyCell` folds into the amount together with the
+    /// organism's own change. Zero for a plain grid between updates (its
+    /// update folds every cell) and for a pool; a gradient's update leaves
+    /// whatever its inflow and flow accumulated.
+    pub fn frozen_cell_deltas(&self, cell_id: i32, out: &mut Vec<f64>) {
+        out.clear();
+        out.extend(
+            self.spatial_resource_count
+                .iter()
+                .zip(&self.geometry)
+                .map(|(s, &g)| {
+                    if is_spatial(g) {
+                        let b = s.base();
+                        if cell_id >= 0 && cell_id < b.size() {
+                            b.element(cell_id).delta()
+                        } else {
+                            0.0
+                        }
+                    } else {
+                        0.0
+                    }
+                }),
+        );
     }
 
     /// `curr_grid_res_cnt` of [`get_cell_resources`](Self::get_cell_resources)

@@ -341,6 +341,9 @@ impl CellResources for CellResourceView<'_> {
     fn cell_levels(&self, cell: i32, out: &mut Vec<f64>) {
         self.0.frozen_cell_amounts(cell, out);
     }
+    fn cell_deltas(&self, cell: i32, out: &mut Vec<f64>) {
+        self.0.frozen_cell_deltas(cell, out);
+    }
 }
 
 /// What the output tests of a burst did to the statistics and to the
@@ -373,6 +376,29 @@ fn replay_out_events(w: &mut World, cell: i32, events: &mut Vec<OutEvent>) {
             }
             OutEvent::ResourceChange(change) => {
                 w.pop.resource_count.modify_cell_updated(&change, cell);
+            }
+        }
+    }
+}
+
+/// The amounts a pending output test (`PendingOutput`) of the organism in
+/// `cell` reads when the world settles it, from `levels` (the cell's amounts
+/// as the world has them now): a `PARTIAL` resource off its list reads 0, as
+/// in `cOrganism::doOutput`, and in a world of grids and pools (`pools`
+/// marks the pools) the grids read what the test saw (`grid_levels`, empty
+/// when there are no grids).
+pub fn settle_levels(
+    rc: &avida_resources::ResourceCount,
+    cell: i32,
+    levels: &mut [f64],
+    grid_levels: &[f64],
+    pools: &[bool],
+) {
+    rc.mask_partial(cell, levels);
+    if grid_levels.len() == levels.len() && pools.len() == levels.len() {
+        for ((v, &g), &pool) in levels.iter_mut().zip(grid_levels).zip(pools) {
+            if !pool {
+                *v = g;
             }
         }
     }
@@ -563,7 +589,7 @@ impl ParallelExec {
         }
         self.stats.updates += 1;
         let cell_grids = w.env.resource_lib().size().max(0) as usize == w.pop.resource_count.size()
-            && w.pop.resource_count.are_plain_cell_grids(w.pop.cells.len());
+            && w.pop.resource_count.are_cell_grids(w.pop.cells.len());
         self.global_pool = !self.force_world
             && w.env.resource_lib().size().max(0) as usize == w.pop.resource_count.size()
             && w.pop.resource_count.are_global_pools()
@@ -1073,22 +1099,30 @@ impl ParallelExec {
             };
             org.state.parallel.stamp = stamp;
             // With grids as well as pools the organism's cell has amounts
-            // of its own for the grids (the processes of the grids ran in
-            // the burst; the pools' read the pools' amounts, which are the
-            // same in every cell).
-            let levels = if self.mixed_pools.is_empty() {
+            // of its own for the grids (the reactions that use only grids
+            // ran in the burst; the pools' amounts are the same in every
+            // cell, a `PARTIAL` pool's off its list read 0).
+            let mut levels = if self.mixed_pools.is_empty() {
                 w.with_pop_resources_for(None, |rc, rng, env| rc.get_resources(rng, env).to_vec())
             } else {
                 w.with_pop_resources_for(None, |rc, rng, env| {
                     rc.get_cell_resources(c, rng, env).to_vec()
                 })
             };
+            let pending = *pending;
+            settle_levels(
+                &w.pop.resource_count,
+                c,
+                &mut levels,
+                &pending.grid_levels,
+                &self.mixed_pools,
+            );
             let Some(org) = w.pop.orgs[c as usize].as_mut() else {
                 continue;
             };
             let (change, mut events) = finish_output_global(
                 &mut org.state,
-                *pending,
+                pending,
                 &w.env,
                 &w.cfg,
                 &levels,

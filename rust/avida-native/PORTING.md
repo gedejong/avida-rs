@@ -169,7 +169,7 @@ rule 1:
   mode, 30x30, nine global pools): seven outcomes agree (p from 0.42 to
   0.98); the number of organisms differs by 2 cells in 900 (p = 0.001),
   the same kind of lingering empty cell already recorded for the stock
-  configuration, cause not traced. Awaiting the maintainer's acceptance.
+  configuration, cause not traced. Accepted by the maintainer on 2026-11-14.
   Global environments outside the gate run their output tests in the
   sequential phase as before.
 - Mixed per-cell grids and global pools (2026-11-14): when every resource
@@ -185,9 +185,38 @@ rule 1:
   may be summed in the other order (last bit). Fresh run of
   `tools/parallel_stats.py` (36 seeds per mode, 30x30, one grid and one
   pool): no outcome significant (smallest p = 0.074 before correction).
-  Awaiting the maintainer's acceptance. Gradients, `PARTIAL` resources and
-  reactions that use both kinds keep the output tests in the sequential
-  phase.
+  Accepted by the maintainer on 2026-11-14. The rule that no reaction uses
+  both kinds was lifted later the same day (next entry).
+- Reactions on both kinds, `PARTIAL` resources and gradients (2026-11-14):
+  (1) A reaction that takes from or gives to a global pool waits for the
+  sequential phase as a whole even when it also uses a per-cell grid; its
+  grid reads are the amounts the test saw (`PendingOutput::grid_levels`),
+  its pool reads the pool at settlement. `output_is_local_mixed` refuses a
+  world where such a waiting reaction takes from a grid that a later
+  non-waiting reaction also takes from, because the settlement order (burst
+  reactions first) would otherwise differ from the library order. Two `add`
+  bonuses of one test may be summed in the other order (last bit).
+  (2) A `PARTIAL` resource is a global pool in the exact mode with its
+  amount read as 0 for a cell off its list (`doOutput`); it is treated as a
+  pool and the settlement applies the same mask
+  (`ResourceCount::mask_partial`). (3) A gradient is read and changed in
+  the organism's own cell like a plain grid, including the pending `delta`
+  its `StateAll` leaves, which `ModifyCell` folds in; the burst's copy of
+  the cell does the same. Predatory, deadly and damaging gradients (their
+  update calls back into the population) keep the output tests in the
+  sequential phase. Differences from the exact mode: tests settle at the
+  end of a round; a gradient's updates are run at the first phase of each
+  update, where the exact mode lumps them into the next output test when no
+  organism tests for several updates. Fresh run: 20 seeds per mode, 30x30,
+  1500 updates, five worlds (grid and pool in one reaction, two `PARTIAL`
+  pools, a global-pool control on the path accepted above, a gradient, a
+  gradient and a pool); of 34 comparisons three have p < 0.05 before
+  correction and none after Holm: the first pool's amount is lower in the
+  parallel mode in the `PARTIAL` world (54.9 vs 43.6, p = 0.002) and
+  equally in the control (40.1 vs 29.1, p = 0.009), so the shift belongs to
+  the pool settlement and not to the `PARTIAL` mask, cause not traced; and
+  the control has 900 vs 899 organisms (p = 0.035), the empty-cell effect
+  recorded above. Accepted by the maintainer on 2026-11-14.
 
 ARCHITECTURE.md ("Parallel execution mode") describes what the mode
 guarantees and what it does not.
@@ -232,7 +261,9 @@ action library does not know them.
   module documentation lists where it departs from the paper's reference
   code (no rows before the first filter, one sample per generation crossing,
   skeletons only for persistent genotypes, test-CPU resources at the level
-  of an unexploited cell).
+  of an unexploited cell). The filter defaults to `nearest`, as in the
+  reference code, by the maintainer's choice of 2026-11-14 over the paper's
+  wording (`any`).
 - `PrintPhylogenyMetrics [file]` and `SavePhylogeny [file]`: the phylogeny
   measures of Dolson, Lalejini, Jorgensen and Ofria, "Interpreting the Tape
   of Life", Artificial Life 26(1), 2020, computed as the Empirical library's

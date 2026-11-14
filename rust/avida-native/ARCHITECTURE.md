@@ -634,9 +634,9 @@ generator, schedule, birth statistics). None of it can run before the
 previous commit of the round has finished. Also still sequential: `get2`
 and `put-reset` (redraw the cell's inputs), divides of the resampling and
 sex families, and, in runs whose environment has non-pure tasks or
-resources that are not per-cell grids or global pools (or a reaction that
-uses both), every output test (the burst stops before the instruction as
-before).
+resources that are not per-cell grids, gradients that do not act on
+organisms, or global or `PARTIAL` pools, every output test (the burst stops
+before the instruction as before).
 
 **Result.** One run of the stock configuration, 3000 updates, seed 42,
 release build, one run at a time, interleaved (load average 6 to 8 from
@@ -747,7 +747,9 @@ go below zero (`consumed` is capped by the level, as in `DoProcesses`;
 
 What stays sequential, and why: the global pools of environments that the
 section on global pools below does not admit (a world of grids and pools
-together is handled in "Mixed grids and global pools in the burst").
+together is handled in "Mixed grids and global pools in the burst"; gradients
+and `PARTIAL` resources in "Reactions on both kinds, PARTIAL resources and
+gradients in the burst").
 
 **Result** (`10-continents` configuration, seed 1, release build, one run at
 a time, interleaved, load average 6.5 to 9 from desktop applications):
@@ -918,17 +920,19 @@ processes in the burst against the organism's own cell, the pools' processes
 in the sequential phase against the pool.
 
 The gate. `ResourceCount::grid_or_global_kinds` says, per resource, whether
-it is a pool, and refuses the world if any resource is a gradient, a
-`PARTIAL` list or a grid without a cell for every cell of the world. The
+it is a pool, and refuses the world if any resource is a grid without a cell
+for every cell of the world (since 2026-11-14 a `PARTIAL` list counts as a
+pool and a gradient that does not act on organisms as a grid, see the next
+section). The
 world uses it when there are both kinds (all one kind keeps the two gates
 above, unchanged). `output_is_local_mixed` then asks what
 `output_is_local_global` asks (no requisite that names other reactions, none
-on divide, the per-cell conditions) and one more thing: no reaction takes
-from or gives to both kinds. A reaction is then entirely in the burst or
+on divide, the per-cell conditions). A reaction is entirely in the burst or
 entirely deferred, which is what makes the split sound: the processes of
 different reactions meet only in `ReactionResult`'s sums, and no process
 reads what a reaction of the other kind consumed (`consumed(res)` is
-per-resource, and a resource is of one kind).
+per-resource, and a resource is of one kind). (Until 2026-11-14 the gate
+also refused a reaction that uses both kinds; see the next section.)
 
 What runs where. `test_output_shared` defers a triggered reaction only if
 one of its processes uses a resource `pools` marks (`pools: None` is the old
@@ -998,6 +1002,150 @@ with the other 24, so 12 seeds are too few for this environment, whose runs
 scatter widely; the build before this change, 12 seeds, had no p below 0.14.
 The crate's `mixed_resources_in_bursts_match_the_exact_mode_statistically`
 repeats a smaller comparison with the loose |z| < 3.5 bound.
+
+#### Reactions on both kinds, PARTIAL resources and gradients in the burst (2026-11-14)
+
+Three worlds that kept every output test in the sequential phase now run in
+the bursts: those with a reaction that uses a grid and a pool, those with
+`PARTIAL` resources, and those with gradient resources that do not act on
+organisms.
+
+**A reaction on both kinds.** `DoProcesses` reads the amounts it is given
+once per test (`res_count` is not updated between reactions or processes),
+and its only other state is `ReactionResult`: what the result already holds
+of the resource (`consumed(res)`), and the bonus sums. So a reaction that
+takes from or gives to a pool waits for the world as a whole, whatever else
+it uses, and the grid half of it is not split off. The waiting reactions run
+at the settlement after the reactions that ran in the burst, with the
+burst's result as their starting point. Two things make that equal to the
+exact mode's library order. (1) The grids it reads are the amounts the test
+saw: `PendingOutput::grid_levels` holds the burst's copy of the cell's
+amounts, and `settle_levels` puts them in place of the cell's amounts at the
+settlement (the pools read the pools as they are then). A reaction that takes
+from a grid and gives to a pool, or the reverse, therefore computes what the
+exact mode computes. (2) `DoProcesses` subtracts what the result already
+holds from the amount a process takes from, so two reactions that take from
+the same grid meet in library order. `output_is_local_mixed` refuses a world
+in which a waiting reaction takes from a grid that a reaction that does not
+wait, and comes later in the library, also takes from (the waiting one would
+run second). The bonus sums of the two halves are added in the order of the
+settlement (the burst's reactions first), which may differ in the last bit
+from the library's for two `add` bonuses; `mult` and `pow` bonuses and the
+sums per resource do not depend on the order.
+
+**`PARTIAL`.** In the exact mode a `PARTIAL` resource is a pool (its
+geometry is not spatial: `fill_curr_grid_res_cnt` hands out the one global
+amount, `ModifyCell` changes it) whose amount `doOutput` sets to 0 for an
+organism whose cell is not on the resource's list (`cell_id_lists`), both for
+reading and, because `consumed` is then 0, for taking. Producing into it is
+not masked. So `are_global_pools` and `grid_or_global_kinds` count it as a
+pool, and the settlement applies `ResourceCount::mask_partial` to the
+amounts the deferred processes read. Nothing else differs from a pool.
+
+**Gradients.** A gradient (`SpatialResource::Gradient`) moves, plateaus and
+refills only in its update, which runs once per update of the world at the
+start of the parallel phase (`update_resources`, as for grids); during the
+phase an organism's output test reads and changes its own cell as with a
+plain grid (`ModifyCell` is the same function, and it sets the gradient's
+`modified` flag, which the next update reads, when the replay applies the
+change). `ResourceCount::are_cell_grids` and `grid_or_global_kinds` accept
+one unless its update calls back into the population
+(`GradientCount::acts_on_organisms`: predatory, deadly or damaging; the
+environment gate refuses `damage` too, as it refused `deadly` and
+`predator`). Those stay in the sequential phase, because the callbacks
+kill or injure the organisms of the cells, which in the parallel phase are
+out of the population in the workers' hands; running the update before
+the bursts would also fire them at another time than the exact mode's lazy
+update, at the first output test of the update. One thing a gradient has that
+a plain grid does not: `StateAll` does nothing for it, so inflow and flow
+leave a pending change (`delta`) in the cells that `ModifyCell` folds into
+the amount with the organism's own change. The burst's copy of the cell
+follows that (`CellResources::cell_deltas`, `ResourceCount::frozen_cell_deltas`;
+the copy takes `delta + change` and clears the delta, as the cell does), so a
+second test of the burst reads what `ModifyCell` would have made of the
+first. Differences from the exact mode: a world whose organisms do no output
+test for some updates has the gradient's updates lumped into the next test
+there, and run one by one here (every update, the first phase); the world's
+random stream is drawn from at other moments in either case, as everywhere
+in the mode.
+
+Tests (`crates/avida/tests/parallel.rs`):
+
+| Test | What it pins |
+|---|---|
+| `reactions_on_grids_and_pools_settle_as_the_exact_path_does` | 21,600 tests (six for each of 3,600 organisms) on a grid and a pool with NOT (grid to pool), NAND (pool to grid) and ORN (grid): each phenotype and every amount in the cell identical to the bit with the exact path; the pool runs dry |
+| `partial_resource_output_tests_settle_as_the_exact_path_does` | the same for two `PARTIAL` pools on halves of the world, and for one next to a grid; a mutant without `mask_partial` fails it |
+| `gradient_and_pool_output_tests_settle_as_the_exact_path_does` | a gradient taken from by NOT and given to by NAND with a pool |
+| `gradient_output_tests_in_one_burst_match_the_world_path` | five tests of one burst on the gradient's richest cell with a pending change of 0.375 in it; a mutant that ignores the deltas fails it |
+| `mixed_gate_keeps_the_library_order_of_the_reactions_taking_from_a_grid` | the gate takes the one library order and refuses the other |
+| `*_world_does_not_depend_on_the_thread_count` (three) | 1, 2 and 4 threads write the same files for each kind of world |
+| `*_in_bursts_match_the_exact_mode_statistically` (three) | six seeds, loose |z| < 3.5 bound; the output tests ran in the bursts |
+
+**Statistics** (20 seeds per mode, seeds 1 to 20, 30 x 30, 1500 updates,
+`not-ancestor.org`, parallel mode at one thread; medians and
+Mann-Whitney p; "tasks" is the sum over the tasks of the number of
+organisms performing them at the last update):
+
+| World | Measure | Exact | Parallel | p |
+|---|---|---|---|---|
+| grid and pool, NOT and NAND on both (`both`) | organisms | 899 [897.75, 900] | 899 [898, 900] | 0.867 |
+|  | tasks_total | 616 [534.25, 717.5] | 624.5 [525, 736.5] | 0.904 |
+|  | mean_fitness | 0.30158 [0.29695, 0.32969] | 0.30629 [0.30197, 0.39024] | 0.121 |
+|  | mean_merit | 112.15 [109.58, 122.86] | 113.99 [111.95, 238.63] | 0.192 |
+|  | gestation | 373.67 [369.13, 380.29] | 373.81 [366.34, 392.44] | 0.841 |
+|  | resource0 | 29.239 [29.064, 29.67] | 29.023 [27.969, 29.503] | 0.253 |
+|  | resource1 | 32.168 [24.102, 44.92] | 25.528 [21.673, 35.157] | 0.211 |
+| two `PARTIAL` pools (`partial`) | organisms | 899 [898.75, 899.25] | 900 [898, 900] | 0.418 |
+|  | tasks_total | 844.5 [808.5, 1065.5] | 821.5 [740.25, 877.5] | 0.183 |
+|  | mean_fitness | 0.39437 [0.37945, 0.55545] | 0.38421 [0.37431, 0.39835] | 0.301 |
+|  | mean_merit | 150.59 [136.36, 204.86] | 143.84 [137.92, 156.51] | 0.529 |
+|  | gestation | 373.2 [367.31, 381.73] | 369.97 [363.81, 388.33] | 0.841 |
+|  | resource0 | 54.922 [48.645, 67.901] | 43.612 [37.148, 51.489] | 0.002 |
+|  | resource1 | 54.722 [44.684, 76.638] | 49.113 [37.895, 60.261] | 0.341 |
+| control: the same two pools, global (`pools`; the path of the build before, unchanged) | organisms | 900 [899, 900] | 899 [898, 899] | 0.035 |
+|  | tasks_total | 1067.5 [1022.8, 1235.5] | 1166 [1015, 1322.8] | 0.298 |
+|  | mean_fitness | 0.37845 [0.37595, 0.39727] | 0.38878 [0.37994, 0.56959] | 0.142 |
+|  | mean_merit | 140.59 [136.23, 160.23] | 143.88 [140.96, 211.01] | 0.076 |
+|  | gestation | 367.59 [362.43, 373.68] | 370.04 [366.6, 375.99] | 0.304 |
+|  | resource0 | 40.13 [32.62, 47.122] | 29.095 [23.752, 40.362] | 0.009 |
+|  | resource1 | 37.02 [31.863, 44.531] | 35.844 [25.173, 47.273] | 0.602 |
+| gradient (`gradient`) | organisms | 898 [897, 899] | 899 [898, 900] | 0.054 |
+|  | tasks_total | 461.5 [438.5, 650.25] | 523.5 [439, 1212] | 0.495 |
+|  | mean_fitness | 0.65065 [0.56933, 1.2662] | 0.65056 [0.6028, 1.4031] | 0.678 |
+|  | mean_merit | 307.78 [213.48, 460.73] | 260.86 [232.87, 504.46] | 0.799 |
+|  | gestation | 380.82 [372.96, 425.92] | 375.66 [364.63, 384.28] | 0.072 |
+|  | resource0 | 2373.5 [1893.6, 4245.2] | 2627.1 [2162.8, 4095.7] | 0.583 |
+| gradient and pool (`gradpool`) | organisms | 898 [897, 899] | 898 [896.75, 899] | 0.608 |
+|  | tasks_total | 1086 [879.25, 1419.8] | 1146 [968, 1402] | 0.478 |
+|  | mean_fitness | 1.0368 [0.74703, 1.6463] | 1.084 [0.83819, 2.0372] | 0.583 |
+|  | mean_merit | 492.58 [303.22, 636.32] | 471.31 [297.01, 740.43] | 0.758 |
+|  | gestation | 387.7 [359.21, 419.5] | 371.88 [359.08, 393.94] | 0.289 |
+|  | resource0 | 2907.3 [1914.8, 4549.6] | 3353.1 [1873.6, 4640.2] | 0.583 |
+|  | resource1 | 42.477 [31.726, 63.36] | 47.227 [39.935, 61.965] | 0.478 |
+
+Thirty-four measures were compared; most are close, and three have p below
+0.05: the first pool's amount in the `partial` world (54.9 in the exact mode
+against 43.6, p = 0.002), the same in the control with global pools (40.1
+against 29.1, p = 0.009; that path is the one of the build before, so the
+effect is not the change of this section's), and the number of organisms
+in the control (900 against 899, p = 0.035, the lingering empty cell of the
+other sections); the gradient world's 898 against 899 (p = 0.054) is the same
+kind. The lower first pool is a difference of the pool-settling scheme (the
+tests of a round settle at its end and the pool advances between rounds,
+"Global resource pools in the burst"), seen here at the pool NOT feeds on;
+its cause was not traced further. With Holm's correction for the 34 measures
+none of them is significant (the smallest, 0.002, becomes 0.068).
+
+**Timing** (60 x 60, 2000 updates, seed 42, 4 threads, release build, one run
+at a time, load average about 6 from other applications, so only the ratios
+mean anything): 
+
+| World | Before (output tests in the sequential phase) | After | Exact mode |
+|---|---|---|---|
+| grid and pool, NOT and NAND on both | 10.0 s (15.6 rounds/update) | 8.0 s (3.3 rounds, 0% sequential) | 28.8 s |
+| two `PARTIAL` pools | 11.4 s | 6.9 s | 29.5 s |
+| gradient | 9.6 s (33.5 rounds/update) | 6.5 s (2.0 rounds, 0% sequential) | 27.0 s |
+| gradient and pool | 9.9 s | 6.9 s | 29.3 s |
 
 #### Profile at 4 and 8 threads, and the cheaper commit (2026-11-13)
 

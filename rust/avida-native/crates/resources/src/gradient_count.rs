@@ -417,6 +417,13 @@ impl GradientCount {
     /// folds that cell's delta, as in the C++).
     pub fn state_all(&mut self) {}
 
+    /// Whether the gradient's update calls back into the population
+    /// (predatory, deadly or damaging resource): then the update acts on
+    /// organisms and must run where the whole population is at hand.
+    pub fn acts_on_organisms(&self) -> bool {
+        self.predator || self.deadly || self.damage != 0.0
+    }
+
     /// `UpdateCount(cAvidaContext&)`: once per update; regenerates walls or
     /// hills, applies probabilistic inflow/outflow, or moves/refreshes the
     /// peak.
