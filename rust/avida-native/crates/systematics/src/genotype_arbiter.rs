@@ -177,6 +177,17 @@ pub struct GenotypeArbiter {
     active_sz: Vec<ListId>,
     historic: ListId,
     genotypes: Arena<Genotype>,
+    /// The genotypes whose `threshold` flag is set (every one of them is
+    /// active): what [`GenotypeArbiter::perform_update`] resets, without
+    /// walking all the active genotypes for it.
+    thresholds: Vec<GroupHandle>,
+    /// Whether the historic list may hold a genotype nothing refers to: set
+    /// where a historic genotype can lose its last reference without being
+    /// removed on the spot (a released passive reference, a loaded
+    /// genotype), and kept while [`GenotypeArbiter::perform_update`] still
+    /// finds work. When it is clear, the sweep of the historic list would
+    /// remove nothing and is skipped.
+    prune_pending: bool,
 
     coalescent: Option<GroupHandle>,
     best: i32,
@@ -211,6 +222,8 @@ impl GenotypeArbiter {
             active_sz,
             historic,
             genotypes: Arena::default(),
+            thresholds: Vec::new(),
+            prune_pending: false,
             coalescent: None,
             best: 0,
             next_id: 1,
@@ -526,6 +539,9 @@ impl GenotypeArbiter {
         };
         let name = self.name_genotype(size);
         if let Some(x) = self.genotypes.get_mut(g) {
+            if !x.threshold {
+                self.thresholds.push(g);
+            }
             x.threshold = true;
             x.name = name;
         }
@@ -658,6 +674,7 @@ impl GenotypeArbiter {
     pub fn remove_passive_reference(&mut self, g: GroupHandle) {
         if let Some(x) = self.genotypes.get_mut(g) {
             x.p_refs = x.p_refs.wrapping_sub(1);
+            self.prune_pending = true;
         }
     }
 
@@ -793,6 +810,9 @@ impl GenotypeArbiter {
             self.stats.num_threshold = self.stats.num_threshold.wrapping_sub(1);
             self.notify_listeners(g, EVENT_REMOVE_THRESHOLD);
             self.genotypes.get_mut(g)?.threshold = false;
+            if let Some(i) = self.thresholds.iter().position(|&t| t == g) {
+                self.thresholds.swap_remove(i);
+            }
         }
         let x = self.genotypes.get(g)?;
         if x.p_refs != 0 {
@@ -954,27 +974,27 @@ impl GenotypeArbiter {
         // is used during
         self.cur_update = current_update.wrapping_add(1);
 
-        let lists: Vec<ListId> = if self.active_sz.len() < HASH_SIZE {
-            self.active_sz.clone()
-        } else {
-            self.active_hash.clone()
-        };
-        for l in lists {
-            for g in self.lists.to_vec(l) {
-                if let Some(x) = self.genotypes.get_mut(g) {
-                    if x.threshold {
-                        x.update_reset();
-                    }
+        // Every threshold genotype is active, and each reset touches only its
+        // own genotype, so the order does not matter.
+        for &g in &self.thresholds {
+            if let Some(x) = self.genotypes.get_mut(g) {
+                if x.threshold {
+                    x.update_reset();
                 }
             }
         }
 
+        if !self.prune_pending {
+            return;
+        }
+        let (mut removed, mut stopped) = (false, false);
         let mut it = self.lists.begin(self.historic);
         while self.lists.next(&mut it) {
             // QUIRK: a removal under the iterator can free the segment it
             // stands on; the C++ then reads a null entry and crashes. Stop
             // instead (see crate::sparse_list).
             let Some(g) = self.lists.get(&it) else {
+                stopped = true;
                 break;
             };
             if self
@@ -983,8 +1003,13 @@ impl GenotypeArbiter {
                 .is_some_and(|x| x.reference_count() == 0)
             {
                 self.remove_genotype(g);
+                removed = true;
             }
         }
+        // A sweep that removed something may have skipped entries (the
+        // iterator's segment layout changes), and one that stopped did not
+        // see them all: the next update sweeps again.
+        self.prune_pending = removed || stopped;
     }
 
     /// `UpdateProvidedValues(current_update)`: recompute the provided
@@ -1007,6 +1032,10 @@ impl GenotypeArbiter {
 
         let mut entropy = 0.0;
         let mut active_count: i32 = 0;
+        // The entropy term of a genotype depends only on its abundance (and
+        // the total), and most genotypes of a population share a handful
+        // of small abundances, so each is computed once per call.
+        let mut partial_by_abundance: [Option<f64>; 64] = [None; 64];
         for &l in self.active_sz.iter().skip(1) {
             active_count = active_count.wrapping_add(self.lists.len(l));
             for g in self.lists.iter(l) {
@@ -1022,11 +1051,20 @@ impl GenotypeArbiter {
                     f64::from(bg.genome.representation().size()),
                     f64::from(abundance),
                 );
-                let p = f64::from(abundance) / f64::from(tot_units);
-                let partial_ent = if abundance == tot_units {
-                    0.0
-                } else {
-                    -(p * p.ln())
+                let partial_ent_of = |abundance: i32| {
+                    let p = f64::from(abundance) / f64::from(tot_units);
+                    if abundance == tot_units {
+                        0.0
+                    } else {
+                        -(p * p.ln())
+                    }
+                };
+                let partial_ent = match usize::try_from(abundance)
+                    .ok()
+                    .and_then(|a| partial_by_abundance.get_mut(a))
+                {
+                    Some(slot) => *slot.get_or_insert_with(|| partial_ent_of(abundance)),
+                    None => partial_ent_of(abundance),
                 };
                 entropy += partial_ent;
                 if bg.threshold {
@@ -1161,6 +1199,7 @@ impl GenotypeArbiter {
         if let Some(x) = self.genotypes.get_mut(g) {
             self.lists.push(self.historic, g, Some(&mut x.handle));
         }
+        self.prune_pending = true;
         Ok(g)
     }
 

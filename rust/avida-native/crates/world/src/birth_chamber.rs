@@ -1133,7 +1133,7 @@ impl BirthChamber {
 /// One offspring built by `SubmitOffspring`: the organism, its
 /// `merit_array` entry and its systematics groups.
 pub struct Offspring {
-    pub org: Organism,
+    pub org: Box<Organism>,
     pub merit: Merit,
     pub membership: GroupMembership,
 }
@@ -1196,16 +1196,20 @@ impl World {
         &mut self,
         genome: &Genome,
         parent_generation: i32,
-    ) -> Result<Organism, String> {
+    ) -> Result<Box<Organism>, String> {
         let src = OrgSource::new(transmission::DIVISION, "", false);
-        Organism::new(self, genome, parent_generation, src)
+        Organism::new(self, genome, parent_generation, src).map(Box::new)
     }
 
     /// The organism a burst built for the offspring (parallel mode, see
     /// [`World::commit_divide`]) as `new cOrganism` would have returned it
     /// here: numbered by the world, and with the generation of a parent that
     /// has reset (`DivideReset` ran since the burst built it).
-    fn adopt_prebuilt_org(&mut self, mut org: Organism, parent_generation: i32) -> Organism {
+    fn adopt_prebuilt_org(
+        &mut self,
+        mut org: Box<Organism>,
+        parent_generation: i32,
+    ) -> Box<Organism> {
         org.state.id = self.stats.tot_organisms;
         org.state.uid = avida_hardware::org_interface::WorldServices::new_org_uid(self);
         if parent_generation >= 0 {
@@ -1253,7 +1257,7 @@ impl World {
             // `DoAsexBirth`: this is asexual who doesn't need to wait in the
             // birth chamber; just build the child and return.
             let mut org = match self.pop.prebuilt_offspring.take() {
-                Some(built) => self.adopt_prebuilt_org(*built, parent_generation),
+                Some(built) => self.adopt_prebuilt_org(built, parent_generation),
                 None => self.new_offspring_org(offspring, parent_generation)?,
             };
             let merit = if self.cfg.energy_enabled {

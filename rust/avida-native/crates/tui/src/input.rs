@@ -69,6 +69,10 @@ impl App {
             self.on_palette_key(key, k);
             return;
         }
+        if self.filtering.dialog.is_some() {
+            self.on_filter_key(key, k);
+            return;
+        }
         if self.config.edit.is_some() || self.config.filtering {
             self.on_text_key(key, k);
             return;
@@ -147,6 +151,9 @@ impl App {
                 "Analyze mode is not part of the live viewer; run avida with an analyze file."
                     .to_string(),
             ),
+            Action::FilterOpen => self.open_filter(false),
+            Action::FilterConditions => self.open_filter(true),
+            Action::FilterClear => self.clear_filter(),
             Action::OpenPalette => self.cmd_palette = Some(PaletteState::default()),
             Action::Help => {
                 self.show_help = true;
@@ -360,6 +367,20 @@ impl App {
                 self.env_scroll = step_unbounded(self.env_scroll, dy);
             }
             Screen::Log => self.log_scroll_by(dy),
+            Screen::OpenEnded => {
+                let view = self.open_ended_view();
+                let groups = view.groups.len();
+                if groups == 0 {
+                    return;
+                }
+                if dx != 0 {
+                    self.oe_group = (self.oe_group.min(groups - 1) as i32 + dx)
+                        .rem_euclid(groups as i32) as usize;
+                    self.oe_focus = 0;
+                }
+                let charts = view.groups[self.oe_group.min(groups - 1)].charts.len();
+                self.oe_focus = step(self.oe_focus, dy, charts);
+            }
         }
     }
 
@@ -451,6 +472,7 @@ impl App {
             || self.confirm_quit
             || self.confirm_restart
             || self.cmd_palette.is_some()
+            || self.filtering.dialog.is_some()
             || self.config.edit.is_some()
         {
             return;
@@ -583,6 +605,7 @@ mod tests {
             ('H', Screen::Histogram),
             ('D', Screen::Log),
             ('O', Screen::Options),
+            ('K', Screen::OpenEnded),
             ('B', Screen::Blank),
             ('M', Screen::Map),
             ('s', Screen::Stats),
@@ -604,7 +627,7 @@ mod tests {
         assert_eq!(a.screen, Screen::Stats);
         a.on_key(key(KeyCode::BackTab));
         a.on_key(key(KeyCode::BackTab));
-        assert_eq!(a.screen, Screen::Options);
+        assert_eq!(a.screen, Screen::OpenEnded);
         a.on_key(key(KeyCode::Esc));
         assert_eq!(a.screen, Screen::Map);
     }

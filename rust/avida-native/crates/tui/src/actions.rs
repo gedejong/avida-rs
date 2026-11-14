@@ -130,6 +130,11 @@ pub enum Action {
     GenoLineage,
     LogProblemsOnly,
     Analyze,
+    /// The organism filter: the "Add condition" dialog, the list of
+    /// conditions (palette only) and clearing.
+    FilterOpen,
+    FilterConditions,
+    FilterClear,
     OpenPalette,
     Help,
     Quit,
@@ -415,6 +420,15 @@ pub static BINDINGS: &[Binding] = &[
         G,
         true,
         "",
+    ),
+    row(
+        Action::Goto(Screen::OpenEnded),
+        "Screens",
+        "Go to the open-endedness measures",
+        &[c('K')],
+        G,
+        true,
+        "open-ended MODES phylogeny genealogy change novelty complexity ecology",
     ),
     row(
         Action::Goto(Screen::Blank),
@@ -732,6 +746,24 @@ pub static BINDINGS: &[Binding] = &[
         "undo",
     ),
     row(
+        Action::FilterOpen,
+        "Filter",
+        "Filter organisms: add a condition (dims the others on the map)",
+        &[c('/')],
+        G,
+        true,
+        "brush select subset condition task fitness genotype family region",
+    ),
+    row(
+        Action::FilterClear,
+        "Filter",
+        "Clear the organism filter",
+        &[c('\\')],
+        G,
+        true,
+        "remove conditions brush subset",
+    ),
+    row(
         Action::OpenPalette,
         "Other",
         "Command palette",
@@ -850,6 +882,14 @@ pub fn palette_items(layers: &[(LayerId, String)]) -> Vec<PaletteItem> {
             keywords: b.keywords,
         })
         .collect();
+    // The list of conditions has no key of its own.
+    items.push(PaletteItem {
+        action: Action::FilterConditions,
+        section: "Filter",
+        title: "Show or remove the filter's conditions".to_string(),
+        keys: String::new(),
+        keywords: "brush subset organisms list delete",
+    });
     for (layer, title) in layers {
         items.push(PaletteItem {
             action: Action::Layer(*layer),

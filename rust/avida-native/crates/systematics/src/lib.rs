@@ -44,6 +44,7 @@ pub mod genotype;
 pub mod genotype_arbiter;
 pub mod group_data;
 pub mod manager;
+pub mod phylometrics;
 pub mod property;
 pub mod source;
 pub mod sparse_list;

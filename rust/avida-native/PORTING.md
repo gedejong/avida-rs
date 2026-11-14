@@ -153,6 +153,41 @@ rule 1:
   `tools/parallel_stats.py` (many seeds per mode, Mann-Whitney per
   outcome). A change to the parallel mode's scheduling needs a fresh run of
   it, reported with the change.
+- Global (well-mixed) resource pools (2026-11-14): when every resource of
+  the population is a global pool and the environment passes
+  `output_is_local_global` (no requisite that names other reactions, no
+  `divide_only`, and the per-cell conditions), the burst evaluates the tasks
+  of an output test and leaves the processes of the reactions that use a
+  resource to the world. The organism stops after that instruction; at the
+  start of the sequential phase the world runs `DoProcesses` for the
+  deferred reactions against the pool as it is, one organism after the
+  other in the update's permutation order, with the exact path's code. The
+  pool arithmetic is not approximated and the pool never goes below zero.
+  What differs from the exact mode is order and timing: the tests of a
+  round settle at its end, and the pool's inflow and outflow advance
+  between rounds. Fresh run of `tools/parallel_stats.py` (12 seeds per
+  mode, 30x30, nine global pools): seven outcomes agree (p from 0.42 to
+  0.98); the number of organisms differs by 2 cells in 900 (p = 0.001),
+  the same kind of lingering empty cell already recorded for the stock
+  configuration, cause not traced. Awaiting the maintainer's acceptance.
+  Global environments outside the gate run their output tests in the
+  sequential phase as before.
+- Mixed per-cell grids and global pools (2026-11-14): when every resource
+  is a plain per-cell grid or a global pool, both kinds occur, no reaction
+  uses both, and the environment passes `output_is_local_mixed` (the
+  global-pool gate), the burst runs the processes of reactions that use
+  grids against the organism's cell and defers those that use a pool, as
+  for pools alone. A test that triggers both kinds becomes a pending
+  output: the grid half is done in the burst, the pool half and the cell's
+  whole change are applied by the world in the permutation order.
+  Differences from the exact mode: tests settle at the end of the round,
+  the pool advances by the round's time, and two `add` bonuses of one test
+  may be summed in the other order (last bit). Fresh run of
+  `tools/parallel_stats.py` (36 seeds per mode, 30x30, one grid and one
+  pool): no outcome significant (smallest p = 0.074 before correction).
+  Awaiting the maintainer's acceptance. Gradients, `PARTIAL` resources and
+  reactions that use both kinds keep the output tests in the sequential
+  phase.
 
 ARCHITECTURE.md ("Parallel execution mode") describes what the mode
 guarantees and what it does not.
@@ -181,6 +216,31 @@ that does not name them.
   because flipping the lowest bit of any input is its increment or its
   decrement), as stepping stones to `add`, and one miss task for
   environments that reward them together with `add_lowbits4`.
+
+## Measurement actions the C++ does not have (2026-11-14)
+
+The maintainer asked for open-endedness measures from the research
+literature (2026-11-13). They are observers: a run with them writes every
+other output file byte for byte as a run without them, in the exact mode and
+in the parallel mode (`crates/avida/tests/modes.rs` holds that for
+`PrintMODESData`). The event-file gate accepts their names although the C++
+action library does not know them.
+
+- `PrintMODESData <file> <resolution> <t> [nearest|any]`: change, novelty,
+  complexity and ecology of Dolson, Vostinar, Wiser and Ofria, "The MODES
+  Toolbox", Artificial Life 25(1), 2019. `crates/world/src/modes.rs`; the
+  module documentation lists where it departs from the paper's reference
+  code (no rows before the first filter, one sample per generation crossing,
+  skeletons only for persistent genotypes, test-CPU resources at the level
+  of an unexploited cell).
+- `PrintPhylogenyMetrics [file]` and `SavePhylogeny [file]`: the phylogeny
+  measures of Dolson, Lalejini, Jorgensen and Ofria, "Interpreting the Tape
+  of Life", Artificial Life 26(1), 2020, computed as the Empirical library's
+  `Systematics.hpp` does, over the genotype tree below the most recent common
+  ancestor, and that tree in the ALife standard phylogeny CSV.
+  `crates/systematics/src/phylometrics.rs`, `crates/world/src/phylo_actions.rs`;
+  `ARCHITECTURE.md` lists the conventions chosen where the paper and the
+  reference code disagree.
 
 ## A test CPU's `MAX_PREY_BT` kill is carried out after the test (2026-11-13)
 

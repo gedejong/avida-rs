@@ -665,6 +665,8 @@ fn local_output_test_matches_the_world_path() {
                 sense_size: 0,
                 io_local: true,
                 divide_local: false,
+                global_pool: false,
+                pools: None,
                 cell_resources: None,
                 cell_inputs: &all_inputs,
                 group_attack_counts: &counts,
@@ -843,6 +845,8 @@ fn cell_resource_output_tests_match_the_world_path() {
             sense_size: 0,
             io_local: true,
             divide_local: false,
+            global_pool: false,
+            pools: None,
             cell_resources: Some(&view),
             cell_inputs: &all_inputs,
             group_attack_counts: &counts,
@@ -973,6 +977,699 @@ fn cell_resources_in_bursts_match_the_exact_mode_statistically() {
                 tail_mean(&dir, "average.dat", 1, 5),
                 tail_mean(&dir, "tasks.dat", 1, 5),
                 tail_mean(&dir, "resource.dat", 1, 5),
+            ]);
+        }
+    }
+    assert!(outcomes[1].iter().all(|o| o[0] > 100.0), "{outcomes:?}");
+    for k in 0..5 {
+        let a: Vec<f64> = outcomes[0].iter().map(|o| o[k]).collect();
+        let b: Vec<f64> = outcomes[1].iter().map(|o| o[k]).collect();
+        let z = welch_z(&a, &b);
+        assert!(
+            z.abs() < 3.5,
+            "outcome {k}: exact {a:?} against parallel {b:?} (z = {z:.2})"
+        );
+    }
+}
+
+/// A small global pool for each of two reactions (and one with no resource),
+/// which the 900 organisms of a 30 x 30 world drain within a few tests: no
+/// inflow, no outflow, no byproduct, so that what leaves the pools is exactly
+/// what the organisms consume.
+const SCARCE_POOL_ENVIRONMENT: &str = "\
+RESOURCE resA:initial=6:inflow=0:outflow=0
+RESOURCE resB:initial=2:inflow=0:outflow=0
+REACTION NOT not process:resource=resA:value=1.0:type=pow:frac=0.3:max=2.0
+REACTION NAND nand process:resource=resB:value=1.0:type=add:frac=0.5:max=1.0
+REACTION ORN orn process:resource=resA:value=0.5:type=add:frac=0.1:max=1.0 process:resource=resB:value=0.5:type=add:frac=0.1:max=1.0
+REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
+";
+
+/// The classic limited-resource environment in small: two well-mixed pools
+/// with inflow and outflow, NOT feeding on the first and giving off the
+/// second as a byproduct (and rewarded each time, with no limit on the
+/// count), NAND feeding on the second.
+const GLOBAL_RESOURCE_ENVIRONMENT: &str = "\
+RESOURCE resA:initial=100:inflow=20:outflow=0.01
+RESOURCE resB:initial=50:inflow=10:outflow=0.01
+REACTION NOT not process:resource=resA:value=1.0:type=pow:frac=0.01:max=2.0:product=resB:conversion=0.5
+REACTION NAND nand process:resource=resB:value=1.0:type=pow:frac=0.01:max=2.0
+REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
+";
+
+/// `fresh_config` of the stock 30 x 30 test with `environment`, and an
+/// ancestor that does NOT: the classic one with `IO, push, pop nop-C, nand,
+/// IO` (the input into BX, a copy of it into CX, their NAND, which is the
+/// complement, and the output) in the padding before its copy loop
+/// (`not-ancestor.org`).
+fn global_resource_config(name: &str, environment: &str) -> PathBuf {
+    let dir = fresh_config("heads_default_100u", name);
+    fs::write(dir.join("environment.cfg"), environment).unwrap();
+    let classic = fs::read_to_string(dir.join("default-classic.org")).unwrap();
+    let mut insts: Vec<&str> = classic
+        .lines()
+        .map(|l| l.split('#').next().unwrap().trim())
+        .filter(|l| !l.is_empty())
+        .collect();
+    assert_eq!(&insts[5..9], ["nop-C"; 4]);
+    insts.splice(8..14, ["IO", "push", "pop", "nop-C", "nand", "IO"]);
+    fs::write(dir.join("not-ancestor.org"), insts.join("\n") + "\n").unwrap();
+    dir
+}
+
+/// The output tests of a burst in an environment of global pools, finished by
+/// the world, do what the exact path does when they come in the same order:
+/// the same phenotype after each, the same amounts in the pools bit for bit
+/// (the later organisms see what the earlier took, down to an empty pool),
+/// no pool below zero, and what left the pools is what the organisms
+/// consumed.
+#[test]
+fn global_pool_output_tests_settle_as_the_exact_path_does() {
+    use avida_hardware::local_output::{finish_output_global, output_is_local_global};
+    use avida_hardware::org_interface::OrgInterface;
+    use avida_hardware::organism::do_output;
+    use avida_hardware::parallel::{CellInputs, LocalInterface, LocalWorld, PendingBirthSlot};
+    use avida_world::pop_interface::PopulationInterface;
+
+    struct Inputs(Vec<Vec<i32>>);
+    impl CellInputs for Inputs {
+        fn inputs(&self, cell: i32) -> &[i32] {
+            &self.0[cell as usize]
+        }
+    }
+
+    let make = |name: &str| {
+        let dir = global_resource_config(name, SCARCE_POOL_ENVIRONMENT);
+        fs::write(
+            dir.join("events.cfg"),
+            "u begin InjectAll filename=default-classic.org\nu 3 Exit\n",
+        )
+        .unwrap();
+        let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+        let mut stepper = Stepper::new(&w);
+        let mut out = Vec::new();
+        while stepper.begin_update(&mut w, &mut out).unwrap() {
+            while stepper.step_slice(&mut w).unwrap() {}
+            stepper.end_update(&mut w, &mut out).unwrap();
+        }
+        w
+    };
+    let mut wa = make("gpool_exact");
+    let mut wb = make("gpool_burst");
+    assert!(wb.pop.resource_count.are_global_pools());
+    assert!(output_is_local_global(&wb.cfg, &wb.env));
+    assert!(!avida_hardware::local_output::output_is_local(
+        &wb.cfg, &wb.env, false
+    ));
+    let cells = wa.pop.live_org_list.clone();
+    assert_eq!(cells, wb.pop.live_org_list);
+    assert!(cells.len() > 500);
+    let pool_start = wb.pop.resource_count.read_resources().to_vec();
+    assert_eq!(pool_start, wa.pop.resource_count.read_resources());
+    assert_eq!(pool_start, [6.0, 2.0]);
+
+    let all_inputs = Inputs(wb.pop.cells.iter().map(|c| c.inputs.clone()).collect());
+    let counts = std::collections::BTreeMap::new();
+    let mut unused = avida_hardware::parallel::stream(1, 0);
+    let (mut pending_tests, mut consumed, mut empty_after) = (0, 0.0, 0);
+    for (k, &cell) in cells.iter().enumerate() {
+        let mut oa = wa.pop.orgs[cell as usize].take().unwrap();
+        let mut ob = wb.pop.orgs[cell as usize].take().unwrap();
+        let inputs = wa.pop.cells[cell as usize].inputs.clone();
+        let is = oa.hardware.base().inst_set.clone();
+        for &v in &inputs {
+            oa.state.do_input(v);
+            ob.state.do_input(v);
+        }
+        let values = [
+            !inputs[0],
+            !(inputs[0] & inputs[1]),
+            inputs[0] ^ 0x55,
+            !inputs[0],
+            !(inputs[1] & inputs[2]),
+        ];
+        for (j, &value) in values.iter().enumerate() {
+            // The exact path.
+            {
+                let mut iface = PopulationInterface {
+                    w: &mut wa,
+                    cell_id: cell,
+                };
+                do_output(
+                    &mut oa.state,
+                    &[],
+                    &is,
+                    &mut iface,
+                    Some(value),
+                    false,
+                    false,
+                    None,
+                )
+                .unwrap();
+            }
+            // A burst and the world's half.
+            let mut events = Vec::new();
+            let mut birth = PendingBirthSlot::default();
+            let pending = {
+                let lw = LocalWorld {
+                    config: &wb.cfg,
+                    environment: &wb.env,
+                    hardware_manager: &wb.hw,
+                    update: wb.stats.update(),
+                    tot_creatures: wb.stats.tot_organisms,
+                    sense_size: 0,
+                    io_local: true,
+                    divide_local: false,
+                    global_pool: true,
+                    pools: None,
+                    cell_resources: None,
+                    cell_inputs: &all_inputs,
+                    group_attack_counts: &counts,
+                };
+                let mut rng = avida_hardware::parallel::org_stream(7, ob.state.uid);
+                let mut iface = LocalInterface::new(&lw, &mut rng, cell, &mut events, &mut birth);
+                do_output(
+                    &mut ob.state,
+                    &[],
+                    &is,
+                    &mut iface,
+                    Some(value),
+                    false,
+                    false,
+                    None,
+                )
+                .unwrap();
+                assert_eq!(iface.denied_call(), None);
+                iface.take_pending_output().0
+            };
+            let before = ob.state.phenotype.res_consumed;
+            if let Some(pending) = pending {
+                pending_tests += 1;
+                let levels = PopulationInterface {
+                    w: &mut wb,
+                    cell_id: cell,
+                }
+                .get_resources(&mut ob.state);
+                let update = wb.stats.update();
+                let (change, _) = finish_output_global(
+                    &mut ob.state,
+                    *pending,
+                    &wb.env,
+                    &wb.cfg,
+                    &levels,
+                    update,
+                    &mut unused,
+                )
+                .unwrap();
+                PopulationInterface {
+                    w: &mut wb,
+                    cell_id: cell,
+                }
+                .update_resources(&mut ob.state, &change);
+                consumed += ob.state.phenotype.res_consumed - before;
+            }
+            assert_eq!(
+                format!("{:?}", ob.state.phenotype),
+                format!("{:?}", oa.state.phenotype),
+                "organism {k} test {j}"
+            );
+            let (pa, pb) = (
+                wa.pop.resource_count.read_resources(),
+                wb.pop.resource_count.read_resources(),
+            );
+            let bits = |v: &[f64]| v.iter().map(|x| x.to_bits()).collect::<Vec<_>>();
+            assert_eq!(bits(pa), bits(pb), "organism {k} test {j}");
+            assert!(pb.iter().all(|&x| x >= 0.0), "{pb:?}");
+            empty_after += usize::from(pb.iter().any(|&x| x < 1e-9));
+        }
+        wa.pop.orgs[cell as usize] = Some(oa);
+        wb.pop.orgs[cell as usize] = Some(ob);
+    }
+    // Tests settled, the pools drained to nothing, and what left them is
+    // what the organisms consumed.
+    let pool_end = wb.pop.resource_count.read_resources().to_vec();
+    assert!(pending_tests > 100, "{pending_tests}");
+    assert!(empty_after > 100, "{empty_after}");
+    let taken: f64 = pool_start.iter().zip(&pool_end).map(|(a, b)| a - b).sum();
+    assert!(
+        consumed > 7.9 && (taken - consumed).abs() < 1e-9,
+        "{taken} {consumed}"
+    );
+}
+
+/// A full 30 x 30 world of global pools, with the output tests in the
+/// bursts: the same output for any number of threads, the divides and tests
+/// out of the sequential phase, and no pool below zero.
+#[test]
+fn global_pool_world_does_not_depend_on_the_thread_count() {
+    let events = "u begin InjectAll filename=not-ancestor.org\n\
+                  u 0:5:end PrintAverageData\n\
+                  u 0:5:end PrintCountData\n\
+                  u 0:5:end PrintTasksData\n\
+                  u 0:5:end PrintResourceData\n\
+                  u 80 SavePopulation\n\
+                  u 80 Exit\n";
+    let run_threads = |threads: &str| {
+        let dir = global_resource_config(
+            &format!("gpool_full_t{threads}"),
+            GLOBAL_RESOURCE_ENVIRONMENT,
+        );
+        fs::write(dir.join("events.cfg"), events).unwrap();
+        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        let mut w = try_world(&dir, &sets).unwrap();
+        let mut stepper = Stepper::new(&w);
+        let mut out = Vec::new();
+        while stepper.begin_update(&mut w, &mut out).unwrap() {
+            while stepper.step_slice(&mut w).unwrap() {}
+            stepper.end_update(&mut w, &mut out).unwrap();
+        }
+        w.out.flush_all();
+        assert!(w
+            .pop
+            .resource_count
+            .read_resources()
+            .iter()
+            .all(|&x| x >= 0.0));
+        (dir, out, stepper.parallel_stats().unwrap())
+    };
+    let (d1, o1, s1) = run_threads("1");
+    // The tests are settled in the sequential phase, the divides commit, and
+    // few instructions are left to the exact path.
+    assert!(s1.pool_tests > 50, "{}", s1.summary());
+    assert!(s1.commits > 100, "{}", s1.summary());
+    assert!(
+        s1.sequential_insts * 50 < s1.parallel_insts,
+        "{}",
+        s1.summary()
+    );
+    for threads in ["2", "4"] {
+        let (d, o, s) = run_threads(threads);
+        assert_eq!(
+            (s.pool_tests, s.rounds, s.commits),
+            (s1.pool_tests, s1.rounds, s1.commits)
+        );
+        compare_runs((&d1, &o1), (&d, &o))
+            .unwrap_or_else(|e| panic!("EXECUTION_THREADS 1 and {threads}: {e}"));
+    }
+}
+
+/// Global pools over several seeds in the exact mode and in the parallel
+/// mode, whose output tests run in the bursts and settle against the pools
+/// in the sequential phase: the outcomes at the end, and the pools left in
+/// the world, should not differ by more than the seeds' own scatter (the
+/// loose |z| < 3.5 bound of the other equivalence tests).
+#[test]
+fn global_pools_in_bursts_match_the_exact_mode_statistically() {
+    let events = "u begin Inject not-ancestor.org\n\
+                  u 300:10:600 PrintCountData\n\
+                  u 300:10:600 PrintAverageData\n\
+                  u 300:10:600 PrintTasksData\n\
+                  u 300:10:600 PrintResourceData\n\
+                  u 600 Exit\n";
+    // (organisms, average gestation time, average merit, organisms with
+    // NOT, resource A in the world) per seed and mode
+    let mut outcomes: [Vec<[f64; 5]>; 2] = [Vec::new(), Vec::new()];
+    for seed in 1..=6 {
+        let seed_text = seed.to_string();
+        for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
+            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            sets.extend(extra);
+            let name = format!("gpool_equiv_{mode}_{seed}");
+            let dir = global_resource_config(&name, GLOBAL_RESOURCE_ENVIRONMENT);
+            fs::write(dir.join("events.cfg"), events).unwrap();
+            let mut w = try_world(&dir, &sets).unwrap();
+            let mut stepper = Stepper::new(&w);
+            let mut out = Vec::new();
+            while stepper.begin_update(&mut w, &mut out).unwrap() {
+                while stepper.step_slice(&mut w).unwrap() {}
+                stepper.end_update(&mut w, &mut out).unwrap();
+            }
+            w.out.flush_all();
+            if mode == "1" {
+                let stats = stepper.parallel_stats().unwrap();
+                assert!(stats.commits > 100, "{}", stats.summary());
+                assert!(stats.pool_tests > 10, "{}", stats.summary());
+            }
+            outcomes[usize::from(mode == "1")].push([
+                tail_mean(&dir, "count.dat", 2, 5),
+                tail_mean(&dir, "average.dat", 2, 5),
+                tail_mean(&dir, "average.dat", 1, 5),
+                tail_mean(&dir, "tasks.dat", 1, 5),
+                tail_mean(&dir, "resource.dat", 1, 5),
+            ]);
+        }
+    }
+    assert!(outcomes[1].iter().all(|o| o[0] > 100.0), "{outcomes:?}");
+    for k in 0..5 {
+        let a: Vec<f64> = outcomes[0].iter().map(|o| o[k]).collect();
+        let b: Vec<f64> = outcomes[1].iter().map(|o| o[k]).collect();
+        let z = welch_z(&a, &b);
+        assert!(
+            z.abs() < 3.5,
+            "outcome {k}: exact {a:?} against parallel {b:?} (z = {z:.2})"
+        );
+    }
+}
+
+/// One per-cell grid and one global pool together on the 30 x 30 world. NOT
+/// has a reaction on each (so one test triggers both kinds), NAND feeds on
+/// the pool, ORN on the grid, and AND uses neither. The pool is small and
+/// closed, so that the organisms drain it within a few tests.
+const MIXED_SCARCE_ENVIRONMENT: &str = "\
+RESOURCE gridA:geometry=grid:initial=8:inflow=2:outflow=0.1:inflowx1=0:inflowx2=29:inflowy1=0:inflowy2=29:outflowx1=0:outflowx2=29:outflowy1=0:outflowy2=29:xdiffuse=0.2:ydiffuse=0.2
+RESOURCE poolB:initial=6:inflow=0:outflow=0
+REACTION NOT not process:resource=gridA:value=1.0:type=pow:frac=0.5:max=2.0
+REACTION NOTP not process:resource=poolB:value=0.5:type=pow:frac=0.3:max=2.0
+REACTION NAND nand process:resource=poolB:value=1.0:type=add:frac=0.5:max=1.0
+REACTION ORN orn process:resource=gridA:value=0.5:type=add:frac=0.1:max=1.0
+REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
+";
+
+/// The grid and pool of [`MIXED_SCARCE_ENVIRONMENT`] with flows that keep a
+/// full world going: a pool with inflow and outflow, a grid with inflow
+/// everywhere, NOT on both.
+const MIXED_RESOURCE_ENVIRONMENT: &str = "\
+RESOURCE gridA:geometry=grid:initial=8:inflow=2:outflow=0.1:inflowx1=0:inflowx2=29:inflowy1=0:inflowy2=29:outflowx1=0:outflowx2=29:outflowy1=0:outflowy2=29:xdiffuse=0.2:ydiffuse=0.2
+RESOURCE poolB:initial=100:inflow=20:outflow=0.01
+REACTION NOT not process:resource=gridA:value=1.0:type=pow:frac=0.5:max=2.0
+REACTION NOTP not process:resource=poolB:value=0.5:type=pow:frac=0.01:max=2.0:product=poolB:conversion=0.1
+REACTION NAND nand process:resource=poolB:value=1.0:type=pow:frac=0.01:max=2.0
+REACTION ORN orn process:resource=gridA:value=0.5:type=add:frac=0.1:max=1.0
+REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
+";
+
+/// The output tests of a burst in a world of a grid and a pool, finished by
+/// the world, do what the exact path does when they come in the same order:
+/// the same phenotype after each (a NOT test triggers a reaction of each
+/// kind), the same amounts in the pool and in the organism's cell bit for
+/// bit, the pool never below zero, and what left the pool and the grids is
+/// what the organisms consumed.
+#[test]
+fn mixed_resource_output_tests_settle_as_the_exact_path_does() {
+    use avida_hardware::local_output::{
+        finish_output_global, output_is_local_mixed, CellResources, OutEvent,
+    };
+    use avida_hardware::org_interface::OrgInterface;
+    use avida_hardware::organism::do_output;
+    use avida_hardware::parallel::{CellInputs, LocalInterface, LocalWorld, PendingBirthSlot};
+    use avida_world::pop_interface::PopulationInterface;
+
+    struct Inputs(Vec<Vec<i32>>);
+    impl CellInputs for Inputs {
+        fn inputs(&self, cell: i32) -> &[i32] {
+            &self.0[cell as usize]
+        }
+    }
+    struct View<'a>(&'a (dyn Fn(i32, &mut Vec<f64>) + Sync));
+    impl CellResources for View<'_> {
+        fn cell_levels(&self, cell: i32, out: &mut Vec<f64>) {
+            (self.0)(cell, out);
+        }
+    }
+
+    let make = |name: &str| {
+        let dir = global_resource_config(name, MIXED_SCARCE_ENVIRONMENT);
+        fs::write(
+            dir.join("events.cfg"),
+            "u begin InjectAll filename=default-classic.org\nu 3 Exit\n",
+        )
+        .unwrap();
+        let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+        let mut stepper = Stepper::new(&w);
+        let mut out = Vec::new();
+        while stepper.begin_update(&mut w, &mut out).unwrap() {
+            while stepper.step_slice(&mut w).unwrap() {}
+            stepper.end_update(&mut w, &mut out).unwrap();
+        }
+        w
+    };
+    let mut wa = make("mixed_exact");
+    let mut wb = make("mixed_burst");
+    let cells_n = wb.pop.cells.len();
+    assert!(!wb.pop.resource_count.are_plain_cell_grids(cells_n));
+    assert!(!wb.pop.resource_count.are_global_pools());
+    let kinds = wb
+        .pop
+        .resource_count
+        .grid_or_global_kinds(cells_n)
+        .expect("a grid and a pool");
+    assert_eq!(kinds, [false, true]);
+    assert!(output_is_local_mixed(&wb.cfg, &wb.env, &kinds));
+    let cells = wa.pop.live_org_list.clone();
+    assert_eq!(cells, wb.pop.live_org_list);
+    assert!(cells.len() > 500);
+    let pool_start = wb.pop.resource_count.get_frozen_resources(0).to_vec()[1];
+    assert_eq!(pool_start, 6.0);
+
+    let all_inputs = Inputs(wb.pop.cells.iter().map(|c| c.inputs.clone()).collect());
+    let counts = std::collections::BTreeMap::new();
+    let mut unused = avida_hardware::parallel::stream(1, 0);
+    let (mut pending_tests, mut both_kinds, mut empty_after) = (0, 0, 0);
+    let (mut consumed, mut grid_changes) = (0.0, 0);
+    let bits = |v: &[f64]| v.iter().map(|x| x.to_bits()).collect::<Vec<_>>();
+    for (k, &cell) in cells.iter().enumerate() {
+        let mut oa = wa.pop.orgs[cell as usize].take().unwrap();
+        let mut ob = wb.pop.orgs[cell as usize].take().unwrap();
+        let inputs = wa.pop.cells[cell as usize].inputs.clone();
+        let is = oa.hardware.base().inst_set.clone();
+        for &v in &inputs {
+            oa.state.do_input(v);
+            ob.state.do_input(v);
+        }
+        let values = [
+            !inputs[0],
+            !(inputs[0] & inputs[1]),
+            inputs[0] ^ 0x55,
+            !inputs[0],
+            !(inputs[1] & inputs[2]),
+            inputs[0] | !inputs[1],
+        ];
+        for (j, &value) in values.iter().enumerate() {
+            {
+                let mut iface = PopulationInterface {
+                    w: &mut wa,
+                    cell_id: cell,
+                };
+                do_output(
+                    &mut oa.state,
+                    &[],
+                    &is,
+                    &mut iface,
+                    Some(value),
+                    false,
+                    false,
+                    None,
+                )
+                .unwrap();
+            }
+            // The grids are as the phase began: bring them up to date as
+            // the world does at the start of a parallel phase, then one burst.
+            PopulationInterface {
+                w: &mut wb,
+                cell_id: cell,
+            }
+            .get_resources(&mut ob.state);
+            let mut events: Vec<OutEvent> = Vec::new();
+            let mut birth = PendingBirthSlot::default();
+            let pending = {
+                let rc = &wb.pop.resource_count;
+                let read = |cell: i32, out: &mut Vec<f64>| rc.frozen_cell_amounts(cell, out);
+                let view = View(&read);
+                let lw = LocalWorld {
+                    config: &wb.cfg,
+                    environment: &wb.env,
+                    hardware_manager: &wb.hw,
+                    update: wb.stats.update(),
+                    tot_creatures: wb.stats.tot_organisms,
+                    sense_size: 0,
+                    io_local: true,
+                    divide_local: false,
+                    global_pool: true,
+                    pools: Some(&kinds),
+                    cell_resources: Some(&view),
+                    cell_inputs: &all_inputs,
+                    group_attack_counts: &counts,
+                };
+                let mut rng = avida_hardware::parallel::org_stream(7, ob.state.uid);
+                let mut iface = LocalInterface::new(&lw, &mut rng, cell, &mut events, &mut birth);
+                do_output(
+                    &mut ob.state,
+                    &[],
+                    &is,
+                    &mut iface,
+                    Some(value),
+                    false,
+                    false,
+                    None,
+                )
+                .unwrap();
+                assert_eq!(iface.denied_call(), None);
+                iface.take_pending_output().0
+            };
+            // What the world replays after the parallel phase.
+            for e in &events {
+                if let OutEvent::ResourceChange(c) = e {
+                    wb.pop.resource_count.modify_cell_updated(c, cell);
+                    grid_changes += 1;
+                }
+            }
+            let before = ob.state.phenotype.res_consumed;
+            if let Some(pending) = pending {
+                pending_tests += 1;
+                // The grid's reaction ran in the burst (nothing of it is in
+                // the cell yet); the pool's waits for the world.
+                both_kinds +=
+                    usize::from(pending.result.consumed(0) > 0.0 && !pending.deferred.is_empty());
+                let levels = PopulationInterface {
+                    w: &mut wb,
+                    cell_id: cell,
+                }
+                .get_resources(&mut ob.state);
+                let update = wb.stats.update();
+                let (change, _) = finish_output_global(
+                    &mut ob.state,
+                    *pending,
+                    &wb.env,
+                    &wb.cfg,
+                    &levels,
+                    update,
+                    &mut unused,
+                )
+                .unwrap();
+                PopulationInterface {
+                    w: &mut wb,
+                    cell_id: cell,
+                }
+                .update_resources(&mut ob.state, &change);
+                consumed += ob.state.phenotype.res_consumed - before;
+            }
+            assert_eq!(
+                format!("{:?}", ob.state.phenotype),
+                format!("{:?}", oa.state.phenotype),
+                "organism {k} test {j}"
+            );
+            let (xa, xb) = (
+                wa.pop.resource_count.get_frozen_resources(cell).to_vec(),
+                wb.pop.resource_count.get_frozen_resources(cell).to_vec(),
+            );
+            assert_eq!(bits(&xa), bits(&xb), "organism {k} test {j}");
+            assert!(xb.iter().all(|&x| x >= 0.0), "{xb:?}");
+            empty_after += usize::from(xb[1] < 1e-9);
+        }
+        wa.pop.orgs[cell as usize] = Some(oa);
+        wb.pop.orgs[cell as usize] = Some(ob);
+    }
+    // Tests settled against the pool, grids changed in the bursts, tests
+    // that triggered a reaction of each kind, and the pool drained.
+    assert!(pending_tests > 100, "{pending_tests}");
+    assert!(both_kinds > 50, "{both_kinds}");
+    assert!(grid_changes > 100, "{grid_changes}");
+    assert!(empty_after > 100, "{empty_after}");
+    assert!(consumed > 0.0);
+}
+
+/// `fresh_config` of the stock 30 x 30 test with the grid and the pool of
+/// [`MIXED_RESOURCE_ENVIRONMENT`], and the ancestor that does NOT.
+fn mixed_resource_config(name: &str) -> PathBuf {
+    global_resource_config(name, MIXED_RESOURCE_ENVIRONMENT)
+}
+
+/// A full 30 x 30 world of a grid and a pool, with the output tests in the
+/// bursts: the same output for any number of threads, the divides and the
+/// grid's tests out of the sequential phase, the pool's half of a test
+/// settled by the world, and nothing below zero.
+#[test]
+fn mixed_resource_world_does_not_depend_on_the_thread_count() {
+    let events = "u begin InjectAll filename=not-ancestor.org\n\
+                  u 0:5:end PrintAverageData\n\
+                  u 0:5:end PrintCountData\n\
+                  u 0:5:end PrintTasksData\n\
+                  u 0:5:end PrintResourceData\n\
+                  u 80 SavePopulation\n\
+                  u 80 Exit\n";
+    let run_threads = |threads: &str| {
+        let dir = mixed_resource_config(&format!("mixed_full_t{threads}"));
+        fs::write(dir.join("events.cfg"), events).unwrap();
+        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        let mut w = try_world(&dir, &sets).unwrap();
+        let mut stepper = Stepper::new(&w);
+        let mut out = Vec::new();
+        while stepper.begin_update(&mut w, &mut out).unwrap() {
+            while stepper.step_slice(&mut w).unwrap() {}
+            stepper.end_update(&mut w, &mut out).unwrap();
+        }
+        w.out.flush_all();
+        let rc = &w.pop.resource_count;
+        assert!(rc.read_resources().iter().all(|&x| x >= 0.0));
+        let g = rc.get_spatial_resource(0).base();
+        assert!(
+            (0..g.size()).all(|c| g.get_amount(c) >= 0.0),
+            "grid below zero"
+        );
+        (dir, out, stepper.parallel_stats().unwrap())
+    };
+    let (d1, o1, s1) = run_threads("1");
+    // The pool's half of the tests is settled in the sequential phase, the
+    // divides commit, and few instructions are left to the exact path.
+    assert!(s1.pool_tests > 50, "{}", s1.summary());
+    assert!(s1.commits > 100, "{}", s1.summary());
+    assert!(
+        s1.sequential_insts * 50 < s1.parallel_insts,
+        "{}",
+        s1.summary()
+    );
+    for threads in ["2", "4"] {
+        let (d, o, s) = run_threads(threads);
+        assert_eq!(
+            (s.pool_tests, s.rounds, s.commits),
+            (s1.pool_tests, s1.rounds, s1.commits)
+        );
+        compare_runs((&d1, &o1), (&d, &o))
+            .unwrap_or_else(|e| panic!("EXECUTION_THREADS 1 and {threads}: {e}"));
+    }
+}
+
+/// A grid and a pool over several seeds in the exact mode and in the
+/// parallel mode, whose output tests run in the bursts (the pool's half
+/// settled in the sequential phase): the outcomes at the end, and the
+/// resources left in the world, should not differ by more than the seeds'
+/// own scatter (the loose |z| < 3.5 bound of the other equivalence tests).
+#[test]
+fn mixed_resources_in_bursts_match_the_exact_mode_statistically() {
+    let events = "u begin Inject not-ancestor.org\n\
+                  u 300:10:600 PrintCountData\n\
+                  u 300:10:600 PrintAverageData\n\
+                  u 300:10:600 PrintTasksData\n\
+                  u 300:10:600 PrintResourceData\n\
+                  u 600 Exit\n";
+    let mut outcomes: [Vec<[f64; 5]>; 2] = [Vec::new(), Vec::new()];
+    for seed in 1..=6 {
+        let seed_text = seed.to_string();
+        for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
+            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            sets.extend(extra);
+            let name = format!("mixed_equiv_{mode}_{seed}");
+            let dir = mixed_resource_config(&name);
+            fs::write(dir.join("events.cfg"), events).unwrap();
+            let mut w = try_world(&dir, &sets).unwrap();
+            let mut stepper = Stepper::new(&w);
+            let mut out = Vec::new();
+            while stepper.begin_update(&mut w, &mut out).unwrap() {
+                while stepper.step_slice(&mut w).unwrap() {}
+                stepper.end_update(&mut w, &mut out).unwrap();
+            }
+            w.out.flush_all();
+            if mode == "1" {
+                let stats = stepper.parallel_stats().unwrap();
+                assert!(stats.commits > 100, "{}", stats.summary());
+                assert!(stats.pool_tests > 10, "{}", stats.summary());
+            }
+            outcomes[usize::from(mode == "1")].push([
+                tail_mean(&dir, "count.dat", 2, 5),
+                tail_mean(&dir, "average.dat", 2, 5),
+                tail_mean(&dir, "average.dat", 1, 5),
+                tail_mean(&dir, "tasks.dat", 1, 5),
+                tail_mean(&dir, "resource.dat", 2, 5),
             ]);
         }
     }

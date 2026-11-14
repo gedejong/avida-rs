@@ -163,6 +163,19 @@ impl InstSet {
         }
     }
 
+    /// A complete private copy of the set, nop map included (unlike
+    /// [`InstSet::cpp_copy`], which reproduces the C++ copy constructor's
+    /// gaps). Port-only: observers such as `PrintMODESData` activate a NULL
+    /// instruction in a copy so that the set the run uses stays untouched.
+    pub fn duplicate(&self) -> InstSet {
+        InstSet {
+            lib_nopmod_map: self.lib_nopmod_map.clone(),
+            stack_size: self.stack_size,
+            uops_per_cycle: self.uops_per_cycle,
+            ..self.copied_members()
+        }
+    }
+
     /// `*this = source` (`cInstSet::operator=`): the members the copy
     /// constructor copies come from `source`; the nop map, stack size and
     /// uops stay those of `self`.

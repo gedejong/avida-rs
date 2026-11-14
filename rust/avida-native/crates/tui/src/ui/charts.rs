@@ -11,6 +11,7 @@ use ratatui::Frame;
 use super::util::{block, clip_lines, trunc, DIM};
 use crate::app::App;
 use crate::color::{hue, Hue};
+use crate::filtering::{has_subset_value, subset_value};
 use crate::metrics::Metric;
 
 pub const SERIES_HUES: [Hue; 6] = [
@@ -25,7 +26,7 @@ pub const SERIES_HUES: [Hue; 6] = [
 /// The line marker of the i-th series. With colour the lines differ by
 /// colour and all use braille; without it (`--colors none`) the marker is
 /// what tells the series apart, so it changes with the series.
-pub fn series_marker(i: usize, mono: bool) -> (Marker, &'static str) {
+pub(super) fn series_marker(i: usize, mono: bool) -> (Marker, &'static str) {
     if !mono {
         return (Marker::Braille, "⣿");
     }
@@ -37,12 +38,23 @@ pub fn series_marker(i: usize, mono: bool) -> (Marker, &'static str) {
     ][i % 4]
 }
 
+/// The marker of a subset line: dots in colour; half blocks without it,
+/// where no series uses them.
+pub(super) fn subset_marker(mono: bool) -> (Marker, &'static str) {
+    if mono {
+        (Marker::HalfBlock, "▀")
+    } else {
+        (Marker::Dot, "•")
+    }
+}
+
 /// The colour of the i-th selected series.
-pub fn series_color(i: usize) -> Color {
+pub(super) fn series_color(i: usize) -> Color {
     hue(SERIES_HUES[i % SERIES_HUES.len()])
 }
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
+    let area = super::filter_bar::take(f, app, area);
     let (chart_area, list_area) = if area.width >= 80 {
         let [c, l] = Layout::horizontal([Constraint::Min(30), Constraint::Length(30)]).areas(area);
         (c, Some(l))
@@ -139,13 +151,40 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
         })
         .collect();
 
+    // The subset's line for each measure that has one, from the update the
+    // filter was set.
+    let subset_rows = app.filtering.subset.rows();
+    let subsets: Vec<(usize, Vec<(f64, f64)>)> = if app.filtering.is_active() {
+        app.chart_metrics
+            .iter()
+            .enumerate()
+            .filter(|(_, &m)| has_subset_value(m))
+            .map(|(i, &m)| {
+                let pts: Vec<(f64, f64)> = subset_rows
+                    .iter()
+                    .filter_map(|r| {
+                        let y = subset_value(m, r)?;
+                        let y = if log { (y > 0.0).then_some(y)? } else { y };
+                        y.is_finite().then(|| (f64::from(r.update), tx(y)))
+                    })
+                    .collect();
+                (i, pts)
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
     let x0 = rows.first().map_or(0.0, |r| f64::from(r.update));
     let x1 = rows
         .last()
         .map_or(1.0, |r| f64::from(r.update))
         .max(x0 + 1.0);
     let (mut lo, mut hi) = (f64::INFINITY, f64::NEG_INFINITY);
-    for (_, pts) in &series {
+    let all_points = series
+        .iter()
+        .map(|(_, p)| p)
+        .chain(subsets.iter().map(|(_, p)| p));
+    for pts in all_points {
         for &(_, y) in pts {
             lo = lo.min(y);
             hi = hi.max(y);
@@ -169,7 +208,7 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
         }
     };
 
-    let datasets: Vec<Dataset> = series
+    let mut datasets: Vec<Dataset> = series
         .iter()
         .enumerate()
         .map(|(i, (m, pts))| {
@@ -181,6 +220,18 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
                 .data(pts)
         })
         .collect();
+    // The subset's lines have a marker of their own, so that they differ
+    // from every series without colour too.
+    for (i, pts) in &subsets {
+        datasets.push(
+            Dataset::default()
+                .name(format!("{} (matching)", series[*i].0.label()))
+                .marker(subset_marker(app.color_mode.is_mono()).0)
+                .graph_type(GraphType::Line)
+                .style(Style::new().fg(series_color(*i)))
+                .data(pts),
+        );
+    }
 
     // The legend is drawn here rather than by the chart, which hides it
     // whenever the names do not fit a quarter of the width.
@@ -196,6 +247,15 @@ fn draw_chart(f: &mut Frame, app: &App, area: Rect) {
         let glyph = series_marker(i, app.color_mode.is_mono()).1;
         legend.push(Span::styled(glyph, Style::new().fg(series_color(i))));
         legend.push(Span::raw(format!(" {}", m.label())));
+        if subsets.iter().any(|(k, _)| *k == i) {
+            let glyph = subset_marker(app.color_mode.is_mono()).1;
+            legend.push(Span::raw("  "));
+            legend.push(Span::styled(glyph, Style::new().fg(series_color(i))));
+            legend.push(Span::raw(" matching"));
+        }
+    }
+    if app.filtering.is_active() && subsets.is_empty() {
+        legend.push(Span::styled("  no line for the matching organisms", DIM));
     }
     f.render_widget(
         Paragraph::new(clip_lines(

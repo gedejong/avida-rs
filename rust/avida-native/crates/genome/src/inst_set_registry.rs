@@ -218,6 +218,20 @@ impl InstSetRegistry {
         true
     }
 
+    /// A private copy of every set under the same names (see
+    /// [`InstSet::duplicate`]); the copies are not shared with any hardware,
+    /// so they can be edited with [`InstSetRegistry::get_inst_set_mut`].
+    pub fn duplicate(&self) -> InstSetRegistry {
+        InstSetRegistry {
+            inst_sets: self
+                .inst_sets
+                .iter()
+                .map(|s| Arc::new(s.duplicate()))
+                .collect(),
+            is_name_map: self.is_name_map.clone(),
+        }
+    }
+
     /// `IsInstSet(name)` (true for `"(default)"`).
     pub fn is_inst_set(&self, name: &str) -> bool {
         self.inst_set_id(name) != -1

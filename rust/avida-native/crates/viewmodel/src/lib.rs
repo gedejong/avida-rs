@@ -15,6 +15,9 @@
 //!   Okabe-Ito for the top genotypes (grey for the rest);
 //! * [`legend`]: value ranges, linear and log scales, tick marks;
 //! * [`render`]: a map layer as an RGBA8 image, one pixel per cell;
+//! * [`open_ended`]: the MODES and phylogeny rows as small charts;
+//! * [`filter`]: organism filters for linked charts and map (conditions,
+//!   the selected subset, histogram, task, scatter and time-series data);
 //! * [`series`]: histograms of layer values, min/max decimation of time
 //!   series;
 //! * [`text`]: a plain-text rendering of a frame (snapshot tests, logs).
@@ -35,8 +38,10 @@
 
 pub mod ancestry;
 pub mod capture;
+pub mod filter;
 pub mod legend;
 pub mod model;
+pub mod open_ended;
 pub mod palette;
 pub mod problem;
 pub mod render;
@@ -48,11 +53,19 @@ pub use capture::{
     all_layers, capture, capture_with_progress, find_organism, ip_positions, ip_sites,
     newest_organism_since, probe, update_row, LINEAGE_MAX, UNCLASSIFIED,
 };
+pub use filter::{
+    scatter_points, subset_row, task_counts, thin_points, Condition, Filter, Prop, ScatterPoint,
+    Selection, SubsetRow,
+};
 pub use legend::{format_number, Legend, Scale, Tick};
 pub use model::{
     mem_flags, CpuView, EnvView, Frame, GenotypeCells, GenotypeRow, GenotypeView, HeadView, Header,
     LayerId, MapFrame, MemCell, MemSpaceView, OrgProbe, OrganismView, PhenotypeView, ReactionView,
     ResourceView, Subscription, TaskView, ThreadView, UpdateProgress, UpdateRow,
+};
+pub use open_ended::{
+    FilterMode, ModesHistory, ModesRow, OeChart, OeGroup, OeSources, OeView, OpenEnded,
+    PhyloHistory, PhyloRow, MODES_EXAMPLE, PHYLOGENY_EXAMPLE, PLAYBACK_NOTE,
 };
 pub use palette::{Palette, Rgba, CATEGORICAL_SLOTS, EMPTY, OKABE_ITO, OTHER_GREY};
 pub use render::{family_color, layer_legend, render_rgba, render_rgba_with_legend};

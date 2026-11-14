@@ -55,6 +55,12 @@ impl HardwareManager {
         }
     }
 
+    /// A manager over `registry` (a private copy of the sets, for observers
+    /// that must not touch the ones the run uses).
+    pub fn from_registry(registry: InstSetRegistry) -> Self {
+        HardwareManager { registry }
+    }
+
     /// The instruction-set registry (for genome loading and the
     /// `GetInstSet` family).
     pub fn registry(&self) -> &InstSetRegistry {

@@ -421,6 +421,40 @@ fn lend_test_world(
     r
 }
 
+/// A test world with no population and services of its own (a null
+/// `cStats`, its own `std::rand` state, no groups), lent to `f`. For
+/// observers of a population run that must leave the run's RNG, statistics
+/// and services alone (`PrintMODESData`): `rng` is theirs, `hw` is a private
+/// copy of the instruction sets, and an error `f` returns, or a service the
+/// test could not answer, comes back as the `Err` text.
+pub fn with_detached_test_world(
+    config: &Config,
+    env: &mut Env,
+    hw: &HardwareManager,
+    group_attack: &BTreeMap<String, usize>,
+    test_sterilize: bool,
+    rng: &mut AvidaRng,
+    f: &mut dyn FnMut(&mut TestWorld<'_>) -> std::result::Result<(), String>,
+) -> std::result::Result<(), String> {
+    let mut services = AnalyzeServices::default();
+    let mut stats = NullStats;
+    lend_test_world(
+        LentParts {
+            config,
+            env,
+            hw,
+            stats: &mut stats,
+            services: &mut services,
+            group_attack,
+            test_sterilize,
+        },
+        rng,
+        false,
+        &mut |tw| f(tw).map_err(AnalyzeError::world),
+    )
+    .map_err(|e| e.to_string())
+}
+
 /// Whether a test can change the environment for the tests after it: the
 /// `xor-max` task repoints its reaction at another resource
 /// (`cEnvironment::ChangeResource` from `Task_XorMax`).

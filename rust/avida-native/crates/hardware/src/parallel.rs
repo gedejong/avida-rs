@@ -36,7 +36,9 @@ use crate::cpu_inst_lib::CPU_INST_DEFS;
 use crate::hardware::Hardware;
 use crate::hardware_manager::HardwareManager;
 use crate::hardware_transsmt::ParasiteUnit;
-use crate::local_output::{CellResources, LocalOutput, LocalResources, OutEvent};
+use crate::local_output::{
+    CellResources, LocalOutput, LocalResources, OutEvent, PendingOutputSlot,
+};
 use crate::org_interface::{
     Faced, OffspringTest, OrgInterface, OrgMessage, OutputServices, SeenOrg, SelfDelivery,
     TestamentTarget, WorldServices,
@@ -436,7 +438,7 @@ pub fn smt_parallel_ok(lib_fun_id: i32) -> bool {
 /// ([`ParallelOrgState::pending_birth`]) and runs `ActivateOffspring` with
 /// the parent, which adopts the organism where the exact path builds one.
 pub struct PendingBirth {
-    pub organism: Organism,
+    pub organism: Box<Organism>,
     pub genome: Genome,
 }
 
@@ -495,6 +497,10 @@ pub struct ParallelOrgState {
     /// The divide the burst ran the organism-local half of, until the
     /// sequential phase runs its world half.
     pub pending_birth: PendingBirthSlot,
+    /// The output test the burst ran up to the processes that use the
+    /// global resource pool, until the sequential phase runs them
+    /// ([`crate::local_output::PendingOutput`]).
+    pub pending_output: PendingOutputSlot,
 }
 
 /// `Apto::RNG::AvidaRNG`'s largest effective seed.
@@ -575,6 +581,7 @@ pub fn run_burst(
     org.hardware.base_mut().burst_divide = world.divide_local;
     let mut events = std::mem::take(&mut org.state.parallel.out_events);
     let mut pending = PendingBirthSlot(None);
+    let pending_output;
     {
         let mut iface = LocalInterface::new(world, &mut rng, cell_id, &mut events, &mut pending);
         while out.executed < cap {
@@ -596,6 +603,13 @@ pub fn run_burst(
                 ));
                 break;
             }
+            if r.is_ok() && iface.has_pending_output() {
+                // The pool's half of an output test is the sequential
+                // phase's; what the organism does next (its next test, a
+                // divide) reads what that half writes.
+                out.needs_world = true;
+                break;
+            }
             match r {
                 Ok(true) if executed => {
                     if iface.has_pending_birth() {
@@ -615,12 +629,14 @@ pub fn run_burst(
                 }
             }
         }
+        pending_output = iface.take_pending_output();
     }
     org.hardware.base_mut().parallel_burst = false;
     org.hardware.base_mut().burst_io = false;
     org.hardware.base_mut().burst_divide = false;
     org.state.parallel.out_events = events;
     org.state.parallel.pending_birth = pending;
+    org.state.parallel.pending_output = pending_output;
     org.state.parallel.rng = Some(rng);
     out
 }
@@ -649,6 +665,14 @@ pub struct LocalWorld<'a> {
     /// The amounts of the resources in each cell, when the run's output
     /// tests read them in the bursts ([`crate::local_output`]).
     pub cell_resources: Option<&'a dyn CellResources>,
+    /// The run's output tests leave the processes that use the global
+    /// resource pool to the sequential phase
+    /// ([`crate::local_output::output_is_local_global`]).
+    pub global_pool: bool,
+    /// In a world of per-cell grids and global pools together
+    /// ([`crate::local_output::output_is_local_mixed`]): which resources
+    /// are the pools. `None`: every resource is one (or there are none).
+    pub pools: Option<&'a [bool]>,
     /// The inputs of every cell.
     pub cell_inputs: &'a dyn CellInputs,
     /// `m_world->GetStats().GetGroupAttackInsts(name).GetSize()` by
@@ -680,6 +704,8 @@ pub struct LocalInterface<'a> {
     /// The organism's copy of its cell's resource amounts
     /// ([`LocalResources`]).
     levels: Vec<f64>,
+    /// The output test whose pool processes wait for the world.
+    pending_output: PendingOutputSlot,
     denied: Cell<Option<&'static str>>,
 }
 
@@ -701,6 +727,7 @@ impl<'a> LocalInterface<'a> {
             pending,
             building: false,
             levels: Vec::new(),
+            pending_output: PendingOutputSlot::default(),
             denied: Cell::new(None),
         }
     }
@@ -708,6 +735,17 @@ impl<'a> LocalInterface<'a> {
     /// A divide ran its organism-local half in this burst.
     pub fn has_pending_birth(&self) -> bool {
         self.pending.0.is_some()
+    }
+
+    /// An output test ran up to the processes that use the global pool in
+    /// this burst, whose rest is the world's.
+    pub fn has_pending_output(&self) -> bool {
+        self.pending_output.0.is_some()
+    }
+
+    /// The pending output test, leaving the slot empty.
+    pub fn take_pending_output(&mut self) -> PendingOutputSlot {
+        std::mem::take(&mut self.pending_output)
     }
 
     /// The first request this interface refused, if any.
@@ -805,6 +843,12 @@ impl OrgInterface for LocalInterface<'_> {
                 }),
                 None => None,
             },
+            pending: if self.world.global_pool {
+                Some(&mut self.pending_output)
+            } else {
+                None
+            },
+            pools: self.world.pools,
         })
     }
     fn get_cell_id(&self) -> i32 {
@@ -989,7 +1033,7 @@ impl OrgInterface for LocalInterface<'_> {
         match built {
             Ok(organism) => {
                 self.pending.0 = Some(Box::new(PendingBirth {
-                    organism,
+                    organism: Box::new(organism),
                     genome: offspring_genome.clone(),
                 }));
             }

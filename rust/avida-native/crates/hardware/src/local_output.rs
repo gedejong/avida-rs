@@ -19,11 +19,21 @@
 //! changes in a local copy ([`LocalResources`]), so that its next output
 //! test sees them, and writes each change as an [`OutEvent::ResourceChange`]
 //! for the world to apply.
+//!
+//! A global (well-mixed) resource is one pool every organism reads and
+//! consumes, so its output tests cannot be evaluated against a copy. They
+//! are split instead ([`PendingOutput`]): the burst evaluates the tasks
+//! (which read the organism's buffers only) and leaves the processes of
+//! the reactions that use the pool undone, the organism stops after the
+//! instruction, and the world runs the processes against the pool as it is,
+//! organism after organism in a fixed order ([`finish_output_global`]),
+//! with the arithmetic of the exact path.
 
 use std::cell::RefCell;
 
 use avida_apto::AvidaRng;
 use avida_config::config::Config;
+use avida_environment::{DeferredReaction, ReactionResult};
 use avida_genome::InstSet;
 use avida_phenotype::{PhenotypeDeme, PhenotypeStats};
 use avida_tasks::{TaskContext, TaskWorld};
@@ -76,6 +86,23 @@ pub struct LocalResources<'a> {
     /// output test of the burst reads them.
     pub levels: &'a mut Vec<f64>,
 }
+
+/// An output test the burst evaluated up to the processes that use the
+/// global resource pool ([`output_is_local_global`]).
+#[derive(Debug, Clone)]
+pub struct PendingOutput {
+    /// The tasks done and the reactions without the pool, recorded;
+    /// the pool's reactions not yet.
+    pub result: ReactionResult,
+    /// What `TestOutput` returned (`result.active()`).
+    pub found: bool,
+    /// The reactions whose processes wait, in library order.
+    pub deferred: Vec<DeferredReaction>,
+}
+
+/// [`crate::parallel::ParallelOrgState`]'s slot for a [`PendingOutput`].
+#[derive(Debug, Clone, Default)]
+pub struct PendingOutputSlot(pub Option<Box<PendingOutput>>);
 
 /// The statistics half of the list an output test writes its
 /// [`OutEvent`]s to (the phenotype takes the statistics and the deme as two
@@ -151,6 +178,14 @@ pub struct LocalOutput<'a> {
     pub events: &'a mut Vec<OutEvent>,
     /// The cell's resources, when the environment has any.
     pub resources: Option<LocalResources<'a>>,
+    /// Where an output test leaves the processes that use the global pool
+    /// (the environment's resources are global pools,
+    /// [`output_is_local_global`]).
+    pub pending: Option<&'a mut PendingOutputSlot>,
+    /// With `pending` in a world of grids and pools together
+    /// ([`output_is_local_mixed`]): which resources are the pools, whose
+    /// processes wait. `None`: every resource is one.
+    pub pools: Option<&'a [bool]>,
 }
 
 /// Whether the output tests of the whole run can be organism-local
@@ -168,6 +203,58 @@ pub struct LocalOutput<'a> {
 /// predatory resource, no resource bins and no detection, which reads a
 /// resource and draws random numbers.
 pub fn output_is_local(cfg: &Config, env: &Env, cell_resources: bool) -> bool {
+    output_is_local_with(
+        cfg,
+        env,
+        if cell_resources {
+            Pools::Cells
+        } else {
+            Pools::None
+        },
+        &[],
+    )
+}
+
+/// [`output_is_local`] for a population whose resources are all global pools
+/// (`ResourceCount::are_global_pools`), which the output tests settle in
+/// the sequential phase ([`PendingOutput`]). The tests of the library are
+/// the same, and one more condition: no reaction's requisite looks at the
+/// counts of other reactions (`reaction`, `noreaction`, the total count),
+/// which the processes left for later would not have updated yet when the
+/// requisite is tested, and no requisite that lets a reaction fire on divide
+/// (`divide_only`), whose test would leave the pool's half to the world with
+/// the divide under way.
+pub fn output_is_local_global(cfg: &Config, env: &Env) -> bool {
+    output_is_local_with(cfg, env, Pools::Global, &[])
+}
+
+/// [`output_is_local`] for a population whose resources are some per-cell
+/// grids and some global pools (`pools[i]` is true for a pool,
+/// `ResourceCount::grid_or_global_kinds`): the processes that use a grid
+/// run in the burst, those that use a pool wait for the sequential phase
+/// ([`PendingOutput`]). The conditions of [`output_is_local_global`], and
+/// one more: no reaction takes from or gives to both kinds, so that its
+/// processes are all in the burst or all after it, and what the pool's half
+/// needs of the grid half is the bonus alone.
+pub fn output_is_local_mixed(cfg: &Config, env: &Env, pools: &[bool]) -> bool {
+    output_is_local_with(cfg, env, Pools::Mixed, pools)
+}
+
+/// What the resources of the population are, for the gate.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Pools {
+    /// No resource is read or changed.
+    None,
+    /// Per-cell grids ([`CellResources`]).
+    Cells,
+    /// Global pools ([`PendingOutput`]).
+    Global,
+    /// Grids and pools together.
+    Mixed,
+}
+
+fn output_is_local_with(cfg: &Config, env: &Env, pools: Pools, is_pool: &[bool]) -> bool {
+    let cell_resources = pools != Pools::None;
     if cfg.use_avatars != 0
         || cfg.energy_enabled
         || cfg.merit_inc_apply_immediate
@@ -205,6 +292,38 @@ pub fn output_is_local(cfg: &Config, env: &Env, cell_resources: bool) -> bool {
         let Some(task) = r.task else {
             return false;
         };
+        if pools == Pools::Mixed {
+            // A reaction's processes are all for grids or all for pools.
+            let used = r
+                .processes
+                .iter()
+                .flat_map(|p| [p.resource, p.product])
+                .flatten();
+            let (mut grid, mut pool) = (false, false);
+            for i in used {
+                match is_pool.get(i) {
+                    Some(true) => pool = true,
+                    Some(false) => grid = true,
+                    None => return false,
+                }
+            }
+            if grid && pool {
+                return false;
+            }
+        }
+        if matches!(pools, Pools::Global | Pools::Mixed)
+            && r.requisites.iter().any(|q| {
+                !q.prior_reactions.is_empty()
+                    || !q.prior_noreactions.is_empty()
+                    || q.min_tot_reaction_count != 0
+                    || q.max_tot_reaction_count != i32::MAX
+                    // A test on divide would leave its pool half to the
+                    // world with the divide already under way.
+                    || q.divide_only != 0
+            })
+        {
+            return false;
+        }
         if task < 0 || !env.tasklib().0.is_organism_local(task as usize) {
             return false;
         }
@@ -413,6 +532,7 @@ pub fn do_output_local(
     // test makes to them (`res_change`).
     let mut levels: Vec<f64> = Vec::new();
     let mut res_change: Vec<f64> = Vec::new();
+    let mut deferred: Vec<DeferredReaction> = Vec::new();
     if let Some(r) = lo.resources.as_mut() {
         if r.levels.is_empty() {
             r.view.cell_levels(lo.cell_id, r.levels);
@@ -470,6 +590,12 @@ pub fn do_output_local(
             &levels,
             &rbins,
             false,
+            if lo.pending.is_some() {
+                Some(&mut deferred)
+            } else {
+                None
+            },
+            lo.pools,
         );
         let first_reactions = std::mem::take(&mut evaluator.first_reactions);
         drop(evaluator);
@@ -477,31 +603,41 @@ pub fn do_output_local(
             phen.set_first_reaction_cycle(r.max(0) as usize);
             phen.set_first_reaction_exec(r.max(0) as usize);
         }
-        let mut stats = StatSink(&events);
-        let mut deme = DemeSink {
-            events: &events,
-            violated: false,
-        };
-        phen.apply_test_output(
-            lo.config,
-            &sizes,
-            lo.update,
-            org.id,
-            found,
-            result,
-            &mut res_change,
-            &mut insts_triggered,
-            false,
-            None,
-            &mut stats,
-            Some(&mut deme),
-        );
-        if deme.violated {
-            return Err(
-                "internal: an output test of a burst asked its deme for a change \
-                        its environment cannot make (parallel phase of EXECUTION_MODE 1)"
-                    .to_string(),
+        if let (Some(slot), false) = (lo.pending.as_mut(), deferred.is_empty()) {
+            // The processes that use the pool wait for the world; the
+            // phenotype takes the whole result then.
+            slot.0 = Some(Box::new(PendingOutput {
+                result,
+                found,
+                deferred,
+            }));
+        } else {
+            let mut stats = StatSink(&events);
+            let mut deme = DemeSink {
+                events: &events,
+                violated: false,
+            };
+            phen.apply_test_output(
+                lo.config,
+                &sizes,
+                lo.update,
+                org.id,
+                found,
+                result,
+                &mut res_change,
+                &mut insts_triggered,
+                false,
+                None,
+                &mut stats,
+                Some(&mut deme),
             );
+            if deme.violated {
+                return Err(
+                    "internal: an output test of a burst asked its deme for a change \
+                        its environment cannot make (parallel phase of EXECUTION_MODE 1)"
+                        .to_string(),
+                );
+            }
         }
     }
     lo.events.extend(events.into_inner());
@@ -523,4 +659,83 @@ pub fn do_output_local(
         effects.bonus_insts.push(inst_set.get_inst(name)?);
     }
     Ok(effects)
+}
+
+/// The rest of an output test the burst left pending
+/// ([`PendingOutput`]): the processes of the reactions that use the global
+/// pool, run against `levels` (the pool's amounts now) with `DoProcesses`'
+/// arithmetic, and then what `doOutput` does with the result. Returns the
+/// change of every resource (produced less consumed), for the caller to
+/// apply to the pool, and the statistics and deme changes, for the caller
+/// to replay.
+///
+/// `rng` is the argument of `DoProcesses`; nothing here draws from it.
+pub fn finish_output_global(
+    org: &mut OrgState,
+    pending: PendingOutput,
+    env: &Env,
+    config: &Config,
+    levels: &[f64],
+    update: i32,
+    rng: &mut AvidaRng,
+) -> Result<(Vec<f64>, Vec<OutEvent>), String> {
+    if levels.len() != org.phenotype_sizes.num_resources {
+        return Err(format!(
+            "internal: a pending output test found {} resource amounts for {} resources \
+             (sequential phase of EXECUTION_MODE 1)",
+            levels.len(),
+            org.phenotype_sizes.num_resources
+        ));
+    }
+    let PendingOutput {
+        mut result,
+        found,
+        deferred,
+    } = pending;
+    let events = RefCell::new(Vec::new());
+    let mut res_change = vec![0.0; levels.len()];
+    let mut insts_triggered: Vec<String> = Vec::new();
+    let phen = &mut org.phenotype;
+    let sizes = org.phenotype_sizes;
+    let rbins: Vec<f64> = phen.cur_rbins_avail.clone();
+    let triggered = env.finish_deferred(
+        rng,
+        config,
+        &mut result,
+        &deferred,
+        levels,
+        &rbins,
+        &mut phen.cur_reaction_count,
+    );
+    for r in triggered {
+        phen.set_first_reaction_cycle(r);
+        phen.set_first_reaction_exec(r);
+    }
+    let mut stats = StatSink(&events);
+    let mut deme = DemeSink {
+        events: &events,
+        violated: false,
+    };
+    phen.apply_test_output(
+        config,
+        &sizes,
+        update,
+        org.id,
+        found,
+        result,
+        &mut res_change,
+        &mut insts_triggered,
+        false,
+        None,
+        &mut stats,
+        Some(&mut deme),
+    );
+    if deme.violated {
+        return Err(
+            "internal: a pending output test asked its deme for a change \
+                    its environment cannot make (sequential phase of EXECUTION_MODE 1)"
+                .to_string(),
+        );
+    }
+    Ok((res_change, events.into_inner()))
 }

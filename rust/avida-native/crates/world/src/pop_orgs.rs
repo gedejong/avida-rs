@@ -350,7 +350,7 @@ impl World {
     /// `running` as for [`World::kill_organism`].
     pub fn activate_organism(
         &mut self,
-        mut org: Organism,
+        mut org: Box<Organism>,
         membership: GroupMembership,
         target: i32,
         assign_group: bool,
@@ -379,7 +379,7 @@ impl World {
         self.pop.spec_state[t] = 0;
         self.host.reset_interface(t);
         self.host.prev_seen[t] = target;
-        self.pop.orgs[t] = Some(Box::new(org));
+        self.pop.orgs[t] = Some(org);
         self.pop.membership[t] = membership;
         self.cell_insert_energy(target, None);
         self.add_live_org(t);
@@ -538,27 +538,40 @@ impl World {
             &mut self.stats,
         );
 
-        // `HOST_USE_GENOTYPE_FILE`: a random entry of the list
-        // `LoadHostGenotypeList` filled, in place of the offspring's genome.
-        let host_seq = if self.cfg.host_use_genotype_file != 0 {
-            let n = self.actions2.env.host_genotype_list.len();
-            if n == 0 {
-                self.set_fatal(
-                    "unsupported: HOST_USE_GENOTYPE_FILE with an empty host genotype list \
-                     (C++: indexes past cPopulation::host_genotype_list)",
-                );
-                return true;
-            }
-            let k = self.rng.get_int(n as i32) as usize;
-            InstructionSequence::from_string(&self.actions2.env.host_genotype_list[k])
+        // The genome of the birth chamber's call. Where the chamber adopts an
+        // organism a burst prebuilt (a committed divide of the parallel mode,
+        // asexual), it never reads it, and the copy is not made.
+        let temp_genome;
+        let temp: &Genome = if self.pop.prebuilt_offspring.is_some()
+            && !parent.phenotype.divide_sex
+            && self.cfg.host_use_genotype_file == 0
+        {
+            offspring_genome
         } else {
-            offspring_genome.representation().clone()
+            // `HOST_USE_GENOTYPE_FILE`: a random entry of the list
+            // `LoadHostGenotypeList` filled, in place of the offspring's
+            // genome.
+            let host_seq = if self.cfg.host_use_genotype_file != 0 {
+                let n = self.actions2.env.host_genotype_list.len();
+                if n == 0 {
+                    self.set_fatal(
+                        "unsupported: HOST_USE_GENOTYPE_FILE with an empty host genotype list \
+                         (C++: indexes past cPopulation::host_genotype_list)",
+                    );
+                    return true;
+                }
+                let k = self.rng.get_int(n as i32) as usize;
+                InstructionSequence::from_string(&self.actions2.env.host_genotype_list[k])
+            } else {
+                offspring_genome.representation().clone()
+            };
+            temp_genome = Genome::new(
+                parent.genome().hardware_type(),
+                &parent.genome().properties(),
+                host_seq,
+            );
+            &temp_genome
         };
-        let temp = Genome::new(
-            parent.genome().hardware_type(),
-            &parent.genome().properties(),
-            host_seq,
-        );
         let parent_membership = match self.pop.running.as_ref() {
             Some(r) if r.cell_id == parent_cell && r.removed => {
                 r.dead_membership.clone().unwrap_or_default()
@@ -568,7 +581,7 @@ impl World {
 
         // `birth_chamber.SubmitOffspring(...)`: zero, one or two offspring.
         let mut offspring =
-            match self.submit_offspring(&temp, parent, parent_cell, &parent_membership) {
+            match self.submit_offspring(temp, parent, parent_cell, &parent_membership) {
                 Ok(o) => o,
                 Err(e) => {
                     self.set_fatal(e);
@@ -1152,7 +1165,7 @@ impl World {
 
         // Activate the organism in the population...
         org.state.lineage_label = lineage_label;
-        self.activate_organism(org, membership, cell_id, assign_group, true, None);
+        self.activate_organism(Box::new(org), membership, cell_id, assign_group, true, None);
         self.log_injection(cell_id)
     }
 
@@ -1395,7 +1408,7 @@ impl World {
         });
         self.host.cur_sg = org.state.cur_sg;
         self.hgt_step_begins(&org.state);
-        self.pop.prebuilt_offspring = Some(Box::new(pending.organism));
+        self.pop.prebuilt_offspring = Some(pending.organism);
 
         {
             let mut iface = PopulationInterface { w: self, cell_id };
@@ -1758,6 +1771,8 @@ enum StatsEvent {
 struct OrgStatsRecord<'a> {
     inst_set: &'a str,
     from_message: &'a [i32],
+    /// Some entry of `from_message` is not zero.
+    from_message_nonzero: bool,
     merit: f64,
     fitness: f64,
     gestation_time: i32,
@@ -1857,6 +1872,7 @@ fn gather_org_stats<'a>(
     OrgStatsRecord {
         inst_set: org.hardware.inst_set().inst_set_name(),
         from_message: &p.last_from_message_count,
+        from_message_nonzero: p.last_from_message_count.iter().any(|&v| v != 0),
         merit: p.merit.get_double(),
         fitness: p.fitness,
         gestation_time: p.gestation_time,
@@ -2050,6 +2066,19 @@ impl OrgStatsTotals {
             stats.sum_div_mut_rate,
             stats.sum_log_div_mut_rate,
         );
+        // Nearly always no organism has a message count (no messaging):
+        // each column then gains only a count, and the three tasks that
+        // would add 8 columns of zeros over every organism (about 80 us
+        // each, the longest of the phase) are not needed.
+        let msg_len = first.from_message.len();
+        let msg_zero = recs
+            .iter()
+            .all(|(r, _)| !r.from_message_nonzero && r.from_message.len() == msg_len);
+        if msg_zero {
+            for a in counts.iter_mut().take(msg_len) {
+                a.add_zeros(recs.len());
+            }
+        }
         pool.scope(|s| {
             s.spawn(|_| {
                 for (r, _) in recs {
@@ -2101,7 +2130,12 @@ impl OrgStatsTotals {
                     self.add_counts(r);
                 }
             });
-            for (k, piece) in counts.chunks_mut(MSG_COLUMNS_PER_TASK).enumerate() {
+            let msg_tasks = if msg_zero { 0 } else { usize::MAX };
+            for (k, piece) in counts
+                .chunks_mut(MSG_COLUMNS_PER_TASK)
+                .enumerate()
+                .take(msg_tasks)
+            {
                 let lo = k * MSG_COLUMNS_PER_TASK;
                 s.spawn(move |_| {
                     for (r, _) in recs {

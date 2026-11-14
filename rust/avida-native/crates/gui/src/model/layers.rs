@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 use avida_session::{Frame, LayerId};
 use avida_viewmodel::{
     layer_legend, render_rgba, render_rgba_with_legend, EnvView, Family, Legend, Palette, Scale,
-    UNCLASSIFIED,
+    Selection, UNCLASSIFIED,
 };
 
 use crate::model::vision::ColorVision;
@@ -176,6 +176,7 @@ pub fn render_map(
     frame: &Frame,
     settings: &MapSettings,
     highlight: Option<i32>,
+    selection: Option<&Selection>,
 ) -> Option<MapImage> {
     let map = frame.map.as_ref()?;
     let layer = settings.layer;
@@ -199,6 +200,9 @@ pub fn render_map(
     if let Some(g) = highlight {
         dim_except(&mut rgba, &map.genotype_id, g);
     }
+    if let Some(sel) = selection.filter(|s| s.active) {
+        dim_outside(&mut rgba, &sel.mask);
+    }
     settings.vision.apply(&mut rgba);
     Some(MapImage {
         layer,
@@ -220,6 +224,18 @@ pub fn dim_except(rgba: &mut [u8], genotype_ids: &[i32], keep: i32) {
     for (px, &g) in rgba.as_chunks_mut::<4>().0.iter_mut().zip(genotype_ids) {
         if g != keep {
             px[3] = px[3].min(DIMMED_ALPHA);
+        }
+    }
+}
+
+/// Alpha of the organisms outside the filter: dim, but still there.
+pub const FILTER_DIMMED_ALPHA: u8 = 70;
+
+/// Fades every organism whose cell is not selected by the filter.
+pub fn dim_outside(rgba: &mut [u8], mask: &[bool]) {
+    for (px, &m) in rgba.as_chunks_mut::<4>().0.iter_mut().zip(mask) {
+        if !m {
+            px[3] = px[3].min(FILTER_DIMMED_ALPHA);
         }
     }
 }
@@ -337,13 +353,13 @@ mod tests {
     fn genotype_layer_is_categorical_and_dimming_keeps_one_genotype() {
         let f = frame_with_map();
         let s = MapSettings::default();
-        let img = render_map(&f, &s, None).unwrap();
+        let img = render_map(&f, &s, None, None).unwrap();
         assert_eq!((img.w, img.h), (3, 2));
         assert!(img.legend.is_none());
         assert_eq!(img.palette, Palette::OkabeIto);
         assert_eq!(img.rgba[3], 255);
         assert_eq!(img.rgba[2 * 4 + 3], 0, "empty cell is transparent");
-        let dimmed = render_map(&f, &s, Some(8)).unwrap();
+        let dimmed = render_map(&f, &s, Some(8), None).unwrap();
         assert_eq!(dimmed.rgba[3], DIMMED_ALPHA);
         assert_eq!(dimmed.rgba[4 + 3], 255);
         // The colour-vision preview changes colours, not alpha.
@@ -351,11 +367,33 @@ mod tests {
             vision: ColorVision::Achromatopsia,
             ..MapSettings::default()
         };
-        let grey = render_map(&f, &s, None).unwrap();
+        let grey = render_map(&f, &s, None, None).unwrap();
         assert_eq!(grey.rgba[0], grey.rgba[1]);
         assert_eq!(grey.rgba[1], grey.rgba[2]);
         assert_eq!(grey.rgba[2 * 4 + 3], 0);
         assert_eq!(grey.vision, ColorVision::Achromatopsia);
+    }
+
+    #[test]
+    fn the_filter_dims_what_it_does_not_select_and_keeps_the_colours() {
+        use avida_viewmodel::{Condition, Filter};
+        let f = frame_with_map();
+        let s = MapSettings::default();
+        let mut filter = Filter::new();
+        filter.set(Condition::Genotype { id: 8 });
+        let sel = filter.select(f.map.as_ref().unwrap());
+        let plain = render_map(&f, &s, None, None).unwrap();
+        let img = render_map(&f, &s, None, Some(&sel)).unwrap();
+        assert_eq!(img.rgba[3], FILTER_DIMMED_ALPHA, "genotype 7 is outside");
+        assert_eq!(img.rgba[4 + 3], 255, "genotype 8 is inside");
+        assert_eq!(img.rgba[2 * 4 + 3], 0, "empty stays transparent");
+        assert_eq!(img.rgba[..3], plain.rgba[..3], "dimmed, not recoloured");
+        // An empty filter changes nothing.
+        let none = Filter::new().select(f.map.as_ref().unwrap());
+        assert_eq!(
+            render_map(&f, &s, None, Some(&none)).unwrap().rgba,
+            plain.rgba
+        );
     }
 
     #[test]
@@ -365,7 +403,7 @@ mod tests {
             layer: LayerId::Merit,
             ..MapSettings::default()
         };
-        assert!(render_map(&f, &s, None).is_none());
+        assert!(render_map(&f, &s, None, None).is_none());
     }
 
     #[test]
@@ -376,11 +414,11 @@ mod tests {
             ..MapSettings::default()
         };
         assert_eq!(s.scale(LayerId::Fitness), Scale::Log);
-        let img = render_map(&f, &s, None).unwrap();
+        let img = render_map(&f, &s, None, None).unwrap();
         let legend = img.legend.unwrap();
         assert_eq!((legend.min, legend.max), (1.0, 4.0));
         s.lock(LayerId::Fitness, &Legend::new(0.5, 8.0, Scale::Log));
-        let img = render_map(&f, &s, None).unwrap();
+        let img = render_map(&f, &s, None, None).unwrap();
         assert_eq!(img.legend.as_ref().map(|l| l.max), Some(8.0));
         s.set_scale(LayerId::Fitness, Scale::Linear);
         assert!(!s.is_locked(LayerId::Fitness));

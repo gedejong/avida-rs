@@ -4,8 +4,8 @@
 use avida_session::{LayerId, RunState};
 use avida_viewmodel::{Palette, Scale};
 use egui::{
-    pos2, vec2, Align, Color32, CornerRadius, Frame, Key, Layout, Margin, Modifiers, Painter, Rect,
-    RichText, Role, Sense, Stroke, StrokeKind, TextureHandle, Ui, UiBuilder, Vec2,
+    pos2, vec2, Align, Color32, CornerRadius, Frame, Key, Layout, Margin, Modifiers, Painter, Pos2,
+    Rect, RichText, Role, Sense, Stroke, StrokeKind, TextureHandle, Ui, UiBuilder, Vec2,
 };
 use egui_material_icons::icons;
 
@@ -245,6 +245,18 @@ fn toolbar(ui: &mut Ui, state: &mut AppState, image: Option<&MapImage>, t: &Toke
             if widgets::icon_button(ui, icons::ICON_FIT_SCREEN, "Fit map", "Fit the world to the view (F)").clicked() {
                 state.viewport.auto_fit = true;
             }
+            let on = state.brush.region_mode;
+            if widgets::icon_toggle(
+                ui,
+                icons::ICON_HIGHLIGHT_ALT,
+                "Select a region",
+                "Drag a rectangle on the map to keep only the organisms in it, as a filter. Holding Shift while dragging does the same.",
+                on,
+            )
+            .clicked()
+            {
+                state.brush.region_mode = !on;
+            }
             vision_menu(ui, state, t);
             if let Some((w, h)) = state.world_size().filter(|_| !narrow) {
                 ui.label(
@@ -454,7 +466,22 @@ fn canvas(
             }
         }
     }
-    if response.dragged() {
+    // A drag draws a region while the region tool is on or Shift is held
+    // as the drag starts; otherwise it moves the view.
+    let region_id = ui.scope_id().with("region-drag");
+    if response.drag_started_by(egui::PointerButton::Primary) {
+        let on = state.brush.region_mode || ui.input(|i| i.modifiers.shift);
+        let start = ui
+            .input(|i| i.pointer.press_origin())
+            .or_else(|| response.interact_pointer_pos())
+            .filter(|_| on);
+        ui.data_mut(|d| d.insert_temp(region_id, start.map(|p| (p, p))));
+    }
+    let region: Option<(Pos2, Pos2)> = ui
+        .data(|d| d.get_temp::<Option<(Pos2, Pos2)>>(region_id))
+        .flatten();
+    let vp = &mut state.viewport;
+    if response.dragged() && region.is_none() {
         vp.pan(rect, w, h, response.drag_delta());
     }
     let vp = *vp;
@@ -477,6 +504,68 @@ fn canvas(
         Stroke::new(1.0, t.border_strong),
         StrokeKind::Outside,
     );
+
+    // The filter: an outline around the world, the regions it holds and the
+    // region being dragged.
+    if state.brush.is_active() {
+        painter.rect_stroke(
+            world,
+            CornerRadius::ZERO,
+            Stroke::new(2.0, t.filter),
+            StrokeKind::Outside,
+        );
+    }
+    let clamp_cell = |p: Pos2| -> (usize, usize) {
+        let c = vp.to_cells(rect, p);
+        (
+            (c.x.floor().max(0.0) as usize).min(w - 1),
+            (c.y.floor().max(0.0) as usize).min(h - 1),
+        )
+    };
+    let cells_rect = |a: (usize, usize), b: (usize, usize)| {
+        let r0 = vp.cell_rect(rect, a.0.min(b.0), a.1.min(b.1));
+        let r1 = vp.cell_rect(rect, a.0.max(b.0), a.1.max(b.1));
+        Rect::from_min_max(r0.min, r1.max)
+    };
+    for c in state.brush.filter.conditions() {
+        if let avida_viewmodel::Condition::Region { x0, y0, x1, y1 } = c {
+            let r = cells_rect((*x0 as usize, *y0 as usize), (*x1 as usize, *y1 as usize));
+            painter.rect_filled(r, CornerRadius::ZERO, t.filter.gamma_multiply(0.10));
+            painter.rect_stroke(
+                r,
+                CornerRadius::ZERO,
+                Stroke::new(2.0, t.filter),
+                StrokeKind::Inside,
+            );
+        }
+    }
+    if let Some((start, _)) = region {
+        if let Some(p) = response.interact_pointer_pos() {
+            let (a, b) = (clamp_cell(start), clamp_cell(p));
+            ui.data_mut(|d| d.insert_temp(region_id, Some((start, p))));
+            let r = cells_rect(a, b);
+            painter.rect_filled(r, CornerRadius::ZERO, t.filter.gamma_multiply(0.18));
+            painter.rect_stroke(
+                r,
+                CornerRadius::ZERO,
+                Stroke::new(2.0, t.filter),
+                StrokeKind::Inside,
+            );
+        }
+    }
+    if response.drag_stopped() {
+        if let Some((start, end)) = region {
+            ui.data_mut(|d| d.insert_temp(region_id, None::<(Pos2, Pos2)>));
+            let (a, b) = (clamp_cell(start), clamp_cell(end));
+            state.brush.region_mode = false;
+            state.edit_filter(|f| {
+                f.set(avida_viewmodel::Condition::region(
+                    (a.0 as i32, a.1 as i32),
+                    (b.0 as i32, b.1 as i32),
+                ))
+            });
+        }
+    }
 
     // Hover.
     let hovered_cell = response

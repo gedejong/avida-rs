@@ -421,13 +421,19 @@ impl AvidaApp {
         let Some(frame) = &self.state.frame else {
             return;
         };
-        let Some(img) = render_map(frame, &self.state.map, self.state.highlight) else {
+        let Some(img) = render_map(
+            frame,
+            &self.state.map,
+            self.state.highlight,
+            self.state.brush.selection().map(|s| &**s),
+        ) else {
             return;
         };
         if img.w == 0 || img.h == 0 {
             return;
         }
         let color = ColorImage::from_rgba_unmultiplied([img.w, img.h], &img.rgba);
+        self.state.map_rgba = Some(img.rgba.as_slice().into());
         match &mut self.map_texture {
             Some(tex) => tex.set(color, TextureOptions::NEAREST),
             None => {
@@ -445,6 +451,8 @@ impl AvidaApp {
         let typing = ctx.text_edit_focused();
         let ready = self.state.phase == Phase::Ready;
         let palette_open = self.state.command_palette.open;
+        // An open list or menu closes itself on Escape: leave the key to it.
+        let popup_open = egui::Popup::is_any_open(ctx);
         let mut actions: Vec<Shortcut> = Vec::new();
         ctx.input_mut(|i| {
             if i.consume_key(Modifiers::COMMAND, Key::K) {
@@ -469,7 +477,7 @@ impl AvidaApp {
             if i.consume_key(Modifiers::NONE, Key::Questionmark) {
                 actions.push(Shortcut::Help);
             }
-            if i.consume_key(Modifiers::NONE, Key::Escape) {
+            if !popup_open && i.consume_key(Modifiers::NONE, Key::Escape) {
                 actions.push(Shortcut::Escape);
             }
             if !ready {
@@ -529,9 +537,13 @@ impl AvidaApp {
                 Shortcut::Escape => {
                     if s.show_shortcuts {
                         s.show_shortcuts = false;
+                    } else if s.brush.form_open {
+                        // The "Add condition" form first; the selection stays.
+                        s.brush.form_open = false;
                     } else {
                         s.select_cell(None);
                         s.clear_highlight();
+                        s.brush.region_mode = false;
                     }
                 }
                 Shortcut::RunPause => s.toggle_run(),
@@ -1009,6 +1021,10 @@ impl eframe::App for AvidaApp {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.window_startup.on_frame(ctx);
         self.pump();
+        self.state.sync_subscription();
+        if self.state.poll_scan() {
+            ctx.request_repaint_after(std::time::Duration::from_millis(50));
+        }
         self.state.set_time(ctx.input(|i| i.time));
     }
 

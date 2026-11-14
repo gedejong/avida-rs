@@ -1124,6 +1124,7 @@ impl Recording {
             inst_names: Arc::clone(&self.inst_names),
             layers: self.meta.layers.clone(),
             lineage: Vec::new(),
+            open_ended: Default::default(),
         })
     }
 }
@@ -1318,6 +1319,7 @@ mod tests {
                 LayerId::Task(1),
             ],
             lineage: Vec::new(),
+            open_ended: Default::default(),
         }
     }
 

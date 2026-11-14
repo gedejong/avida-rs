@@ -13,6 +13,7 @@ pub mod commands;
 pub mod config;
 pub mod debugger;
 pub mod export;
+pub mod filtering;
 pub mod format;
 pub mod genotypes;
 pub mod history;
@@ -20,6 +21,7 @@ pub mod layers;
 pub mod log;
 pub mod metrics;
 pub mod new_experiment;
+pub mod scan;
 pub mod viewport;
 pub mod vision;
 
@@ -39,6 +41,7 @@ use self::abundance::AbundanceHistory;
 use self::commands::PaletteState;
 use self::config::ConfigView;
 use self::debugger::Debugger;
+use self::filtering::Filtering;
 use self::genotypes::GenoSort;
 use self::history::RowHistory;
 use self::layers::MapSettings;
@@ -219,16 +222,26 @@ pub enum ChartTab {
     TimeSeries,
     Tasks,
     Histogram,
+    Scatter,
+    OpenEnded,
 }
 
 impl ChartTab {
-    pub const ALL: [ChartTab; 3] = [ChartTab::TimeSeries, ChartTab::Tasks, ChartTab::Histogram];
+    pub const ALL: [ChartTab; 5] = [
+        ChartTab::TimeSeries,
+        ChartTab::Tasks,
+        ChartTab::Histogram,
+        ChartTab::Scatter,
+        ChartTab::OpenEnded,
+    ];
 
     pub fn title(self) -> &'static str {
         match self {
             ChartTab::TimeSeries => "Time series",
             ChartTab::Tasks => "Tasks",
             ChartTab::Histogram => "Histogram",
+            ChartTab::Scatter => "Scatter",
+            ChartTab::OpenEnded => "Open-ended",
         }
     }
 }
@@ -403,6 +416,13 @@ pub struct AppState {
     pub side_tab: SideTab,
     pub chart_tab: ChartTab,
     pub chart_metrics: Vec<Metric>,
+    /// The organism filter shared by the charts and the map, the subset
+    /// it selects and the chart options that go with it.
+    pub brush: Filtering,
+    /// The colours of the map as last drawn (RGBA, one pixel per cell),
+    /// for charts that colour organisms like the map does.
+    pub map_rgba: Option<Arc<[u8]>>,
+    last_sub: Option<Subscription>,
     pub geno_sort: GenoSort,
     pub show_shortcuts: bool,
     pub show_log: bool,
@@ -468,6 +488,9 @@ impl Default for AppState {
             side_tab: SideTab::default(),
             chart_tab: ChartTab::default(),
             chart_metrics: Metric::DEFAULT_CHARTS.to_vec(),
+            brush: Filtering::default(),
+            map_rgba: None,
+            last_sub: None,
             geno_sort: GenoSort::default(),
             show_shortcuts: false,
             show_log: false,
@@ -578,6 +601,9 @@ impl AppState {
         self.map_dirty = true;
         self.selection = None;
         self.highlight = None;
+        self.brush.reset();
+        self.map_rgba = None;
+        self.last_sub = None;
         // A new session follows nobody; display choices stay.
         self.debugger = self.debugger.for_new_session();
         self.command_palette.close();
@@ -614,6 +640,14 @@ impl AppState {
         self.frame = Some(frame);
         self.frames_applied += 1;
         self.map_dirty = true;
+        let live = self.playback.is_none();
+        self.brush.refresh(self.frame.as_deref(), live);
+    }
+
+    /// Takes in the rows a recording scan has read; true when there were
+    /// some (or the scan is still running, so the UI keeps polling).
+    pub fn poll_scan(&mut self) -> bool {
+        self.brush.poll_scan()
     }
 
     /// Where the playback stands; `None` for a simulation.
@@ -996,8 +1030,18 @@ impl AppState {
     }
 
     pub fn subscription(&self) -> Subscription {
+        let mut layers = vec![self.map.layer];
+        let families = self.brush.add_open && self.brush.draft.kind == filtering::DraftKind::Family;
+        for l in self
+            .brush
+            .layers(self.chart_tab == ChartTab::Scatter, families)
+        {
+            if !layers.contains(&l) {
+                layers.push(l);
+            }
+        }
         Subscription {
-            layers: vec![self.map.layer],
+            layers,
             inspect_cell: self.selection,
             genotypes_top_n: GENOTYPE_LIST_LEN,
             lineage_of: self.highlight,
@@ -1276,7 +1320,41 @@ impl AppState {
     /// Re-sends the subscription (layer or selection changed).
     pub fn subscribe(&mut self) {
         let sub = self.subscription();
+        self.last_sub = Some(sub.clone());
         self.send(Command::Subscribe(sub));
+    }
+
+    /// Re-sends the subscription when what the charts need has changed
+    /// (a filter condition, the scatter plot's axes); called every frame.
+    pub fn sync_subscription(&mut self) {
+        if self.phase == Phase::Ready
+            && self.restarting.is_none()
+            && self
+                .last_sub
+                .as_ref()
+                .is_some_and(|l| *l != self.subscription())
+        {
+            self.subscribe();
+        }
+    }
+
+    /// Changes the organism filter: the map is drawn again, the layers the
+    /// conditions read are subscribed to and the subset's series starts
+    /// over.
+    pub fn edit_filter(&mut self, f: impl FnOnce(&mut avida_viewmodel::Filter)) {
+        let v = self.brush.version;
+        self.brush.edit(f);
+        if self.brush.version != v {
+            let path = self.playback.as_ref().map(|p| p.path.clone());
+            self.brush.restart_scan(path);
+            self.brush.refresh(self.frame.as_deref(), true);
+            self.map_dirty = true;
+            self.subscribe();
+        }
+    }
+
+    pub fn clear_filter(&mut self) {
+        self.edit_filter(|f| f.clear());
     }
 
     pub fn request(&mut self, request: Request) {
@@ -1589,6 +1667,44 @@ mod tests {
         assert_eq!(s.subscription().inspect_cell, Some(42));
         s.select_cell(Some(42));
         assert!(s.take_commands().is_empty(), "same cell, no command");
+    }
+
+    #[test]
+    fn filtering_only_changes_the_subscription_and_ends_with_the_run() {
+        use avida_viewmodel::{Condition, Prop};
+        let mut s = ready();
+        s.apply_frame(Arc::new(frame_with_map()));
+        s.take_commands();
+        s.edit_filter(|f| f.set(Condition::Genotype { id: 7 }));
+        let cmds = s.take_commands();
+        assert_eq!(cmds.len(), 1, "nothing but a subscription: {cmds:?}");
+        match &cmds[0] {
+            Command::Subscribe(sub) => {
+                assert_eq!(sub.layers[0], LayerId::Genotype, "the map's layer first");
+                for p in Prop::ALL {
+                    assert!(sub.layers.contains(&p.layer()), "{p:?}");
+                }
+                assert_eq!(sub.genotypes_top_n, GENOTYPE_LIST_LEN);
+            }
+            c => panic!("{c:?}"),
+        }
+        assert!(s.brush.selection().is_some());
+        assert!(s.map_dirty, "the map is drawn again, dimmed");
+        // The scatter plot's axes follow the open view; the sync sends them
+        // only when they changed.
+        s.clear_filter();
+        s.take_commands();
+        s.chart_tab = ChartTab::Scatter;
+        s.sync_subscription();
+        let cmds = s.take_commands();
+        assert!(matches!(&cmds[..], [Command::Subscribe(sub)]
+            if sub.layers == vec![LayerId::Genotype, LayerId::GenomeLen, LayerId::Fitness]));
+        s.sync_subscription();
+        assert!(s.take_commands().is_empty());
+        // Another run starts without a filter.
+        s.edit_filter(|f| f.set(Condition::Genotype { id: 7 }));
+        s.closed();
+        assert!(!s.brush.is_active() && s.brush.selection().is_none());
     }
 
     #[test]

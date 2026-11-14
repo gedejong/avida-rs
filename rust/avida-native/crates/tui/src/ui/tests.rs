@@ -10,7 +10,9 @@ use super::{draw, MIN_SIZE};
 use crate::actions::{Action, PaletteState};
 use crate::app::{App, GenoView, Screen};
 use crate::config_view::tests::{setting, setup};
-use crate::fixtures::{app_with, frame_with_map, frame_with_org, genotype, organism};
+use crate::fixtures::{
+    app_with, frame_with_map, frame_with_org, frame_with_values, genotype, organism,
+};
 
 fn render(app: &mut App, w: u16, h: u16) -> String {
     let mut t = Terminal::new(TestBackend::new(w, h)).unwrap();
@@ -84,9 +86,12 @@ fn a_parasite_thread_lists_its_own_memory_space() {
 fn the_tab_strip_fits_80_columns_with_the_new_screens() {
     let mut a = debugging();
     let t = render(&mut a, 80, 24);
-    has(&t, "U Debug");
+    // At 80 columns the longer titles are shortened so that every tab fits.
+    has(&t, "U Dbg");
     has(&t, "F Cfg");
     has(&t, "O Opts");
+    has(&t, "K Open");
+    has(&render(&mut a, 100, 30), "U Debug");
 }
 
 #[test]
@@ -600,4 +605,381 @@ fn the_help_overlay_explains_the_memory_marks() {
     let t = render(&mut a, 80, 24);
     has(&t, "Marks in the memory listings");
     has(&t, "I R W F");
+}
+
+fn event(action: &str, args: &str) -> avida_session::EventLine {
+    avida_session::EventLine {
+        text: format!("u 0:1:end {action} {args}"),
+        trigger: "u".into(),
+        timing: "0:1:end".into(),
+        action: action.into(),
+        args: args.into(),
+    }
+}
+
+fn with_events(a: &mut App, events: Vec<avida_session::EventLine>) {
+    let mut s = crate::config_view::tests::setup(Vec::new());
+    s.events = events;
+    a.setup = Some(Arc::new(s));
+}
+
+#[test]
+fn the_open_endedness_screen_explains_an_empty_events_file() {
+    let mut a = app_with(frame_with_map());
+    with_events(&mut a, Vec::new());
+    a.on_key(key(ratatui::crossterm::event::KeyCode::Char('K')));
+    assert_eq!(a.screen, Screen::OpenEnded);
+    let t = render(&mut a, 80, 24);
+    has(&t, "has neither PrintMODESData nor");
+    has(
+        &t,
+        "PrintPhylogenyMetrics, so there is nothing to chart yet.",
+    );
+    has(&t, "u 0:1:end PrintMODESData modes.dat 100 500");
+    has(&t, "u 0:200:end PrintPhylogenyMetrics phylogeny.dat");
+    // The tab strip names the screen and its key.
+    has(&render(&mut a, 100, 30), "K Open");
+}
+
+#[test]
+fn the_open_endedness_screen_says_when_modes_rows_start() {
+    let mut a = app_with(frame_with_map());
+    with_events(&mut a, vec![event("PrintMODESData", "modes.dat 100 500")]);
+    a.goto(Screen::OpenEnded);
+    let t = render(&mut a, 80, 24);
+    has(&t, "No row has been written yet");
+    has(&t, "Rows start after 600 generations");
+}
+
+#[test]
+fn the_open_endedness_screen_charts_rows_and_explains_the_chosen_chart() {
+    use avida_viewmodel::{FilterMode, ModesHistory, ModesRow, OpenEnded, PhyloHistory};
+    let row = |g: i32| ModesRow {
+        update: g * 10,
+        generation: f64::from(g),
+        snapshot_update: g * 10 - 20,
+        change: i64::from(g % 3),
+        novelty: 1,
+        complexity: 10 + i64::from(g),
+        ecology: f64::from(g) / 4.0,
+        persistent: 2,
+        skeletons: 2,
+        living: 5,
+        cumulative_novelty: 3,
+    };
+    let mut frame = frame_with_map();
+    frame.open_ended = OpenEnded {
+        modes: vec![ModesHistory {
+            filename: "modes.dat".into(),
+            resolution: 1,
+            filter: 2,
+            mode: FilterMode::Nearest,
+            rows: (3..12).map(row).collect(),
+        }],
+        phylogeny: vec![PhyloHistory {
+            filename: "phylogeny.dat".into(),
+            rows: Vec::new(),
+        }],
+    };
+    let mut a = app_with(frame);
+    with_events(
+        &mut a,
+        vec![
+            event("PrintMODESData", "modes.dat 1 2"),
+            event("PrintPhylogenyMetrics", "phylogeny.dat"),
+        ],
+    );
+    a.goto(Screen::OpenEnded);
+    let t = render(&mut a, 100, 30);
+    has(
+        &t,
+        "MODES, persistence lag t = 2 generations, nearest filter",
+    );
+    has(&t, "< 1/2 >");
+    has(&t, "Change");
+    has(&t, "Change is the number of skeletons");
+    // Down chooses the next chart and its explanation replaces the first.
+    a.on_key(key(ratatui::crossterm::event::KeyCode::Down));
+    let t = render(&mut a, 100, 30);
+    has(&t, "Novelty is the number of skeletons");
+    // Right switches to the phylogeny group, which has no row yet.
+    a.on_key(key(ratatui::crossterm::event::KeyCode::Right));
+    let t = render(&mut a, 100, 30);
+    has(&t, "Genealogy of the genotypes");
+    has(&t, "No row has been written yet.");
+}
+
+#[test]
+fn the_open_endedness_screen_in_a_playback_says_the_rows_are_not_recorded() {
+    let mut a = app_with(frame_with_map());
+    a.apply_playback(Some(avida_session::PlaybackInfo {
+        path: "x.avrec".into(),
+        frames: 4,
+        index: 0,
+        update: 0,
+        first_update: 0,
+        last_update: 30,
+        cut_tail_bytes: 0,
+        layers: Vec::new(),
+    }));
+    a.goto(Screen::OpenEnded);
+    let t = render(&mut a, 120, 24);
+    has(&t, "only available in a live run");
+}
+
+// --- the organism filter ---------------------------------------------------
+
+mod filtering {
+    use ratatui::buffer::Buffer;
+    use ratatui::crossterm::event::{KeyCode, KeyEvent};
+    use ratatui::style::Color;
+
+    use super::*;
+    use crate::color::ColorMode;
+    use crate::filtering::Kind;
+    use avida_viewmodel::{Condition, Prop};
+
+    fn render_buf(app: &mut App, w: u16, h: u16) -> Buffer {
+        let mut t = Terminal::new(TestBackend::new(w, h)).unwrap();
+        t.draw(|f| draw(f, app)).unwrap().buffer.clone()
+    }
+
+    fn key(c: KeyCode) -> KeyEvent {
+        KeyEvent::new(c, ratatui::crossterm::event::KeyModifiers::NONE)
+    }
+
+    fn filtered(c: Condition) -> App {
+        let mut a = app_with(frame_with_values());
+        a.edit_filter(|f| f.set(c));
+        a.take_commands();
+        a
+    }
+
+    #[test]
+    fn the_bar_names_the_conditions_and_counts_the_matches() {
+        let mut a = filtered(Condition::Genotype { id: 8 });
+        let t = render(&mut a, 80, 24);
+        has(&t, "Filter: Genotype 051-bbbbb");
+        has(&t, "1 of 3 organisms match (33%)");
+        // Two conditions: both labels, the count at the right edge.
+        a.edit_filter(|f| f.set(Condition::range(Prop::Fitness, 0.5, f64::INFINITY)));
+        let t = render(&mut a, 80, 24);
+        let bar = t.lines().find(|l| l.contains("Filter:")).unwrap();
+        assert!(bar.contains("Genotype 051-bbbbb · Fitness ≥ 0.5"), "{bar}");
+        assert!(bar.ends_with("match (33%)"), "{bar}");
+        // A narrow terminal keeps the count and shortens the rest.
+        let t = render(&mut a, 40, 12);
+        let bar = t.lines().find(|l| l.contains("Filter:")).unwrap();
+        assert!(bar.contains("1 of 3 match (33%)"), "{bar}");
+        assert!(bar.chars().count() <= 40, "{bar}");
+        // No filter, no bar.
+        a.clear_filter();
+        assert!(!render(&mut a, 80, 24).contains("Filter:"));
+    }
+
+    #[test]
+    fn the_bar_says_when_nothing_matches_and_when_a_layer_is_missing() {
+        let mut a = filtered(Condition::range(Prop::Fitness, 100.0, 200.0));
+        let t = render(&mut a, 80, 24);
+        has(&t, "Fitness 100 to 200");
+        has(&t, "No organism matches");
+        // The fixture has no merit layer.
+        let mut a = filtered(Condition::range(Prop::Merit, 0.0, 1.0));
+        has(&render(&mut a, 80, 24), "Merit 0 to 1 (no data)");
+    }
+
+    #[test]
+    fn the_map_dims_the_organisms_the_filter_leaves_out() {
+        let mut a = filtered(Condition::Genotype { id: 8 });
+        let buf = render_buf(&mut a, 80, 24);
+        let g = a.geom.unwrap();
+        let at = |x: u16, y: u16| buf[(g.area.x + x, g.area.y + y)].clone();
+        // The world is 3x2: column 0 holds genotype 7 twice, column 1
+        // genotype 8 over an empty cell. Dimmed cells are grey.
+        let grey = |c: Color| matches!(c, Color::Rgb(r, g, b) if r == g && g == b);
+        let dimmed = at(0, 0);
+        assert!(grey(dimmed.fg) && grey(dimmed.bg), "{dimmed:?}");
+        let kept = at(1, 0);
+        assert!(!grey(kept.fg), "{kept:?}");
+        // Without the filter nothing is grey.
+        a.clear_filter();
+        let buf = render_buf(&mut a, 80, 24);
+        let g = a.geom.unwrap();
+        assert!(!grey(buf[(g.area.x, g.area.y)].fg));
+    }
+
+    #[test]
+    fn dimming_survives_16_colours_and_no_colour() {
+        let mut a = filtered(Condition::Genotype { id: 8 });
+        a.color_mode = ColorMode::Ansi16;
+        let buf = render_buf(&mut a, 80, 24);
+        let g = a.geom.unwrap();
+        let dim = &buf[(g.area.x, g.area.y)];
+        let kept = &buf[(g.area.x + 1, g.area.y)];
+        assert_eq!((dim.fg, dim.bg), (Color::DarkGray, Color::DarkGray));
+        assert_ne!(kept.fg, Color::DarkGray);
+        // No colour, genotypes: letters take the place of colours, and the
+        // others are the light shade.
+        a.color_mode = ColorMode::Mono;
+        let t = render(&mut a, 80, 24);
+        has(&t, "░ no match");
+        let buf = render_buf(&mut a, 80, 24);
+        let g = a.geom.unwrap();
+        assert_eq!(buf[(g.area.x, g.area.y)].symbol(), "░");
+        let kept = buf[(g.area.x + 2, g.area.y)].symbol().to_string();
+        assert!(kept != "░" && kept != " " && kept != "·", "{kept:?}");
+        // No colour, another layer: half blocks, light for the others.
+        a.set_layer(avida_session::LayerId::Fitness);
+        let buf = render_buf(&mut a, 80, 24);
+        let g = a.geom.unwrap();
+        assert_eq!(buf[(g.area.x, g.area.y)].symbol(), "░");
+        assert_eq!(buf[(g.area.x + 1, g.area.y)].symbol(), "▀");
+    }
+
+    #[test]
+    fn the_dialog_lists_kinds_and_walks_through_a_range() {
+        let mut a = app_with(frame_with_values());
+        a.on_key(key(KeyCode::Char('/')));
+        let t = render(&mut a, 80, 24);
+        has(&t, "Filter organisms");
+        has(&t, "Add condition");
+        has(&t, "▸ Performs task");
+        has(&t, "Does not perform task");
+        has(&t, "Region of the map");
+        has(&t, "Esc closes");
+        for _ in 0..Kind::all()
+            .iter()
+            .position(|&k| k == Kind::Prop(Prop::Fitness))
+            .unwrap()
+        {
+            a.on_key(key(KeyCode::Down));
+        }
+        a.on_key(key(KeyCode::Enter));
+        a.on_key(key(KeyCode::Char('2')));
+        let t = render(&mut a, 80, 24);
+        has(&t, "Merit divided by gestation time.");
+        has(&t, "Now from 1 to 4.");
+        has(&t, "[at least]");
+        has(&t, "Value");
+        has(&t, "2_");
+        a.on_key(key(KeyCode::Enter));
+        let t = render(&mut a, 80, 24);
+        has(&t, "Fitness ≥ 2");
+        has(&t, "2 of 3 organisms match");
+        assert!(!t.contains("Filter organisms"), "the dialog closed:\n{t}");
+        // The list of conditions.
+        a.on_key(key(KeyCode::Char('/')));
+        a.on_key(key(KeyCode::Tab));
+        let t = render(&mut a, 80, 24);
+        has(&t, "Conditions (1)");
+        has(&t, "1. Fitness ≥ 2");
+        has(&t, "Del removes");
+    }
+
+    #[test]
+    fn the_dialog_fits_the_smallest_terminal() {
+        let mut a = app_with(frame_with_values());
+        a.on_key(key(KeyCode::Char('/')));
+        let t = render(&mut a, 40, 10);
+        has(&t, "Filter organisms");
+        has(&t, "Performs task");
+        for _ in 0..12 {
+            a.on_key(key(KeyCode::Down));
+        }
+        let t = render(&mut a, 40, 10);
+        has(&t, "▸ Region of the map");
+    }
+
+    #[test]
+    fn the_histogram_overlays_the_matching_organisms() {
+        let mut a = filtered(Condition::Genotype { id: 7 });
+        a.set_layer(avida_session::LayerId::Fitness);
+        a.goto(Screen::Histogram);
+        let t = render(&mut a, 80, 24);
+        has(&t, "Filter: Genotype 050-aaaaa");
+        has(&t, "Histogram: Fitness");
+        // Genotype 7 holds the fitness 1 and 2 cells; 4 belongs to genotype 8.
+        assert!(t.lines().any(|l| l.contains("1 of 1")), "{t}");
+        assert!(t.lines().any(|l| l.contains("0 of 1")), "{t}");
+        has(&t, "█ matching the filter, ░ the others.");
+        // The genotype view overlays per genotype.
+        a.set_layer(avida_session::LayerId::Genotype);
+        let t = render(&mut a, 80, 24);
+        assert!(
+            t.lines()
+                .any(|l| l.contains("050-aaaaa") && l.contains("2 of 2")),
+            "{t}"
+        );
+        assert!(
+            t.lines()
+                .any(|l| l.contains("051-bbbbb") && l.contains("0 of 1")),
+            "{t}"
+        );
+    }
+
+    #[test]
+    fn the_tasks_show_both_shares() {
+        let mut a = filtered(Condition::Genotype { id: 8 });
+        a.goto(Screen::Stats);
+        let t = render(&mut a, 80, 24);
+        has(&t, "Tasks: all organisms, matching ones");
+        // Cell 0 of three organisms performs the task; the one matching
+        // organism does not.
+        let row = t.lines().find(|l| l.contains("nand")).unwrap();
+        assert!(row.contains("33%") && row.contains("0%"), "{row}");
+    }
+
+    #[test]
+    fn the_time_series_gets_a_second_line_for_the_subset() {
+        let mut a = filtered(Condition::Genotype { id: 7 });
+        let mut next = frame_with_values();
+        next.update = 13;
+        a.apply_frame(Arc::new(next));
+        let rows: Vec<_> = (10..14)
+            .map(|u| avida_session::UpdateRow {
+                update: u,
+                ave_fitness: f64::from(u),
+                ..Default::default()
+            })
+            .collect();
+        a.apply_rows(rows);
+        a.goto(Screen::Charts);
+        let t = render(&mut a, 100, 30);
+        has(&t, "Filter: Genotype 050-aaaaa");
+        has(&t, "Average fitness");
+        has(&t, "• matching");
+        // A measure without an organism counterpart has no subset line.
+        a.chart_metrics = vec![crate::metrics::Metric::Births];
+        let t = render(&mut a, 100, 30);
+        has(&t, "no line for the matching organisms");
+    }
+
+    #[test]
+    fn the_help_and_palette_list_the_filter() {
+        let mut a = app_with(frame_with_values());
+        a.show_help = true;
+        a.help_scroll = 1000;
+        let t = render(&mut a, 100, 40);
+        has(&t, "Filter");
+        has(&t, "Filter organisms: add a condition");
+        has(&t, "Clear the organism filter");
+        a.show_help = false;
+        a.on_key(key(KeyCode::Char(':')));
+        for c in "filter".chars() {
+            a.on_key(key(KeyCode::Char(c)));
+        }
+        let t = render(&mut a, 80, 24);
+        has(&t, "Filter: Filter organisms");
+        has(&t, "Filter: Clear the organism filter");
+        has(&t, "Filter: Show or remove the filter's conditions");
+        // Enter runs the first match.
+        for _ in 0.."filter".len() {
+            a.on_key(key(KeyCode::Backspace));
+        }
+        for c in "add a cond".chars() {
+            a.on_key(key(KeyCode::Char(c)));
+        }
+        a.on_key(key(KeyCode::Enter));
+        assert!(a.filtering.dialog.is_some());
+    }
 }

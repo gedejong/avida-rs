@@ -14,6 +14,8 @@ pub struct Actions2State {
     pub deme2: crate::actions_deme2::Deme2State,
     pub env: crate::actions_env::EnvState,
     pub a3: crate::actions3::Actions3State,
+    pub modes: crate::modes::ModesState,
+    pub phylo: crate::phylo_actions::PhyloState,
 }
 
 impl World {

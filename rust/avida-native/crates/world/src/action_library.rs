@@ -449,10 +449,20 @@ pub const REGISTERED_ACTIONS: &[(&str, &str)] = &[
     ("SaveFlameData", "Arguments: [string filename='flame']"),
 ];
 
+/// Actions this port adds that the reference binary lacks. They are known to
+/// the event loader and to `describe`, but not part of `describe_all`, which
+/// reproduces the reference listing.
+const EXTENSION_ACTIONS: &[(&str, &str)] = &[
+    ("PrintMODESData", "Arguments: <string file> <int resolution [generations]> <int filter t [generations]> [nearest|any]\n  Port extension: the MODES open-endedness metrics (ARCHITECTURE.md)."),
+    ("PrintPhylogenyMetrics", "Arguments: [string fname=\"phylogeny.dat\"]\n  Port extension: phylogeny metrics of the genotype tree (ARCHITECTURE.md)."),
+    ("SavePhylogeny", "Arguments: [string fname=\"phylogeny_tree.csv\"]\n  Port extension: the pruned genotype tree as an ALife standard phylogeny CSV, rewritten on every call."),
+];
+
 /// `cActionLibrary::Supports(key)`: is `name` registered (any case)?
 pub fn is_registered(name: &str) -> bool {
     REGISTERED_ACTIONS
         .iter()
+        .chain(EXTENSION_ACTIONS)
         .any(|(n, _)| n.eq_ignore_ascii_case(name))
 }
 
@@ -460,6 +470,7 @@ pub fn is_registered(name: &str) -> bool {
 pub fn describe(name: &str) -> &'static str {
     REGISTERED_ACTIONS
         .iter()
+        .chain(EXTENSION_ACTIONS)
         .find(|(n, _)| n.eq_ignore_ascii_case(name))
         .map_or("(Not Available)", |(_, d)| d)
 }

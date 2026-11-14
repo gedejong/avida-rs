@@ -20,6 +20,7 @@ pub mod color;
 pub mod config_view;
 pub mod debugger;
 mod features;
+pub mod filtering;
 #[cfg(test)]
 pub(crate) mod fixtures;
 pub mod history;

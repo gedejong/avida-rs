@@ -32,6 +32,8 @@ pub enum Action {
     FitMap,
     ClearSelection,
     ClearHighlight,
+    ClearFilter,
+    SelectRegion,
     HighlightDominant,
     InspectDominant,
     Tab(SideTab),
@@ -232,6 +234,20 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
         if state.highlight.is_some() {
             v.push(item(Action::ClearHighlight, "Genotypes", "Clear highlight"));
         }
+        if state.brush.is_active() {
+            v.push(
+                item(Action::ClearFilter, "Charts", "Clear the organism filter")
+                    .words("conditions brush"),
+            );
+        }
+        v.push(
+            item(
+                Action::SelectRegion,
+                "Charts",
+                "Filter by a region of the map",
+            )
+            .words("brush rectangle select"),
+        );
         if state.frame.as_ref().is_some_and(|f| f.dominant.is_some()) {
             v.push(
                 item(
@@ -506,6 +522,8 @@ pub fn perform(
         Action::FitMap => state.viewport.auto_fit = true,
         Action::ClearSelection => state.select_cell(None),
         Action::ClearHighlight => state.clear_highlight(),
+        Action::ClearFilter => state.clear_filter(),
+        Action::SelectRegion => state.brush.region_mode = true,
         Action::HighlightDominant => {
             if let Some(id) = state.dominant_id() {
                 state.set_highlight(Some(id));

@@ -16,4 +16,5 @@ avida-config = { path = "../config" }
 avida-world = { path = "../world" }
 
 [dev-dependencies]
+avida-genome = { path = "../genome" }
 avida-hardware = { path = "../hardware" }

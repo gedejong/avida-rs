@@ -31,6 +31,10 @@ pub const SHORTCUT_GROUPS: &[(&str, &[(&str, &str)])] = &[
             ("Esc", "Clear the selection and highlight"),
             ("Scroll / Pinch", "Zoom at the pointer"),
             ("Drag", "Move the view"),
+            (
+                "Shift drag",
+                "Keep only the organisms in a region (a filter)",
+            ),
         ],
     ),
     (
@@ -39,6 +43,13 @@ pub const SHORTCUT_GROUPS: &[(&str, &[(&str, &str)])] = &[
             ("Drag", "Move along the run"),
             ("Pinch / Cmd scroll", "Zoom into part of the run"),
             ("Double-click", "Show the whole run"),
+            ("Drag on a histogram", "Keep only organisms in that range"),
+            (
+                "Drag on a scatter plot",
+                "Keep only organisms in a rectangle",
+            ),
+            ("Click a task", "Keep only organisms that perform it"),
+            ("Shift click a task", "Keep only organisms that do not"),
         ],
     ),
     (

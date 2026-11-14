@@ -365,6 +365,7 @@ fn main_screens(s: &mut Shots, d: &mut Driver, tag: &str) {
         Screen::Log,
         Screen::Config,
         Screen::Options,
+        Screen::OpenEnded,
         Screen::Blank,
     ] {
         go(d, screen);
@@ -453,6 +454,86 @@ fn sweep(mode: &'static str, color: ColorMode, background: Background) {
     d.app.cursor = (5, 5);
     settle(&mut d);
     s.shot(&mut d, "map-cursor-on-empty-cell");
+
+    // The organism filter: the dialog's steps, then the screens with it.
+    go(&mut d, Screen::Map);
+    d.app.cursor = (12, 6);
+    press(&mut d, KeyCode::Char('/'));
+    s.shot(&mut d, "filter-dialog-kinds");
+    press(&mut d, KeyCode::Down);
+    press(&mut d, KeyCode::Down);
+    press(&mut d, KeyCode::Enter);
+    settle(&mut d);
+    s.shot(&mut d, "filter-dialog-fitness-empty");
+    typed(&mut d, "0.5");
+    press(&mut d, KeyCode::Right);
+    press(&mut d, KeyCode::Right);
+    press(&mut d, KeyCode::Tab);
+    typed(&mut d, "x");
+    s.shot(&mut d, "filter-dialog-fitness-between");
+    press(&mut d, KeyCode::Enter);
+    s.shot(&mut d, "filter-dialog-fitness-error");
+    press(&mut d, KeyCode::Esc);
+    press(&mut d, KeyCode::Esc);
+    press(&mut d, KeyCode::Char('/'));
+    for _ in 0..13 {
+        press(&mut d, KeyCode::Down);
+    }
+    press(&mut d, KeyCode::Enter);
+    s.shot(&mut d, "filter-dialog-region");
+    press(&mut d, KeyCode::Esc);
+    press(&mut d, KeyCode::Esc);
+    d.app.edit_filter(|f| {
+        f.set(avida_viewmodel::Condition::region((0, 0), (14, 12)));
+        f.set(avida_viewmodel::Condition::Task {
+            task: 0,
+            performs: false,
+        });
+        f.set(avida_viewmodel::Condition::range(
+            avida_viewmodel::Prop::Age,
+            4.0,
+            f64::INFINITY,
+        ));
+    });
+    d.pump();
+    settle(&mut d);
+    s.shot(&mut d, "filter-map");
+    press(&mut d, KeyCode::Char('/'));
+    press(&mut d, KeyCode::Tab);
+    s.shot(&mut d, "filter-dialog-conditions");
+    press(&mut d, KeyCode::Esc);
+    d.app.set_layer(avida_session::LayerId::Fitness);
+    settle(&mut d);
+    s.shot(&mut d, "filter-map-fitness");
+    d.app.perform(Action::BigCells, false);
+    s.shot(&mut d, "filter-map-big-cells");
+    d.app.perform(Action::BigCells, false);
+    for (screen, name) in [
+        (Screen::Histogram, "filter-histogram-fitness"),
+        (Screen::Stats, "filter-stats"),
+        (Screen::Charts, "filter-charts"),
+    ] {
+        go(&mut d, screen);
+        s.shot(&mut d, name);
+    }
+    d.app.set_layer(avida_session::LayerId::Genotype);
+    go(&mut d, Screen::Histogram);
+    s.shot(&mut d, "filter-histogram-genotypes");
+    d.app.edit_filter(|f| {
+        f.set(avida_viewmodel::Condition::range(
+            avida_viewmodel::Prop::Fitness,
+            1.0e9,
+            f64::INFINITY,
+        ));
+    });
+    d.pump();
+    settle(&mut d);
+    go(&mut d, Screen::Map);
+    s.shot(&mut d, "filter-nothing-matches");
+    d.app.perform(Action::FilterClear, false);
+    d.pump();
+    settle(&mut d);
+    assert!(!d.app.filtering.is_active());
 
     // Genotypes in their three views.
     go(&mut d, Screen::Genotypes);
@@ -637,4 +718,61 @@ fn every_screen_in_every_colour_mode_and_size() {
         sweep(name, mode, background);
     }
     eprintln!("wrote {}", out_dir().display());
+}
+
+/// The open-endedness screen of a run whose events file asks for both
+/// measures: before the first MODES row, and with rows, with the chosen
+/// chart moved and the group switched. (A run without either action is part
+/// of the sweep above.)
+#[test]
+#[ignore = "a screen sweep for design review; run it explicitly"]
+fn the_open_endedness_screen_with_rows() {
+    set_theme(Background::Dark, ColorMode::TrueColor);
+    let dir = fresh_config("screens_oe");
+    let events = fs::read_to_string(dir.join("events.cfg")).unwrap();
+    fs::write(
+        dir.join("events.cfg"),
+        format!(
+            "u 0:1:end PrintMODESData modes.dat 1 2\n\
+             u 0:1:end PrintMODESData modes_any.dat 1 1 any\n\
+             u 0:5:end PrintPhylogenyMetrics phylogeny.dat\n{events}"
+        ),
+    )
+    .unwrap();
+    let mut d = Driver::start(dir, Vec::new(), ColorMode::TrueColor).unwrap();
+    d.freeze_clock(0.0);
+    let mut s = Shots::new("oe", false);
+    wait(&mut d, "the first frame", |d| {
+        d.app.frame.as_ref().is_some_and(|f| f.map.is_some())
+    });
+    settle(&mut d);
+    for _ in 0..3 {
+        d.app.perform(Action::StepUpdate, false);
+        d.pump();
+    }
+    wait(&mut d, "three updates", |d| d.app.history.len() >= 3);
+    settle(&mut d);
+    go(&mut d, Screen::OpenEnded);
+    s.shot(&mut d, "waiting");
+    d.app.goto(Screen::Map);
+    d.app.perform(Action::RunPause, false);
+    wait(&mut d, "the end", |d| {
+        d.app.run_state() == RunState::Finished
+    });
+    settle(&mut d);
+    go(&mut d, Screen::OpenEnded);
+    s.shot(&mut d, "rows");
+    for _ in 0..4 {
+        press(&mut d, KeyCode::Down);
+    }
+    s.shot(&mut d, "rows-fifth-chart-chosen");
+    press(&mut d, KeyCode::Right);
+    s.shot(&mut d, "rows-second-group");
+    press(&mut d, KeyCode::Right);
+    for _ in 0..6 {
+        press(&mut d, KeyCode::Down);
+    }
+    s.shot(&mut d, "rows-genealogy-last-chart");
+    d.shutdown(Duration::from_secs(5));
+    eprintln!("wrote {}", out_dir().join("oe").display());
 }

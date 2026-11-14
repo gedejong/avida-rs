@@ -85,6 +85,7 @@ pub fn frame_with_map() -> Frame {
             .into(),
         layers,
         lineage: Vec::new(),
+        open_ended: Default::default(),
     }
 }
 

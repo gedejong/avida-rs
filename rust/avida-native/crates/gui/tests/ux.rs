@@ -176,7 +176,6 @@ fn charts_zoom_along_the_run_and_come_back() {
     });
     h.get_by_role_and_label(Role::Tab, "Charts").click();
     settle(&mut h);
-    h.get_by_label_contains("Drag sideways to move along the run.");
     let area = h.state().state().chart_area.expect("the charts are drawn");
     // Drag the first chart to the right: earlier updates come into view
     // and the charts no longer follow the whole run.
@@ -193,7 +192,7 @@ fn charts_zoom_along_the_run_and_come_back() {
     settle(&mut h);
     h.get_by_label("Show the whole run").click();
     settle(&mut h);
-    h.get_by_label_contains("Drag sideways to move along the run.");
+    assert!(h.query_by_label("Show the whole run").is_none());
 
     // Hovering a chart reads the values at that update into the titles.
     h.hover_at(from);

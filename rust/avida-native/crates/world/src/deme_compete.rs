@@ -617,7 +617,8 @@ impl World {
         org.state.parent_ft = orig_parent_ft;
 
         // Activate the organism in the population...
-        let org_survived = self.activate_organism(org, membership, cell_id, true, true, None);
+        let org_survived =
+            self.activate_organism(Box::new(org), membership, cell_id, true, true, None);
         // only assign an avatar cell if the org lived through birth
         self.place_offspring_avatar(cell_id, org_survived, orig_uid);
         if let Some(f) = self.fatal.borrow_mut().take() {

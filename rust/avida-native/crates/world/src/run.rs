@@ -421,7 +421,9 @@ impl World {
             Action::Deme2(a) => self.run_deme2_action(a),
             Action::Env(a) => self.run_env_action(a),
             Action::MiniTrace(m) => self.run_mini_trace_action(m),
+            Action::Phylo(a) => self.run_phylo_action(a),
             Action::A3(a) => self.run_action3(a),
+            Action::Modes(a) => self.run_modes_action(a),
         }
     }
 
@@ -783,6 +785,7 @@ impl Stepper {
         if w.done {
             return Ok(false);
         }
+        let t_begin = std::time::Instant::now();
         w.process_events();
         w.flush_action_stdout(stdout)?;
         w.check_fatal()?;
@@ -806,6 +809,9 @@ impl Stepper {
         self.step_size = 1.0 / f64::from(self.ud_size);
         self.slice = 0;
         self.in_update = true;
+        if let Some(p) = self.parallel.as_mut() {
+            p.stats.begin_time += t_begin.elapsed();
+        }
         Ok(true)
     }
 

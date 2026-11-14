@@ -35,6 +35,12 @@ pub struct Tokens {
     pub on_accent: Color32,
     /// Accent at low opacity (selected rows, chips).
     pub accent_soft: Color32,
+    /// The one colour of the organism filter: the matching subset on the
+    /// map, in the charts and in the scatter plot. A saturated magenta
+    /// that none of the layer palettes (viridis, cividis, Okabe-Ito) has.
+    pub filter: Color32,
+    /// The filter colour at low opacity (chips, bands).
+    pub filter_soft: Color32,
     /// Behind the world on the map (empty cells).
     pub map_backdrop: Color32,
     /// Around the map canvas.
@@ -61,6 +67,8 @@ pub const DARK: Tokens = Tokens {
     accent: Color32::from_rgb(0x7b, 0x8c, 0xff),
     on_accent: Color32::from_rgb(0x0d, 0x10, 0x26),
     accent_soft: Color32::from_rgba_premultiplied(0x1e, 0x23, 0x40, 0x60),
+    filter: Color32::from_rgb(0xff, 0x5c, 0xc4),
+    filter_soft: Color32::from_rgba_premultiplied(0x4a, 0x1b, 0x3b, 0x60),
     map_backdrop: Color32::from_rgb(0x0e, 0x10, 0x14),
     canvas: Color32::from_rgb(0x11, 0x13, 0x17),
     success: Color32::from_rgb(0x4c, 0xc3, 0x8a),
@@ -85,6 +93,8 @@ pub const LIGHT: Tokens = Tokens {
     accent: Color32::from_rgb(0x43, 0x56, 0xe0),
     on_accent: Color32::from_rgb(0xff, 0xff, 0xff),
     accent_soft: Color32::from_rgba_premultiplied(0x2a, 0x36, 0x8c, 0x22),
+    filter: Color32::from_rgb(0xc4, 0x12, 0x8a),
+    filter_soft: Color32::from_rgba_premultiplied(0x5a, 0x06, 0x3e, 0x22),
     map_backdrop: Color32::from_rgb(0xe6, 0xe9, 0xef),
     canvas: Color32::from_rgb(0xfa, 0xfb, 0xfc),
     success: Color32::from_rgb(0x0f, 0x7a, 0x4c),
@@ -375,6 +385,7 @@ mod tests {
                 ("warning", t.warning),
                 ("danger", t.danger),
                 ("info", t.info),
+                ("filter", t.filter),
             ] {
                 for (on, bg) in [("bg", t.bg), ("surface", t.surface)] {
                     let c = contrast(fg, bg);

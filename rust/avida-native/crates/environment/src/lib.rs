@@ -96,6 +96,7 @@ pub mod task;
 pub use context_phenotype::ContextPhenotype;
 pub use env_reqs::EnvReqs;
 pub use environment::{ActionTrigger, Environment, INPUT_SIZE_DEFAULT, OUTPUT_SIZE_DEFAULT};
+pub use evaluation::DeferredReaction;
 pub use mutation_rates::MutationRates;
 pub use reaction::{
     proc_type, CellBox, ContextReactionRequisite, PhenPlastBonusMethod, Reaction, ReactionLib,

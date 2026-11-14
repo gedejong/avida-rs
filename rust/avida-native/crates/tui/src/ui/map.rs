@@ -37,6 +37,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     } else {
         (area, None)
     };
+    let main = super::filter_bar::take(f, app, main);
     let [grid, legend, info] = Layout::vertical([
         Constraint::Min(1),
         Constraint::Length(1),
@@ -100,6 +101,29 @@ fn rebuild_cache(app: &mut App) {
     let rgba = render_rgba(map, layer, &palette, scale);
     let legend = layer_legend(map, layer, scale);
     app.map_cache = Some(MapCache { key, rgba, legend });
+}
+
+/// The colour of an organism the filter leaves out: a mid grey, a little
+/// lighter for the brighter colours. It is the same grey in every colour
+/// depth (in 16 colours it is the dark grey), clear of the terminal's own
+/// background on dark and light terminals, and it carries no hue, so the
+/// organisms that match are the only coloured cells.
+fn dimmed(rgb: [u8; 3]) -> [u8; 3] {
+    let g = (95.0 + luminance(rgb) * 30.0) as u8;
+    [g, g, g]
+}
+
+/// The brightness a cell is drawn with in monochrome while a filter is
+/// set: matching organisms keep the upper half of the shades, the others
+/// are the lightest one.
+fn mono_lum(rgb: [u8; 3], filtering: bool, matched: bool) -> f64 {
+    if !filtering {
+        luminance(rgb)
+    } else if matched {
+        0.5 + 0.5 * luminance(rgb)
+    } else {
+        0.0
+    }
 }
 
 /// A shading character for a brightness in `[0, 1]`.
@@ -177,9 +201,18 @@ fn draw_grid(f: &mut Frame, app: &mut App, area: Rect) {
         return;
     };
     let genotype_layer = app.layer == LayerId::Genotype;
+    // The organisms a filter leaves out are dimmed, not hidden.
+    let selection = app.filtering.selection().cloned();
+    let filtering = selection.is_some();
+    let matches =
+        |x: usize, y: usize| -> bool { selection.as_ref().is_none_or(|s| s.contains(y * ww + x)) };
     let buf = f.buffer_mut();
     let at = |x: usize, y: usize| -> ([u8; 3], bool) {
         let rgb = cell_rgb(cache, ww, x, y);
+        let rgb = match rgb {
+            Some(c) if !mode.is_mono() && !matches(x, y) => Some(dimmed(c)),
+            other => other,
+        };
         (rgb.unwrap_or(EMPTY_CURSOR), rgb.is_some())
     };
     for row in 0..rows {
@@ -190,12 +223,15 @@ fn draw_grid(f: &mut Frame, app: &mut App, area: Rect) {
                 let is_cursor = (x, y) == app.cursor;
                 let id = map.genotype_id.get(y * ww + x).copied().unwrap_or(-1);
                 if mode.is_mono() {
+                    let matched = matches(x, y);
                     let sym = if !occupied {
                         '·'
+                    } else if filtering && !matched {
+                        '░'
                     } else if genotype_layer {
                         genotype_char(map, id)
                     } else {
-                        shade(luminance(rgb))
+                        shade(mono_lum(rgb, filtering, matched))
                     };
                     for k in 0..2u16 {
                         if let Some(c) = buf.cell_mut((rect.x + col as u16 * 2 + k, rect.y + row)) {
@@ -243,7 +279,7 @@ fn draw_grid(f: &mut Frame, app: &mut App, area: Rect) {
                             return None;
                         }
                         let (rgb, occupied) = at(x, y);
-                        occupied.then(|| luminance(rgb))
+                        occupied.then(|| mono_lum(rgb, filtering, matches(x, y)))
                     };
                     let glyph = match (lum(top_y), lum(top_y + 1)) {
                         (Some(a), Some(b)) => shade((a + b) / 2.0),
@@ -307,6 +343,9 @@ pub fn map_legend_spans(app: &App, width: usize) -> Vec<Span<'static>> {
     let mut spans = vec![Span::styled(format!(" {title}"), heading())];
     if app.mono_letters() {
         spans.push(Span::styled(" (a letter per genotype, · empty)", DIM));
+    }
+    if mode.is_mono() && app.filtering.is_active() {
+        spans.push(Span::styled(" (░ no match)", DIM));
     }
     let Some(frame) = app.frame.as_ref() else {
         return spans;

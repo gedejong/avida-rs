@@ -119,6 +119,20 @@ impl Histogram {
         self.counts.iter().map(|&c| u64::from(c)).sum()
     }
 
+    /// Counts of the values whose `mask` entry is set, in this histogram's
+    /// bins (the overlay of a subset on the whole).
+    pub fn counts_where(&self, values: &[f32], mask: &[bool]) -> Vec<u32> {
+        let mut counts = vec![0u32; self.counts.len()];
+        for (&v, &m) in values.iter().zip(mask) {
+            if m {
+                if let Some(b) = self.bin_of(f64::from(v)) {
+                    counts[b] += 1;
+                }
+            }
+        }
+        counts
+    }
+
     /// The largest bin count (0 for an empty histogram).
     pub fn max_count(&self) -> u32 {
         self.counts.iter().copied().max().unwrap_or(0)

@@ -205,3 +205,157 @@ fn frame_costs_on_a_300_by_300_world() {
         }),
     );
 }
+
+/// What the filter costs on a 160 x 160 world (25,600 organisms): the
+/// selection and the subset's row per frame, and a UI frame of each chart
+/// view without and with a filter.
+#[test]
+#[ignore = "a measurement; run it explicitly in a release build"]
+fn filtering_costs_on_a_160_by_160_world() {
+    use avida_gui::model::ChartTab;
+    use avida_viewmodel::{subset_row, Condition, Prop};
+
+    let dir = fresh_config("perf-filter");
+    let events = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
+    std::fs::write(
+        dir.join("events.cfg"),
+        events
+            .replace(
+                "u begin Inject default-classic.org",
+                "u begin InjectAll filename=default-classic.org",
+            )
+            .replace("u 100 Exit", "u 100000 Exit"),
+    )
+    .unwrap();
+    let mut h = harness(
+        StartupArgs {
+            dir: Some(dir),
+            avida_args: [
+                "-set",
+                "WORLD_X",
+                "160",
+                "-set",
+                "WORLD_Y",
+                "160",
+                "-set",
+                "DIVIDE_INS_PROB",
+                "0.08",
+                "-set",
+                "DIVIDE_DEL_PROB",
+                "0.08",
+            ]
+            .map(String::from)
+            .to_vec(),
+            ..Default::default()
+        },
+        vec2(1440.0, 900.0),
+    );
+    wait_until(&mut h, "the world", |app| {
+        let s = app.state();
+        s.phase == Phase::Ready && s.frame.as_ref().is_some_and(|f| f.map.is_some())
+    });
+    h.state_mut().state_mut().run_to(12);
+    wait_until(&mut h, "update 12", |app| {
+        let s = app.state();
+        s.run_state() == Some(RunState::Paused)
+            && s.history.latest().is_some_and(|r| r.update >= 12)
+    });
+    eprintln!(
+        "world 160 x 160, {} organisms",
+        h.state().state().organisms().unwrap_or(0)
+    );
+    h.state_mut().state_mut().side_tab = SideTab::Charts;
+    // A filter that needs every property layer and keeps part of the world.
+    h.state_mut().state_mut().edit_filter(|f| {
+        f.set(Condition::range(Prop::GenomeLen, 0.0, 1e9));
+        f.set(Condition::Task {
+            task: 0,
+            performs: false,
+        });
+        f.set(Condition::region((10, 10), (120, 120)));
+    });
+    h.state_mut().state_mut().chart_tab = ChartTab::Scatter;
+    wait_until(&mut h, "the layers", |app| {
+        app.state()
+            .frame
+            .as_ref()
+            .and_then(|f| f.map.as_ref())
+            .is_some_and(|m| Prop::ALL.iter().all(|p| m.layer(p.layer()).is_some()))
+    });
+    settle(&mut h);
+
+    // The per-frame work of the view-model.
+    let frame_arc = h.state().state().frame.clone().unwrap();
+    let map = frame_arc.map.as_ref().unwrap();
+    let filter = h.state().state().brush.filter.clone();
+    let mut select = Vec::new();
+    let mut row = Vec::new();
+    let mut points = Vec::new();
+    for _ in 0..200 {
+        let t0 = Instant::now();
+        let sel = filter.select(map);
+        select.push(ms(t0.elapsed()));
+        let t0 = Instant::now();
+        let _ = subset_row(frame_arc.update, map, &sel);
+        row.push(ms(t0.elapsed()));
+        let t0 = Instant::now();
+        let p = avida_viewmodel::scatter_points(map, Prop::GenomeLen, Prop::Fitness);
+        let _ = avida_viewmodel::thin_points(&p, Some(&sel), 60_000);
+        points.push(ms(t0.elapsed()));
+    }
+    report("Filter::select, three conditions", summary(select));
+    report("subset_row", summary(row));
+    report("scatter_points + thin_points", summary(points));
+    let matched = h.state().state().brush.selection().map_or(0, |s| s.matched);
+    eprintln!("organisms matching the filter: {matched}");
+
+    for (tab, name) in [
+        (ChartTab::Scatter, "scatter"),
+        (ChartTab::Histogram, "histogram"),
+        (ChartTab::Tasks, "tasks"),
+        (ChartTab::TimeSeries, "time series"),
+        (ChartTab::OpenEnded, "open-ended"),
+    ] {
+        h.state_mut().state_mut().chart_tab = tab;
+        settle(&mut h);
+        report(
+            &format!("idle frame, {name}, with the filter"),
+            frames(&mut h, 60, |_, _| {}),
+        );
+    }
+    h.state_mut().state_mut().clear_filter();
+    for (tab, name) in [
+        (ChartTab::Scatter, "scatter"),
+        (ChartTab::Histogram, "histogram"),
+        (ChartTab::Tasks, "tasks"),
+    ] {
+        h.state_mut().state_mut().chart_tab = tab;
+        settle(&mut h);
+        report(
+            &format!("idle frame, {name}, without a filter"),
+            frames(&mut h, 60, |_, _| {}),
+        );
+    }
+    // The scatter plot while the run advances (a new frame every time).
+    h.state_mut().state_mut().chart_tab = ChartTab::Scatter;
+    h.state_mut().state_mut().edit_filter(|f| {
+        f.set(Condition::range(Prop::GenomeLen, 0.0, 1e9));
+    });
+    settle(&mut h);
+    h.state_mut().state_mut().set_speed(SpeedSetting::default());
+    h.state_mut().state_mut().toggle_run();
+    wait_until(&mut h, "running", |app| {
+        app.state().run_state() == Some(RunState::Running)
+    });
+    let t0 = Instant::now();
+    let mut all = Vec::new();
+    while t0.elapsed() < Duration::from_secs(6) {
+        let cost = frame(&mut h);
+        all.push(cost);
+        std::thread::sleep(Duration::from_secs_f64(
+            (1.0 / 60.0 - cost / 1000.0).max(0.0),
+        ));
+    }
+    report("frame while running, scatter with a filter", summary(all));
+    h.state_mut().state_mut().toggle_run();
+}

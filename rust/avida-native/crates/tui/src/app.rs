@@ -23,6 +23,7 @@ use crate::actions::PaletteState;
 use crate::color::ColorMode;
 use crate::config_view::ConfigState;
 use crate::debugger::Debugger;
+use crate::filtering::Filtering;
 use crate::history::RowHistory;
 use crate::log::{EventLog, LogKind};
 use crate::metrics::Metric;
@@ -53,13 +54,15 @@ pub enum Screen {
     /// The effective configuration, with overrides and restart.
     Config,
     Options,
+    /// The open-endedness measures (MODES and the genealogy of the genotypes) over time.
+    OpenEnded,
     /// The viewer's blank screen: nothing drawn but the status line.
     Blank,
 }
 
 impl Screen {
     /// The screens of the tab strip, in `Tab` order.
-    pub const TABS: [Screen; 11] = [
+    pub const TABS: [Screen; 12] = [
         Screen::Map,
         Screen::Stats,
         Screen::Charts,
@@ -71,6 +74,7 @@ impl Screen {
         Screen::Log,
         Screen::Config,
         Screen::Options,
+        Screen::OpenEnded,
     ];
 
     pub fn title(self) -> &'static str {
@@ -86,6 +90,7 @@ impl Screen {
             Screen::Log => "Log",
             Screen::Config => "Cfg",
             Screen::Options => "Opts",
+            Screen::OpenEnded => "Open",
             Screen::Blank => "Blank",
         }
     }
@@ -104,6 +109,7 @@ impl Screen {
             Screen::Log => 'D',
             Screen::Config => 'F',
             Screen::Options => 'O',
+            Screen::OpenEnded => 'K',
             Screen::Blank => 'B',
         }
     }
@@ -309,6 +315,10 @@ pub struct App {
     pub stats_task_offset: usize,
     pub chart_metrics: Vec<Metric>,
     pub chart_focus: usize,
+    /// The open-endedness screen: the group of charts shown and the chart
+    /// chosen in it.
+    pub oe_group: usize,
+    pub oe_focus: usize,
     pub chart_log: bool,
     pub geno_sel: usize,
     pub geno_view: GenoView,
@@ -322,6 +332,10 @@ pub struct App {
     pub config: ConfigState,
     /// The command palette, while open.
     pub cmd_palette: Option<PaletteState>,
+    /// The organism filter, the subset it selects and its dialog.
+    pub filtering: Filtering,
+    /// The layers of the last subscription sent.
+    pub(crate) last_layers: Vec<LayerId>,
     pub confirm_restart: bool,
     pub help_scroll: usize,
     pub env_tab: EnvTab,
@@ -403,6 +417,8 @@ impl App {
             stats_task_offset: 0,
             chart_metrics: vec![Metric::AveFitness],
             chart_focus: 0,
+            oe_group: 0,
+            oe_focus: 0,
             chart_log: false,
             geno_sel: 0,
             geno_view: GenoView::Table,
@@ -413,6 +429,8 @@ impl App {
             setup: None,
             config: ConfigState::default(),
             cmd_palette: None,
+            filtering: Filtering::default(),
+            last_layers: Vec::new(),
             confirm_restart: false,
             help_scroll: 0,
             env_tab: EnvTab::Resources,
@@ -476,6 +494,9 @@ impl App {
         }
         self.frame = Some(frame);
         self.frames_applied += 1;
+        let frame = self.frame.clone();
+        self.filtering.refresh(frame.as_deref(), true);
+        self.sync_subscription();
     }
 
     /// What the session was built from, for the configuration screen.
@@ -759,9 +780,33 @@ impl App {
         !layer.is_categorical() && !layer.is_boolean()
     }
 
+    /// The open-endedness view for the newest frame and the run's events.
+    pub fn open_ended_view(&self) -> avida_viewmodel::OeView {
+        let sources = self
+            .setup
+            .as_ref()
+            .map(|s| {
+                avida_viewmodel::OeSources::from_lines(
+                    s.events
+                        .iter()
+                        .map(|e| (e.action.as_str(), e.args.as_str())),
+                )
+            })
+            .unwrap_or_default();
+        let empty = avida_viewmodel::OpenEnded::default();
+        let data = self.frame.as_ref().map_or(&empty, |f| &f.open_ended);
+        avida_viewmodel::open_ended::build(data, &sources)
+    }
+
     pub fn subscription(&self) -> Subscription {
+        let mut layers = vec![self.layer];
+        for l in self.filtering.layers() {
+            if !layers.contains(&l) {
+                layers.push(l);
+            }
+        }
         Subscription {
-            layers: vec![self.layer],
+            layers,
             inspect_cell: self.selection,
             genotypes_top_n: GENOTYPE_LIST_LEN,
             lineage_of: self.highlight,
@@ -803,6 +848,9 @@ impl App {
 
     pub fn subscribe(&mut self) {
         let sub = self.subscription();
+        if self.restarting.is_none() {
+            self.last_layers = sub.layers.clone();
+        }
         self.send(Command::Subscribe(sub));
     }
 
@@ -1107,6 +1155,7 @@ impl App {
         self.abundance.clear();
         self.debugger = Debugger::default();
         self.highlight = None;
+        self.filtering.reset();
         self.geno_sel = 0;
         self.lineage_sel = 0;
         self.config = ConfigState::default();

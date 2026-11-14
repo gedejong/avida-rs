@@ -229,10 +229,7 @@ pub struct Population {
     /// threads).
     pub defer_drops: bool,
     /// Hardware and state of deleted organisms, not yet freed.
-    pub graveyard: Vec<(
-        Box<dyn avida_hardware::hardware::Hardware>,
-        avida_hardware::organism::OrgState,
-    )>,
+    pub graveyard: Vec<Box<avida_hardware::organism::Organism>>,
     /// The offspring's organism a burst of the parallel mode built for the
     /// divide being committed ([`World::commit_divide`]); the birth chamber
     /// takes it where the exact path builds one. Always `None` in the exact

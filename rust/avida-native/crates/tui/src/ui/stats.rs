@@ -1,7 +1,7 @@
 //! The statistics screen: current values with a sparkline each, the
 //! dominant genotype and the tasks performed.
 
-use avida_viewmodel::format_number;
+use avida_viewmodel::{format_number, task_counts};
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
@@ -14,6 +14,7 @@ use crate::color::{hue, Hue};
 use crate::metrics::{hbar, sparkline, Metric};
 
 pub fn draw(f: &mut Frame, app: &App, area: Rect) {
+    let area = super::filter_bar::take(f, app, area);
     let rows = Metric::STATS.len() as u16;
     let top_h = (rows + 3).min(area.height.saturating_sub(4).max(4));
     let [top, bottom] =
@@ -74,6 +75,21 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
     };
     let orgs = app.latest_stats().map_or(0, |r| r.orgs).max(1);
     let n = env.tasks.len();
+    // With a filter each task shows the share of all organisms and the
+    // share of the matching ones, both counted on the newest frame's map so
+    // that they use the same organisms.
+    let shares: Option<(Vec<u32>, Vec<u32>, usize, usize)> = app
+        .filtering
+        .selection()
+        .zip(app.frame.as_ref().and_then(|f| f.map.as_ref()))
+        .map(|(sel, map)| {
+            (
+                task_counts(map, None),
+                task_counts(map, Some(&sel.mask)),
+                sel.occupied,
+                sel.matched,
+            )
+        });
     let inner_w = area.width.saturating_sub(2);
     // As many columns of at least 30 cells as fit; the columns share the
     // width, and the rows are only as many as the tasks need, so a short list
@@ -94,17 +110,22 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
     let col_w = (inner.width / cols).clamp(1, 48);
     let per_page = usize::from(cols) * rows;
     let offset = app.stats_task_offset.min(n.saturating_sub(1));
+    let which = if shares.is_some() {
+        "Tasks: all organisms, matching ones"
+    } else {
+        "Tasks"
+    };
     let title = if n == 0 {
-        "Tasks (none defined)".to_string()
+        format!("{which} (none defined)")
     } else if n > per_page {
         format!(
-            "Tasks {}-{} of {}  (Left and Right turn the page)",
+            "{which} {}-{} of {}  (Left and Right turn the page)",
             offset + 1,
             (offset + per_page).min(n),
             n
         )
     } else {
-        "Tasks".to_string()
+        which.to_string()
     };
     f.render_widget(block(&title), area);
     let name_w = usize::from(col_w).saturating_sub(15).max(4);
@@ -119,6 +140,44 @@ fn draw_tasks(f: &mut Frame, app: &App, area: Rect) {
             width: col_w.min(inner.width - col * col_w),
             height: 1,
         };
+        if let Some((all, sub, occupied, matched)) = &shares {
+            let share = |c: u32, of: usize| -> f64 {
+                if of == 0 {
+                    0.0
+                } else {
+                    f64::from(c) / of as f64
+                }
+            };
+            let a = share(all.get(i).copied().unwrap_or(0), *occupied);
+            let m = share(sub.get(i).copied().unwrap_or(0), *matched);
+            let name_w = usize::from(col_w).saturating_sub(24).max(4);
+            // A bar of five cells, padded, and the share.
+            let cell = |v: f64, any: bool, hue: Hue| -> [Span<'static>; 2] {
+                let bar = hbar(v, 5);
+                let pad = " ".repeat(5usize.saturating_sub(bar.chars().count()));
+                let pct = if any {
+                    format!("{pad}{:>3.0}%", v * 100.0)
+                } else {
+                    format!("{pad}   -")
+                };
+                [
+                    Span::styled(bar, Style::new().fg(crate::color::hue(hue))),
+                    Span::raw(pct),
+                ]
+            };
+            let [bar_a, pct_a] = cell(a, *occupied > 0, Hue::Green);
+            let [bar_m, pct_m] = cell(m, *matched > 0, Hue::Magenta);
+            let line = Line::from(vec![
+                Span::raw(format!("{:<name_w$} ", trunc(&t.name, name_w))),
+                bar_a,
+                pct_a,
+                Span::raw("  "),
+                bar_m,
+                pct_m,
+            ]);
+            f.render_widget(Paragraph::new(line), r);
+            continue;
+        }
         let frac = f64::from(t.last_count) / f64::from(orgs);
         let line = Line::from(vec![
             Span::raw(format!("{:<name_w$}", trunc(&t.name, name_w))),

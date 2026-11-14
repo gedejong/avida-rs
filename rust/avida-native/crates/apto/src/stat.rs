@@ -109,6 +109,24 @@ impl<T: AccValue> Accumulator<T> {
         self.sum_sq = self.sum_sq.acc_add(value.acc_mul(value));
     }
 
+    /// `count` calls of `Add(0)`, in one step: the same state as the calls
+    /// leave (the count, the extremes taken over zero, and the sums, which
+    /// the first zero passes through `acc_add` as every one would).
+    pub fn add_zeros(&mut self, count: usize) {
+        if count == 0 {
+            return;
+        }
+        self.n += count;
+        if T::ZERO > self.max {
+            self.max = T::ZERO;
+        }
+        if T::ZERO < self.min {
+            self.min = T::ZERO;
+        }
+        self.sum = self.sum.acc_add(T::ZERO);
+        self.sum_sq = self.sum_sq.acc_add(T::ZERO.acc_mul(T::ZERO));
+    }
+
     /// `Count()`.
     pub fn count(&self) -> usize {
         self.n
@@ -179,6 +197,34 @@ mod tests {
             bits(a.variance()),
             bits(a.std_error())
         )
+    }
+
+    /// `add_zeros(k)` leaves the state of `k` calls of `add(0)`, from an
+    /// empty accumulator and from one holding values on either side of zero.
+    #[test]
+    fn add_zeros_is_repeated_add_of_zero() {
+        for start in [&[][..], &[3, 5][..], &[-4, -9][..], &[-2, 6][..]] {
+            for k in [0usize, 1, 2, 7] {
+                let (mut one, mut many) = (Accumulator::<i32>::new(), Accumulator::<i32>::new());
+                for &v in start {
+                    one.add(v);
+                    many.add(v);
+                }
+                for _ in 0..k {
+                    one.add(0);
+                }
+                many.add_zeros(k);
+                assert_eq!(one, many, "start {start:?}, {k} zeros");
+            }
+        }
+        let (mut one, mut many) = (Accumulator::<f64>::new(), Accumulator::<f64>::new());
+        one.add(2.5);
+        many.add(2.5);
+        for _ in 0..3 {
+            one.add(0.0);
+        }
+        many.add_zeros(3);
+        assert_eq!(one, many);
     }
 
     /// Mirror of `Acc()` in tools/ref_harness.cc.

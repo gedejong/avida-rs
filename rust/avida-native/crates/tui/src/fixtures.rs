@@ -89,7 +89,20 @@ pub fn frame_with_map() -> Frame {
         inst_names: INST.map(String::from).to_vec().into(),
         layers: LayerId::FIXED.to_vec(),
         lineage: Vec::new(),
+        open_ended: Default::default(),
     }
+}
+
+/// [`frame_with_map`] with a fitness layer: cells 0, 1 and 3 hold 1, 4 and 2.
+pub fn frame_with_values() -> Frame {
+    let mut f = frame_with_map();
+    if let Some(map) = f.map.as_mut() {
+        map.layers = vec![(
+            LayerId::Fitness,
+            Arc::from(vec![1.0, 4.0, f32::NAN, 2.0, f32::NAN, f32::NAN]),
+        )];
+    }
+    f
 }
 
 /// An organism with `sites` memory cells, register AX = `ax`, IP at `ip`.

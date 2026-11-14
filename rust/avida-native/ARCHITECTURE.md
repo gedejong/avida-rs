@@ -340,7 +340,11 @@ triggers the bursts feed.
 `World::run` to stderr: rounds per update, the share of instructions run in
 the sequential phase, the newborn grants, the rescales, the carry-over,
 bursts per update and the share run inline, and the wall time in
-allocation, parallel and sequential phases. It is not a C++ output.
+allocation, parallel and sequential phases. Since 2026-11-14 it also splits
+the main thread's time: `begin_update`, the parallel phase outside the bursts
+(taking the organisms out of their cells, the merge loop after the bursts),
+and the sequential phase into its settle step, the divide commits, the other
+steps and the tail. It is not a C++ output.
 
 ### Statistical equivalence (2026-11-12)
 
@@ -425,6 +429,32 @@ earlier design that measured a newborn's grant against its parent's own
 grant instead of the update clock let chains of fast replicators earn grants
 without end (one seed never finished an update); the update clock and the
 bounded carry-over fix that.
+
+#### 120 seeds per mode (2026-11-13)
+
+The 12 to 16 seed comparisons above and in the later subsections showed
+generation or gestation time leaning the same way three times (raw p of 0.03
+to 0.04). To tell a small systematic bias from noise, both modes were run on
+120 seeds each (1001 to 1120, `tools/parallel_stats.py`, build of the commit
+after 34ae22603 plus the cheaper commit):
+
+| Outcome | Stock 60x60, 5000 updates: exact, parallel, p | 30x30 with two per-cell resources, 3000 updates: exact, parallel, p |
+|---|---|---|
+| generation | 999.6, 1005, 0.58 | 255.5, 254.7, 0.32 |
+| gestation | 372.3, 379.4, 0.69 | 345.3, 349.8, 0.80 |
+| log10 fitness | 3.38, 3.23, 0.16 | -0.542, -0.538, 0.77 |
+| genome length | 102.4, 102.8, 0.79 | 103.1, 103.5, 0.21 |
+| first NOT | 535.5, 526, 0.67 | 537.5, 573, 0.18 |
+| first NAND | 690.5, 709, 0.52 | 724, 795, 0.65 |
+| tasks held | 6, 6, 0.27 | 0, 0, 0.95 |
+| organisms | 3592, 3592, 0.47 | 3598, 3598, 1.00 |
+| instructions in the last update | 1.078e5, 1.078e5, 0.16 | 1.079e5, 1.080e5, 0.12 |
+
+Medians; two-sided Mann-Whitney U. No outcome is below 0.12 in either world,
+and the earlier lean in generation and gestation does not reappear. With 120
+seeds per mode a shift of about 0.37 standard deviations would be found with
+80% power, so a smaller bias is not excluded. Not covered: transsmt and
+parasites, demes, and worlds larger than 60x60.
 
 ### Performance
 
@@ -603,8 +633,10 @@ statistics, schedule) and the placement (cell inputs drawn from the world
 generator, schedule, birth statistics). None of it can run before the
 previous commit of the round has finished. Also still sequential: `get2`
 and `put-reset` (redraw the cell's inputs), divides of the resampling and
-sex families, and, in runs whose environment has global resources or non-pure tasks,
-every output test (the burst stops before the instruction as before).
+sex families, and, in runs whose environment has non-pure tasks or
+resources that are not per-cell grids or global pools (or a reaction that
+uses both), every output test (the burst stops before the instruction as
+before).
 
 **Result.** One run of the stock configuration, 3000 updates, seed 42,
 release build, one run at a time, interleaved (load average 6 to 8 from
@@ -713,16 +745,9 @@ the same change is applied to the same cell by the same arithmetic; no cell can
 go below zero (`consumed` is capped by the level, as in `DoProcesses`;
 `cell_resource_world_does_not_depend_on_the_thread_count` checks it).
 
-What stays sequential, and why: global (well-mixed) resources, and mixed
-environments. One pool is read and consumed by every organism, so the result
-of an output test depends on the order of all the others, and on the resource
-clock at the instruction. A deterministic scheme exists in principle (stop the
-burst *before* an `IO` whose triggered reaction has a global resource, which
-needs a non-mutating look at the register the handler will output and a probe
-evaluation of the task) but it was not built: the handler consumes its nop
-modifier and the output buffer before the test, so the probe has to be written
-for each of the four output handlers. Such runs keep stopping the burst
-before each `IO`, as before this section.
+What stays sequential, and why: the global pools of environments that the
+section on global pools below does not admit (a world of grids and pools
+together is handled in "Mixed grids and global pools in the burst").
 
 **Result** (`10-continents` configuration, seed 1, release build, one run at
 a time, interleaved, load average 6.5 to 9 from desktop applications):
@@ -762,6 +787,351 @@ the rewards). The generation and gestation time lean the same way as in the
 stock configuration's comparison above; that run is the reference for whether it
 is a real shift. The crate's `cell_resources_in_bursts_match_the_exact_mode_statistically`
 repeats a smaller comparison with the loose |z| < 3.5 bound.
+
+#### Global resource pools in the burst (2026-11-14)
+
+A global (well-mixed) resource is one amount that every organism reads and
+consumes, so no organism can evaluate its output test against a copy of it:
+what an organism consumes (`frac` of the level the test finds, capped by `max`,
+scaled by the task quality) depends on everything the organisms before it
+took, and the bonus the phenotype receives depends on what was consumed. A
+scheme that lets every organism consume from a snapshot of the pool was
+rejected: with the classic environment (`frac=0.0025`) 400 organisms that
+complete the task in a round take the whole snapshot between them, and the
+thousands a full world has overdraw it several times, so that either the
+organisms are paid for resource that does not exist or their bonuses have to be
+taken back after the burst has gone on (a `pow` or `mult` bonus cannot be undone
+by a later one). The pool's half of the test is therefore not approximated: the
+world runs it, one organism after another, with the arithmetic of the exact
+path.
+
+The test is split where it depends on the pool:
+
+1. In the burst (`do_output_local` with `LocalOutput::pending`), `TestOutput`
+   runs as in a world without resources, up to the processes of the reactions
+   that use a resource (a `resource` or a `product`). The tasks read only the
+   organism's buffers. Those reactions are recorded as
+   `DeferredReaction { reaction, task_quality, task_count }` and the
+   `ReactionResult` so far is kept as the organism's `PendingOutput`. A test
+   that triggers no such reaction is applied at once, as in a world without
+   resources. After an instruction that left a `PendingOutput` the burst stops
+   (`needs_world`, also when its budget is spent): what the organism does next,
+   its next output test and a divide, reads what the pool's half writes.
+2. At the start of the sequential phase (`ParallelExec::settle_pool_tests`)
+   the world takes the pending tests of the organisms that stopped, in the
+   update's permutation order and before any other step of the phase, so that
+   no step can kill an organism whose test is pending. For each: the
+   pool's amounts now (`ResourceCount::get_resources`, which first advances
+   the pool by the time the round used, as the first output test of a round
+   does in the exact mode), the processes of the deferred reactions in library
+   order (`Environment::finish_deferred`, which runs `DoProcesses`
+   itself), `Phenotype::apply_test_output` with the world's own statistics
+   and deme sinks, and the change (produced less consumed) applied to the pool
+   (`ModifyCell`, as `cOrganism::doOutput` does). The organism, which executed
+   its instruction in the burst, is marked as having run in this phase and
+   goes to the next round with its remaining budget.
+
+Admitted (`output_is_local_global`, with `ResourceCount::are_global_pools`):
+every resource a global pool (no grid, gradient or `PARTIAL` list), and the
+conditions of the per-cell case (no deme, energy, HGT, deadly or predatory
+resource, no bins, `detect`, `internal` or random-resource process). Two more,
+because a deferred reaction is neither triggered nor counted when the next
+reaction of the same test is examined: no requisite that names other reactions
+(`reaction`, `noreaction`, total counts), and none that lets a reaction fire on
+divide (`divide_only`), whose test would leave the pool's half to the world
+with the divide under way. A reaction's requisites on its own count
+(`max_count`) and on its task's count are exact: the next test comes after
+the pool's half. With the burst running the output tests, divides run in it too
+(`divide_local`).
+
+What is the same as the exact mode: the arithmetic of every test (the pool is
+read and changed by the same code, bit for bit, for the same sequence of tests:
+`global_pool_output_tests_settle_as_the_exact_path_does` runs 4500 tests of
+900 organisms on two pools that run dry in both paths and compares each
+phenotype and each pool amount to the bit), the pool never below zero
+(`consumed` is capped by the level), and the amount that leaves the pool being
+the amount the organisms consumed (the same test checks the sum).
+
+What differs, and by how much. In the exact mode the tests of an update come in
+the order of the time slices, interleaved with every other organism's
+instructions, and the pool's inflow and outflow advance between any two tests.
+Here the tests of one round come at its end, in the order of the update's
+permutation (every update has a fresh one, so no organism is always first),
+and the pool advances by the round's time between rounds. The difference is
+bounded by what the pool does in a round: with the classic environment (inflow
+100 and outflow 0.01 per update) a round is a fraction of an update and the
+pool moves by that fraction of its inflow. A round ends at each organism's
+next pool-consuming test, so an organism cannot perform two such tests in one
+round.
+
+**Result, global pools** (`environment-9resource.cfg`, the classic limited
+environment with nine pools of inflow 100 and outflow 0.01, stock `default-heads.org`, 60 x 60
+world, 2000 updates, seed 42, release build, one run at a time, load average 5
+to 7 from desktop applications):
+
+| Run | Before | After |
+|---|---|---|
+| exact mode | 30.5 s | 29.9 s (unchanged) |
+| parallel, 1 thread | 20.6 s | 18.4 s |
+| parallel, 4 threads | 12.5 s | 7.7 s |
+| rounds per update | 26.9 | 3.6 |
+| sequential share of the time in updates, 4 threads | 63.3% | 28.3% |
+| commits per update | 0 | 141 |
+
+The output for a seed is identical for 1, 2 and 4 threads (the 60 x 60 run
+compared for 1 and 4; `global_pool_world_does_not_depend_on_the_thread_count`
+for 1, 2 and 4 on the 30 x 30 world). The sequential phase that remains is the
+pool's half of the tests (181 per update here), the divide commits and the
+world-level instructions.
+
+Equivalence, 12 seeds in each mode, 3000 updates, 30 x 30 world with the same
+environment (`tools/parallel_stats.py`; the exact mode against the parallel
+mode at one thread; medians, Mann-Whitney p):
+
+| Outcome | Exact | Parallel | p |
+|---|---|---|---|
+| log10 average fitness | 0.714 | 0.779 | 0.55 |
+| average genome length | 104.3 | 103.2 | 0.93 |
+| tasks held by at least 5% of the organisms | 6 | 6 | 0.98 |
+| first update with NOT | 997 | 819 | 0.42 |
+| first update with NAND | 1128 | 948 | 0.67 |
+| average generation | 388 | 398 | 0.55 |
+| average gestation time | 377 | 371 | 0.67 |
+| organisms | 900 | 898 | 0.001 |
+
+The one outcome that differs is the number of organisms at the end: two cells
+of 900 empty against none or one. It is of the kind "Statistical equivalence"
+above traces to how long an emptied cell stays empty in the parallel mode
+(3590 against 3593 organisms on the stock configuration, p = 0.031). The
+divides of these worlds now commit at the round's end as the others do; the
+build before this section, which ran every divide in the sequential phase, had
+899 against 900 (p = 0.10) on the same seeds. That this is the same cause was
+not traced (no empty-cell count was taken here).
+
+#### Mixed grids and global pools in the burst (2026-11-14)
+
+A world whose resources are some plain per-cell grids and some global pools
+used to stop every burst at an output test (17.9 rounds per update and 54%
+of the update loop in the sequential phase on the benchmark below). It now
+runs as the two sections above do, each kind where it can be: the grids'
+processes in the burst against the organism's own cell, the pools' processes
+in the sequential phase against the pool.
+
+The gate. `ResourceCount::grid_or_global_kinds` says, per resource, whether
+it is a pool, and refuses the world if any resource is a gradient, a
+`PARTIAL` list or a grid without a cell for every cell of the world. The
+world uses it when there are both kinds (all one kind keeps the two gates
+above, unchanged). `output_is_local_mixed` then asks what
+`output_is_local_global` asks (no requisite that names other reactions, none
+on divide, the per-cell conditions) and one more thing: no reaction takes
+from or gives to both kinds. A reaction is then entirely in the burst or
+entirely deferred, which is what makes the split sound: the processes of
+different reactions meet only in `ReactionResult`'s sums, and no process
+reads what a reaction of the other kind consumed (`consumed(res)` is
+per-resource, and a resource is of one kind).
+
+What runs where. `test_output_shared` defers a triggered reaction only if
+one of its processes uses a resource `pools` marks (`pools: None` is the old
+"any resource"); the others run in the burst against the organism's copy of
+its cell's amounts, which `frozen_cell_amounts` fills (a pool reads 0 there:
+nothing in the burst reads it). A test that triggers no pool reaction is
+finished in the burst, as for grids alone, and its change to the cell goes
+to the world as an `OutEvent::ResourceChange`. A test that does trigger one
+becomes a `PendingOutput` with the grid reactions' consumption and
+production already in its result; the burst stops. At the start of the
+sequential phase the world gets the amounts the organism's cell sees
+(`get_cell_resources`: the pools' and the cell's grids), runs the deferred
+processes, applies `Phenotype::apply_test_output`, and applies the change of
+the whole result (grid and pool parts) with `modify_cell`, which is what
+`doOutput` does. The grids are brought up to date at the start of every
+parallel phase, as for grids alone (`update_resources`; that call also
+advances the pools by the clock time accumulated so far, which in a world
+of pools alone happens at the first settled test).
+
+Arithmetic. A test that triggers one reaction of each kind with an `add`
+process each can add the two bonuses in the other order than the exact mode
+(the burst's first), which differs in the last bit at most; `mult` and `pow`
+bonuses and the sums per resource are independent of the order.
+`mixed_resource_output_tests_settle_as_the_exact_path_does` runs six tests for
+each of 3,600 organisms (a NOT test triggers a reaction on the grid and one
+on the pool, a NAND test the pool's, an ORN test the grid's; the pool runs
+dry) through the exact path and through a burst plus the world's half, and
+compares each phenotype and the amounts in the pool and in the organism's
+cell bit for bit; two thirds of the tests wait for the world.
+
+Timing (benchmark: the 9-resource chemostat with four pools and five
+per-cell grids, stock 60 x 60 world, 1000 updates, seed 42, release build,
+one run at a time; load average 10 to 11, the maintainer's own six-thread run
+on the machine, so only the ratios mean anything):
+
+| Run | Before | After |
+|---|---|---|
+| 4 threads | 6.52 s (17.9 rounds/update, 54% sequential) | 3.90 s (2.1 rounds, 20%) |
+| 8 threads | 4.81 s | 3.42 s |
+| 1 thread | | 7.87 s |
+
+The output for a seed is identical for 1, 4 and 8 threads (every data file
+compared; `mixed_resource_world_does_not_depend_on_the_thread_count` does
+it for 1, 2 and 4 on a full world). It is not what the build before wrote
+for such a world (the tests settle at the end of a round, as in the global
+pools), so the statistics comparison was rerun, 36 seeds in each mode,
+3000 updates, a 30 x 30 world with one grid and one pool (NOT has a reaction
+on each; `tools/parallel_stats.py`, the parallel mode at one thread; medians,
+Mann-Whitney p):
+
+| Outcome | Exact | Parallel | p |
+|---|---|---|---|
+| log10 average fitness | -0.437 | -0.515 | 0.074 |
+| average genome length | 104.4 | 101.8 | 0.145 |
+| tasks held by at least 5% of the organisms | 2 | 2 | 0.64 |
+| first update with NOT | 739 | 809 | 0.36 |
+| first update with NAND | 1044 | 1294 | 0.39 |
+| average generation | 294.7 | 286.2 | 0.55 |
+| average gestation time | 383.4 | 367.3 | 0.14 |
+| organisms | 899 | 899 | 0.30 |
+| instructions in the last update | 26,970 | 26,920 | 0.81 |
+
+Nothing is significant (the smallest, 0.074, is 0.67 after Holm's correction
+for nine outcomes). With the first 12 seeds alone three outcomes had p between
+0.017 and 0.04 (genome length, first NAND, gestation time) and went away
+with the other 24, so 12 seeds are too few for this environment, whose runs
+scatter widely; the build before this change, 12 seeds, had no p below 0.14.
+The crate's `mixed_resources_in_bursts_match_the_exact_mode_statistically`
+repeats a smaller comparison with the loose |z| < 3.5 bound.
+
+#### Profile at 4 and 8 threads, and the cheaper commit (2026-11-13)
+
+Where the time went before this step (stock configuration, 3000 updates, seed
+42, `AVIDA_EXECUTION_STATS` and `sample` on the main thread; Apple M1 Pro with
+the desktop running, load average 6 to 13):
+
+| Part | 4 threads (12.3 s) | 8 threads (10.6 s) |
+|---|---|---|
+| bursts on the pool | 5.7 s | 4.2 s |
+| divide commits (sequential) | 2.9 s | 2.9 s |
+| end-of-update statistics | 1.9 s | 1.7 s |
+| systematics at the end of the update | 0.78 s | 0.75 s |
+| budget allocation (Poisson draws, one stream) | 0.6 s | 0.6 s |
+
+The main thread at 8 threads: 36% waiting for bursts, 26% in commits, 15% in
+the statistics (waiting for the pool), 7% in the systematics, 4% in the
+allocation. Everything on the main thread but the waits is serial, so about a
+third of the wall time does not shrink with threads. The bursts themselves
+give 5.7 to 4.2 s for twice the threads: the sum of the bursts' own run time
+(`busy`, measured with a counter in the burst closure, not kept) was 17.8 s on
+one thread, 19.0 s on four and 21 to 23 s on eight, so the work per
+instruction grows by a fifth to a quarter (shared cache and memory, and the
+desktop taking cores); the wait for the first burst to start was 0.1 s (4
+threads) and 0.3 s (8) over the run, and the wait from the last burst's end to
+the return of `install` 0.1 s and 0.5 s. At 8 threads the pool was 66% busy
+over its phases. The statistics are not compute bound at this size: the
+longest column sum takes 0.07 ms, the phase 0.2 ms (spawning tasks to threads
+that have gone to sleep), and the gather 0.3 ms per update; a cold pool entry
+costs about 0.1 ms, which is why moving the Poisson draws to the pool (blocks
+of 256 organisms, own streams) made the run slower (allocation 9.2% against
+8.9%) and was dropped.
+
+| Change | Effect | Parallel output per seed |
+|---|---|---|
+| Organisms moved by value in a commit (3.4 KB each; `memmove` was 31% of the commit's samples) are now `Box<Organism>` end to end: `PendingBirth::organism`, `Offspring::org`, `adopt_prebuilt_org`, `activate_organism`, and the graveyard keeps the box instead of taking it apart | commit 6.4 us to about 4.3 us | unchanged |
+| `activate_offspring` no longer builds the `Genome` it hands the birth chamber when the chamber adopts a prebuilt organism (a copy of the sequence, a property map and a string, never read) | a few percent of the commit | unchanged |
+| `GenotypeArbiter::perform_update` resets the threshold genotypes from a list kept for the purpose (`thresholds`) instead of walking every active list, and sweeps the historic list only while `prune_pending` is set (a released passive reference, a loaded genotype, or a sweep that removed or stopped); a sweep that would remove nothing has no effect, so the exact mode is unchanged | systematics 0.75 s to 0.36 s | unchanged |
+
+Measured one run at a time, interleaved with the build before, load average 6
+to 11:
+
+| Run | Before | After |
+|---|---|---|
+| stock, 1 thread | 27.6, 27.7 s | 26.4, 26.9 s |
+| stock, 4 threads | 12.2, 12.0, 12.1 s | 10.9, 10.7, 10.7 s |
+| stock, 8 threads | 10.6, 10.6, 10.3 s | 9.1, 9.3, 9.7 s |
+| `10-continents`, 1 thread | 205.6 s | 205.4 s |
+| `10-continents`, 4 threads | 86.1, 87.1 s | 78.5, 78.2 s |
+| `10-continents`, 8 threads | 70.3, 70.2 s | 63.6, 62.7 s |
+
+The gain is the same at 4 and at 8 threads (about 11 and 12%): the sequential
+share is what shrank, not the scaling of the pool, so 4 to 8 threads still
+gives 1.15x (stock) and 1.24x (continents). The output of a seed is
+byte-identical to the build before and for 1, 4 and 8 threads (every data file
+and the continents' grid files compared). The reference suite is unchanged (85
+same, 34 trivial, 1 UNSUPPORTED, 1 REF-TIMEOUT).
+
+Where the remaining time is, and why it is mostly not more code: the commit
+(about 2 s at 8 threads) is now dominated by the systematics' own structures
+(the sparse lists' segment search on each change of abundance, 16% of the
+commit; the genome comparison in the hash bucket; frees of genotypes), all
+cache-miss bound and order-visible. The end-of-update statistics and the
+bursts are bound by memory traffic and by the cores the desktop leaves, and
+each pool entry costs about 0.1 ms. On `10-continents` the nine grids are nine
+equal jobs, so 8 threads take two waves (4 threads three); a grid's flow is
+order-dependent in its sums and cannot be split without changing bits.
+Tried and left out, no gain: loading the next organism's memory before a burst
+(slower, +3%), the calling thread working and spinning for the end of a burst
+phase instead of sleeping on the latch (0.8% at 4 threads, none at 8),
+Poisson draws on the pool (slower, see above). Not tried: running the
+end-of-update systematics beside the statistics gather (the data-file actions
+between them may read the systematics), and committing round r while the
+bursts of the rest run, which needs the occupancy of cells whose organisms are
+out on workers.
+
+#### The 4-to-8-thread ceiling, measured (2026-11-14)
+
+Where the time of 1000 updates of the stock configuration (60 x 60, seed
+42) goes at each thread count, from the counters of `AVIDA_EXECUTION_STATS`
+(now with the main thread's time in `begin_update`, in the parallel phase
+outside the bursts, and in the parts of the sequential phase). Seconds for
+1000 updates are also milliseconds per update. Release build, one run at a
+time, the machine's other load 5 to 7 (11 later in the day: the maintainer's
+own six-thread simulation ran beside it), so the third decimal is noise.
+The population grows to 3600 organisms over the first 150 updates; the
+average update runs 66,800 instructions, 2,400 bursts and 101 divide commits.
+
+| Part (s per 1000 updates) | 1 thread | 4 threads | 8 threads | Serial? |
+|---|---|---|---|---|
+| bursts (pool, or inline with 1 thread) | 3.8 to 4.4 | 1.10 to 1.43 | 0.74 to 1.21 | the span at 8 threads is 78% of ideal; entry and exit of the pool 0.13 |
+| divide commits (101 per update, 4.5 to 5.3 us each) | 0.67 | 0.50 to 0.52 | 0.48 to 0.53 | yes |
+| end-of-update statistics | 1.14 | 0.49 | 0.43 | gather 0.22, sums 0.13 (critical path), wake-ups |
+| budget allocation (Poisson draws, one stream) | 0.16 | 0.16 | 0.16 | yes |
+| `begin_update`, merge and prep of the bursts, grants | 0.09 | 0.09 | 0.10 | yes |
+| systematics, output, rest of the end of an update | 0.10 | 0.11 | 0.08 to 0.15 | yes |
+
+Amdahl budget at 8 threads: about 0.85 s of the 2.0 to 2.2 s update loop is on
+the main thread alone (commits 0.48, allocation 0.16, the end of the update
+0.08 to 0.15, the rest 0.1), so the serial share is 40%. With perfect scaling
+of everything else the loop would be 1.5 s at 8 threads and 2.2 s at 4, a
+ratio of 1.45; with bursts at the span efficiency measured here (0.74 s for
+3.8 s of work on 8 threads) and the wake-up cost of each pool entry, the
+bound is about 1.3, and 1.2 is what the machine gives with its other load.
+The commit alone is a quarter of the loop at either thread count and cannot
+be spread (see above).
+
+What changed, all byte-identical in the output of a seed (stock, 160 x 160,
+`misc/environment-9resource.cfg`, each at 1, 4 and 8 threads where run, the
+data files compared against the build before):
+
+| Change | Effect |
+|---|---|
+| Statistics: the per-instruction message counts (26 columns, three pool tasks of 80 us each, the longest of the phase) are not summed when no organism has any (the usual case: `OrgStatsRecord::from_message_nonzero`, read in the gather): each column then gets only its count (`Accumulator::add_zeros`, the state of repeated `Add(0)`) | statistics 0.43 to 0.35-0.38 s at 8 threads (0.49 to 0.40-0.46 at 4); the exact mode is unchanged (it keeps the walk) |
+| `GenotypeArbiter::update_provided_values` computes the entropy term of each abundance once per call (most genotypes have an abundance of 1 or 2), in the same order of additions | end-of-update rest 0.107 to 0.080-0.088 s; also in the exact mode, same bits |
+
+Not worth it, measured: the Poisson draws are 25 ns each (3600 per update,
+0.09 ms), the rest of the allocation is the 3600 writes into the organisms
+(0.07 ms); neither can leave one thread without changing the stream.
+Bundling the column tasks of the statistics (14 spawns to 4) changed nothing
+(0.137 against 0.136 to 0.144 s): the wake-ups are not in the spawns. The
+commit's profile (719 samples of the main thread at 8 threads): classifying
+the offspring 26%, the kill of the occupant 24% (both mostly the systematics'
+`adjust_genotype`, whose sparse-list segment search is 16% of the commit),
+`divide_reset` and `setup_offspring` of the phenotypes 15% (copies of 15
+vectors that the exact path makes too, cold in the main thread's cache
+because another core ran the burst), the genome comparison in the hash bucket
+7%. A scheme that moves any of this to the burst changes what the commit
+reads, and was not attempted. Not attempted either: a pool of our own with
+spinning workers (the 0.13 s of entry and exit; rayon's workers sleep between
+phases; the previous section tried the calling thread spinning at the end of a
+phase and found 0.8%), and the end-of-update systematics beside the
+statistics gather (the data-file actions between them read the systematics,
+and `update_provided_values` is only 4% of the loop).
 
 ## Recording and playback (2026-11-13)
 
@@ -856,6 +1226,311 @@ took 10 ms (60 x 60) to 35 ms (160 x 160), 1 to 3 % of the run.
   when it is next asked to run or step past its last frame.
 - Nobody has looked at the playback screens in a real window or terminal; they
   were checked in the offscreen GUI harness and the TUI's test terminal.
+
+## Open-endedness metrics: MODES (`PrintMODESData`)
+
+A port-only extension (the C++ has no such action; `world/src/modes.rs`,
+tests in `world/src/modes/tests.rs` and `crates/avida/tests/modes.rs`). It
+computes the change, novelty, complexity and ecology metrics of Dolson et al.,
+"The MODES Toolbox" (Artificial Life 25(1), 2019), as the Empirical
+`OEETracker` / `CoalescenceFilter` / `Skeletonize` code computes them, on the
+genotype tracker's genotypes.
+
+```
+u 0:1:end PrintMODESData <file> <resolution> <t> [nearest|any]
+```
+
+`resolution` and `t` are in generations of the average generation; `t` must be
+a positive multiple of `resolution` (anything else stops the start-up).
+Several instances (other file, resolution, `t` or mode) coexist and share the
+skeleton cache. The action fires every update and samples only when
+`floor(generation / resolution)` exceeds the last sampled index, one sample
+per crossing (the reference drops a sample when its rounded generation skips a
+multiple). Per-update cost of a firing that does not sample: one division.
+
+**Method.** A sample stores `(genotype id, organisms)` of every living genotype
+(`Window` keeps the last `t / resolution + 1`). When the window is full, the
+oldest snapshot is evaluated: its persistent genotypes (alive now, or with a
+living descendant now) get a skeleton, `F` maps skeleton to summed snapshot
+count, and `change = |F \ F'|`, `novelty = |F \ S|`, `complexity` = longest
+skeleton, `ecology` = entropy in bits. No row is written before a snapshot
+`t` generations old exists. `nearest` (default) is the reference lookup (the
+first ancestor-or-self alive at the snapshot, so an ancestor that has a
+snapshot descendant is left out unless it survives by itself); `any` is the
+paper's wording (every snapshot genotype with a living descendant). Skeletons
+are computed only for persistent genotypes, cached per genotype id, and the
+cache keeps only ids that a snapshot of any instance still holds. The skeleton
+keeps the symbols of the sites whose replacement by NULL strictly lowers test
+fitness, positions dropped (reference behaviour); complexity counts
+instructions.
+
+**Test-CPU resources.** The default test CPU (`RES_INITIAL`) gives a limited
+resource its `initial=` level, usually 0, and `DoProcesses` pays nothing from a
+resource at 0, so in a `geometry=grid` / `frac=:max=` world no task is worth
+anything and no site needed only for a task is informative. The action uses
+the Avida mechanism for other levels, `SetResourceOptions(RES_CONSTANT,
+history, 0, 0)`, with one history entry that gives each resource
+`max(initial, inflow per cell / outflow)` (the level of an unexploited cell;
+1 unit for the 160 x 160 "continents" environment). Not modelled: diffusion,
+gradient resources, instructions that read the cell's own resources (the test
+CPU's cell resources stay 0). Pinned by
+`a_rewarded_task_lengthens_the_skeleton_in_a_spatial_resource_world`: a NOT
+organism (6 inserted instructions) has skeleton length 21 against 15 for the
+replicator alone at these levels, and 17 under `RES_INITIAL`, where the
+instructions that only make the task (IO, push, nand, IO) are absent.
+
+**Observation only.** The test CPU runs through
+`avida_analyze::world::with_detached_test_world`: own RNG (re-seeded per
+genotype), null statistics, own `std::rand` state, no population, diagnostics
+discarded, on a private copy of the instruction sets (`InstSetRegistry::
+duplicate`, `HardwareManager::from_registry`) in which `ActivateNullInst` has
+run, so the live sets (instruction numbering, mutation, output files) are
+untouched. The run's environment is only read; `xor-max` (which repoints a
+reaction) is refused at the first firing. Results are cached in the action,
+not in `GenomeTestMetrics`. `observation_only_*` compare every other data file
+byte for byte (time stamps aside) with a run without the action, in the exact
+mode and in the parallel mode on 1 and 4 threads, and the MODES files of 1 and
+4 threads against each other. `DISABLE_GENOTYPE_CLASSIFICATION 1` is refused.
+
+**Output** (`data/<file>`): header comments (source of the definitions,
+parameters, conventions), then one row per evaluated sample with columns update,
+average generation, update of the snapshot evaluated, change, novelty,
+complexity, ecology (bits), persistent genotypes, distinct persistent
+skeletons, living genotypes in the snapshot, cumulative novelty.
+
+**Cost** (stock 60 x 60, 5000 updates, release): 84 to 87 s with and without
+the action on a shared machine (no measurable difference); with resolution 50
+and `t` 200, 11 rows and at most 461 skeletons (persistent genotypes summed over
+the rows; about 100 test runs each, fewer when cached).
+
+**Validation against the paper (2026-11-14).** The paper's Avida experiment
+was repeated: well-mixed (`BIRTH_METHOD 4`), 500 organisms, the empty and the
+Logic-9 environment, 10 seeds each, 300,000 updates (about 57,000
+generations). Mean change per sample at a persistence lag of 100, 500, 1000
+and 2000 generations: 8.8, 1.63 ± 0.10, 1.08, 1.00 in the empty environment
+and 5.9, 1.53 ± 0.06, 1.07, 1.00 in Logic-9. As in the paper a longer lag
+lowers change, novelty follows change, ecology stays low (0.4 to 0.5 bits at
+a lag of 500), complexity rises and then falls in the empty environment (48
+at the first sample, about 40 afterwards) and keeps rising in Logic-9 (53 to
+about 68). Not reproduced: the paper's higher change in Logic-9 than in the
+empty environment; the cause is not known (the paper does not give its
+sampling resolution). The `any` filter gives 2.40 where `nearest` gives 1.63.
+
+## Open-endedness metrics: phylogeny
+
+Two event actions beyond the C++ program (nothing like them exists in avida-core; `PORTING.md` and the reference comparison are untouched): `PrintPhylogenyMetrics [file=phylogeny.dat]` writes one row per firing, `SavePhylogeny [file=phylogeny_tree.csv]` rewrites a CSV of the current tree. Both only read the genotype tracker: no random draw, no write to the population or the systematics. `crates/avida/tests/phylogeny.rs` runs a 60x60 world with `PrintPhylogenyMetrics` every 10 updates (and `SavePhylogeny` at updates 50 and 90) against the same run without it, and every other data file and the status lines are byte-identical (time stamps aside) in the exact mode and in the parallel mode on one and four threads; the metrics file is identical for one and four threads and for repeated exact runs.
+
+**Layering.** `systematics/src/phylometrics.rs` holds pure functions over a snapshot (`Vec<PhyloNode>`: id, parent index, abundance, origination update, tracker depth, destruction update) and knows nothing of the world. `world/src/phylo_actions.rs` builds the snapshot from the genotype arbiter (the active size lists, size 0 included, plus the historic list; `Begin()`/`Next()` stops at size 1 and skips the historic ancestors, so it cannot be used) and writes the rows. A genotype is living when `num_units() > 0`; its parent is `parents()[0]`, as `updateCoalescent` follows (a sexual genotype's other parents are ignored); origination is `update_born()`. The tree is the snapshot pruned to living genotypes and their ancestors, rooted at the MRCA: the topmost node of a living lineage that is living or has two or more children (`GetMRCA`; the tracker's own `coalescent` follows the best genotype's line only and never tests the root, so the two can differ). Pre-MRCA taxa are excluded. With several roots or nothing living there is no MRCA: the MRCA columns are -1 and the metrics nan.
+
+**Metrics (sources: Empirical `Systematics.hpp`; Dolson et al. 2020)**
+
+| Column | Definition | Living internal node |
+|---|---|---|
+| nodes, PD | nodes of the tree from the MRCA down; PD = edges = nodes - 1 (Empirical returns ancestors + living - 1 over the whole tree, pre-MRCA ancestors included; the paper's text says "nodes") | an ordinary node |
+| pairwise distance sum, mean, variance | path length in edges over all unordered pairs of living genotypes, unweighted. Sum: each edge to a child c lies on live(c) (n - live(c)) paths. Sum of squares: one bottom-up pass carrying (count, sum of depths, sum of squared depths), charging each cross pair at its lowest common ancestor. Exact in 128-bit integers; variance = (N sum d^2 - (sum d)^2) / (N (N - 1)) | a taxon at distance 0 from its own node, as `GetPairwiseDistances` pairs a living taxon with the subtrees below it |
+| evolutionary distinctiveness mean, sum, variance | `GetEvolutionaryDistinctiveness` with time = the current update: the first branch is measured from now to the origination of the first ancestor that is living, branching or the MRCA (so a leaf's own life counts), then origination differences; each segment is divided by the living genotypes below its upper end (living descendants + 1 for a living split point, living descendants for a dead branch point). One top-down pass: segments telescope, so a taxon's value is (now - o(p)) / live(taxon) + G(p) with p its nearest split ancestor and G accumulated down the tree | a split point whose divisor restarts at itself plus its living descendants; the MRCA contributes 0 |
+| Sackin | sum over living genotypes of (ancestors strictly between it and the MRCA with two or more children, + 1). The MRCA itself contributes 1; `GetBranchesToRoot` would walk past it and count branch points above (pre-MRCA taxa are excluded here) | counts as a branching point for the taxa below only if it has two or more children (the code tests `GetNumOff() > 1`, not aliveness) |
+| Colless-like | `RecursiveCollessStep` as written (skip unifurcations; n value of a child = sum of its n values + ln(children of the child + e); add the mean absolute deviation from the median), not Mir et al. 2018. Iterative: per node (sum of n values, total), reverse breadth-first | ignored: only the shape counts |
+| Shannon | bits, abundance weighted, all living genotypes (`CalcDiversity`) | an ordinary taxon |
+| mean depth | edges below the MRCA, mean over living genotypes | |
+| lineage length | edges from the founder to the most abundant genotype (lowest id on ties) along first parents | |
+
+Variances are sample variances (n - 1) as `emp::Variance`, nan below two values. Children are summed in ascending id order wherever floating-point order matters (the reference iterates a `std::set` of pointers, so its order is unspecified). `mrca_changes` counts rows whose MRCA id differs from the previous row's (the first row counts 0; several changes between two rows count once), kept per file name.
+
+Phenotypic volatility (task-phenotype changes and distinct phenotypes along the lineage) is not reported: the tracker keeps no task phenotype of an extinct ancestor (`Genotype::task_counts` exists but nothing feeds it, as in the C++, and a test CPU run on an ancestor's genome would not be its phenotype in the run). It needs the gestation hook (`handle_unit_gestation`) to record the organism's task vector at a genotype's first gestation; that is a read of data the world already has, but it is a change to a shared struct and was left out.
+
+**Cost.** Everything is O(nodes) or O(nodes log nodes) (the sorts) and iterative: a caterpillar of 60,000 branch points is a unit test. On a release build one call takes about 33 ms for 200,000 snapshot nodes with 20,000 living genotypes (about 70,000 to 134,000 pruned nodes) and 16 ms for 100,000 nodes; `cargo test --release -p avida-systematics --test phylometrics large_tree_timing -- --ignored --nocapture`.
+
+**Verification.** `systematics/tests/phylometrics.rs` compares the fast code on 4,000 random trees (chains, multifurcations, dead prefixes above the MRCA, living internal nodes, one or two living taxa, shuffled node order) and four long-chain trees with brute force: pairwise sum, sum of squares, mean and variance from the list of all pairs; PD, Sackin, evolutionary distinctiveness and the MRCA as transcriptions of the reference functions; Colless-like as a transcription of `RecursiveCollessStep`. Floating-point results agree to 1e-9 relative (the reference sums evolutionary distinctiveness bottom up, the fast code top down). Hand-computed cases pin the living-internal-node conventions.
+
+**`SavePhylogeny`** writes the ALife standard phylogeny format (`id,ancestor_list,origin_time,destruction_time,num_orgs,depth`), the whole pruned tree with pre-MRCA ancestors, in ascending id order, one ancestor per row (`[none]` for a root), `inf` for a living genotype, an empty destruction time when an extinct genotype's is unknown. It rewrites its file at every firing.
+
+### Open-endedness view (2026-11-14)
+
+Both front ends chart what `PrintMODESData` and `PrintPhylogenyMetrics` write,
+live. It is observation only: the actions append to a bounded in-memory
+history besides writing their rows, and nothing else changes (no output file,
+no random draw; `crates/avida/tests/modes.rs`, `phylogeny.rs` and the reference
+suite are the check).
+
+Data path, bottom to top:
+
+1. `world`: each `PrintMODESData` instance (`modes::Instance`) and each
+   `PrintPhylogenyMetrics` file (`phylo_actions::MrcaTrack`) keeps the last
+   `modes::HISTORY_CAP` (2,000) rows it wrote, oldest dropped first
+   (`push_capped`). `ModesState::history()` and `PhyloState::history()` copy
+   them out (`ModesRow`, `PhyloRow`: every MODES column, and the phylogeny columns a
+   chart shows; the other columns stay in the data file).
+2. `viewmodel::capture` copies both into `Frame::open_ended` on every frame
+   (empty when the events file has neither action, so nothing is cloned
+   then). This is the mechanism the session already uses for everything a
+   front end draws, so `session` needed no new command or subscription. A
+   recording stores the layers it asks for and not this field: the recording
+   format is unchanged, a recorded `Frame` reads back with `open_ended`
+   empty, and a playback shows `PLAYBACK_NOTE` ("only available in a live
+   run").
+3. `viewmodel::open_ended::build(&OpenEnded, &OeSources)` makes an `OeView`:
+   groups (one per MODES instance, labelled by its persistence lag `t` and
+   filter mode; one per phylogeny file), each with one `OeChart` per measure
+   (title, x label, whole-number flag, one-sentence explanation, points with
+   non-finite values dropped). MODES charts (change, novelty, complexity,
+   ecology) are against the average generation; phylogeny charts (living
+   genotypes, phylogenetic diversity, mean pairwise distance, mean
+   evolutionary distinctiveness, Shannon diversity, depth of the common
+   ancestor, changes of the common ancestor) against the update. `OeSources`
+   is read from the run's event lines (`ExperimentSetup::events`) and is how
+   the empty states are told apart: neither action (a notice and both example
+   event lines), an action with no row yet (MODES: "rows start after
+   resolution + t generations"), or one action missing (a notice and its
+   line).
+4. The front ends draw the view; neither touches `world`.
+   - GUI (`gui/src/ui/open_ended.rs`): the last view of the Charts tab,
+     "Open-ended" (Charts, then the segmented control; or the command
+     palette, "Chart: Open-ended"). One small plot per measure with a shared
+     x axis per group, the time series' zoom, drag and hover read-out (the
+     title shows the value at the pointer), and an info mark whose tooltip is
+     the explanation. The page holds group titles, chart titles and values:
+     the MODES paragraph and a group's caption are tooltips of the group
+     title, the interaction hints tooltips of the chart titles, and a missing
+     action's notice shows its first sentence (the rest is a tooltip) and the
+     line to add.
+   - TUI (`tui/src/ui/open_ended.rs`): screen `K` ("Open" in the tab strip, last
+     in the cycle). Charts in a grid (two columns from 100 columns), paged to
+     fit; Up and Down choose a chart, whose explanation is written under the
+     charts; Left and Right switch group. A terminal has no hover, so each
+     title carries the newest value.
+
+Tests: `viewmodel/src/open_ended.rs` (series and the empty states),
+`viewmodel/tests/open_ended.rs` (the frame's rows equal the data files' rows on
+a real run), `world/src/modes/tests.rs` (the cap), `tui/src/ui/tests.rs`, and
+the sweeps `gui/tests/audit.rs` (`open_endedness_in_both_themes_and_sizes`)
+and `tui/tests/screens.rs` (`Screen::OpenEnded` in every state, and
+`the_open_endedness_screen_with_rows`).
+
+## Chart filtering and brushing (2026-11-14)
+
+The Charts tab of the desktop GUI links its views and the map through one
+organism filter ("brushing"). The filter is view state and nothing else: it
+changes which layers the GUI asks the session for, never the simulation, an
+output file or a recording (`crates/gui/src/model/mod.rs`,
+`filtering_only_changes_the_subscription_and_ends_with_the_run`). It is
+cleared when another run is opened, closed or restarted, and it survives
+switching chart views and map layers.
+
+**Model** (`viewmodel/src/filter.rs`, toolkit-free, shared with any front
+end). A `Filter` is a list of `Condition`s joined by AND; an empty filter
+selects every organism. `Filter::select(&MapFrame)` returns a `Selection`: one
+flag per cell (never set for an empty cell), the number of matching and
+occupied cells, and the conditions it could not apply.
+
+| Condition | Source in the frame |
+|---|---|
+| performs / does not perform task `k` | `MapFrame::task_bits` (always captured) |
+| range on fitness, merit, gestation time, genome length, age, generation, tasks performed, threads (`Prop`) | the property's float layer (`MapFrame::layers`) |
+| genotype | `MapFrame::genotype_id` |
+| family | the Ancestry layer's values and `MapFrame::families`, the same grouping the map layer colours |
+| region | the cell's `x = c % w`, `y = c / w`; a rectangle of cells |
+
+A condition whose layer is not in the frame (a recording that did not keep
+it) is left out of the selection and listed in `Selection::ignored`; its chip
+carries a warning. Lineage depth (the phylogeny depth of a genotype) is not a
+condition: no layer carries it, and adding one changes the recording format;
+`generation` is the per-organism count of ancestors.
+
+**Data path.** `AppState::subscription()` asks for the map layer, and, while
+a filter is active, all eight property layers (the subset's series reads
+every one) plus the Ancestry layer for a family condition; the scatter view
+adds its two axes, and the open "Add condition" form adds Ancestry to list
+families. `AppState::sync_subscription()` (every frame, from `logic`) and
+`edit_filter` re-send the subscription when that set changes; no other command
+is sent. `apply_frame` and `edit_filter` recompute the `Selection` for the
+newest frame (`Filtering::refresh`); everything below reads it.
+`render_map` dims unselected organisms to alpha 70 of 255 and leaves their
+colours (the scatter view reads those colours from the map image,
+`AppState::map_rgba`).
+
+| View | With a filter |
+|---|---|
+| Map | unselected organisms dimmed, not hidden; a filter-coloured outline around the world; the regions as rectangles. Drag with the region tool on (toolbar, "Add condition" form, command palette) or with Shift held draws a region; the tool is used once. |
+| Histogram | the selected organisms' counts in the same bins, in the filter colour, over the whole population's; "N matching (P%)". Dragging sideways sets the range of the layer's property (whole numbers rounded inwards), a click removes it. The bar charts of genotypes and families overlay the subset per bar; a click on a bar toggles the genotype or family. |
+| Tasks | per task a second thin bar and a second share for the selected organisms next to everyone's (the frame's `task_counts`, not the row's, so both use the same organisms); a click on a row toggles "performs", Shift-click "does not perform"; the swatch still hides or shows the task's line. |
+| Time series | for measures with an organism-level counterpart (organisms, genotypes, average and maximum fitness and merit, gestation time, generation, age, genome size, threads) a second line of the subset's mean (`SubsetRow`, `subset_value`). One y axis per chart; the measure chips, linear or log value axis and a moving average are controls of the view. |
+| Scatter | any two properties, one dot per organism coloured as the map is; selected organisms larger with a filter-coloured outline, the rest fainter; per-axis log scale; dragging a rectangle sets both ranges; a click inspects the nearest dot. Painted as one mesh over a plot that only draws axes and grid. |
+
+The filter colour (`Tokens::filter`, magenta) is the one mark of the subset
+everywhere; it is in neither viridis, cividis nor Okabe-Ito. Chart text uses
+text colours.
+
+**The subset's series.** A live run keeps no per-organism past, so the subset
+line starts at the update the filter was set and grows with every frame
+(`SubsetHistory`, one row per frame, 50,000 rows at most). In a playback the
+GUI starts a worker (`model/scan.rs`) that opens the recording file again,
+applies the filter to every frame and sends one `SubsetRow` per frame back; the
+line fills in over the whole run (up to the frame on screen) while the worker
+reads. It reads only, and a new filter stops the old worker.
+
+**Tests.** `viewmodel/src/filter.rs` (each condition, AND, empty filter,
+counts, ignored conditions, histogram overlay, task counts, subset row,
+scatter points and thinning), `gui/src/model/filtering.rs`, `layers.rs`,
+`metrics.rs`, `ui/histogram.rs`, `ui/scatter.rs`, and `gui/tests/filter.rs`
+(the chips remove conditions; a drag on the histogram, a click on a task, a
+Shift-drag region, a rectangle on the scatter plot and the Add condition form
+make them; a recording gives the subset line over every frame; a recording
+without a layer does not apply the condition). The review sweep is
+`gui/tests/audit.rs` (`chart_filtering_in_both_themes_and_sizes`, on a
+synthetic recording from `gui/tests/common/synth.rs`) and the measurements
+`gui/tests/perf.rs` (`filtering_costs_on_a_160_by_160_world`).
+
+**Cost** (160 x 160 world, 25,600 organisms, release build, a machine under
+other load; `gui/tests/perf.rs`, `viewmodel/tests/filter_cost.rs`):
+
+| What | Median |
+|---|---|
+| `capture` on the simulation thread, genotype layer only / fitness only | 1.1 ms / 1.4 ms |
+| the same with the eight property layers (a filter is active) / and Ancestry | 3.9 ms / 4.2 ms |
+| `Filter::select`, three conditions (range, task, region) | 0.06 ms |
+| `subset_row` (means of eight properties, maxima, distinct genotypes) | 0.34 ms |
+| `scatter_points` and `thin_points` | 0.07 ms |
+| UI frame (UI pass and tessellation), scatter, no filter / 12,321 of 25,600 selected | 0.93 ms / 1.17 ms (p95 1.5 ms) |
+| UI frame, histogram, no filter / with a filter | 0.23 ms / 0.51 ms |
+| UI frame, tasks, no filter / with a filter | 0.43 ms / 0.59 ms |
+| UI frame, time series with the subset line | 0.34 ms |
+| UI frame while the run advances, scatter with a filter | 1.8 ms (p95 4.6 ms) |
+
+The scatter plot therefore draws every organism: it thins (`MAX_DOTS`, 60,000)
+only beyond what the largest worlds have, and then keeps the selected ones
+first and every k-th of the rest, so the picture is the same from frame to
+frame. The cost of a filter is the extra 2.8 ms of capture per frame, paid on
+the simulation thread only while a filter is active.
+
+**Terminal interface** (`crates/tui/src/filtering.rs`, `ui/filter_bar.rs`,
+`ui/filter_dialog.rs`). The same `Filter` and `Selection`, as view state of
+`App` (`App::filtering`); the subset's series (`SubsetHistory`) is a copy of
+the desktop one, without the playback scan. `App::subscription()` adds the
+layers of `Filtering::layers()` (the eight properties while a filter is
+active, Ancestry for a family condition, the chosen property's layer or
+Ancestry while the dialog is on that step); `App::sync_subscription()` (after
+every edit, step of the dialog and frame) sends a `Subscribe` only when that
+set of layers changed, and nothing else goes to the session. The filter is
+cleared by `reset_run`. Keys: `/` opens the "Filter organisms" dialog (on the
+Config screen `/` still filters the settings; the palette has the dialog on
+every screen), `\` clears the filter, and the palette also lists "Show or
+remove the filter's conditions". The dialog has an "Add condition" list (kind,
+then the task list, the family list, or a comparison with typed numbers beside
+the property's current minimum and maximum, or a rectangle typed over the cells
+in view) and a "Conditions" list (`Del` or `x` removes one, `c` clears). Every
+screen with the map or a chart (Map, Stats, Charts, Hist) gets a one-line bar
+with the same labels as the desktop chips and "N of M organisms match (P%)";
+nothing matching reads "No organism matches". The map greys the organisms the
+filter leaves out (the same grey at every colour depth, so it never reads as an
+empty cell; in 16 colours it is dark grey); without colour they are the light
+shade and the matching ones keep the upper shades or their letters. The
+histogram draws the matching part of each bin or genotype bar solid and the
+rest shaded, with "n of m"; the task list shows both shares as bars with
+percentages; a time series gets a dotted second line (half blocks without
+colour) for every measure that has a subset value, from the update the filter
+was set. Not in the terminal interface: the scatter view, drag selection and
+the family histogram overlay.
 
 ## Config flags not yet ported
 

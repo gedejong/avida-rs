@@ -385,20 +385,23 @@ impl World {
     /// (thread owners), then `m_parasites` last to first, then the
     /// organism's own unit (`membership`, `None` if it has none).
     pub fn delete_organism(&mut self, org: Box<Organism>, membership: Option<GroupMembership>) {
+        if self.pop.defer_drops && !self.pop.parasites.made_units() {
+            // Nothing in the organism can reach the world when it is freed:
+            // the parallel mode frees it on a worker thread.
+            self.pop.graveyard.push(org);
+            if let Some(m) = membership {
+                self.systematics.remove_unit(&m);
+            }
+            return;
+        }
         let Organism {
             mut state,
             hardware,
         } = *org;
-        if self.pop.defer_drops && !self.pop.parasites.made_units() {
-            // Nothing in the organism can reach the world when it is freed:
-            // the parallel mode frees it on a worker thread.
-            self.pop.graveyard.push((hardware, state));
-        } else {
-            drop(hardware);
-            state.clear_parasites();
-            drop(state);
-            self.flush_parasite_deaths();
-        }
+        drop(hardware);
+        state.clear_parasites();
+        drop(state);
+        self.flush_parasite_deaths();
         if let Some(m) = membership {
             self.systematics.remove_unit(&m);
         }

@@ -6,16 +6,19 @@ mod charts;
 mod config;
 mod debug;
 mod env;
+mod filter_bar;
+mod filter_dialog;
 mod genotypes;
 mod help;
 mod histogram;
 mod lineage;
 mod logview;
 mod map;
+mod open_ended;
 mod options;
 mod palette;
 mod stats;
-mod util;
+pub(crate) mod util;
 mod zoom;
 
 use avida_session::RunState;
@@ -94,6 +97,7 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         Screen::Histogram => histogram::draw(f, app, body),
         Screen::Log => logview::draw(f, app, body),
         Screen::Options => options::draw(f, app, body),
+        Screen::OpenEnded => open_ended::draw(f, app, body),
         Screen::Blank => {
             f.render_widget(
                 Paragraph::new("Blank screen. Any screen key brings the display back.").style(DIM),
@@ -105,6 +109,9 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     draw_footer(f, app, footer);
     if app.show_help {
         help::draw(f, app, area);
+    }
+    if let Some(d) = &app.filtering.dialog {
+        filter_dialog::draw(f, app, d, area);
     }
     if let Some(p) = &app.cmd_palette {
         palette::draw(f, app, p, area);
@@ -272,8 +279,22 @@ fn draw_tabs(f: &mut Frame, app: &mut App, area: Rect) {
     let mut hits = Vec::new();
     spans.push(Span::raw(" "));
     x += 1;
+    // When the full strip does not fit (80 columns), the longer titles give
+    // way to shorter ones so that the last tab stays visible.
+    let full: usize = 1 + Screen::TABS
+        .iter()
+        .map(|s| s.title().chars().count() + 3)
+        .sum::<usize>()
+        - 1;
+    let narrow = full > area.width as usize;
     for (i, s) in Screen::TABS.iter().enumerate() {
-        let label = format!("{} {}", s.key(), s.title());
+        let title = match (narrow, s) {
+            (true, Screen::Stats) => "Stat",
+            (true, Screen::Charts) => "Chart",
+            (true, Screen::Debug) => "Dbg",
+            _ => s.title(),
+        };
+        let label = format!("{} {}", s.key(), title);
         let w = label.chars().count() as u16;
         let style = if *s == app.screen {
             Style::new().add_modifier(Modifier::REVERSED | Modifier::BOLD)
@@ -305,6 +326,7 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (StepUpdate, "step"),
             (StepSlice, "slice"),
             (NextLayer, "layer"),
+            (FilterOpen, "filter"),
             (ToggleScale, "scale"),
             (Enter, "inspect"),
         ],
@@ -313,11 +335,13 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (StepUpdate, "step"),
             (StepSlice, "slice"),
             (Faster, "speed"),
+            (FilterOpen, "filter"),
         ],
         Screen::Charts => &[
             (Dir(0, -1), "choose series"),
             (Enter, "toggle"),
             (RunPause, "run/pause"),
+            (FilterOpen, "filter"),
         ],
         Screen::Genotypes => &[
             (GenoView, "view"),
@@ -346,6 +370,7 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (NextLayer, "layer"),
             (ToggleScale, "scale"),
             (RunPause, "run/pause"),
+            (FilterOpen, "filter"),
         ],
         Screen::Log => &[
             (PageDown, "scroll"),
@@ -364,6 +389,11 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (Faster, "speed"),
             (CyclePalette, "palette"),
             (SavePopulation, "save population"),
+        ],
+        Screen::OpenEnded => &[
+            (RunPause, "run/pause"),
+            (Dir(0, -1), "choose chart"),
+            (Dir(1, 0), "next group"),
         ],
         Screen::Blank => &[(Goto(Screen::Map), "map"), (Goto(Screen::Stats), "stats")],
     }

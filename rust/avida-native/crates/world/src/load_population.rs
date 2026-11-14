@@ -254,15 +254,21 @@ impl World {
                         )?;
                     }
                     self.pop.groups.activating = Some(key);
-                    let org_survived =
-                        self.activate_organism(org, membership, cell_id, false, true, None);
+                    let org_survived = self.activate_organism(
+                        Box::new(org),
+                        membership,
+                        cell_id,
+                        false,
+                        true,
+                        None,
+                    );
                     self.pop.groups.activating = None;
                     if org_survived {
                         self.loaded_org_set_forage_target(cell_id, forager_type)?;
                     }
                     org_survived
                 } else {
-                    self.activate_organism(org, membership, cell_id, true, true, None)
+                    self.activate_organism(Box::new(org), membership, cell_id, true, true, None)
                 };
                 if args.load_parent_dat {
                     let ft = parent_list(parent_ft, "parent_ft")?;
@@ -286,7 +292,7 @@ impl World {
                     org.state.p_merit = m;
                 }
                 org.state.phenotype.birth_cell_id = cell_id;
-                self.activate_organism(org, membership, cell_id, false, true, None)
+                self.activate_organism(Box::new(org), membership, cell_id, false, true, None)
             };
 
             if org_survived && self.cfg.use_avatars != 0 && !self.cfg.neural_networking {

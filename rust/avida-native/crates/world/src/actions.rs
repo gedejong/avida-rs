@@ -310,8 +310,12 @@ pub enum Action {
     Env(crate::actions_env::EnvAction),
     /// A mini or micro trace action (mini_trace.rs).
     MiniTrace(crate::mini_trace::MiniTraceAction),
+    /// A phylogeny measurement (phylo_actions.rs; not in the C++).
+    Phylo(crate::phylo_actions::PhyloAction),
     /// An action of the third porting round (actions3.rs).
     A3(crate::actions3::Action3),
+    /// `PrintMODESData`, a port-only extension (modes.rs).
+    Modes(crate::modes::ModesAction),
 }
 
 /// World facts the C++ constructors read while parsing.
@@ -398,7 +402,9 @@ pub fn canonical_name(name: &str) -> Option<&'static str> {
         .chain(crate::actions_deme2::DEME2_ACTIONS.iter().copied())
         .chain(crate::actions_env::ENV_ACTIONS.iter().copied())
         .chain(crate::mini_trace::MINI_TRACE_ACTIONS.iter().copied())
+        .chain(crate::phylo_actions::PHYLO_ACTIONS.iter().copied())
         .chain(crate::actions3::ACTIONS3.iter().copied())
+        .chain(crate::modes::MODES_ACTIONS.iter().copied())
         .find(|n| n.eq_ignore_ascii_case(name))
 }
 
@@ -546,8 +552,14 @@ pub fn parse(
     if let Some(m) = crate::mini_trace::parse(name, args, feedback) {
         return Ok(Action::MiniTrace(m));
     }
+    if let Some(p) = crate::phylo_actions::parse(name, args) {
+        return Ok(Action::Phylo(p));
+    }
     if let Some(r) = crate::actions3::parse(name, args, ctx, feedback) {
         return r.map(Action::A3);
+    }
+    if let Some(r) = crate::modes::parse(name, args) {
+        return r.map(Action::Modes);
     }
 
     let mut a = Args(args.to_string());

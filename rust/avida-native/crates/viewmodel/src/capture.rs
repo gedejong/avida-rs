@@ -38,6 +38,7 @@ use crate::model::{
     MapFrame, MemCell, MemSpaceView, OrgProbe, OrganismView, PhenotypeView, ReactionView,
     ResourceView, Subscription, TaskView, ThreadView, UpdateProgress, UpdateRow,
 };
+use crate::open_ended::{OpenEnded, PhyloHistory};
 use crate::palette::CATEGORICAL_SLOTS;
 
 /// Genotype id of an occupied cell whose organism has no genotype (not seen
@@ -92,6 +93,22 @@ pub fn capture_with_progress(w: &World, sub: &Subscription, progress: UpdateProg
         inst_names: inst_names(w),
         layers: all_layers(w),
         lineage,
+        open_ended: open_ended(w),
+    }
+}
+
+/// The rows the open-endedness actions have kept (nothing when the events
+/// file has neither). Reads the world's bounded in-memory history only.
+fn open_ended(w: &World) -> OpenEnded {
+    OpenEnded {
+        modes: w.actions2.modes.history(),
+        phylogeny: w
+            .actions2
+            .phylo
+            .history()
+            .into_iter()
+            .map(|(filename, rows)| PhyloHistory { filename, rows })
+            .collect(),
     }
 }
 

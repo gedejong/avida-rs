@@ -397,7 +397,11 @@ fn runs_to_the_end_and_everything_stays_inspectable() {
     settle(&mut h);
     h.get_by_label("Histogram").click();
     settle(&mut h);
-    h.get_by_label_contains("cells counted");
+    // The explanation ("N cells counted ...") is the tooltip of the title.
+    assert!(
+        h.state().state().chart_area.is_some(),
+        "the histogram is drawn"
+    );
 
     // Light theme (System -> Light).
     h.get_by_label("Theme").click();
@@ -735,12 +739,26 @@ fn the_organism_tab_lists_the_memory_space_of_a_parasite_thread() {
         head.pos = [7, 3, 4, 0][i.min(3)];
     }
     org.cpu.threads.push(parasite);
-    {
-        let d = &mut h.state_mut().state_mut().debugger;
-        d.current = Some(org);
-        d.previous = None;
+    // A snapshot of the real organism that was still on its way from the
+    // session replaces the dressed-up one when it arrives (seen on a loaded
+    // machine): put it back until it stays.
+    for _ in 0..20 {
+        {
+            let d = &mut h.state_mut().state_mut().debugger;
+            d.current = Some(org.clone());
+            d.previous = None;
+        }
+        settle(&mut h);
+        if h.state()
+            .state()
+            .debugger
+            .current
+            .as_ref()
+            .is_some_and(|o| o.cpu.spaces.len() == org.cpu.spaces.len())
+        {
+            break;
+        }
     }
-    settle(&mut h);
 
     // The host thread lists the genome; the spaces are tabs.
     h.get_by_role_and_label(Role::Tab, "Memory space 0 genome");

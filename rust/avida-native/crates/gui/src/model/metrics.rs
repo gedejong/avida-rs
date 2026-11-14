@@ -456,6 +456,85 @@ pub fn nice_step(min: f64, whole: bool) -> f64 {
         .unwrap_or(10.0 * power)
 }
 
+/// The trailing moving average of `ys` over `window` points: each value
+/// is the mean of the finite values among the last `window` (NaN where
+/// there are none). A window of 1 returns the series as it is.
+pub fn moving_average(ys: &[f64], window: usize) -> Vec<f64> {
+    if window <= 1 {
+        return ys.to_vec();
+    }
+    let mut out = Vec::with_capacity(ys.len());
+    let (mut sum, mut n) = (0.0f64, 0usize);
+    for (i, &y) in ys.iter().enumerate() {
+        if y.is_finite() {
+            sum += y;
+            n += 1;
+        }
+        if i >= window {
+            let old = ys[i - window];
+            if old.is_finite() {
+                sum -= old;
+                n -= 1;
+            }
+        }
+        out.push(if n > 0 { sum / n as f64 } else { f64::NAN });
+    }
+    out
+}
+
+/// Points of a series as a chart draws it: averaged, on a log10 axis when
+/// asked (values at or below zero are left out), cut to the updates in
+/// `range` (and one point past each edge) and thinned to `max_points`.
+pub fn shape_points(
+    xs: &[f64],
+    ys: &[f64],
+    smoothing: usize,
+    log: bool,
+    range: Option<(f64, f64)>,
+    max_points: usize,
+) -> Vec<[f64; 2]> {
+    let mut ys = moving_average(ys, smoothing);
+    if log {
+        for y in &mut ys {
+            *y = if *y > 0.0 { y.log10() } else { f64::NAN };
+        }
+    }
+    let (lo, hi) = match range {
+        Some((a, b)) => {
+            let start = xs.partition_point(|&x| x < a).saturating_sub(1);
+            let end = (xs.partition_point(|&x| x <= b) + 1).min(xs.len());
+            (start, end.max(start))
+        }
+        None => (0, xs.len()),
+    };
+    decimate_min_max(&xs[lo..hi], &ys[lo..hi], max_points)
+        .into_iter()
+        .map(|(x, y)| [x, y])
+        .collect()
+}
+
+/// Grid marks of a log10 axis: a mark at every power of ten, and at 2 and
+/// 5 times it while few decades are in view.
+pub fn log_marks(lo: f64, hi: f64) -> Vec<(f64, f64)> {
+    let mut v = Vec::new();
+    if !(lo.is_finite() && hi.is_finite()) || hi - lo > 40.0 {
+        return v;
+    }
+    let few = hi - lo < 4.0;
+    let mut d = lo.floor();
+    while d <= hi.ceil() {
+        v.push((d, 1.0));
+        if few {
+            for m in [2.0f64, 5.0] {
+                v.push((d + m.log10(), 0.3));
+            }
+        }
+        d += 1.0;
+    }
+    v.retain(|(x, _)| *x >= lo && *x <= hi);
+    v
+}
+
 /// `series_of` + `decimate_min_max` for one key.
 pub fn series(rows: &[UpdateRow], key: SeriesKey, max_points: usize) -> Vec<[f64; 2]> {
     let (xs, ys) = series_of(rows, |r| key.value(r));
@@ -606,6 +685,48 @@ mod tests {
         let (lo, hi) = y_fit(&[[0.0, 2.0]], None, false);
         assert!(lo < 2.0 && hi > 2.0);
         assert_eq!(y_fit(&[], None, false), (0.0, 1.0));
+    }
+
+    #[test]
+    fn moving_averages_skip_gaps_and_keep_the_length() {
+        let ys = [1.0, 3.0, f64::NAN, 5.0, 7.0];
+        assert_eq!(moving_average(&ys, 1)[..2], ys[..2]);
+        let m = moving_average(&ys, 2);
+        assert_eq!(m.len(), 5);
+        assert_eq!(m[..2], [1.0, 2.0]);
+        assert_eq!(m[2], 3.0, "the gap is skipped");
+        assert_eq!(m[3], 5.0);
+        assert_eq!(m[4], 6.0);
+        assert!(moving_average(&[f64::NAN, f64::NAN], 3)[1].is_nan());
+    }
+
+    #[test]
+    fn shaped_points_are_averaged_logged_and_cut() {
+        let xs: Vec<f64> = (0..100).map(f64::from).collect();
+        let ys: Vec<f64> = xs
+            .iter()
+            .map(|x| if *x == 0.0 { 0.0 } else { *x })
+            .collect();
+        let p = shape_points(&xs, &ys, 1, true, None, 1000);
+        assert_eq!(p.len(), 99, "the zero has no logarithm");
+        assert!((p[0][1] - 0.0).abs() < 1e-12 && (p[0][0] - 1.0).abs() < 1e-12);
+        let cut = shape_points(&xs, &ys, 1, false, Some((10.0, 20.0)), 1000);
+        assert_eq!(cut.first().map(|p| p[0]), Some(9.0));
+        assert_eq!(cut.last().map(|p| p[0]), Some(21.0));
+        let thin = shape_points(&xs, &ys, 10, false, None, 20);
+        assert!(thin.len() <= 20);
+    }
+
+    #[test]
+    fn log_marks_cover_the_decades_in_view() {
+        let m = log_marks(0.0, 3.0);
+        assert!(m.iter().any(|(x, s)| *x == 2.0 && *s == 1.0));
+        assert!(m
+            .iter()
+            .any(|(x, s)| (*x - 5f64.log10()).abs() < 1e-12 && *s < 1.0));
+        let wide = log_marks(0.0, 10.0);
+        assert!(wide.iter().all(|(_, s)| *s == 1.0));
+        assert!(log_marks(f64::NAN, 1.0).is_empty());
     }
 
     #[test]

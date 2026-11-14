@@ -119,6 +119,11 @@ fn a_recording_drives_the_state_and_the_slider_moves_through_it() {
     h.state_mut().state_mut().side_tab = avida_gui::model::SideTab::Charts;
     settle(&mut h);
     screenshot(&mut h, "playback-charts");
+    // The open-endedness measures are not in a recording, and the view says so.
+    h.state_mut().state_mut().chart_tab = avida_gui::model::ChartTab::OpenEnded;
+    settle(&mut h);
+    h.get_by_label(avida_viewmodel::PLAYBACK_NOTE);
+    screenshot(&mut h, "playback-open-ended");
 
     // Play to the end.
     h.state_mut().state_mut().seek_frame(0);

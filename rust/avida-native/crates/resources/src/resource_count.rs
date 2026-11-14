@@ -748,16 +748,64 @@ impl ResourceCount {
             )
     }
 
+    /// Whether every resource is a global (well-mixed) pool: no grid, no
+    /// gradient and no `PARTIAL` list. Then what an organism reads and
+    /// changes of a resource is the one amount every organism shares. The
+    /// parallel execution mode settles the output tests of such worlds in
+    /// the sequential phase, in a fixed order, against that amount.
+    pub fn are_global_pools(&self) -> bool {
+        !self.resource_count.is_empty()
+            && self.geometry.iter().all(|&g| !is_spatial(g))
+            && self.cell_lists.iter().all(Vec::is_empty)
+    }
+
+    /// For a world whose resources are each either a plain per-cell grid
+    /// (a cell for each of `num_cells`) or a global pool, and no other kind
+    /// (no gradient, no `PARTIAL` list): for each resource, whether it is a
+    /// global pool. `None` for any other world. The parallel execution mode
+    /// runs the output tests of a world with both kinds in the bursts:
+    /// the grids are read and changed in the organism's own cell, and the
+    /// processes that use a pool wait for the sequential phase.
+    pub fn grid_or_global_kinds(&self, num_cells: usize) -> Option<Vec<bool>> {
+        if self.resource_count.is_empty() || !self.cell_lists.iter().all(Vec::is_empty) {
+            return None;
+        }
+        self.geometry
+            .iter()
+            .zip(&self.spatial_resource_count)
+            .map(|(&g, s)| {
+                if !is_spatial(g) {
+                    Some(true)
+                } else if matches!(s, SpatialResource::Plain(p) if p.size().max(0) as usize >= num_cells)
+                {
+                    Some(false)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
     /// `curr_grid_res_cnt` of [`get_cell_resources`](Self::get_cell_resources)
     /// for a cell of [`are_plain_cell_grids`](Self::are_plain_cell_grids)
     /// without updating or taking `&mut self`: the amount of every resource
-    /// in `cell_id`, into `out`.
+    /// in `cell_id`, into `out`. A global pool (a world of
+    /// [`grid_or_global_kinds`](Self::grid_or_global_kinds)) reads 0: it has
+    /// no amount in a cell, and the bursts leave every process that uses
+    /// one to the sequential phase.
     pub fn frozen_cell_amounts(&self, cell_id: i32, out: &mut Vec<f64>) {
         out.clear();
         out.extend(
             self.spatial_resource_count
                 .iter()
-                .map(|s| s.base().get_amount(cell_id)),
+                .zip(&self.geometry)
+                .map(|(s, &g)| {
+                    if is_spatial(g) {
+                        s.base().get_amount(cell_id)
+                    } else {
+                        0.0
+                    }
+                }),
         );
     }
 

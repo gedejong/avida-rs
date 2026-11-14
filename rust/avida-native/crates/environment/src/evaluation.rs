@@ -28,6 +28,63 @@ pub(crate) struct ProcessArgs<'a> {
     pub reaction_id: usize,
 }
 
+/// A reaction whose processes [`Environment::test_output_shared`] left for
+/// later because they use the global resource pool: what
+/// [`Environment::finish_deferred`] needs to run them.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct DeferredReaction {
+    /// The reaction's index in the library.
+    pub reaction: usize,
+    /// The quality of its task, as `TestOutput` computed it.
+    pub task_quality: f64,
+    /// The organism's count of the reaction's task before this test.
+    pub task_count: i32,
+}
+
+/// The evaluator `DoProcesses` is given when the processes of deferred
+/// reactions run ([`Environment::finish_deferred`]): there is no task to
+/// ask. The environments that defer ([`DeferredReaction`]) have no HGT
+/// resource, the only thing `DoProcesses` asks its evaluator for.
+struct NoEvaluator;
+
+impl<T: ?Sized> TaskEvaluator<T> for NoEvaluator {
+    fn setup_tests(&mut self, _lib: &T) {}
+    fn set_task_entry(&mut self, _lib: &T, _task_id: i32) {}
+    fn on_divide(&self) -> bool {
+        false
+    }
+    fn test_output(&mut self, _lib: &T, _rng: &mut AvidaRng) -> f64 {
+        0.0
+    }
+    fn task_value(&self) -> f64 {
+        0.0
+    }
+    fn has_organism(&self) -> bool {
+        true
+    }
+    fn cell_id(&self) -> i32 {
+        -1
+    }
+    fn stolen_reaction_count(&self, _reaction_id: usize) -> i32 {
+        0
+    }
+    fn set_first_reaction(&mut self, _reaction_id: i32) {}
+    fn task_probability(
+        &mut self,
+        _env: &mut Environment<T>,
+        _rng: &mut AvidaRng,
+        _task_id: i32,
+    ) -> f64
+    where
+        T: Sized,
+    {
+        -1.0
+    }
+    fn metabolize_genome_fragment(&mut self, _rng: &mut AvidaRng) -> Option<i32> {
+        None
+    }
+}
+
 impl<T: TaskRegistry> Environment<T> {
     /// `SetupInputs(ctx, input_array, random)`: fill the organism's input
     /// buffer (resized to the input size).
@@ -232,6 +289,10 @@ impl<T: TaskRegistry> Environment<T> {
     /// `phenplastbonus` method (the plasticity test runs test CPUs over the
     /// environment), and there is no context phenotype. It is the same loop
     /// on a shared borrow, so that many workers can evaluate at once.
+    ///
+    /// With `deferred`, the processes of a reaction that uses a global pool
+    /// are not run but recorded; `pools` says which resources are pools
+    /// (`None`: every resource).
     #[allow(clippy::too_many_arguments)]
     pub fn test_output_shared(
         &self,
@@ -244,6 +305,8 @@ impl<T: TaskRegistry> Environment<T> {
         resource_count: &[f64],
         rbins_count: &[f64],
         is_parasite: bool,
+        mut deferred: Option<&mut Vec<DeferredReaction>>,
+        pools: Option<&[bool]>,
     ) -> bool {
         let skip_processing = is_parasite && config.parasite_skip_reactions != 0;
         taskctx.setup_tests(&self.tasklib);
@@ -282,6 +345,19 @@ impl<T: TaskRegistry> Environment<T> {
             }
             result.mark_task(task_id as usize, task_quality, taskctx.task_value());
             if !skip_processing {
+                // With `deferred`, the processes of a reaction that uses the
+                // global resource pool wait for [`Self::finish_deferred`],
+                // which runs them against the pool as it is then.
+                if let Some(list) = deferred.as_deref_mut() {
+                    if self.reaction_uses_pools(i, pools) {
+                        list.push(DeferredReaction {
+                            reaction: i,
+                            task_quality,
+                            task_count: task_cnt,
+                        });
+                        continue;
+                    }
+                }
                 let args = ProcessArgs {
                     resource_count,
                     rbins_count,
@@ -298,6 +374,60 @@ impl<T: TaskRegistry> Environment<T> {
             }
         }
         result.active()
+    }
+
+    /// Whether any process of reaction `i` takes from or gives to a
+    /// resource that waits for the world: any resource with `pools` of
+    /// `None`, otherwise those `pools` marks (a world that has per-cell
+    /// grids as well as global pools defers only the pools).
+    fn reaction_uses_pools(&self, i: usize, pools: Option<&[bool]>) -> bool {
+        let waits = |r: usize| pools.is_none_or(|p| p.get(r).copied().unwrap_or(true));
+        self.reaction_lib
+            .reaction(i)
+            .processes
+            .iter()
+            .any(|p| p.resource.is_some_and(waits) || p.product.is_some_and(waits))
+    }
+
+    /// The processes of the reactions [`Self::test_output_shared`] deferred,
+    /// in the order it met them, against `resource_count` (the pool's
+    /// amounts now), with `DoProcesses`' own arithmetic: `result` gets what
+    /// each consumed, produced and rewarded, and `reaction_count` is
+    /// incremented for each reaction that was triggered. Returns those
+    /// reactions.
+    ///
+    /// Nothing here draws a random number: the environments that defer
+    /// have no detection and no lethal process
+    /// (`avida_hardware::local_output::output_is_local_global`).
+    #[allow(clippy::too_many_arguments)]
+    pub fn finish_deferred(
+        &self,
+        rng: &mut AvidaRng,
+        config: &Config,
+        result: &mut ReactionResult,
+        deferred: &[DeferredReaction],
+        resource_count: &[f64],
+        rbins_count: &[f64],
+        reaction_count: &mut [i32],
+    ) -> Vec<usize> {
+        let mut triggered = Vec::new();
+        let mut none = NoEvaluator;
+        for d in deferred {
+            let args = ProcessArgs {
+                resource_count,
+                rbins_count,
+                task_quality: d.task_quality,
+                task_probability: -1.0,
+                task_count: d.task_count,
+                reaction_id: d.reaction,
+            };
+            self.do_processes(rng, config, &args, result, &mut none);
+            if result.reaction_triggered(d.reaction) {
+                reaction_count[d.reaction] = reaction_count[d.reaction].wrapping_add(1);
+                triggered.push(d.reaction);
+            }
+        }
+        triggered
     }
 
     /// `TestRequisites(taskctx, reaction, task_count, reaction_count,

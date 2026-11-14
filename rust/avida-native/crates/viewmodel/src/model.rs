@@ -205,6 +205,10 @@ pub struct Frame {
     /// [`crate::capture::LINEAGE_MAX`] genotypes). Empty when nothing was
     /// asked for or the genotype is unknown.
     pub lineage: Vec<GenotypeRow>,
+    /// The rows `PrintMODESData` and `PrintPhylogenyMetrics` have written
+    /// (the last 2,000 of each instance); empty when the events file has
+    /// neither action, and in a recording (which does not carry them).
+    pub open_ended: crate::open_ended::OpenEnded,
 }
 
 /// World-level facts and the statistics row of the current update.

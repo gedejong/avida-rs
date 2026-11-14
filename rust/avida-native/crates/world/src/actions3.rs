@@ -1939,7 +1939,7 @@ impl World {
         }
 
         // Activate the organism in the population...
-        self.activate_organism(org, membership, cell_id, true, true, None);
+        self.activate_organism(Box::new(org), membership, cell_id, true, true, None);
         if let Some(f) = self.fatal.borrow_mut().take() {
             return Err(f);
         }
