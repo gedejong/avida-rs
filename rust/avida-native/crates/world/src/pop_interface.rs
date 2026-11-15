@@ -332,6 +332,14 @@ impl OrgInterface for PopulationInterface<'_> {
         self.own_genotype().is_some()
     }
     fn phylo_distance_to(&mut self, cell: i32) -> Result<i32, String> {
+        if self.w.cfg.port.drop_extinct_genotypes != 0 {
+            return Err(
+                "unsupported: MAX_DONATE_KIN_DIST with DROP_EXTINCT_GENOTYPES=1 (the kin \
+                 distance walks the parents of extinct genotypes, which are not kept; \
+                 C++: SexualAncestry::GetPhyloDistance)"
+                    .to_string(),
+            );
+        }
         let own = self
             .own_genotype()
             .ok_or("SexualAncestry of an organism without a genotype")?;

@@ -234,12 +234,14 @@ impl World {
         let trigger_names: Vec<String> =
             env.action_triggers().iter().map(|t| t.id.clone()).collect();
         let mut systematics = Manager::new();
-        systematics.register_arbiter(Arbiter::genotype(GenotypeArbiter::new(
+        let mut genotype_arbiter = GenotypeArbiter::new(
             "genotype",
             cfg.threshold,
             cfg.disable_genotype_classification,
             &trigger_names,
-        )));
+        );
+        genotype_arbiter.set_drop_extinct(cfg.port.drop_extinct_genotypes != 0);
+        systematics.register_arbiter(Arbiter::genotype(genotype_arbiter));
 
         // Setup Stats Object
         let task_names: Vec<String> = env
@@ -457,6 +459,15 @@ impl World {
                 }
                 match actions::parse(&spec.name, &spec.args, &ctx, &mut afb) {
                     Ok(action) => {
+                        if cfg.port.drop_extinct_genotypes != 0 {
+                            if let Some(name) = actions::needs_ancestry(&action) {
+                                return Err(format!(
+                                    "unsupported: {name} with DROP_EXTINCT_GENOTYPES=1 \
+                                     (ancestry is not tracked: extinct genotypes and their \
+                                     parent links are dropped)\n"
+                                ));
+                            }
+                        }
                         let update = stats.update();
                         let ave_gen = stats.sum_generation.average();
                         let tot = stats.tot_organisms;

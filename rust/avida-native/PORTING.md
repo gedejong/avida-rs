@@ -370,6 +370,26 @@ is unchanged (suite at no DIFF, observer test in
 with `LoadPopulation`, so finished runs can be surveyed from their saved
 population. `PrintReuseData` and its file format are unchanged.
 
+## Extension beyond the C++: dropping extinct genotypes (opt-in, 2026-11-15)
+
+`DROP_EXTINCT_GENOTYPES 1` (port-only setting, default 0) removes a genotype
+when its last organism dies. The default keeps the C++ behaviour: a genotype
+without organisms stays as a historic genotype while another genotype names
+it as a parent. With two-parent reproduction lineages never coalesce, so
+nearly every generation stays in memory (86,936 historic genotypes for 3,522
+living ones after 3,200 updates of a 60x60 `divide-sex` world, several GB
+over 100,000 updates); the maintainer chose this setting on 2026-11-15 to
+make such runs possible. With the setting on a genotype copies its depth and
+its parents' ids at birth and holds no reference to its parents. Nothing an
+organism computes changes: the data files of a sexual and an asexual run are
+byte-identical with and without it, in the exact and the parallel mode
+(`crates/avida/tests/drop_extinct.rs`); a saved population has no historic
+rows and loads only with the setting on. What needs the ancestry of extinct
+genotypes stops with `unsupported:`: `PrintMODESData`,
+`PrintPhylogenyMetrics` and `SavePhylogeny` when the events are read, and the
+kin-distance check of the donate instructions at first use. The front ends
+show no Ancestry layer in such a run.
+
 ## Views the C++ does not have: Ladder and arm comparison (2026-11-15)
 
 Observation only; no output of the program changes. The Ladder view (Charts

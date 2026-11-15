@@ -320,6 +320,19 @@ pub enum Action {
     Knockout(crate::knockout_run::KnockoutAction),
 }
 
+/// The name of an action that reads ancestry (the parents of extinct
+/// genotypes), which `DROP_EXTINCT_GENOTYPES 1` does not keep.
+pub fn needs_ancestry(action: &Action) -> Option<&'static str> {
+    match action {
+        Action::Phylo(crate::phylo_actions::PhyloAction::Metrics { .. }) => {
+            Some("PrintPhylogenyMetrics")
+        }
+        Action::Phylo(crate::phylo_actions::PhyloAction::Save { .. }) => Some("SavePhylogeny"),
+        Action::Modes(_) => Some("PrintMODESData"),
+        _ => None,
+    }
+}
+
 /// World facts the C++ constructors read while parsing.
 #[derive(Debug, Clone, Copy)]
 pub struct ParseContext<'a> {

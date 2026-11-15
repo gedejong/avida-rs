@@ -1831,6 +1831,36 @@ Code: `viewmodel/src/compare/` (`mod.rs` the loader, types and summaries; `dat.r
 
 Tests: `viewmodel/src/compare/stats.rs` (quartiles, `erfc` against tabulated values, Mann-Whitney exact without and with ties and the normal approximation with its tie correction against hand-computed values and an enumeration, Fisher against hand-computed tables including `[[8, 2], [1, 5]]` = 400/11440), `viewmodel/src/compare/dat.rs`, `viewmodel/tests/compare.rs` (loader and summaries on batches the test writes under `CARGO_TARGET_TMPDIR`: arms, seed order, 1 % rule, running and cut runs, malformed and missing files, other task counts, rung names, medians over runs of different length, the state across a reload), `gui/tests/compare.rs` (opening from the command line and from the start screen, panel text, running runs, finished only, the folder of a run, three arms, screenshots in both themes at 1000 x 650 and 1280 x 800), `tui/tests/compare.rs` (buffers at 80 x 24 and 100 x 30, keys).
 
+## Dropping extinct genotypes (`DROP_EXTINCT_GENOTYPES`, port-only, 2026-11-15)
+
+The genotype arbiter keeps a genotype that has no living organism as a "historic" genotype for as long as another genotype names it as a parent, as the C++ does. With sexual reproduction (`divide-sex`: two parents per genotype) the lineages never coalesce, so most of every generation stays: a 60x60 run held 86,936 historic genotypes beside 3,522 living ones after 3,200 updates, and memory grew about 30 MB per 1,000 updates (about 100 MB with the ancestry observers on). `DROP_EXTINCT_GENOTYPES 1` (port-only like `EXECUTION_MODE`: `crates/config/src/port_settings.rs`, set in `avida.cfg` or with `-set`; it is not listed in `avida-core/support/config/avida.cfg`, which does not list `EXECUTION_MODE` either) trades the ancestry for flat memory. The default `0` is the C++ behaviour and every existing output is unchanged.
+
+**What it does.** A genotype that loses its last living organism leaves the arena at the point where it would otherwise become historic, whether or not other genotypes name it as a parent. To make that possible a genotype keeps no handle to, and no passive reference on, its parents: `GenotypeArbiter::drop_extinct` makes `classify_new_unit_with_parents` skip the parent handles and the parents' passive-reference increment. What a child copies at birth stays: its own depth (parent depth plus one, so `PrintDepthHistogram` and the depth columns are exact), its parents' ids as text (`parent_str`), so the `parents` column of a `.spop` file (written from that text) and the `parents` property are exact. A genotype with another passive reference (a deme's founder genotype, `deme_founders.rs`) is still kept as historic until that reference is released, so the historic list is bounded by the number of such references and not by the run.
+
+**What does not change.** Nothing an organism computes: genotype ids come from the same counter, a genotype that dies out and reappears is a new genotype in both modes (the genome hash lookup only finds active genotypes), thresholds, names and the best-genotype bookkeeping do not look at ancestors. `crates/avida/tests/drop_extinct.rs` compares `average.dat`, `count.dat`, `tasks.dat`, `dominant.dat`, `time.dat` and `resource.dat` of a sexual 20x20 run with and without the setting, in the exact and the parallel mode: byte-identical (time stamps aside). The same files of the 60x60 modular sexual configuration of the lab (3,000 updates, seed 1, with `PrintReuseData` and the `.m` resource maps) and of the stock asexual run (1,000 updates, seed 42) are identical as well. Only what describes the dropped history differs: `SavePopulation` writes one row per living genotype instead of one per genotype ever referenced (3,555 against 83,613 lines in the 3,000-update lab run), and the arbiter's provided values `ancestral` (historic count) and `coalescent_depth` (found by walking parent handles, so it stays -1) differ; no data file the port writes prints them.
+
+**What it blocks.** Anything that walks parent links or the historic list stops with `unsupported: <what> with DROP_EXTINCT_GENOTYPES=1 (...)`:
+
+| Needs ancestry | Where it stops |
+|---|---|
+| `PrintMODESData` (persistent lineages) | when the event file is read |
+| `PrintPhylogenyMetrics`, `SavePhylogeny` (the tree of ancestors) | when the event file is read |
+| the kin-distance test of the donate instructions (`MAX_DONATE_KIN_DIST` other than -1, `SexualAncestry`) | when an organism first executes it |
+
+Left alone on purpose: the standard `Print*Data` files, `PrintKnockoutMap`, `PrintReuseData`, `PrintReuseSurvey`, `SavePopulation`, the depth histograms (depth is copied), `PrintLineageCounts` and the lineage label (a per-organism label, inherited, independent of the tracker), the clade arbiter and `PrintCClade*` (a separate arbiter), the phenotypic-plasticity summaries (they follow the arena), analyze mode (a separate world that reads a saved population as a file; the setting does not apply there). Front ends: the Ancestry map layer needs the phylogeny of the living genotypes; with the setting on the frame does not carry the layer (`viewmodel::capture`, like the Genotype layer that is not a value layer), and the GUI and TUI show their existing "no values yet" text and an empty family list. There is no one-line reason in the frame for a missing layer (playback's one-line reasons exist for commands, such as the knockout map, not for layers).
+
+**Save and load.** `SavePopulation` works: the file holds the living genotypes (and any held by a deme founder), each with its `parents` ids, which name genotypes that are not in the file. `LoadPopulation` with the setting on reads such a file, and also a full file written by the default: the parent ids stay as text, every unreferenced loaded genotype is swept at the end of the first update (in this mode the sweep of the historic list repeats until it removes nothing), and the organisms are reactivated by genotype id as before. A file written with the setting on cannot be loaded with it off: the C++ loader looks the parents up and the port stops with `parent genotype N of genotype M not found`.
+
+**Memory.** Sexual 60x60 modular configuration of the lab (seed 1, release build, no ancestry actions), physical footprint from `vmmap --summary`:
+
+| update | off | on |
+|---|---|---|
+| 2,000 | 111.1 MB | 52.4 MB |
+| 4,000 | 184.9 MB | 53.4 MB |
+| 6,000 | 191.3 MB | 54.7 MB |
+
+Cost: none measurable; the removal is the one `removeGenotype` already does, a little earlier.
+
 ## Config flags not yet ported
 
 A feature path that is not ported yet must fail loudly at start-up

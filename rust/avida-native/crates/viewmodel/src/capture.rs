@@ -413,9 +413,17 @@ fn map_frame(w: &World, layers: &[LayerId], ranked: &[GroupRef]) -> MapFrame {
 
     let mut out_layers: Vec<(LayerId, Arc<[f32]>)> = Vec::new();
     let mut families: Vec<Family> = Vec::new();
+    // DROP_EXTINCT_GENOTYPES: the ancestors are not kept, so there is no
+    // phylogeny to colour by; the layer is left out of the frame (the front
+    // ends then show "no values yet").
+    let ancestry_tracked = !role
+        .and_then(|r| w.systematics.arbiter(r))
+        .and_then(|a| a.as_genotype())
+        .is_some_and(|a| a.drop_extinct());
     for &layer in layers {
         let valid = match layer {
             LayerId::Genotype => false,
+            LayerId::Ancestry => ancestry_tracked,
             LayerId::Task(k) => k < num_tasks,
             LayerId::Resource(r) => r < rc.size(),
             _ => true,

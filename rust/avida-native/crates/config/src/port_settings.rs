@@ -38,6 +38,13 @@ pub static PORT_ENTRIES: &[PortEntryDef] = &[
         default: "0",
         desc: "Worker threads for EXECUTION_MODE 1 (0 or -1 = all available cores)",
     },
+    PortEntryDef {
+        name: "DROP_EXTINCT_GENOTYPES",
+        default: "0",
+        desc: "0 = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does)\n\
+               1 = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, \
+               ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop",
+    },
 ];
 
 /// The entry named `name`, if it is a port-only setting.
@@ -59,6 +66,9 @@ pub struct PortSettings {
     /// `EXECUTION_THREADS`: worker threads of the parallel mode; 0 or a
     /// negative value means every available core.
     pub execution_threads: i32,
+    /// `DROP_EXTINCT_GENOTYPES`: 0 keeps ancestry (the C++ behaviour), 1
+    /// drops a genotype when its last organism dies.
+    pub drop_extinct_genotypes: i32,
 }
 
 impl Default for PortSettings {
@@ -73,6 +83,7 @@ impl PortSettings {
         let mut s = PortSettings {
             execution_mode: 0,
             execution_threads: 0,
+            drop_extinct_genotypes: 0,
         };
         for e in PORT_ENTRIES {
             s.load_str(e.name, e.default);
@@ -87,6 +98,7 @@ impl PortSettings {
         match name {
             "EXECUTION_MODE" => self.execution_mode = as_int(value),
             "EXECUTION_THREADS" => self.execution_threads = as_int(value),
+            "DROP_EXTINCT_GENOTYPES" => self.drop_extinct_genotypes = as_int(value),
             _ => return false,
         }
         true
@@ -97,6 +109,7 @@ impl PortSettings {
         match name {
             "EXECUTION_MODE" => Some(convert_int(self.execution_mode)),
             "EXECUTION_THREADS" => Some(convert_int(self.execution_threads)),
+            "DROP_EXTINCT_GENOTYPES" => Some(convert_int(self.drop_extinct_genotypes)),
             _ => None,
         }
     }
@@ -127,12 +140,16 @@ mod tests {
         assert_eq!(s.review_lines(), "");
         assert!(s.load_str("EXECUTION_MODE", "1"));
         assert!(s.load_str("EXECUTION_THREADS", "4 # comment"));
+        assert_eq!(s.drop_extinct_genotypes, 0);
+        assert!(s.load_str("DROP_EXTINCT_GENOTYPES", "1"));
+        assert_eq!(s.as_string("DROP_EXTINCT_GENOTYPES").as_deref(), Some("1"));
         assert!(!s.load_str("WORLD_X", "4"));
         assert_eq!(s.execution_mode, EXECUTION_MODE_PARALLEL);
         assert_eq!(s.execution_threads, 4);
         assert_eq!(
             s.review_lines(),
-            " EXECUTION_MODE 1 (default=0)\n EXECUTION_THREADS 4 (default=0)\n"
+            " EXECUTION_MODE 1 (default=0)\n EXECUTION_THREADS 4 (default=0)\n\
+             \x20DROP_EXTINCT_GENOTYPES 1 (default=0)\n"
         );
         assert!(find("EXECUTION_MODE").is_some());
         assert!(find("SPECULATIVE").is_none());

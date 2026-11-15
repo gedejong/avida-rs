@@ -346,6 +346,15 @@ impl Genotype {
         &self.parents
     }
 
+    /// The ids in `m_parent_str`, in order.
+    pub fn parent_ids(&self) -> Vec<i32> {
+        self.parent_str
+            .split(',')
+            .filter(|w| !w.is_empty())
+            .map(avida_config::string_util::as_int)
+            .collect()
+    }
+
     /// `m_parent_str` (the `parents` property).
     pub fn parent_str(&self) -> &str {
         &self.parent_str

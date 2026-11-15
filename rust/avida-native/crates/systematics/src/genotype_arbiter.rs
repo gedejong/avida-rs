@@ -188,6 +188,12 @@ pub struct GenotypeArbiter {
     /// finds work. When it is clear, the sweep of the historic list would
     /// remove nothing and is skipped.
     prune_pending: bool,
+    /// `DROP_EXTINCT_GENOTYPES`: a genotype is not kept for the sake of
+    /// its descendants. No parent handles or parent passive references are
+    /// kept (a genotype keeps only its parents' ids as text), so a genotype
+    /// whose last organism dies leaves the arena on the spot unless
+    /// something else (a deme's founder) holds a passive reference.
+    drop_extinct: bool,
 
     coalescent: Option<GroupHandle>,
     best: i32,
@@ -224,6 +230,7 @@ impl GenotypeArbiter {
             genotypes: Arena::default(),
             thresholds: Vec::new(),
             prune_pending: false,
+            drop_extinct: false,
             coalescent: None,
             best: 0,
             next_id: 1,
@@ -244,6 +251,17 @@ impl GenotypeArbiter {
             record_events: false,
             events: Vec::new(),
         }
+    }
+
+    /// Switches `DROP_EXTINCT_GENOTYPES` on or off. Call before the first
+    /// unit is classified.
+    pub fn set_drop_extinct(&mut self, on: bool) {
+        self.drop_extinct = on;
+    }
+
+    /// Whether `DROP_EXTINCT_GENOTYPES` is on: ancestry is not tracked.
+    pub fn drop_extinct(&self) -> bool {
+        self.drop_extinct
     }
 
     // ------------------------------------------------------------------
@@ -487,10 +505,17 @@ impl GenotypeArbiter {
             &parent_info,
             self.env_action_count.len(),
         );
+        let mut genotype = genotype;
+        if self.drop_extinct {
+            // The ids and the depth were copied; the handles are not kept.
+            genotype.parents.clear();
+        }
         let g = self.genotypes.insert(genotype);
-        for &(p, _, _) in &parent_info {
-            if let Some(x) = self.genotypes.get_mut(p) {
-                x.p_refs = x.p_refs.wrapping_add(1);
+        if !self.drop_extinct {
+            for &(p, _, _) in &parent_info {
+                if let Some(x) = self.genotypes.get_mut(p) {
+                    x.p_refs = x.p_refs.wrapping_add(1);
+                }
             }
         }
         self.lists.push(self.active_hash[list_num], g, None);
@@ -987,6 +1012,15 @@ impl GenotypeArbiter {
         if !self.prune_pending {
             return;
         }
+        // With DROP_EXTINCT_GENOTYPES only a loaded population leaves
+        // unreferenced genotypes behind; sweep until none is left, so that
+        // the historic list is empty after the first update.
+        while self.prune_historic() && self.drop_extinct {}
+    }
+
+    /// One sweep of the historic list for [`GenotypeArbiter::perform_update`];
+    /// whether it removed anything.
+    fn prune_historic(&mut self) -> bool {
         let (mut removed, mut stopped) = (false, false);
         let mut it = self.lists.begin(self.historic);
         while self.lists.next(&mut it) {
@@ -1010,6 +1044,7 @@ impl GenotypeArbiter {
         // iterator's segment layout changes), and one that stopped did not
         // see them all: the next update sweeps again.
         self.prune_pending = removed || stopped;
+        removed
     }
 
     /// `UpdateProvidedValues(current_update)`: recompute the provided
@@ -1158,7 +1193,11 @@ impl GenotypeArbiter {
         let Some(x) = self.genotypes.get(g) else {
             return false;
         };
-        let parent_ids: Vec<i32> = x.parents.iter().map(|&p| self.id_of(p)).collect();
+        let parent_ids: Vec<i32> = if self.drop_extinct {
+            x.parent_ids()
+        } else {
+            x.parents.iter().map(|&p| self.id_of(p)).collect()
+        };
         x.legacy_save(df, &parent_ids);
         true
     }
@@ -1182,7 +1221,9 @@ impl GenotypeArbiter {
         let (mut genotype, parent_ids) =
             Genotype::from_props(id, props, self.env_action_count.len());
         let mut parents = Vec::with_capacity(parent_ids.len());
-        for pid in parent_ids {
+        // With DROP_EXTINCT_GENOTYPES the ids stay as text (the parents
+        // may be absent from the file).
+        for pid in parent_ids.into_iter().filter(|_| !self.drop_extinct) {
             match self.group(pid) {
                 Some(p) => parents.push(p),
                 None => return Err(format!("parent genotype {pid} of genotype {id} not found")),
