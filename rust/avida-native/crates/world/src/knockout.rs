@@ -64,8 +64,8 @@
 //! **Call sites** (when the instruction set has `call`): the number of sites
 //! that are `call`; the number of distinct targets, found statically the way
 //! `Inst_Call` finds them (the complement of the label of nops after the
-//! `call`, searched forward without wrapping; a `call` with no label jumps to
-//! the register BX, which is not known statically and counts as one target of
+//! `call`, searched forward without wrapping; a `call` with no label jumps
+//! forward by the number in BX, which is not known statically and counts as one target of
 //! its own, the "dynamic" one); and how many call sites are non-neutral (any
 //! class other than neutral, lethal included).
 
