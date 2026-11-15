@@ -1,0 +1,73 @@
+#inst_set heads_modular
+#hw_type 0
+# A self-replicator for the heads_modular set (instset-heads-modular.cfg)
+# that does NOT, NAND and AND through ONE shared subroutine, called from
+# three places. Registers: BX, CX are the subroutine's arguments and result;
+# DX keeps the first input, EX the intermediate NAND result.
+# Labels with six nops: the complement of a label rotates every nop by one
+# (A->B->C->D->E->F->A), so "call C C" reaches the label "D D" and the
+# end marker "A B" is found by "h-search F A".
+#
+# --- set-up, as in the stock ancestor ---
+h-alloc        # allocate room for the offspring
+h-search       # find the complement of the label below ("A B", the end marker)
+nop-F          #   label F
+nop-A          #   label A: complement A B
+mov-head       # move a head to the flow head (the start of the offspring) ...
+nop-C          #   ... head C, the write head
+# --- the task block: runs once per life ---
+IO             # BX = first input A (outputs the junk left by h-search)
+push           # stash A in DX through the stack:
+nop-B          #   push BX
+pop            #   pop into DX
+nop-D          #
+push           # CX = A as well:
+nop-B          #   push BX
+pop            #   pop into CX
+nop-C          #
+call           # BX = nand(BX, CX) = NOT A, return address on the stack
+nop-C          #   call label C
+nop-C          #   call label C (complement D D)
+IO             # output NOT A (task NOT); BX = second input B
+push           # CX = A, taken from DX:
+nop-D          #   push DX
+pop            #   pop into CX
+nop-C          #
+call           # BX = nand(B, A), the second use of the subroutine
+nop-C          #
+nop-C          #
+push           # keep the intermediate NAND(A,B) in EX:
+nop-B          #   push BX
+pop            #   pop into EX
+nop-E          #
+IO             # output NAND(A,B) (task NAND); BX = third input C
+push           # BX = the intermediate again, from EX:
+nop-E          #   push EX
+pop            #   pop into BX
+nop-B          #
+push           # CX = the intermediate as well:
+nop-E          #   push EX
+pop            #   pop into CX
+nop-C          #
+call           # BX = nand(x, x) = NOT NAND(A,B) = AND(A,B): third use
+nop-C          #
+nop-C          #
+IO             # output AND(A,B) (task AND)
+# --- the copy loop, as in the stock ancestor ---
+h-search       # no label: the flow head marks the start of the copy loop
+h-copy         # copy one instruction
+if-label       # copied the end marker "A B"?
+nop-F          #   complement of F A
+nop-A          #
+h-divide       # ... then divide
+mov-head       # else go back to the flow head (the next h-copy)
+nop-A          #   head A (the instruction pointer); this nop must come first
+               #   so that mov-head does not take the label below as its head
+# --- the shared subroutine, placed after every call (call searches forward) ---
+nop-D          # label D D, the complement of the call label C C
+nop-D          #
+nand           # BX = ~(BX & CX): the only work the subroutine does
+return         # pop the return address: continue after the call's label
+# --- end marker ---
+nop-A          # found by "h-search F A" at the start: the offspring begins here
+nop-B          #

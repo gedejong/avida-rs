@@ -22,8 +22,12 @@ use avida_genome::{CpuMemory, Genome, InstSet, Instruction, InstructionSequence}
 use std::any::Any;
 use std::sync::Arc;
 
-/// `cHardwareCPU::NUM_REGISTERS`
+/// `cHardwareCPU::NUM_REGISTERS`: the registers of every stock instruction
+/// set. A set that declares `nop-D`..`nop-F` gets up to [`MAX_REGISTERS`]
+/// (`HardwareCpu::num_regs`).
 pub const NUM_REGISTERS: usize = 3;
+/// Port-only: registers a thread has room for (AX..FX).
+pub const MAX_REGISTERS: usize = 6;
 /// `cHardwareCPU::NUM_NOPS`
 pub const NUM_NOPS: i32 = 3;
 /// `REG_AX`
@@ -32,6 +36,13 @@ pub const REG_AX: usize = 0;
 pub const REG_BX: usize = 1;
 /// `REG_CX`
 pub const REG_CX: usize = 2;
+
+/// Registers (and label-complement modulus) of a heads CPU on `is`: the
+/// number of nops it declares, at least the 3 of `cHardwareCPU`, at most
+/// [`MAX_REGISTERS`].
+pub fn reg_count(is: &InstSet) -> usize {
+    (is.num_nops().max(0) as usize).clamp(NUM_REGISTERS, MAX_REGISTERS)
+}
 
 /// The C++ constructor's `internalReset()` looks up the `promoter`
 /// instruction when `PROMOTERS_ENABLED` is set; `cInstSet::GetInst` prints
@@ -69,7 +80,7 @@ pub struct LocalThread {
     pub(crate) promoter_inst_executed: i32,
     pub(crate) message_trigger_type: i32,
     /// `reg`
-    pub reg: [i32; NUM_REGISTERS],
+    pub reg: [i32; MAX_REGISTERS],
     /// `heads`
     pub heads: [HeadCpu; NUM_HEADS],
     /// `stack`
@@ -95,7 +106,7 @@ impl LocalThread {
     /// `Reset(in_hardware, in_id)`.
     pub fn reset(&mut self, id: i32) {
         self.id = id;
-        self.reg = [0; NUM_REGISTERS];
+        self.reg = [0; MAX_REGISTERS];
         for h in self.heads.iter_mut() {
             *h = HeadCpu::default();
         }
@@ -173,7 +184,13 @@ pub struct HardwareCpu {
     pub(crate) slip_read_head: bool,
 
     pub(crate) epigenetic_state: bool,
-    pub(crate) epigenetic_saved_reg: [i32; NUM_REGISTERS],
+    pub(crate) epigenetic_saved_reg: [i32; MAX_REGISTERS],
+    /// Port-only: registers in use, `max(3, nops of the set)` up to 6. 3
+    /// for every stock set. It is also the modulus of label complements
+    /// (the C++ `NUM_NOPS`) and of the next-register rotation.
+    pub(crate) num_regs: usize,
+    /// `num_regs - 1`, the clamp of a register modifier.
+    pub(crate) last_reg: usize,
     pub(crate) epigenetic_saved_stack: CpuStack,
 
     /// `m_last_cell_data`
@@ -217,6 +234,7 @@ impl HardwareCpu {
     /// without an interface) and a second `internalReset()`.
     pub fn new(cfg: &Config, org: &mut OrgState, inst_set: Arc<InstSet>) -> Self {
         let memory = CpuMemory::from_sequence(org.initial_genome.representation());
+        let num_regs = reg_count(&inst_set);
         let mut hw = HardwareCpu {
             base: HardwareBase::new(cfg, inst_set),
             functions: handler_table(),
@@ -234,7 +252,9 @@ impl HardwareCpu {
             no_cpu_cycle_time: cfg.no_cpu_cycle_time != 0,
             slip_read_head: cfg.slip_copy_mode == 0,
             epigenetic_state: false,
-            epigenetic_saved_reg: [0; NUM_REGISTERS],
+            epigenetic_saved_reg: [0; MAX_REGISTERS],
+            num_regs,
+            last_reg: num_regs - 1,
             epigenetic_saved_stack: CpuStack::default(),
             last_cell_data: (false, 0),
             flash_info: (0, 0),
@@ -771,7 +791,7 @@ impl HardwareCpu {
             let ip = self.threads[ct].heads[HEAD_IP];
             let r = is.nop_mod(ip.get_inst(&self.memory));
             ip.set_flag_executed(&mut self.memory);
-            return (r.max(0) as usize).min(NUM_REGISTERS - 1);
+            return (r.max(0) as usize).min(self.last_reg);
         }
         default_register
     }
@@ -784,7 +804,7 @@ impl HardwareCpu {
         if is.is_nop(ip.get_next_inst(&self.memory, is)) {
             self.find_modified_register(default_register)
         } else {
-            (default_register + 1) % NUM_REGISTERS
+            self.find_next_register(default_register)
         }
     }
 
@@ -807,8 +827,13 @@ impl HardwareCpu {
 
     /// `FindNextRegister(base_reg)`.
     #[inline]
-    pub(crate) fn find_next_register(base_reg: usize) -> usize {
-        (base_reg + 1) % NUM_REGISTERS
+    pub(crate) fn find_next_register(&self, base_reg: usize) -> usize {
+        let n = base_reg + 1;
+        if n >= self.num_regs {
+            0
+        } else {
+            n
+        }
     }
 
     // ------------------------------------------------------------------
@@ -1599,7 +1624,7 @@ impl Hardware for HardwareCpu {
             ip.position(),
             name
         );
-        for i in 0..NUM_REGISTERS {
+        for i in 0..self.num_regs {
             let r = self.reg(i);
             let _ = write!(
                 s,
@@ -1728,11 +1753,11 @@ impl Hardware for HardwareCpu {
     }
 
     fn register(&self, reg_id: usize) -> i32 {
-        self.reg(reg_id.min(NUM_REGISTERS - 1))
+        self.reg(reg_id.min(self.num_regs - 1))
     }
 
     fn num_registers(&self) -> i32 {
-        NUM_REGISTERS as i32
+        self.num_regs as i32
     }
 
     fn num_threads(&self) -> i32 {

@@ -11,12 +11,14 @@ mod filter_dialog;
 mod genotypes;
 mod help;
 mod histogram;
+mod ladder;
 mod lineage;
 mod logview;
 mod map;
 mod open_ended;
 mod options;
 mod palette;
+mod reuse;
 mod stats;
 pub(crate) mod util;
 mod zoom;
@@ -98,6 +100,7 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         Screen::Log => logview::draw(f, app, body),
         Screen::Options => options::draw(f, app, body),
         Screen::OpenEnded => open_ended::draw(f, app, body),
+        Screen::Ladder => ladder::draw(f, app, body),
         Screen::Blank => {
             f.render_widget(
                 Paragraph::new("Blank screen. Any screen key brings the display back.").style(DIM),
@@ -287,14 +290,42 @@ fn draw_tabs(f: &mut Frame, app: &mut App, area: Rect) {
         .sum::<usize>()
         - 1;
     let narrow = full > area.width as usize;
-    for (i, s) in Screen::TABS.iter().enumerate() {
-        let title = match (narrow, s) {
-            (true, Screen::Stats) => "Stat",
-            (true, Screen::Charts) => "Chart",
-            (true, Screen::Debug) => "Dbg",
-            _ => s.title(),
-        };
-        let label = format!("{} {}", s.key(), title);
+    let labels: Vec<(String, Screen)> = Screen::TABS
+        .iter()
+        .map(|s| {
+            let title = match (narrow, s) {
+                (true, Screen::Stats) => "Stat",
+                (true, Screen::Charts) => "Chart",
+                (true, Screen::Debug) => "Dbg",
+                _ => s.title(),
+            };
+            (format!("{} {}", s.key(), title), *s)
+        })
+        .collect();
+    // When even the short titles do not fit, the strip starts at the first
+    // tab from which the current screen's tab is still on it ("<" marks the
+    // tabs left of it), so the screen being shown always has its tab.
+    let width = area.width as usize;
+    let active = labels.iter().position(|(_, s)| *s == app.screen);
+    let mut start = 0;
+    if let Some(active) = active {
+        while start < active {
+            let need: usize = 2 * usize::from(start > 0)
+                + labels[start..=active]
+                    .iter()
+                    .map(|(l, _)| l.chars().count() + 1)
+                    .sum::<usize>();
+            if need <= width {
+                break;
+            }
+            start += 1;
+        }
+    }
+    if start > 0 {
+        spans.push(Span::styled("<", DIM));
+        x += 1;
+    }
+    for (i, (label, s)) in labels.iter().enumerate().skip(start) {
         let w = label.chars().count() as u16;
         let style = if *s == app.screen {
             Style::new().add_modifier(Modifier::REVERSED | Modifier::BOLD)
@@ -304,10 +335,10 @@ fn draw_tabs(f: &mut Frame, app: &mut App, area: Rect) {
         if x + w > area.x + area.width {
             break;
         }
-        spans.push(Span::styled(label, style));
+        spans.push(Span::styled(label.clone(), style));
         hits.push((Rect::new(x, area.y, w, 1), *s));
         x += w;
-        if i + 1 < Screen::TABS.len() {
+        if i + 1 < labels.len() {
             spans.push(Span::raw(" "));
             x += 1;
         }
@@ -394,6 +425,12 @@ fn hint_actions(screen: Screen) -> &'static [(Action, &'static str)] {
             (RunPause, "run/pause"),
             (Dir(0, -1), "choose chart"),
             (Dir(1, 0), "next group"),
+        ],
+        Screen::Ladder => &[
+            (RunPause, "run/pause"),
+            (Dir(0, -1), "choose rung"),
+            (Enter, "filter on rung"),
+            (FilterOpen, "filter"),
         ],
         Screen::Blank => &[(Goto(Screen::Map), "map"), (Goto(Screen::Stats), "stats")],
     }

@@ -38,7 +38,7 @@ const fn d(
 
 /// `s_f_array`, in order. The NOP table is its first three entries.
 #[rustfmt::skip]
-pub static CPU_INST_DEFS: [CpuInstDef; 563] = [
+pub static CPU_INST_DEFS: [CpuInstDef; 566] = [
     d("nop-A", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
     d("nop-B", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
     d("nop-C", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
@@ -601,5 +601,11 @@ pub static CPU_INST_DEFS: [CpuInstDef; 563] = [
     d("exit-germline", "Inst_ExitGermline", C::Lifecycle, F::STALL, ""),
     d("repair-on", "Inst_RepairPointMutOn", C::Lifecycle, F::STALL, ""),
     d("repair-off", "Inst_RepairPointMutOff", C::Lifecycle, F::STALL, ""),
+    // Port-only extension (opt-in, instset-heads-modular.cfg): three more
+    // register nops. They sit just before NULL so that every C++ library
+    // index below it is unchanged.
+    d("nop-D", "Inst_Nop", C::Nop, F::NOP, "No-operation instruction; modifies other instructions (DX)"),
+    d("nop-E", "Inst_Nop", C::Nop, F::NOP, "No-operation instruction; modifies other instructions (EX)"),
+    d("nop-F", "Inst_Nop", C::Nop, F::NOP, "No-operation instruction; modifies other instructions (FX)"),
     d("NULL", "Inst_Nop", C::Nop, 0, "True no-operation instruction: does nothing"),
 ];

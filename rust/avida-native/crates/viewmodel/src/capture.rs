@@ -691,7 +691,7 @@ fn cpu_view(hw: &dyn Hardware) -> CpuView {
             {
                 (
                     lt.id(),
-                    lt.reg.to_vec(),
+                    lt.reg[..num_regs.min(lt.reg.len())].to_vec(),
                     lt.read_label.as_string(),
                     lt.next_label.as_string(),
                 )

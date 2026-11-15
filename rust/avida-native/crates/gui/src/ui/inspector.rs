@@ -112,6 +112,11 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
                 "Tasks performed in this and the last gestation",
             ),
             (OrgTab::Io, "I/O", "Input and output buffers"),
+            (
+                OrgTab::Reuse,
+                "Reuse",
+                "Which instructions each task depends on, and whether tasks share code",
+            ),
         ],
     ) {
         state.debugger.tab = tab;
@@ -129,6 +134,7 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
                         OrgTab::Phenotype => phenotype(ui, &org),
                         OrgTab::Tasks => tasks(ui, state, &org, &t),
                         OrgTab::Io => buffers(ui, &org, &t),
+                        OrgTab::Reuse => crate::ui::reuse::show(ui, state, &org, &t),
                         OrgTab::Cpu => {}
                     }
                 });
@@ -663,8 +669,10 @@ fn registers(ui: &mut Ui, state: &AppState, th: &ThreadView, t: &Tokens) {
     let changed = state.debugger.changed_registers();
     let n = th.regs.len();
     let gap = 6.0;
-    // At most six to a row, so twelve registers (BCR) wrap to two rows.
-    let per_row = n.min(6) as f32;
+    // At most six to a row, so twelve registers (BCR) wrap to two rows; four
+    // to six (the modular heads set has six) take three to a row, wide
+    // enough for a ten-digit value.
+    let per_row = n.min(if (4..=6).contains(&n) { 3 } else { 6 }) as f32;
     let w = ((ui.available_width() - gap * (per_row - 1.0)) / per_row - 1.0).max(60.0);
     ui.horizontal_wrapped(|ui| {
         ui.spacing_mut().item_spacing = vec2(gap, gap);
@@ -767,6 +775,7 @@ fn stacks(ui: &mut Ui, state: &AppState, th: &ThreadView, t: &Tokens) {
             ),
         };
         let active = th.active_stack == s as i32;
+        let stack_name = name.clone();
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 6.0;
             ui.label(
@@ -792,7 +801,8 @@ fn stacks(ui: &mut Ui, state: &AppState, th: &ThreadView, t: &Tokens) {
                 } else {
                     text.color(t.text_weak)
                 };
-                ui.label(text);
+                let r = ui.label(text);
+                name_widget(&r, Role::Label, &format!("{stack_name} level {d}: {v}"));
             }
         });
     }

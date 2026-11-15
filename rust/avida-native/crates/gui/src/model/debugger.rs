@@ -9,8 +9,9 @@
 //! organism stays on screen, marked as such, until the user moves on.
 
 use std::collections::BTreeSet;
+use std::sync::Arc;
 
-use avida_session::{Frame, RunUntil, StopWhen, UntilOutcome};
+use avida_session::{Frame, KnockoutReply, RunUntil, StopWhen, UntilOutcome};
 use avida_viewmodel::{OrganismView, ThreadView};
 
 use crate::model::format;
@@ -42,10 +43,18 @@ pub enum OrgTab {
     Phenotype,
     Tasks,
     Io,
+    /// Knockout map and code-reuse measures of the genome.
+    Reuse,
 }
 
 impl OrgTab {
-    pub const ALL: [OrgTab; 4] = [OrgTab::Cpu, OrgTab::Phenotype, OrgTab::Tasks, OrgTab::Io];
+    pub const ALL: [OrgTab; 5] = [
+        OrgTab::Cpu,
+        OrgTab::Phenotype,
+        OrgTab::Tasks,
+        OrgTab::Io,
+        OrgTab::Reuse,
+    ];
 
     pub fn title(self) -> &'static str {
         match self {
@@ -53,7 +62,32 @@ impl OrgTab {
             OrgTab::Phenotype => "Phenotype",
             OrgTab::Tasks => "Tasks",
             OrgTab::Io => "I/O",
+            OrgTab::Reuse => "Reuse",
         }
+    }
+}
+
+/// The Reuse tab: the knockout map asked for and the latest answer.
+#[derive(Clone, Debug, Default)]
+pub struct ReuseState {
+    /// The organism whose map was asked for and has not come back.
+    pub pending: Option<i32>,
+    /// The latest answer (for the organism it names).
+    pub reply: Option<Arc<KnockoutReply>>,
+}
+
+impl ReuseState {
+    /// The answer for organism `org_id`, if the latest one is its own.
+    pub fn answer_for(&self, org_id: i32) -> Option<&KnockoutReply> {
+        self.reply.as_deref().filter(|r| r.request.org_id == org_id)
+    }
+
+    /// Takes in an answer from the session.
+    pub fn arrive(&mut self, reply: Arc<KnockoutReply>) {
+        if self.pending == Some(reply.request.org_id) {
+            self.pending = None;
+        }
+        self.reply = Some(reply);
     }
 }
 
@@ -139,6 +173,8 @@ pub struct Debugger {
     pub last_stop: Option<StopNote>,
     /// What the run-until in flight was asked for.
     pending: Option<StopWhat>,
+    /// The Reuse tab.
+    pub reuse: ReuseState,
     /// The `(memory space, position)` the memory listing last scrolled to.
     pub scrolled_to: Option<(i32, i32)>,
     /// The memory listing's scroll offset and height last frame.
@@ -161,6 +197,7 @@ impl Default for Debugger {
             tab: OrgTab::Cpu,
             last_stop: None,
             pending: None,
+            reuse: ReuseState::default(),
             scrolled_to: None,
             listing: (0.0, 0.0),
         }

@@ -316,6 +316,8 @@ pub enum Action {
     A3(crate::actions3::Action3),
     /// `PrintMODESData`, a port-only extension (modes.rs).
     Modes(crate::modes::ModesAction),
+    /// `PrintKnockoutMap`, `PrintReuseData`: port-only (knockout_run.rs).
+    Knockout(crate::knockout_run::KnockoutAction),
 }
 
 /// World facts the C++ constructors read while parsing.
@@ -405,6 +407,7 @@ pub fn canonical_name(name: &str) -> Option<&'static str> {
         .chain(crate::phylo_actions::PHYLO_ACTIONS.iter().copied())
         .chain(crate::actions3::ACTIONS3.iter().copied())
         .chain(crate::modes::MODES_ACTIONS.iter().copied())
+        .chain(crate::knockout_run::KNOCKOUT_ACTIONS.iter().copied())
         .find(|n| n.eq_ignore_ascii_case(name))
 }
 
@@ -560,6 +563,9 @@ pub fn parse(
     }
     if let Some(r) = crate::modes::parse(name, args) {
         return r.map(Action::Modes);
+    }
+    if let Some(r) = crate::knockout_run::parse(name, args) {
+        return r.map(Action::Knockout);
     }
 
     let mut a = Args(args.to_string());

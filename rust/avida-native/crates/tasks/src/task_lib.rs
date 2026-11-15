@@ -9,7 +9,7 @@ use crate::eval_logic::{compute_logic_id, eval_logic, eval_logic3, LogicOp};
 use crate::registry_table::{
     TaskKind, UnaryOp, REQ_NEIGHBOR_INPUT, REQ_NEIGHBOR_OUTPUT, SIMPLE_TASKS,
 };
-use crate::{eval_math, eval_misc, eval_world};
+use crate::{eval_field, eval_math, eval_misc, eval_world};
 
 /// `cTaskEntry`: one registered task.
 #[derive(Debug, Clone)]
@@ -19,6 +19,8 @@ pub struct TaskEntry {
     id: usize,
     kind: TaskKind,
     args: Option<ArgContainer>,
+    /// Parsed arguments of a `field_arith` task.
+    field: Option<eval_field::FieldSpec>,
     prop_id_ave: String,
     prop_id_count: String,
 }
@@ -32,6 +34,7 @@ impl TaskEntry {
             id,
             kind,
             args,
+            field: None,
             prop_id_ave: format!("environment.triggers.{}.average", name),
             prop_id_count: format!("environment.triggers.{}.count", name),
         }
@@ -64,6 +67,10 @@ impl TaskEntry {
     /// `HasArguments()`.
     pub fn has_arguments(&self) -> bool {
         self.args.is_some()
+    }
+    /// The parsed arguments of a `field_arith` task (port addition).
+    pub fn field_spec(&self) -> Option<&eval_field::FieldSpec> {
+        self.field.as_ref()
     }
     /// `GetArguments()` (`None` where the C++ would dereference `NULL`).
     pub fn arguments(&self) -> Option<&ArgContainer> {
@@ -312,6 +319,18 @@ impl TaskLib {
                         0,
                         Some(args),
                     );
+                }
+            }
+
+            // Port addition, not in the C++.
+            "field_arith" => {
+                if let Some((spec, args)) = eval_field::FieldSpec::load(info, feedback) {
+                    envreqs.set_min_inputs(envreqs.get_min_inputs().max(2));
+                    envreqs.set_min_outputs(envreqs.get_min_outputs().max(spec.outputs_needed()));
+                    self.new_task(name, "FieldArith", TaskKind::FieldArith, 0, Some(args));
+                    if let Some(entry) = self.task_array.last_mut() {
+                        entry.field = Some(spec);
+                    }
                 }
             }
 
@@ -672,6 +691,7 @@ impl TaskLib {
                 | TaskKind::IncLowBits
                 | TaskKind::DecLowBits
                 | TaskKind::ArithMiss
+                | TaskKind::FieldArith
                 | TaskKind::DontCare
                 | TaskKind::Logic(_)
                 | TaskKind::Logic3(_)
@@ -712,6 +732,10 @@ impl TaskLib {
             TaskKind::IncLowBits => eval_math::eval_inc_lowbits(input, output),
             TaskKind::DecLowBits => eval_math::eval_dec_lowbits(input, output),
             TaskKind::ArithMiss => eval_math::eval_arith_miss(input, output),
+            TaskKind::FieldArith => match entry.field.as_ref() {
+                Some(spec) => eval_field::eval_field_arith(spec, input, output),
+                None => 0.0,
+            },
             TaskKind::DontCare => eval_misc::eval_dont_care(),
             TaskKind::Logic(op) => eval_logic(op, ctx.logic_id),
             TaskKind::Logic3(targets) => eval_logic3(targets, ctx.logic_id),

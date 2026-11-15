@@ -15,7 +15,7 @@ use crate::hardware::{
     div_guard, divide_do_mutations, divide_test_fitness_measures, do_slip_mutation,
     do_uniform_copy_mutation, energy_usage_inst, in_no_mut_list, DivGuard, Hardware,
 };
-use crate::hardware_cpu::{HardwareCpu, NUM_NOPS, NUM_REGISTERS, REG_AX, REG_BX, REG_CX};
+use crate::hardware_cpu::{HardwareCpu, REG_AX, REG_BX, REG_CX};
 use crate::head_cpu::HeadCpu;
 use crate::nhardware::*;
 use crate::org_interface::{with_neighbor_state, Faced, OrgInterface};
@@ -77,10 +77,12 @@ impl HardwareCpu {
         self.read_label(m);
     }
 
-    /// `GetLabel().Rotate(1, NUM_NOPS)`.
+    /// `GetLabel().Rotate(1, NUM_NOPS)`; the modulus is the register count
+    /// (3 for every stock set).
     #[inline]
     pub(crate) fn rotate_label(&mut self) {
-        self.label_mut().rotate(1, NUM_NOPS);
+        let n = self.num_regs as i32;
+        self.label_mut().rotate(1, n);
     }
 
     /// `if (cond) getIP().Advance();`
@@ -495,7 +497,7 @@ macro_rules! if_pair {
         $(#[$m])*
         fn $name(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
             let op1 = hw.find_modified_register(REG_BX);
-            let op2 = HardwareCpu::find_next_register(op1);
+            let op2 = hw.find_next_register(op1);
             let $a = hw.reg(op1);
             let $b = hw.reg(op2);
             hw.skip_if($skip);
@@ -633,7 +635,7 @@ macro_rules! if_end {
         $(#[$m])*
         fn $name(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
             let x = hw.find_modified_register(REG_BX);
-            let y = HardwareCpu::find_next_register(x);
+            let y = hw.find_next_register(x);
             let $a = hw.reg(x);
             let $b = hw.reg(y);
             if $fail {
@@ -899,7 +901,7 @@ fn inst_flip_stack(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterf
 /// `Inst_Swap`
 fn inst_swap(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
     let op1 = hw.find_modified_register(REG_BX);
-    let op2 = HardwareCpu::find_next_register(op1);
+    let op2 = hw.find_next_register(op1);
     let (a, b) = (hw.reg(op1), hw.reg(op2));
     hw.set_reg(op1, b);
     hw.set_reg(op2, a);
@@ -925,7 +927,7 @@ swap_fixed!(inst_swap_ac, REG_AX, REG_CX, "`Inst_SwapAC`");
 /// `Inst_CopyReg`
 fn inst_copy_reg(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
     let src = hw.find_modified_register(REG_BX);
-    let dst = HardwareCpu::find_next_register(src);
+    let dst = hw.find_next_register(src);
     let v = hw.reg(src);
     hw.set_reg(dst, v);
     Ok(true)
@@ -951,7 +953,7 @@ copy_fixed!(inst_copy_reg_cb, REG_CX, REG_BX, "`Inst_CopyRegCB`");
 
 /// `Inst_Reset`
 fn inst_reset(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
-    for r in 0..NUM_REGISTERS {
+    for r in 0..hw.num_regs {
         hw.set_reg(r, 0);
     }
     hw.stack_clear();
@@ -1207,7 +1209,7 @@ fn inst_order(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) 
 /// `Inst_Setbit`
 fn inst_setbit(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
     let to_set = hw.find_modified_register(REG_BX);
-    let bit_reg = HardwareCpu::find_next_register(to_set);
+    let bit_reg = hw.find_next_register(to_set);
     let bit = (hw.reg(bit_reg).max(0) % 32) as u32;
     let v = hw.reg(to_set) | 1i32.wrapping_shl(bit);
     hw.set_reg(to_set, v);
@@ -1217,7 +1219,7 @@ fn inst_setbit(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface)
 /// `Inst_Clearbit`
 fn inst_clearbit(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
     let to_clear = hw.find_modified_register(REG_BX);
-    let bit_reg = HardwareCpu::find_next_register(to_clear);
+    let bit_reg = hw.find_next_register(to_clear);
     let bit = (hw.reg(bit_reg).max(0) % 32) as u32;
     let v = hw.reg(to_clear) & !1i32.wrapping_shl(bit);
     hw.set_reg(to_clear, v);
@@ -1247,7 +1249,7 @@ macro_rules! set_num {
         $(#[$m])*
         fn $name(hw: &mut HardwareCpu, _: &mut OrgState, world: &mut dyn OrgInterface) -> R {
             hw.rl(world);
-            let v = hw.label().$method(NUM_NOPS);
+            let v = hw.label().$method(hw.num_regs as i32);
             hw.set_reg(REG_BX, v);
             Ok(true)
         }
@@ -1577,7 +1579,7 @@ fn inst_task_get2(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn OrgI
     world.reset_inputs();
     org.input_buf.clear();
     let r1 = hw.find_modified_register(REG_BX);
-    let r2 = HardwareCpu::find_next_register(r1);
+    let r2 = hw.find_next_register(r1);
     let v1 = HardwareCpu::next_input(org, world);
     hw.set_reg(r1, v1);
     org.do_input(v1);
@@ -1789,7 +1791,7 @@ fn inst_rotate_label(hw: &mut HardwareCpu, _: &mut OrgState, world: &mut dyn Org
             geometry
         ));
     }
-    let new_facing = hw.label().as_int_grey_code(NUM_NOPS) % 8;
+    let new_facing = hw.label().as_int_grey_code(hw.num_regs as i32) % 8;
     for _ in 0..actual {
         if new_facing == world.get_facing() {
             break;
@@ -1980,7 +1982,7 @@ fn inst_get_cell_position(
         return Ok(false);
     }
     let xreg = hw.find_modified_register(REG_BX);
-    let yreg = HardwareCpu::find_next_register(xreg);
+    let yreg = hw.find_next_register(xreg);
     hw.set_reg(xreg, x);
     hw.set_reg(yreg, y);
     Ok(true)
@@ -2326,7 +2328,7 @@ fn inst_head_divide_mate_select(
     world: &mut dyn OrgInterface,
 ) -> R {
     hw.rl(world);
-    org.phenotype.mate_select_id = hw.label().as_int(NUM_NOPS);
+    org.phenotype.mate_select_id = hw.label().as_int(hw.num_regs as i32);
     org.phenotype.divide_sex = true;
     org.phenotype.cross_num = 1;
     inst_head_divide(hw, org, world)
@@ -2534,7 +2536,7 @@ fn inst_set_opinion(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn Or
 fn inst_get_opinion(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn OrgInterface) -> R {
     if world.has_opinion(org) {
         let opinion_reg = hw.find_modified_register(REG_BX);
-        let age_reg = HardwareCpu::find_next_register(opinion_reg);
+        let age_reg = hw.find_next_register(opinion_reg);
         let (op, upd) = org.get_opinion();
         hw.set_reg(opinion_reg, op);
         hw.set_reg(age_reg, world.update().wrapping_sub(upd));

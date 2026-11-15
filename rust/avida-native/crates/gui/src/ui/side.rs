@@ -40,13 +40,23 @@ fn content(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
                 .show(ui, |ui| charts::show(ui, state, cache));
         }
         // These fill the panel and scroll their own long lists.
-        SideTab::Organism if state.is_playback() => widgets::empty_state(
-            ui,
-            egui_material_icons::icons::ICON_BIOTECH,
-            "Organisms are not recorded",
-            "A playback shows the map, the charts and the genotype table. \
-             Open the experiment itself to inspect an organism or step its CPU.",
-        ),
+        SideTab::Organism if state.is_playback() => {
+            widgets::empty_state(
+                ui,
+                egui_material_icons::icons::ICON_BIOTECH,
+                "Organisms are not recorded",
+                "A playback shows the map, the charts and the genotype table. \
+                 Open the experiment itself to inspect an organism or step its CPU.",
+            );
+            // The Reuse view's answer in a playback.
+            ui.add_space(8.0);
+            ui.vertical_centered(|ui| {
+                ui.label(
+                    egui::RichText::new(avida_session::KNOCKOUT_PLAYBACK_REASON)
+                        .color(crate::ui::theme::Tokens::of(ui).text_weak),
+                );
+            });
+        }
         SideTab::Config if state.is_playback() => widgets::empty_state(
             ui,
             egui_material_icons::icons::ICON_TUNE,

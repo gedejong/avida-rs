@@ -42,6 +42,7 @@ pub enum Action {
     Shortcuts,
     Theme(ThemeChoice),
     Open,
+    CompareRuns,
     NewExperiment,
     OpenRecent(PathBuf),
     Restart,
@@ -289,6 +290,10 @@ pub fn catalog(state: &AppState, settings: &Settings) -> Vec<Item> {
         }
     }
     v.push(item(Action::Open, "Experiment", "Open experiment…").key("Cmd O"));
+    v.push(
+        item(Action::CompareRuns, "Experiment", "Compare runs…")
+            .words("arms seeds batch ladder statistics"),
+    );
     v.push(
         item(
             Action::NewExperiment,
@@ -540,6 +545,7 @@ pub fn perform(
         Action::Shortcuts => state.show_shortcuts = true,
         Action::Theme(t) => settings.theme = t,
         Action::Open => state.request(Request::PickFolder),
+        Action::CompareRuns => state.request(Request::PickCompareFolder),
         Action::NewExperiment => state.request(Request::NewExperiment),
         Action::OpenRecent(dir) => state.request(Request::Open(dir)),
         Action::Restart => state.restart(None),

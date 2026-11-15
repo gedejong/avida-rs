@@ -9,8 +9,9 @@
 //! organism stays on screen, marked as such, until the user moves on.
 
 use std::collections::BTreeSet;
+use std::sync::Arc;
 
-use avida_session::{Frame, RunUntil, StopWhen, UntilOutcome};
+use avida_session::{Frame, KnockoutReply, RunUntil, StopWhen, UntilOutcome};
 use avida_viewmodel::{MemSpaceView, OrganismView, ThreadView};
 
 /// Time slices a "step instruction" may take before giving up.
@@ -89,6 +90,45 @@ impl StopNote {
     }
 }
 
+/// The knockout map view (`v` on the debugger screen), shown in place of the
+/// memory listing.
+#[derive(Clone, Debug, Default)]
+pub struct ReuseView {
+    /// Whether the view is on.
+    pub show: bool,
+    /// The organism whose map was asked for and has not come back.
+    pub pending: Option<i32>,
+    /// The latest answer.
+    pub reply: Option<Arc<KnockoutReply>>,
+    /// The selected site, and the first one listed.
+    pub sel: usize,
+    pub top: usize,
+}
+
+impl ReuseView {
+    /// The answer for organism `org_id`, if the latest one is its own.
+    pub fn answer_for(&self, org_id: i32) -> Option<&KnockoutReply> {
+        self.reply.as_deref().filter(|r| r.request.org_id == org_id)
+    }
+
+    /// Takes in an answer from the session.
+    pub fn arrive(&mut self, reply: Arc<KnockoutReply>) {
+        if self.pending == Some(reply.request.org_id) {
+            self.pending = None;
+        }
+        self.sel = 0;
+        self.top = 0;
+        self.reply = Some(reply);
+    }
+
+    /// The number of sites of the map shown, 0 without one.
+    pub fn sites(&self, org_id: i32) -> usize {
+        self.answer_for(org_id)
+            .and_then(|r| r.result.as_ref().ok())
+            .map_or(0, |m| m.sites.len())
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Debugger {
     /// The watched organism's id, once a frame has shown it.
@@ -115,6 +155,8 @@ pub struct Debugger {
     pub top: usize,
     pub last_stop: Option<StopNote>,
     pending: Option<StopWhat>,
+    /// The knockout map view.
+    pub reuse: ReuseView,
 }
 
 impl Default for Debugger {
@@ -133,6 +175,7 @@ impl Default for Debugger {
             top: 0,
             last_stop: None,
             pending: None,
+            reuse: ReuseView::default(),
         }
     }
 }
@@ -352,6 +395,13 @@ impl Debugger {
 
     /// Moves the selected line by `d`, leaving follow mode.
     pub fn move_sel(&mut self, d: i64) {
+        if self.reuse.show {
+            let n = self.reuse.sites(self.org_id.unwrap_or(-1));
+            if n > 0 {
+                self.reuse.sel = (self.reuse.sel as i64 + d).clamp(0, n as i64 - 1) as usize;
+            }
+            return;
+        }
         let n = self.sites();
         self.follow_ip = false;
         if n > 0 {
@@ -361,6 +411,11 @@ impl Debugger {
 
     /// Jumps to the first or last line, leaving follow mode.
     pub fn set_sel(&mut self, pos: usize) {
+        if self.reuse.show {
+            let n = self.reuse.sites(self.org_id.unwrap_or(-1));
+            self.reuse.sel = pos.min(n.saturating_sub(1));
+            return;
+        }
         self.follow_ip = false;
         self.sel = pos.min(self.sites().saturating_sub(1));
     }

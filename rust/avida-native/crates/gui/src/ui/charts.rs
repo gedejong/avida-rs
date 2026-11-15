@@ -1,5 +1,5 @@
-//! The charts tab: the filter bar and five views: time series of the
-//! accumulated rows, task shares and counts, a histogram of the map layer,
+//! The charts tab: the filter bar and six views: time series of the
+//! accumulated rows, task shares and counts, the ladder of reactions, a histogram of the map layer,
 //! a scatter plot of two properties, and the open-endedness measures.
 //!
 //! The time series and the task chart follow the whole run until the user
@@ -33,36 +33,52 @@ use crate::ui::widgets::{self, rgba};
 const MAX_SERIES: usize = 4;
 
 pub fn show(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
-    // The two export buttons sit right of the picker when there is room, and
-    // under it, right-aligned, when the picker (four views) fills the row.
+    let opts: Vec<(ChartTab, &str, &str)> = ChartTab::ALL
+        .iter()
+        .map(|&c| {
+            let tip = match c {
+                ChartTab::TimeSeries => "Population statistics over time",
+                ChartTab::Tasks => "Organisms performing each task over time",
+                ChartTab::Ladder => {
+                    "The environment's reactions in order, as rungs: how many organisms hold each one over time"
+                }
+                ChartTab::Histogram => "Distribution of the map layer's values now",
+                ChartTab::Scatter => "Two properties of every organism plotted against each other",
+                ChartTab::OpenEnded => {
+                    "Open-endedness measures (MODES and the genealogy of the genotypes) over time"
+                }
+            };
+            (c, c.title(), tip)
+        })
+        .collect();
+    let mut tab = state.chart_tab;
+    // Six views side by side when the panel is wide enough; otherwise two
+    // rows of three, which share the one value. The two export buttons sit
+    // right of the picker (of its second row) when there is room, and under
+    // it, right-aligned, when there is not.
+    let two_rows = ui.available_width() < SIX_VIEWS_WIDTH;
+    let split = if two_rows { 3 } else { opts.len() };
+    let picker = |ui: &mut Ui, id: &str, tab: &mut ChartTab, o: &[(ChartTab, &str, &str)]| {
+        ui.scope(|ui| {
+            // Tighter buttons so they fit the panel.
+            ui.spacing_mut().button_padding.x = 6.0;
+            widgets::segmented(ui, id, tab, o)
+        })
+        .inner
+    };
+    let mut changed = false;
     let mut export_below = false;
+    if two_rows {
+        ui.horizontal(|ui| changed |= picker(ui, "chart-tab-1", &mut tab, &opts[..split]));
+        ui.add_space(2.0);
+    }
     ui.horizontal(|ui| {
-        let mut tab = state.chart_tab;
-        let opts: Vec<(ChartTab, &str, &str)> = ChartTab::ALL
-            .iter()
-            .map(|&c| {
-                let tip = match c {
-                    ChartTab::TimeSeries => "Population statistics over time",
-                    ChartTab::Tasks => "Organisms performing each task over time",
-                    ChartTab::Histogram => "Distribution of the map layer's values now",
-                    ChartTab::Scatter => "Two properties of every organism plotted against each other",
-                    ChartTab::OpenEnded => {
-                        "Open-endedness measures (MODES and the genealogy of the genotypes) over time"
-                    }
-                };
-                (c, c.title(), tip)
-            })
-            .collect();
-        // Five views side by side: tighter buttons so they fit the panel.
-        let changed = ui
-            .scope(|ui| {
-                ui.spacing_mut().button_padding.x = 6.0;
-                widgets::segmented(ui, "chart-tab", &mut tab, &opts)
-            })
-            .inner;
-        if changed {
-            state.chart_tab = tab;
-        }
+        changed |= picker(
+            ui,
+            "chart-tab",
+            &mut tab,
+            &opts[if two_rows { split } else { 0 }..],
+        );
         if ui.available_width() < EXPORT_BUTTONS_WIDTH {
             export_below = true;
         } else {
@@ -71,6 +87,9 @@ pub fn show(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
             });
         }
     });
+    if changed {
+        state.chart_tab = tab;
+    }
     if export_below {
         ui.horizontal(|ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -90,11 +109,15 @@ pub fn show(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
     match state.chart_tab {
         ChartTab::TimeSeries => time_series(ui, state, cache),
         ChartTab::Tasks => tasks(ui, state, cache),
+        ChartTab::Ladder => super::ladder::show(ui, state),
         ChartTab::Histogram => super::histogram::show(ui, state),
         ChartTab::Scatter => super::scatter::show(ui, state),
         ChartTab::OpenEnded => super::open_ended::show(ui, state),
     }
 }
+
+/// The panel width from which the six views fit in one row.
+const SIX_VIEWS_WIDTH: f32 = 500.0;
 
 /// Room the two export buttons need.
 const EXPORT_BUTTONS_WIDTH: f32 = 72.0;
@@ -692,7 +715,7 @@ const TASK_ROW_H: f32 = 22.0;
 
 /// The modifier keys held when the pointer was released (the click), else
 /// those held now.
-fn click_modifiers(ui: &Ui) -> egui::Modifiers {
+pub(super) fn click_modifiers(ui: &Ui) -> egui::Modifiers {
     ui.input(|i| {
         i.events
             .iter()

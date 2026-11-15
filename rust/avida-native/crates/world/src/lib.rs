@@ -45,6 +45,8 @@ pub mod habitat;
 pub mod hgt;
 pub mod host;
 pub mod kaboom;
+pub mod knockout;
+pub mod knockout_run;
 pub mod load_population;
 pub mod mating_actions;
 pub mod messaging;

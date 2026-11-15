@@ -1,0 +1,44 @@
+#inst_set heads_default
+#hw_type 0
+# HALFADD_PLANES (field_arith:fn=halfadd:bits=1:mode=planes) for the stock heads set.
+# Reads three inputs first, because every IO that outputs also reads an input
+# and the task takes the two newest inputs at the last output: after the two
+# output IOs those are the third input c and the first, a. Two outputs: x ^ y,
+# then x & y (x = c, y = a). Only bit 0 of every 2-bit field is read, so no
+# mask and no constant is needed. xor is the four-nand form.
+# 32 instructions in the genome (23 without the no-op modifiers; no add, no sub).
+# An idle trap (get-head, set-flow, mov-head) follows the task so that it runs once; a
+# replicator would have its copy loop there.
+#
+IO         # BX = first input a
+push       # stash it
+IO         # BX = second input b
+IO         # BX = third input c; the two newest inputs at the last output are then c and a
+pop        # CX = a
+nop-C
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+IO         # output plane 0: the sums (x ^ y)
+pop        # CX = t0
+nop-C
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+IO         # output plane 1: the carries (x & y)
+get-head   # trap: CX = own position
+set-flow   # flow head = here
+mov-head   # back to get-head: idle forever
+nop-A      # explicit head IP: keeps mov-head from taking a following label as its head

@@ -224,6 +224,13 @@ impl Player {
             // A frame has the layers that were recorded; there is no
             // organism to watch.
             Command::Subscribe(_) | Command::WatchCell(_) | Command::FollowOffspring(_) => {}
+            Command::KnockoutMap(request) => {
+                self.push_event(SessionEvent::KnockoutMap(Arc::new(crate::KnockoutReply {
+                    request,
+                    result: Err(crate::KNOCKOUT_PLAYBACK_REASON.to_string()),
+                    elapsed: Duration::ZERO,
+                })))
+            }
             Command::SavePopulation
             | Command::RunUntil(_)
             | Command::Restart { .. }

@@ -16,6 +16,7 @@ pub struct Actions2State {
     pub a3: crate::actions3::Actions3State,
     pub modes: crate::modes::ModesState,
     pub phylo: crate::phylo_actions::PhyloState,
+    pub knockout: crate::knockout_run::KnockoutState,
 }
 
 impl World {

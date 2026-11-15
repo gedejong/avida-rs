@@ -30,6 +30,9 @@ fn playback_refusal(action: Action) -> Option<&'static str> {
         Action::DebugStep | Action::DebugRun | Action::DebugFollowOffspring => {
             "there is no simulation to debug"
         }
+        Action::DebugReuse => {
+            "a recording does not carry the instruction set and the environment a test CPU needs"
+        }
         Action::GenoLineage => "lineages are not recorded",
         Action::ConfigEdit | Action::ConfigRevert => "settings cannot change",
         _ => return None,
@@ -136,6 +139,7 @@ impl App {
             Action::DebugFollowOffspring => self.debug_toggle_follow_offspring(),
             Action::DebugFollowIp => self.debugger.follow(),
             Action::DebugCycleSpace => self.debug_cycle_space(),
+            Action::DebugReuse => self.debug_reuse(),
             Action::ConfigFilter => self.config_filter(),
             Action::ConfigEdit => self.config_edit(),
             Action::ConfigChangedOnly => self.config_toggle_changed_only(),
@@ -288,6 +292,7 @@ impl App {
                 self.goto(Screen::Zoom);
             }
             Screen::Charts => self.toggle_chart_metric(),
+            Screen::Ladder => self.ladder_filter(),
             Screen::Genotypes => {
                 let id = if self.geno_view == GenoView::Lineage {
                     let rows = self.lineage_rows();
@@ -312,6 +317,20 @@ impl App {
             }
             _ => {}
         }
+    }
+
+    /// Enter on a rung: "performs this task" becomes a condition of the
+    /// filter, or stops being one.
+    fn ladder_filter(&mut self) {
+        let view = self.ladder_view();
+        let Some(rung) = view
+            .rungs
+            .get(self.ladder_sel.min(view.rungs.len().saturating_sub(1)))
+        else {
+            return;
+        };
+        let task = rung.task;
+        self.edit_filter(|f| f.toggle_task(task, true));
     }
 
     fn toggle_chart_metric(&mut self) {
@@ -367,6 +386,11 @@ impl App {
                 self.env_scroll = step_unbounded(self.env_scroll, dy);
             }
             Screen::Log => self.log_scroll_by(dy),
+            Screen::Ladder => {
+                // Up the screen is up the ladder: the top rung is drawn first.
+                let n = self.ladder_view().rungs.len();
+                self.ladder_sel = step(self.ladder_sel.min(n.saturating_sub(1)), -dy, n);
+            }
             Screen::OpenEnded => {
                 let view = self.open_ended_view();
                 let groups = view.groups.len();
@@ -606,6 +630,7 @@ mod tests {
             ('D', Screen::Log),
             ('O', Screen::Options),
             ('K', Screen::OpenEnded),
+            ('J', Screen::Ladder),
             ('B', Screen::Blank),
             ('M', Screen::Map),
             ('s', Screen::Stats),
@@ -627,7 +652,7 @@ mod tests {
         assert_eq!(a.screen, Screen::Stats);
         a.on_key(key(KeyCode::BackTab));
         a.on_key(key(KeyCode::BackTab));
-        assert_eq!(a.screen, Screen::OpenEnded);
+        assert_eq!(a.screen, Screen::Ladder);
         a.on_key(key(KeyCode::Esc));
         assert_eq!(a.screen, Screen::Map);
     }

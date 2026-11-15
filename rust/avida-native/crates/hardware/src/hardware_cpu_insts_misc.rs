@@ -10,7 +10,7 @@
 //! the list stays empty, `terminate` never finds an active promoter and
 //! the regulation instructions only consume their nops.
 
-use crate::hardware_cpu::{HardwareCpu, NUM_REGISTERS, REG_AX, REG_BX};
+use crate::hardware_cpu::{HardwareCpu, REG_AX, REG_BX};
 use crate::hardware_cpu_insts::{arm_rem, InstFn, R};
 use crate::nhardware::HEAD_IP;
 use crate::org_interface::OrgInterface;
@@ -142,7 +142,7 @@ pub(crate) fn handler(method: &str) -> Option<InstFn> {
         "Inst_RegulateSpecificPromoters" => |h, _, w| {
             let reg_used = h.find_modified_register(REG_BX);
             let regulation_code = h.reg(reg_used);
-            let reg_promoter = h.find_modified_register((reg_used + 1) % NUM_REGISTERS);
+            let reg_promoter = h.find_modified_register(h.find_next_register(reg_used));
             let regulation_promoter = h.reg(reg_promoter);
             let exe_length = w.config().promoter_exe_length;
             for p in h.promoters.iter_mut() {

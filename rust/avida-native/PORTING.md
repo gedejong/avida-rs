@@ -214,12 +214,33 @@ rule 1:
   correction and none after Holm: the first pool's amount is lower in the
   parallel mode in the `PARTIAL` world (54.9 vs 43.6, p = 0.002) and
   equally in the control (40.1 vs 29.1, p = 0.009), so the shift belongs to
-  the pool settlement and not to the `PARTIAL` mask, cause not traced; and
+  the pool settlement and not to the `PARTIAL` mask. Its cause was traced
+  the same day: the pool's clock advances by executed instructions and the
+  tests of a round settle at its end, so with sparse tests an update's
+  tests cluster in its last fifth, where the exact mode spreads them
+  evenly. Consumption per update is the same (19.82 against 19.82 in a
+  fixed population) and a pool nobody consumes follows the same curve to
+  0.002. A pool read at an update boundary (`PrintResourceData`) is the
+  trough of a sawtooth, lower than the exact mode's level by about
+  x/(e^x - 1), x being the fraction of the pool taken per update (measured
+  ratios 0.85, 0.71, 0.50, 0.29 at x of 0.46, 0.88, 1.7, 3.3), independent
+  of the inflow rate and growing with the update size; and
   the control has 900 vs 899 organisms (p = 0.035), the empty-cell effect
   recorded above. Accepted by the maintainer on 2026-11-14.
 
 ARCHITECTURE.md ("Parallel execution mode") describes what the mode
 guarantees and what it does not.
+
+## Extensions beyond the C++ no longer need a decision each (2026-11-15)
+
+The maintainer's ruling of 2026-11-15: "From here on it's ok to depart from
+the C++ version! We're now in new terrain." Read here as: new, opt-in
+features (instruction sets, tasks, actions, views, execution options) may be
+added without asking for each one. Two things stay as they were. Every
+extension gets an entry in this file that says what it is and how it was
+checked. And what the C++ did is still reproduced: a configuration that does
+not name an extension runs as before, and the consistency suite stays at no
+DIFF.
 
 ## Tasks the C++ does not have
 
@@ -273,19 +294,100 @@ action library does not know them.
   `ARCHITECTURE.md` lists the conventions chosen where the paper and the
   reference code disagree.
 
+## Extension beyond the C++: the modular heads set (opt-in, 2026-11-15)
+
+`avida-core/support/config/instset-heads-modular.cfg` (`heads_modular`,
+hardware type 0) adds `nop-D`, `nop-E`, `nop-F` (registers DX, EX, FX) to
+the stock heads set and enables the C++'s own `call` and `return`, so that
+a subroutine and scratch storage are cheap. The C++ has no such set, so
+runs with it have no reference to compare with. Every other set is
+unchanged: the heads CPU has `max(3, nops of the set)` registers (at most
+6), label complements and the next-register rotation use that count where
+the C++ uses `NUM_NOPS`, and at 3 the arithmetic is the C++'s. The new nops
+sit just before `NULL` in `CPU_INST_DEFS`, so every C++ library index is
+unchanged. The checks are the consistency suite, the default run (output
+identical, time within noise: 44.5 s before, 43.6 to 44.1 s after) and
+`crates/hardware/tests/modular.rs`. Select the set with
+`-def INST_SET instset-heads-modular.cfg`; `-set INST_SET` does not select
+it, because `avida.cfg` includes the set by a directive.
+`modular-subroutine.org` is a hand-written replicator that does NOT, NAND
+and AND through one shared `nand; return` subroutine. Two properties of the
+C++'s `call` shape such organisms: it searches for its label forward only,
+so a subroutine lies after its callers, and without a label it jumps to BX.
+
+## Extension beyond the C++: the task `field_arith` and the adder ladder (opt-in, 2026-11-15)
+
+Accepted by the maintainer on 2026-11-15, with the threshold, field width and
+reward values below. `field_arith` (`crates/tasks/src/eval_field.rs`)
+is a task with no C++ counterpart; a configuration that does not name it is
+unchanged, and the consistency suite is byte-identical with it in the tree.
+It treats a 32-bit word as a row of independent small fields and scores a
+function of two inputs field by field: arguments `fn` (`xor`, `and`, `or`,
+`halfadd`, `add`), `bits` (operand width, 1 to 4), `mode` (`packed`: all
+result bits of every field in the newest output; `planes`: one result bit per
+output, over successive outputs), `thresh` and `stride`. The quality is
+max(0, 2f - 1) for the fraction f of the compared bits that are right, so a
+random output scores about zero. `environment-adder-ladder.cfg` orders eight
+reactions as rungs ending in a 2-bit adder; its threshold was raised from
+0.25 to 0.75 before any experiment, because constant and near-trivial outputs
+cleared 0.25 (measured chance levels in `ARCHITECTURE.md`). The hand-written
+`ladder-*.org` task blocks show every rung is reachable without `add` or
+`sub` in both the stock and the modular set. `default-heads-modular.org` is
+the stock ancestor with its search label adapted to six nops.
+
+## Extension beyond the C++: knockout map and reuse measures (opt-in, 2026-11-15)
+
+Accepted by the maintainer on 2026-11-15. `PrintKnockoutMap [file]` and
+`PrintReuseData [file]` (event actions with no C++ counterpart),
+`Command::KnockoutMap` of the session and the Reuse views of the desktop app
+and the terminal interface map single-site knockouts of a genome in the test
+CPU. A knockout replaces a site by the NULL instruction of `ActivateNullInst`
+in a private copy of the instruction sets (as `PrintMODESData` does) and
+compares with the unmodified genome under the same conditions: the default
+fixed test inputs, the detached world's RNG re-seeded before every run,
+resources at the unexploited level. A site is lethal, shared (loses two or
+more of the base's tasks), task (one), speed (fitness only) or neutral. The
+measures and their known weaknesses (a broken early pipeline step looks like
+reuse, redundancy hides sites) are in `ARCHITECTURE.md`. The actions observe
+only: `crates/avida/tests/knockout.rs` shows the other output byte-identical
+with and without them, in the exact mode and in the parallel mode on 1 and 4
+threads. A playback answers with a one-line reason, because a recording
+carries no instruction set, environment or configuration.
+
+## Views the C++ does not have: Ladder and arm comparison (2026-11-15)
+
+Observation only; no output of the program changes. The Ladder view (Charts
+tab, `J` in the terminal) shows per task of the environment how many
+organisms performed it over time; a rung counts as held at 1 % of the
+organisms. `avida-gui --compare DIR` and `avida-tui --compare DIR` read the
+data files of a batch (`DIR/<arm>/seed-<N>/`) and run no simulation. Their
+statistics are descriptive and always shown with n: Mann-Whitney U two-sided
+(exact permutation of the midranks up to 40 pooled values, otherwise the
+normal approximation with tie and continuity corrections) and Fisher's exact
+test two-sided.
+
 ## A test CPU's `MAX_PREY_BT` kill is carried out after the test (2026-11-13)
 
-`Inst_SetRandPFTOnce` in a test CPU that a dividing organism runs can kill
-a prey organism of the population (`MAX_PREY_BT`). The C++ kills in the
-middle of the test; the port queues the kill (`HostOp::KillCell`) and
-`World::flush_host` carries it out when the test ends. The output is the
-same because nothing between the two points may depend on the kill, and
-the port stops with `unsupported:` where something would: a kill that draws
-random numbers, a later read of the live list or of the prey and predator
-counts in the same test run, a second kill, a pick of the dividing parent,
-and a kill from a plasticity test or an event-time test.
-`crates/avida/tests/actions/gap_exp_max_prey_bt_test_cpu` pins it against
-the reference binary. The maintainer accepted this ordering on 2026-11-13.
+`Inst_SetRandPFTOnce` in a test CPU can kill a prey organism of the
+population (`MAX_PREY_BT`). The C++ kills in the middle of the test; the
+port queues the kill (`HostOp::KillCell`) and `World::flush_host` carries it
+out when the test ends, in every test whose end the world answers at once
+(`WorldHost::kill_ok`): the divide-time tests, the fitness tests,
+single-test events (`PrintDominantGenotype`, the mini-trace genome files)
+and, since 2026-11-15, the plasticity test inside an output test (flushed
+when the step ends). Until then the test world's live list and prey and
+predator counts follow each kill (swap-remove as `RemoveLiveOrg`), so later
+runs of the same test see the C++'s population. The output is the same
+because nothing between the two points reads the population. Stops: a kill
+that draws random numbers; a group-size or kaboom-flag read after a pending
+kill; a kill from a loop of tests or from the precalculated phenotype. A
+pick of the dividing parent stops because the reference binary segfaults
+there (exit by SIGSEGV on three of three seeds at the update where the port
+stops). Pinned by `gap_exp_max_prey_bt_event_test`, `_divide_kills` and
+`_plasticity` under `crates/avida/tests/actions`. The maintainer accepted
+the ordering on 2026-11-13; its extension to event-time and plasticity
+tests (2026-11-15) rests on the same argument and on byte-identical output
+in the pinned cases and six further seeds.
 
 ## `Task_Optimize` follows the reference binary's helper (2026-11-12)
 

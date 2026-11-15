@@ -137,6 +137,18 @@ fn content(
                 }
                 ui.add_space(6.0);
                 path_field(ui, state, path_input);
+                ui.add_space(6.0);
+                let r = ui
+                    .add(
+                        egui::Button::new(RichText::new("Compare runs…").color(t.text))
+                            .min_size(vec2(0.0, 30.0)),
+                    )
+                    .on_hover_text(
+                        "Pick a folder of finished or running runs (<arm>/seed-<N>/) and compare the arms across seeds",
+                    );
+                if r.clicked() {
+                    state.request(Request::PickCompareFolder);
+                }
             },
         );
     };

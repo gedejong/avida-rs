@@ -22,6 +22,10 @@ OPTIONS (before CONFIG_DIR):
                     then COLORFGBG, and assumes dark
     --play FILE     play back a recording made with --record or avida-rec,
                     instead of running a simulation
+    --compare DIR   compare the arms of a batch of runs (DIR/<arm>/seed-<N>/
+                    with the data files the runs wrote) in tables, instead of
+                    running a simulation. Tab switches summary and runs,
+                    f finished runs only, p the pair of arms, r reload
     --record FILE   record the run to FILE
     --record-every N, --record-layers LIST, --record-top N
                     what and how often to record (default: every layer, every
@@ -46,6 +50,8 @@ pub struct Cli {
     pub play: Option<PathBuf>,
     /// `--record FILE ...`: record the run.
     pub record: Option<avida_session::RecordSpec>,
+    /// `--compare DIR`: tables comparing the arms of a batch of runs.
+    pub compare: Option<PathBuf>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -61,6 +67,10 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
     let mut args: Vec<String> = args.into_iter().collect();
     // The recording options may stand anywhere before CONFIG_DIR; they are
     // taken out first so that the rest reads as before.
+    let compare = match avida_session::cli::take_option(&mut args, "--compare") {
+        Ok(c) => c.map(PathBuf::from),
+        Err(e) => return Parsed::Error(e),
+    };
     let (play, record) = match (
         avida_session::cli::take_option(&mut args, "--play"),
         avida_session::cli::take_record_options(&mut args),
@@ -115,11 +125,16 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
             _ => break,
         }
     }
+    if let Some(dir) = &compare {
+        if !dir.is_dir() {
+            return Parsed::Error(format!("{}: not a directory", dir.display()));
+        }
+    }
     let work_dir = match it.peek() {
         Some(a) if !a.starts_with('-') => PathBuf::from(it.next().unwrap_or_default()),
         _ => PathBuf::from("."),
     };
-    if !work_dir.is_dir() {
+    if compare.is_none() && !work_dir.is_dir() {
         return Parsed::Error(format!("{}: not a directory", work_dir.display()));
     }
     Parsed::Run(Cli {
@@ -129,6 +144,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
         theme,
         play,
         record,
+        compare,
     })
 }
 
@@ -242,6 +258,20 @@ mod tests {
             Parsed::Error(_)
         ));
         assert!(matches!(p(&["--play"]), Parsed::Error(_)));
+    }
+
+    #[test]
+    fn compare_takes_an_existing_folder() {
+        let Parsed::Run(c) = p(&["--compare", "/", "--colors", "16"]) else {
+            panic!()
+        };
+        assert_eq!(c.compare, Some(PathBuf::from("/")));
+        assert_eq!(c.colors, Some(ColorMode::Ansi16));
+        assert!(matches!(p(&["--compare"]), Parsed::Error(_)));
+        assert!(matches!(
+            p(&["--compare", "/no/such/dir/anywhere"]),
+            Parsed::Error(_)
+        ));
     }
 
     #[test]

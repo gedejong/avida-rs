@@ -16,6 +16,9 @@ pub struct StartupArgs {
     pub play: Option<PathBuf>,
     /// `--record FILE [--record-every N]`: record the run that is opened.
     pub record: Option<avida_session::RecordSpec>,
+    /// `--compare DIR`: a batch of runs (`<arm>/seed-<N>/`) to compare
+    /// instead of an experiment.
+    pub compare: Option<PathBuf>,
 }
 
 /// The outcome of reading the command line.
@@ -31,6 +34,7 @@ pub enum Parsed {
 pub const USAGE: &str = "\
 usage: avida-gui [CONFIG_DIR] [AVIDA_ARGS...]
        avida-gui --play FILE
+       avida-gui --compare BATCH_DIR
 
 Opens the Avida experiment in CONFIG_DIR (the folder holding avida.cfg,
 events.cfg and environment.cfg) in the desktop viewer. Without a folder
@@ -41,6 +45,12 @@ back: the map with every recorded layer, the charts and the genotype table,
 with a slider to move through it. A .avrec file dropped on the window opens
 too. --record FILE [--record-every N] [--record-layers LIST] [--record-top N]
 records the experiment as it runs.
+
+--compare BATCH_DIR opens the comparison of a finished or running batch:
+BATCH_DIR holds one folder per arm and each of those one folder per seed
+(`<arm>/seed-<N>/`, with the data files the runs wrote). It shows, across
+seeds, how far up the reward ladder each arm gets and how the arms differ in
+complexity and code reuse. Nothing is simulated.
 
 AVIDA_ARGS are passed to the world as the avida binary takes them, for
 example `-s 7 -set WORLD_X 30`.
@@ -64,6 +74,10 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
     if args.iter().any(|a| a == "-h" || a == "--help") {
         return Parsed::Help;
     }
+    let compare = match avida_session::cli::take_option(&mut args, "--compare") {
+        Ok(c) => c.map(PathBuf::from),
+        Err(e) => return Parsed::Error(e),
+    };
     let (play, record) = match (
         avida_session::cli::take_option(&mut args, "--play"),
         avida_session::cli::take_record_options(&mut args),
@@ -83,6 +97,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Parsed {
         avida_args: args,
         play,
         record,
+        compare,
     })
 }
 
@@ -144,6 +159,16 @@ mod tests {
             parse(strings(&["--play", "a", "--record", "b"])),
             Parsed::Error(_)
         ));
+    }
+
+    #[test]
+    fn compare_takes_a_folder() {
+        let Parsed::Run(a) = parse(strings(&["--compare", "runs"])) else {
+            panic!()
+        };
+        assert_eq!(a.compare, Some(PathBuf::from("runs")));
+        assert_eq!(a.dir, None);
+        assert!(matches!(parse(strings(&["--compare"])), Parsed::Error(_)));
     }
 
     #[test]

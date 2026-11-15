@@ -159,6 +159,36 @@ fn a_recording_drives_the_app_and_the_playback_keys_move_through_it() {
 }
 
 #[test]
+fn a_recording_fills_the_ladder_one_point_per_frame_up_to_the_frame_shown() {
+    let file = record("play_ladder");
+    let steps = vec![
+        Step::Until(
+            "the first frame",
+            Box::new(|a| a.frame.as_ref().is_some_and(|f| f.map.is_some()) && a.playback.is_some()),
+        ),
+        Step::Keys(">"),
+        Step::Until("the last record", Box::new(|a| index(a) == Some(3))),
+        Step::Until("the rows", Box::new(|a| a.history.len() == 4)),
+        Step::Keys("J"),
+        Step::Check(Box::new(|a, t| {
+            assert_eq!(a.screen, Screen::Ladder);
+            assert_eq!(a.ladder.len(), 4);
+            has(t, "Ladder (one point per recorded frame)");
+            has(t, "Held now:");
+            // The stock environment: NOT at the bottom, EQU at the top.
+            let at = |n: &str| t.lines().position(|l| l.contains(n)).unwrap_or(usize::MAX);
+            assert!(at("EQU") < at("NOT"), "{t}");
+        })),
+        // Back to the first frame: the ladder is rebuilt up to it.
+        Step::Keys("{"),
+        Step::Until("record 0", Box::new(|a| index(a) == Some(0))),
+        Step::Until("one point", Box::new(|a| a.ladder.len() == 1)),
+    ];
+    let run = play(&file, steps, "play_ladder");
+    assert_eq!(run.driver.app.ladder.len(), 1);
+}
+
+#[test]
 fn a_missing_or_foreign_file_is_reported_not_played() {
     let e = Driver::start_playback(Path::new("/no/such/file.avrec"), ColorMode::Mono)
         .err()

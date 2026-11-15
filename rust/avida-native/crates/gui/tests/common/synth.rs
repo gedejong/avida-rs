@@ -10,7 +10,7 @@ use avida_session::recording::{Meta, RecordingWriter};
 use avida_session::{Frame, LayerId, UpdateRow};
 use avida_viewmodel::ancestry::{layout, Node};
 use avida_viewmodel::{
-    EnvView, GenotypeCells, GenotypeRow, Header, MapFrame, TaskView, UpdateProgress,
+    EnvView, GenotypeCells, GenotypeRow, Header, MapFrame, ReactionView, TaskView, UpdateProgress,
 };
 
 /// The size and length of the synthetic run.
@@ -377,7 +377,17 @@ fn frame(spec: &Synth, all: &[Geno], u: i32, index: usize) -> Frame {
         inspect: None,
         env: EnvView {
             resources: Vec::new(),
-            reactions: Vec::new(),
+            // One reaction per task, named as the stock environment does.
+            reactions: TASKS
+                .iter()
+                .enumerate()
+                .map(|(k, n)| ReactionView {
+                    name: n.to_uppercase(),
+                    task: Some(k),
+                    value: 1.0,
+                    last_count: t_count[k],
+                })
+                .collect(),
             tasks: TASKS
                 .iter()
                 .enumerate()

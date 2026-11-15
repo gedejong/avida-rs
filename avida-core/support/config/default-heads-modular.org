@@ -1,0 +1,107 @@
+#inst_set heads_modular
+#hw_type 0
+# The stock ancestor (default-heads.org) for the heads_modular set. With six
+# nops the complement of a label rotates every nop by one (A->...->F->A), so
+# the search label is "F A" where the stock set has "C A"; the end label
+# "A B" is unchanged.
+
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-F      #
+nop-A      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+if-label   # If we're done copying....
+nop-F      #
+nop-A      #
+h-divide   #    ...divide!
+mov-head   # Otherwise, loop back to the beginning of the copy loop.
+nop-A      # End label.
+nop-B      #

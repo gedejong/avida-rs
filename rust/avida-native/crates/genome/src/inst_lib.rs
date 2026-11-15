@@ -168,6 +168,9 @@ pub struct InstLib {
     entries: Vec<InstLibEntry>,
     nop_names: Vec<String>,
     nop_mods: Vec<i32>,
+    /// Number of real nops (`nop_mods` may be padded, see
+    /// [`InstLib::with_extra_nops`]).
+    n_nops: i32,
     inst_default: i32,
     inst_null: i32,
     /// `m_namemap` keys in first-insertion order with their (last) index.
@@ -194,15 +197,34 @@ impl InstLib {
                 name_map.push((e.name().to_string(), i as i32));
             }
         }
-        let (nop_names, nop_mods) = nops.into_iter().unzip();
+        let (nop_names, nop_mods): (Vec<String>, Vec<i32>) = nops.into_iter().unzip();
+        let n_nops = nop_mods.len() as i32;
         InstLib {
             entries,
             nop_names,
             nop_mods,
+            n_nops,
             inst_default,
             inst_null,
             name_map,
         }
+    }
+
+    /// Port-only: declares library entries beyond the first ones as nops
+    /// too, each `(library index, name, nop_mod)`. `nop_mod(id)` indexes by
+    /// library index, so the table is padded with -1 up to the largest
+    /// index; `num_nops` counts the declared nops only.
+    pub fn with_extra_nops(mut self, extra: Vec<(usize, String, i32)>) -> Self {
+        for (id, name, m) in extra {
+            if self.nop_mods.len() <= id {
+                self.nop_mods.resize(id + 1, -1);
+                self.nop_names.resize(id + 1, String::new());
+            }
+            self.nop_mods[id] = m;
+            self.nop_names[id] = name;
+            self.n_nops += 1;
+        }
+        self
     }
 
     /// `GetSize()`.
@@ -260,7 +282,7 @@ impl InstLib {
 
     /// Number of entries in the NOP table.
     pub fn num_nops(&self) -> i32 {
-        self.nop_mods.len() as i32
+        self.n_nops
     }
 
     /// `GetInstDefault()`.

@@ -52,7 +52,12 @@
 //! read-only [`avida_viewmodel::capture()`], [`avida_viewmodel::update_row`]
 //! and the organism probes, through the birth log (which nothing in the run
 //! reads), and, on [`Command::SavePopulation`] only, through
-//! [`World::save_population`], which writes a file but changes no state.
+//! [`World::save_population`], which writes a file but changes no state, and
+//! on [`Command::KnockoutMap`] only, through `World::knockout_map_of_cell`,
+//! which runs the genome of one organism and its single-site knockouts in a
+//! detached test CPU (its own random stream, statistics and instruction-set
+//! copy) and so changes nothing the run reads (`tests/knockout.rs` compares
+//! the data files of a run that was asked for maps with one that was not).
 //!
 //! # Recording and playback
 //!
@@ -109,7 +114,9 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
-pub use avida_viewmodel::{Frame, LayerId, Subscription, UpdateProgress, UpdateRow};
+pub use avida_viewmodel::{
+    Frame, KnockoutMap, LayerId, ReuseMeasures, SiteClass, Subscription, UpdateProgress, UpdateRow,
+};
 pub use recording::{MapFrameCompare, Recording, RecordingError, RecordingWriter};
 
 /// Time slices run between two looks at the command channel.
@@ -218,6 +225,12 @@ pub enum Command {
     /// otherwise appended when an update ends at a multiple of the
     /// interval, and when the run finishes.)
     RecordNow,
+    /// Compute the knockout map and reuse measures of one organism's genome
+    /// in a test CPU (see `avida_world::knockout`), on the simulation
+    /// thread, and answer with [`SessionEvent::KnockoutMap`]. It costs one
+    /// test-CPU run per site of the genome, during which the run does not
+    /// advance. A playback answers with the reason it cannot.
+    KnockoutMap(KnockoutRequest),
     /// Playback only: show record number `n` (0 is the first). Out of
     /// range numbers are clamped. A simulation answers with an `Error`.
     SeekFrame(usize),
@@ -300,6 +313,31 @@ pub struct PlaybackInfo {
     /// The recorded layers, for front ends that want to say what is there.
     pub layers: Vec<LayerId>,
 }
+
+/// [`Command::KnockoutMap`]: whose genome to map.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct KnockoutRequest {
+    /// The cell the organism lives in.
+    pub cell: i32,
+    /// Its id (`cOrganism::GetID()`): the request fails when the cell no
+    /// longer holds it.
+    pub org_id: i32,
+}
+
+/// The answer to a [`Command::KnockoutMap`].
+#[derive(Clone, Debug, PartialEq)]
+pub struct KnockoutReply {
+    pub request: KnockoutRequest,
+    /// The map, or the reason there is none (one line).
+    pub result: Result<KnockoutMap, String>,
+    /// How long the test runs took.
+    pub elapsed: Duration,
+}
+
+/// Why a playback cannot map knockouts.
+pub const KNOCKOUT_PLAYBACK_REASON: &str = "A recording does not carry the instruction set, the \
+     environment and the configuration a test CPU needs, so knockouts can only be mapped in a \
+     running experiment.";
 
 /// What a [`Command::RunUntil`] waits for.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -446,6 +484,8 @@ pub enum SessionEvent {
     /// [`Command::Restart`] could not build a new world (the text `avida`
     /// would print); the old run goes on.
     RestartFailed(String),
+    /// The answer to a [`Command::KnockoutMap`].
+    KnockoutMap(Arc<KnockoutReply>),
     /// A recording to this file has begun ([`Command::Record`]).
     RecordingStarted(PathBuf),
     /// The recording ended (asked for, replaced, or by a restart) with

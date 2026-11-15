@@ -48,6 +48,18 @@ pub const DEFAULT_CONFIG: &[BundledFile] = bundled!(
     "default-gx.org",
     "instset-experimental.cfg",
     "experimental.org",
+    "instset-heads-modular.cfg",
+    "modular-subroutine.org",
+    "default-heads-modular.org",
+    "environment-adder-ladder.cfg",
+    "ladder-halfadd-planes-heads.org",
+    "ladder-halfadd-heads.org",
+    "ladder-add2-planes-heads.org",
+    "ladder-add2-heads.org",
+    "ladder-halfadd-planes-modular.org",
+    "ladder-halfadd-modular.org",
+    "ladder-add2-planes-modular.org",
+    "ladder-add2-modular.org",
 );
 
 /// The folder name a new experiment gets inside a folder that is not
@@ -145,7 +157,7 @@ mod tests {
         assert!(dir.join("default-heads.org").is_file());
         let err = create_experiment(&dir).unwrap_err();
         assert!(
-            err.contains("already has avida.cfg and 15 other files"),
+            err.contains("already has avida.cfg and 27 other files"),
             "{err}"
         );
     }

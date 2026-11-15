@@ -366,6 +366,7 @@ fn main_screens(s: &mut Shots, d: &mut Driver, tag: &str) {
         Screen::Config,
         Screen::Options,
         Screen::OpenEnded,
+        Screen::Ladder,
         Screen::Blank,
     ] {
         go(d, screen);

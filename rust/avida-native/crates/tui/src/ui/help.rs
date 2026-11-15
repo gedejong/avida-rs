@@ -157,6 +157,21 @@ mod tests {
         assert!(DEBUG_STEP_MICRO_OPS.chars().count() <= 78 - 2 - KEY_W - 1 - " (Debug)".len());
     }
 
+    /// The knockout map's key is listed under the debugger.
+    #[test]
+    fn the_reuse_key_is_in_the_help() {
+        let rows = entries(false);
+        let row = rows
+            .iter()
+            .find(|(_, t, _)| t.contains("knockout map"))
+            .expect("a help row for the knockout map");
+        assert!(
+            row.0.eq_ignore_ascii_case("v") && row.2.contains("Debug"),
+            "{row:?}"
+        );
+        assert!(row.1.chars().count() <= 78 - 2 - KEY_W - 1 - " (Debug)".len());
+    }
+
     #[test]
     fn key_labels_fit_their_column() {
         for (k, _, _) in entries(false) {

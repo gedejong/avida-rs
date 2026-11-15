@@ -17,6 +17,7 @@ pub mod actions;
 pub mod app;
 pub mod cli;
 pub mod color;
+pub mod compare;
 pub mod config_view;
 pub mod debugger;
 mod features;

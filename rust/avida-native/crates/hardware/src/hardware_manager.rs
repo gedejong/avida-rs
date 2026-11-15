@@ -36,7 +36,16 @@ pub fn cpu_inst_lib() -> Arc<InstLib> {
             ("nop-C".to_string(), 2),
         ];
         let null_inst = CPU_INST_DEFS.len() as i32 - 1;
-        Arc::new(InstLib::new(entries, nops, 0, null_inst))
+        // Port-only: nop-D/E/F (DX/EX/FX), opt-in through the set file.
+        let extra = ["nop-D", "nop-E", "nop-F"]
+            .iter()
+            .enumerate()
+            .map(|(k, n)| {
+                let id = CPU_INST_DEFS.iter().position(|d| d.name == *n).unwrap();
+                (id, n.to_string(), 3 + k as i32)
+            })
+            .collect();
+        Arc::new(InstLib::new(entries, nops, 0, null_inst).with_extra_nops(extra))
     })
     .clone()
 }

@@ -94,14 +94,14 @@ pub(crate) fn handler(method: &str) -> Option<InstFn> {
         },
         "Inst_CreateLinkByXY" => |h, _, w| {
             let xreg = h.find_modified_register(REG_BX);
-            let yreg = HardwareCpu::find_next_register(xreg);
-            let wreg = HardwareCpu::find_next_register(yreg);
+            let yreg = h.find_next_register(xreg);
+            let wreg = h.find_next_register(yreg);
             w.create_link_by_xy(h.reg(xreg), h.reg(yreg), f64::from(h.reg(wreg)));
             Ok(true)
         },
         "Inst_CreateLinkByIndex" => |h, _, w| {
             let idxreg = h.find_modified_register(REG_BX);
-            let wreg = HardwareCpu::find_next_register(idxreg);
+            let wreg = h.find_next_register(idxreg);
             w.create_link_by_index(h.reg(idxreg), f64::from(h.reg(wreg)));
             Ok(true)
         },
@@ -466,7 +466,7 @@ fn network_message(
     broadcast: bool,
 ) -> R {
     let label_reg = hw.find_modified_register(REG_BX);
-    let data_reg = HardwareCpu::find_next_register(label_reg);
+    let data_reg = hw.find_next_register(label_reg);
     let mut msg = new_message(org, world, 0);
     msg.label = hw.reg(label_reg) as u32;
     msg.data = hw.reg(data_reg) as u32;

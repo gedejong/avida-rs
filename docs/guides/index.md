@@ -28,6 +28,10 @@ Each tutorial compares two or more *arms* (variants of one experiment) over seve
 | [Streamlining](tutorial-streamlining.md) | Can selection shrink a genome to the shortest program for the task? | The stock folder. |
 | [An adder from NAND](tutorial-adder-from-nand.md) | Can evolution build addition without arithmetic instructions? | The stock folder plus new instruction set and environments. |
 
+## Experiments in progress
+
+- [Can populations evolve composed computation?](experiment-composed-computation.md) An instruction set with subroutines against the stock set on a reward ladder that ends in a 2-bit adder. The design is fixed; results follow.
+
 ## About the results quoted
 
 The observations in the tutorials come from short pilot runs by the maintainer, usually with one to four seeds per arm. They illustrate what to look for; they are not evidence. Replicate with more seeds before drawing any conclusion, and report what you find.

@@ -243,6 +243,13 @@ fn experiment_menu(ui: &mut Ui, state: &mut AppState, settings: &Settings, max_w
                 state.request(Request::PickFolder);
                 ui.close();
             }
+            if menu_item(ui, icons::ICON_COMPARE_ARROWS, "Compare runs…", "")
+                .on_hover_text("Open a folder of runs (<arm>/seed-<N>/) and compare the arms across seeds")
+                .clicked()
+            {
+                state.request(Request::PickCompareFolder);
+                ui.close();
+            }
             ui.menu_button("Open recent", |ui| {
                 if settings.recent.is_empty() {
                     ui.label(RichText::new("No recent experiments").color(t.text_weak));

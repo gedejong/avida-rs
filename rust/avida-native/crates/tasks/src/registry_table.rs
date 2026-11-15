@@ -36,6 +36,9 @@ pub enum TaskKind {
     DecLowBits,
     /// Port addition: `arith_miss`
     ArithMiss,
+    /// Port addition: `field_arith`, see `eval_field`; the parsed arguments
+    /// are in the task entry.
+    FieldArith,
     /// `Task_DontCare`
     DontCare,
     /// `Task_Not` ... `Task_Equ`: a boolean logic function by logic id.

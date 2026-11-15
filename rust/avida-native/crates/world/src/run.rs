@@ -424,6 +424,7 @@ impl World {
             Action::Phylo(a) => self.run_phylo_action(a),
             Action::A3(a) => self.run_action3(a),
             Action::Modes(a) => self.run_modes_action(a),
+            Action::Knockout(a) => self.run_knockout_action(a),
         }
     }
 

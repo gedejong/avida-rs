@@ -10,6 +10,7 @@
 
 pub mod abundance;
 pub mod commands;
+pub mod compare;
 pub mod config;
 pub mod debugger;
 pub mod export;
@@ -33,8 +34,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use avida_session::{
-    Command, ExperimentSetup, Frame, LayerId, PlaybackInfo, RecordingStatus, RunState,
-    SessionEvent, Speed, Status, Subscription, UntilOutcome, UpdateRow,
+    Command, ExperimentSetup, Frame, KnockoutRequest, LayerId, PlaybackInfo, RecordingStatus,
+    RunState, SessionEvent, Speed, Status, Subscription, UntilOutcome, UpdateRow,
 };
 
 use self::abundance::AbundanceHistory;
@@ -221,15 +222,18 @@ pub enum ChartTab {
     #[default]
     TimeSeries,
     Tasks,
+    /// The environment's reactions as a ladder of rungs over time.
+    Ladder,
     Histogram,
     Scatter,
     OpenEnded,
 }
 
 impl ChartTab {
-    pub const ALL: [ChartTab; 5] = [
+    pub const ALL: [ChartTab; 6] = [
         ChartTab::TimeSeries,
         ChartTab::Tasks,
+        ChartTab::Ladder,
         ChartTab::Histogram,
         ChartTab::Scatter,
         ChartTab::OpenEnded,
@@ -239,6 +243,7 @@ impl ChartTab {
         match self {
             ChartTab::TimeSeries => "Time series",
             ChartTab::Tasks => "Tasks",
+            ChartTab::Ladder => "Ladder",
             ChartTab::Histogram => "Histogram",
             ChartTab::Scatter => "Scatter",
             ChartTab::OpenEnded => "Open-ended",
@@ -290,6 +295,11 @@ impl SpeedSetting {
 pub enum Request {
     /// Show the native folder picker, then open the folder.
     PickFolder,
+    /// Show the native folder picker, then open the folder as a batch of
+    /// runs to compare.
+    PickCompareFolder,
+    /// Open this folder as a batch of runs to compare.
+    OpenCompare(PathBuf),
     /// Ask where to put a new experiment, write Avida's default
     /// configuration there and open it.
     NewExperiment,
@@ -382,6 +392,9 @@ pub struct AppState {
     /// Frames applied so far (for change detection).
     pub frames_applied: u64,
     pub history: RowHistory,
+    /// Organisms per task over time, for the ladder view (fed from the
+    /// same rows as `history`, so a playback fills it per recorded frame).
+    pub ladder: avida_viewmodel::LadderHistory,
     pub log: EventLog,
     pub toasts: Vec<Toast>,
     /// The error that stopped the run.
@@ -469,6 +482,7 @@ impl Default for AppState {
             frame: None,
             frames_applied: 0,
             history: RowHistory::default(),
+            ladder: avida_viewmodel::LadderHistory::default(),
             log: EventLog::default(),
             toasts: Vec::new(),
             fatal: None,
@@ -589,6 +603,7 @@ impl AppState {
         self.status = None;
         self.frame = None;
         self.history.clear();
+        self.ladder.clear();
         self.toasts.clear();
         self.fatal = None;
         self.fatal_context.clear();
@@ -670,6 +685,7 @@ impl AppState {
     /// before is stale.
     pub fn rows_reset(&mut self) {
         self.history.clear();
+        self.ladder.clear();
         self.abundance.clear();
         self.rate.clear();
         self.run_reset = true;
@@ -722,6 +738,7 @@ impl AppState {
             self.rate.record(self.now, last.update);
             self.recent_problems.clear();
         }
+        self.ladder.extend(&rows);
         self.history.extend(rows);
     }
 
@@ -848,6 +865,7 @@ impl AppState {
                 self.restarting = None;
                 self.notify(ToastKind::Error, format!("Restart failed: {e}"));
             }
+            SessionEvent::KnockoutMap(reply) => self.debugger.reuse.arrive(reply),
             SessionEvent::RecordingStarted(path) => {
                 self.notify(ToastKind::Info, format!("Recording to {}.", path.display()));
             }
@@ -1258,6 +1276,23 @@ impl AppState {
                 "The watched organism is gone; select another one to step.".to_string(),
             ),
         }
+    }
+
+    /// Asks the session for the knockout map of the watched organism's
+    /// genome (the Reuse tab); the answer arrives as an event.
+    pub fn request_knockouts(&mut self) {
+        if self.refuse_in_playback("Mapping knockouts") || self.run_state().is_none() {
+            return;
+        }
+        let (Some(cell), Some(org)) = (self.selection, self.debugger.current.as_ref()) else {
+            return;
+        };
+        let request = KnockoutRequest {
+            cell,
+            org_id: org.org_id,
+        };
+        self.debugger.reuse.pending = Some(request.org_id);
+        self.send(Command::KnockoutMap(request));
     }
 
     /// Runs until the watched organism's IP stands on a breakpoint.

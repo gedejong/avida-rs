@@ -18,6 +18,10 @@
 //! * [`open_ended`]: the MODES and phylogeny rows as small charts;
 //! * [`filter`]: organism filters for linked charts and map (conditions,
 //!   the selected subset, histogram, task, scatter and time-series data);
+//! * [`ladder`]: the environment's reactions as rungs, with each rung's
+//!   organisms over time and when it was first reached and first held;
+//! * [`compare`]: a batch of runs (`<arm>/seed-<N>/`) loaded from their data
+//!   files, with the per-seed ladder and measures and the tests between arms;
 //! * [`series`]: histograms of layer values, min/max decimation of time
 //!   series;
 //! * [`text`]: a plain-text rendering of a frame (snapshot tests, logs).
@@ -38,7 +42,9 @@
 
 pub mod ancestry;
 pub mod capture;
+pub mod compare;
 pub mod filter;
+pub mod ladder;
 pub mod legend;
 pub mod model;
 pub mod open_ended;
@@ -49,6 +55,10 @@ pub mod series;
 pub mod text;
 
 pub use ancestry::{Family, FAMILY_SLOTS};
+pub use avida_world::knockout::{
+    summary as reuse_summary, CallMeasures, CallSite, KnockoutMap, ReuseMeasures, SiteClass,
+    SiteKnockout,
+};
 pub use capture::{
     all_layers, capture, capture_with_progress, find_organism, ip_positions, ip_sites,
     newest_organism_since, probe, update_row, LINEAGE_MAX, UNCLASSIFIED,
@@ -57,6 +67,7 @@ pub use filter::{
     scatter_points, subset_row, task_counts, thin_points, Condition, Filter, Prop, ScatterPoint,
     Selection, SubsetRow,
 };
+pub use ladder::{LadderHistory, LadderPoint, LadderView, Rung, RungState, SubsetCounts};
 pub use legend::{format_number, Legend, Scale, Tick};
 pub use model::{
     mem_flags, CpuView, EnvView, Frame, GenotypeCells, GenotypeRow, GenotypeView, HeadView, Header,

@@ -1,7 +1,7 @@
 //! What the debugger, genotype, configuration and palette actions do to
 //! the [`App`].
 
-use avida_session::{Command, LayerId};
+use avida_session::{Command, KnockoutRequest, LayerId};
 
 use crate::actions::{palette_items, search, PaletteItem, PaletteState, DEBUG_STEP_MICRO_OPS};
 use crate::app::{layer_title, App, GenoView, Request, Screen, ToastKind};
@@ -38,6 +38,31 @@ impl App {
                 "The watched organism is gone or not shown yet; select another one.".to_string(),
             ),
         }
+    }
+
+    /// `v` on the debugger screen: the knockout map of the watched
+    /// organism's genome in place of the memory listing, asked for from the
+    /// session each time the view is opened (it costs one test run per
+    /// site); `v` again returns to the memory.
+    pub fn debug_reuse(&mut self) {
+        if self.debugger.reuse.show {
+            self.debugger.reuse.show = false;
+            return;
+        }
+        let (Some(cell), Some(org)) = (self.selection, self.debugger.current.as_ref()) else {
+            self.toast(
+                ToastKind::Info,
+                "No organism watched: press Enter on an occupied cell of the map.".to_string(),
+            );
+            return;
+        };
+        let request = KnockoutRequest {
+            cell,
+            org_id: org.org_id,
+        };
+        self.debugger.reuse.show = true;
+        self.debugger.reuse.pending = Some(request.org_id);
+        self.send(Command::KnockoutMap(request));
     }
 
     /// Runs until the watched organism's IP stands on a breakpoint.

@@ -541,7 +541,7 @@ pub fn unexploited_levels(resources: &[Resource], world_x: i32, world_y: i32) ->
 }
 
 /// The NULL instruction of a set that `ActivateNullInst` has run on.
-fn null_of(set: &InstSet) -> Option<Instruction> {
+pub(crate) fn null_of(set: &InstSet) -> Option<Instruction> {
     let null = set.inst_lib().inst_null();
     (0..set.size())
         .map(Instruction::new)

@@ -19,6 +19,7 @@ use egui::{
 };
 
 use crate::cli::StartupArgs;
+use crate::model::compare::CompareState;
 use crate::model::export::{
     charts_file_name, crop_rgba, csv_file_name, export_scale, genotypes_csv, genotypes_file_name,
     map_file_name, png_bytes, rows_csv,
@@ -63,6 +64,9 @@ pub struct AvidaApp {
     exports: Vec<ExportJob>,
     /// A PNG of the charts tab on its way (see [`ChartShot`]).
     chart_shot: Option<ChartShot>,
+    /// The comparison of a batch of runs, shown instead of the experiment
+    /// while it is open.
+    compare: Option<CompareState>,
 }
 
 /// An export written on a helper thread.
@@ -122,8 +126,11 @@ impl AvidaApp {
             dialog_answer: None,
             exports: Vec::new(),
             chart_shot: None,
+            compare: None,
         };
-        if let Some(file) = startup.play {
+        if let Some(dir) = startup.compare {
+            app.open_compare(dir);
+        } else if let Some(file) = startup.play {
             app.pending_record = None;
             app.open_playback(file);
         } else if let Some(dir) = startup.dir {
@@ -216,6 +223,25 @@ impl AvidaApp {
             args,
         };
         self.spawn_opening(move |wake| Session::spawn_with_wake(config, wake));
+    }
+
+    /// Opens a folder of runs (`<arm>/seed-<N>/`) in the comparison screen.
+    /// A folder that cannot be read leaves what was on screen and says why.
+    pub fn open_compare(&mut self, dir: PathBuf) {
+        let dir = std::path::absolute(&dir).unwrap_or(dir);
+        match CompareState::load(&dir) {
+            Ok(c) => self.compare = Some(c),
+            Err(e) => self.state.notify(ToastKind::Error, e),
+        }
+    }
+
+    /// The comparison screen's state, when it is open.
+    pub fn compare(&self) -> Option<&CompareState> {
+        self.compare.as_ref()
+    }
+
+    pub fn compare_mut(&mut self) -> Option<&mut CompareState> {
+        self.compare.as_mut()
     }
 
     /// Opens a recording (`--play FILE`, or a `.avrec` file dropped on the
@@ -582,6 +608,12 @@ impl AvidaApp {
                         self.open(dir);
                     }
                 }
+                Request::PickCompareFolder => {
+                    if let Some(dir) = self.pick_folder("Open a folder of runs to compare") {
+                        self.open_compare(dir);
+                    }
+                }
+                Request::OpenCompare(dir) => self.open_compare(dir),
                 Request::NewExperiment | Request::CreateExperimentIn(_) => {
                     let target = if let Request::CreateExperimentIn(dir) = request {
                         dir
@@ -891,6 +923,37 @@ impl AvidaApp {
         }
     }
 
+    /// The comparison screen, in place of the start screen or the
+    /// workspace.
+    fn compare_screen(&mut self, ui: &mut egui::Ui) {
+        let Some(state) = self.compare.as_mut() else {
+            return;
+        };
+        let out = crate::ui::compare::show(ui, state);
+        let escape = ui
+            .ctx()
+            .input_mut(|i| i.consume_key(Modifiers::NONE, Key::Escape));
+        if out.close || escape {
+            self.compare = None;
+        }
+        if out.reload {
+            if let Some(c) = self.compare.as_mut() {
+                match c.reload() {
+                    Ok(()) => self
+                        .state
+                        .toast(ToastKind::Info, "Read the folder again.".to_string()),
+                    Err(e) => self.state.notify(ToastKind::Error, e),
+                }
+            }
+        }
+        if out.open_other {
+            self.state.request(Request::PickCompareFolder);
+        }
+        if let Some(text) = out.copy {
+            self.state.request(Request::Copy(text));
+        }
+    }
+
     fn workspace(&mut self, ui: &mut egui::Ui) {
         let t = Tokens::of(ui);
         Panel::top("top-bar")
@@ -1035,6 +1098,12 @@ impl eframe::App for AvidaApp {
         self.shortcuts(&ctx);
         self.refresh_map(&ctx);
         self.state.chart_area = None;
+        if self.compare.is_some() {
+            self.compare_screen(ui);
+            overlays::toasts(&ctx, &self.state);
+            self.handle_requests(&ctx);
+            return;
+        }
         match self.state.phase {
             Phase::Start | Phase::Opening => start::show(
                 ui,

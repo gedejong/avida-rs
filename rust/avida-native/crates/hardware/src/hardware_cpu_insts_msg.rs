@@ -67,7 +67,7 @@ pub(crate) fn handler(method: &str) -> Option<InstFn> {
         },
         "Inst_FlashInfo" => |h, _, _| {
             let bx = h.find_modified_register(REG_BX);
-            let cx = HardwareCpu::find_next_register(bx);
+            let cx = h.find_next_register(bx);
             if h.flash_info.0 > 0 {
                 h.set_reg(bx, h.flash_info.0 as i32);
                 h.set_reg(cx, h.cycle_counter.wrapping_sub(h.flash_info.1) as i32);
@@ -247,7 +247,7 @@ fn send_message(
     message_type: i32,
 ) -> R {
     let label_reg = hw.find_modified_register(REG_BX);
-    let data_reg = HardwareCpu::find_next_register(label_reg);
+    let data_reg = hw.find_next_register(label_reg);
     let mut msg = new_message(org, world, message_type);
     msg.label = hw.reg(label_reg) as u32;
     msg.data = hw.reg(data_reg) as u32;
@@ -262,7 +262,7 @@ fn broadcast_x(
     depth: i32,
 ) -> R {
     let label_reg = hw.find_modified_register(REG_BX);
-    let data_reg = HardwareCpu::find_next_register(label_reg);
+    let data_reg = hw.find_next_register(label_reg);
     let mut msg = new_message(org, world, 0);
     msg.label = hw.reg(label_reg) as u32;
     msg.data = hw.reg(data_reg) as u32;
@@ -312,7 +312,7 @@ pub(crate) fn inst_retrieve_message(
         return Ok(false);
     };
     let label_reg = hw.find_modified_register(REG_BX);
-    let data_reg = HardwareCpu::find_next_register(label_reg);
+    let data_reg = hw.find_next_register(label_reg);
     hw.set_reg(label_reg, msg.label as i32);
     hw.set_reg(data_reg, msg.data as i32);
     if world.config().net_log_retmessages != 0 {

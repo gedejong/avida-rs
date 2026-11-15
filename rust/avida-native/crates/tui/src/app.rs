@@ -56,13 +56,15 @@ pub enum Screen {
     Options,
     /// The open-endedness measures (MODES and the genealogy of the genotypes) over time.
     OpenEnded,
+    /// The environment's reactions as a ladder of rungs over time.
+    Ladder,
     /// The viewer's blank screen: nothing drawn but the status line.
     Blank,
 }
 
 impl Screen {
     /// The screens of the tab strip, in `Tab` order.
-    pub const TABS: [Screen; 12] = [
+    pub const TABS: [Screen; 13] = [
         Screen::Map,
         Screen::Stats,
         Screen::Charts,
@@ -75,6 +77,7 @@ impl Screen {
         Screen::Config,
         Screen::Options,
         Screen::OpenEnded,
+        Screen::Ladder,
     ];
 
     pub fn title(self) -> &'static str {
@@ -91,6 +94,7 @@ impl Screen {
             Screen::Config => "Cfg",
             Screen::Options => "Opts",
             Screen::OpenEnded => "Open",
+            Screen::Ladder => "Ladder",
             Screen::Blank => "Blank",
         }
     }
@@ -110,6 +114,7 @@ impl Screen {
             Screen::Config => 'F',
             Screen::Options => 'O',
             Screen::OpenEnded => 'K',
+            Screen::Ladder => 'J',
             Screen::Blank => 'B',
         }
     }
@@ -280,6 +285,11 @@ pub struct App {
     /// Frames applied so far.
     pub frames_applied: u64,
     pub history: RowHistory,
+    /// Organisms per task over time, for the ladder screen (fed from the
+    /// same rows as `history`, so a playback fills it per recorded frame).
+    pub ladder: avida_viewmodel::LadderHistory,
+    /// The rung chosen on the ladder screen (0 is the bottom rung).
+    pub ladder_sel: usize,
     pub log: EventLog,
     pub toasts: Vec<Toast>,
     /// The error that stopped the run.
@@ -397,6 +407,8 @@ impl App {
             frame: None,
             frames_applied: 0,
             history: RowHistory::default(),
+            ladder: avida_viewmodel::LadderHistory::default(),
+            ladder_sel: 0,
             log: EventLog::default(),
             toasts: Vec::new(),
             fatal: None,
@@ -523,6 +535,7 @@ impl App {
     /// history up to the frame shown.
     pub fn reset_rows(&mut self) {
         self.history = RowHistory::default();
+        self.ladder.clear();
         self.rate = RateMeter::default();
         self.abundance.clear();
     }
@@ -560,6 +573,7 @@ impl App {
         if let Some(last) = rows.last() {
             self.rate.record(self.now, last.update);
         }
+        self.ladder.extend(&rows);
         self.history.extend(rows);
     }
 
@@ -662,6 +676,7 @@ impl App {
                 self.restarting = None;
                 self.notify(ToastKind::Error, format!("Restart failed: {e}"));
             }
+            SessionEvent::KnockoutMap(reply) => self.debugger.reuse.arrive(reply),
             SessionEvent::RecordingStarted(path) => {
                 self.log
                     .push(LogKind::Info, format!("Recording to {}", path.display()));
@@ -796,6 +811,32 @@ impl App {
         let empty = avida_viewmodel::OpenEnded::default();
         let data = self.frame.as_ref().map_or(&empty, |f| &f.open_ended);
         avida_viewmodel::open_ended::build(data, &sources)
+    }
+
+    /// The ladder for the newest rows and frame, with the filter's subset
+    /// when one is set.
+    pub fn ladder_view(&self) -> avida_viewmodel::LadderView {
+        let empty = avida_viewmodel::EnvView::default();
+        let frame = self.frame.as_deref();
+        let env = frame.map_or(&empty, |f| &f.env);
+        let sub = self
+            .filtering
+            .selection()
+            .zip(frame.and_then(|f| f.map.as_ref()))
+            .map(|(s, map)| {
+                (
+                    avida_viewmodel::task_counts(map, Some(&s.mask)),
+                    s.matched as u32,
+                )
+            });
+        avida_viewmodel::ladder::build(
+            &self.ladder,
+            env,
+            sub.as_ref().map(|(c, m)| avida_viewmodel::SubsetCounts {
+                per_task: c,
+                matched: *m,
+            }),
+        )
     }
 
     pub fn subscription(&self) -> Subscription {
@@ -1147,6 +1188,8 @@ impl App {
         self.frame = None;
         self.frames_applied = 0;
         self.history = RowHistory::default();
+        self.ladder.clear();
+        self.ladder_sel = 0;
         self.rate = RateMeter::default();
         self.fatal = None;
         self.selection = None;

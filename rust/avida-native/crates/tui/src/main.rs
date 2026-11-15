@@ -43,6 +43,16 @@ fn main() -> ExitCode {
     let colors = cli.colors.unwrap_or_else(ColorMode::detect);
     avida_tui::color::set_theme(cli.theme.unwrap_or_else(Background::detect), colors);
 
+    if let Some(dir) = &cli.compare {
+        return match avida_tui::compare::run(dir) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(e) => {
+                eprintln!("avida-tui: {e}");
+                ExitCode::from(1)
+            }
+        };
+    }
+
     // Build the world before taking over the terminal, so a configuration
     // error prints as ordinary text.
     let started = match &cli.play {

@@ -30,7 +30,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     if app.debugger.current.is_none() {
         let text = match (app.selection, app.world_size()) {
             _ if app.playback.is_some() => {
-                " The debugger needs a simulation: a playback has no organisms to step. Run the experiment itself to debug one.".to_string()
+                format!(" The debugger needs a simulation: a playback has no organisms to step. Run the experiment itself to debug one. {}", avida_session::KNOCKOUT_PLAYBACK_REASON)
             }
             (Some(c), Some((w, _))) => format!(
                 " Cell ({},{}) is empty. Press Esc, move the cursor to an organism and press Enter (or C for the next one).",
@@ -72,6 +72,15 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         let [t, m] = Layout::vertical([Constraint::Length(h), Constraint::Min(3)]).areas(main);
         (t, m)
     };
+    if app.debugger.reuse.show {
+        // The knockout map takes the whole width in place of the CPU and
+        // the memory.
+        super::reuse::draw(f, app, main);
+        if status_h > 0 {
+            draw_status(f, app, status);
+        }
+        return;
+    }
     let d = &app.debugger;
     if let Some(org) = d.current.as_ref() {
         draw_cpu(f, d, org, cpu_area, wide);

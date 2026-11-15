@@ -1,0 +1,102 @@
+#inst_set heads_default
+#hw_type 0
+# ADD2_PLANES (field_arith:fn=add:bits=2:mode=planes) for the stock heads set.
+# Reads three inputs first (every IO that outputs also reads one; after the
+# three output IOs the two newest inputs at the last output are the first, a,
+# and the second, b). Three outputs, read at bit 0 of every 3-bit field: u = a
+# ^ b; (u >> 1) ^ g; (g >> 1) | (g & (u >> 1)) with g = a & b. No mask and no
+# constant is needed.
+# 90 instructions in the genome (66 without the no-op modifiers; no add, no sub).
+# An idle trap (get-head, set-flow, mov-head) follows the task so that it runs once; a
+# replicator would have its copy loop there.
+#
+IO         # BX = first input a
+push       # stash it
+IO         # BX = second input b
+push       # stash it
+IO         # BX = third input; with the next two outputs the newest two inputs at the last output are a and b
+pop        # CX = b
+nop-C
+pop        # BX = a
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+pop        # CX = t0
+nop-C
+push       # stack: x ^ y
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+push       # stack: x ^ y, x & y
+pop        # CX = g = a & b
+nop-C
+pop        # BX = u = a ^ b
+push       # keep u
+IO         # output plane 0: u
+pop        # BX = u
+shift-r    # BX = u >> 1 = v
+push       # save g
+nop-C
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+pop        # CX = t0
+nop-C
+push       # stack: x ^ y
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+push       # stack: x ^ y, x & y
+pop        # CX = v & g
+nop-C
+pop        # BX = v ^ g
+IO         # output plane 1: (u >> 1) ^ g
+pop        # BX = g
+shift-r    # BX = w = g >> 1
+push       # keep w
+push       # BX = v & g
+nop-C
+pop        # 
+nand       # BX = ~(v & g)
+push       # keep it
+pop        # AX = ~(v & g)
+nop-A
+pop        # BX = w
+push       # CX = w
+pop        # 
+nop-C
+nand       # BX = ~w
+push       # CX = ~(v & g)
+nop-A
+pop        # 
+nop-C
+nand       # BX = ~(~w & ~(v & g)) = w | (v & g)
+IO         # output plane 2: (g >> 1) | (v & g)
+get-head   # trap: CX = own position
+set-flow   # flow head = here
+mov-head   # back to get-head: idle forever
+nop-A      # explicit head IP: keeps mov-head from taking a following label as its head

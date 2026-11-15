@@ -16,7 +16,7 @@ use avida_config::config::{find_entry, Config};
 use avida_config::init_file::InitFile;
 use avida_viewmodel::{
     all_layers, capture_with_progress, find_organism, ip_positions, ip_sites, probe, update_row,
-    LayerId, OrgProbe, Subscription, UpdateProgress,
+    KnockoutMap, LayerId, OrgProbe, Subscription, UpdateProgress,
 };
 use avida_world::births::Birth;
 use avida_world::run::{Stepper, WatchedStep};
@@ -24,9 +24,9 @@ use avida_world::world::World;
 
 use crate::recording::{Meta, RecordingWriter};
 use crate::{
-    lock, Command, EventLine, ExperimentSetup, RecordSpec, RecordingStatus, RunState, RunUntil,
-    SessionConfig, SessionEvent, Setting, Shared, Speed, Status, StopWhen, UntilOutcome, WakeFn,
-    MIN_FRAME_INTERVAL, SLICE_BATCH,
+    lock, Command, EventLine, ExperimentSetup, KnockoutReply, KnockoutRequest, RecordSpec,
+    RecordingStatus, RunState, RunUntil, SessionConfig, SessionEvent, Setting, Shared, Speed,
+    Status, StopWhen, UntilOutcome, WakeFn, MIN_FRAME_INTERVAL, SLICE_BATCH,
 };
 
 /// The text of a panic payload.
@@ -301,6 +301,9 @@ struct Sim {
     follow: bool,
     /// The recording in progress.
     recorder: Option<Recorder>,
+    /// Knockout maps asked for in the middle of an update of the parallel
+    /// mode.
+    knockout_queue: Vec<KnockoutRequest>,
 }
 
 /// A recording in progress: frames are captured between updates, with a
@@ -346,6 +349,7 @@ impl Sim {
             until_ended: None,
             follow: false,
             recorder: None,
+            knockout_queue: Vec::new(),
         }
     }
 
@@ -445,11 +449,73 @@ impl Sim {
             Command::Record(spec) => self.start_recording(spec),
             Command::StopRecording => self.stop_recording(),
             Command::RecordNow => self.record_now(),
+            Command::KnockoutMap(request) => self.knockout(request),
             Command::SeekFrame(_) => self.push_event(SessionEvent::Error(
                 "SeekFrame works in a playback of a recording, not in a simulation".to_string(),
             )),
         }
         Flow::Continue
+    }
+
+    /// `Command::KnockoutMap`. The test runs only read the world (see
+    /// `avida_world::knockout_run`); in the parallel mode they wait for the
+    /// end of the update, where the events run too.
+    fn knockout(&mut self, request: KnockoutRequest) {
+        if self.stepper.in_update() && self.stepper.parallel_stats().is_some() {
+            if self.mode == RunState::Running {
+                self.knockout_queue.push(request);
+            } else {
+                self.reply_knockout(
+                    request,
+                    Err(
+                        "In the parallel mode the map is computed between updates: finish the \
+                         update first."
+                            .to_string(),
+                    ),
+                    Duration::ZERO,
+                );
+            }
+            return;
+        }
+        self.compute_knockout(request);
+    }
+
+    fn compute_knockout(&mut self, request: KnockoutRequest) {
+        if self.poisoned {
+            self.reply_knockout(
+                request,
+                Err("A panic left the world in an unknown state.".to_string()),
+                Duration::ZERO,
+            );
+            return;
+        }
+        let started = Instant::now();
+        let world = &mut self.world;
+        let result = catch_unwind(AssertUnwindSafe(|| {
+            world.knockout_map_of_cell(request.cell, request.org_id)
+        }))
+        .unwrap_or_else(|p| Err(format!("panic: {}", panic_message(p.as_ref()))));
+        self.reply_knockout(request, result, started.elapsed());
+    }
+
+    fn reply_knockout(
+        &mut self,
+        request: KnockoutRequest,
+        result: Result<KnockoutMap, String>,
+        elapsed: Duration,
+    ) {
+        self.push_event(SessionEvent::KnockoutMap(Arc::new(KnockoutReply {
+            request,
+            result,
+            elapsed,
+        })));
+    }
+
+    /// The requests that waited for the end of an update.
+    fn serve_knockouts(&mut self) {
+        for request in std::mem::take(&mut self.knockout_queue) {
+            self.compute_knockout(request);
+        }
     }
 
     /// `Command::Restart`: a new world in the same working directory, or
@@ -899,6 +965,7 @@ impl Sim {
             Ok(row) => {
                 lock(&self.shared.rows).push(row);
                 self.record_frame(false);
+                self.serve_knockouts();
                 // `Avida2Driver::Run` leaves its loop here when the
                 // population died out; `begin_update` would only say so.
                 if self.world.done {
