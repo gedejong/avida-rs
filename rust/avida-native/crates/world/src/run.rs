@@ -549,6 +549,7 @@ impl World {
         let genome = Genome::from_string(&self.systematics.property(bg, "genome").string_value());
         let update = self.stats.update();
         let mut df = self.out.create_with_path(&filename)?;
+        self.host.kill_ok = true;
         let result = {
             let mut tw = make_test_world(
                 &self.cfg,
@@ -567,6 +568,7 @@ impl World {
                 )
             })
         };
+        self.host.kill_ok = false;
         self.flush_host();
         result
     }

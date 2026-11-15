@@ -115,10 +115,15 @@ pub struct WorldHost {
     /// may run a test CPU (a divide, a fitness test) has its state at hand:
     /// the test CPU's view of the live organisms needs it.
     pub running_forage_target: Option<(avida_hardware::organism::OrgUid, i32)>,
-    /// Set while a test CPU runs that the world flushes at once
-    /// (`flush_host`, right after the divide-time tests), so that a kill the
-    /// test asks for can wait until it ends.
-    pub kill_in_test_ok: bool,
+    /// Set while a test CPU runs whose end the world answers at once: it
+    /// carries out the kills the test asked for (`flush_host`) before
+    /// anything else reads the population. The divide-time tests, the
+    /// fitness tests, the tests of the events that make a single test, and
+    /// a plasticity test (flushed at the end of the step) are such. A test
+    /// CPU without it that asks for a kill stops the run: loops of tests,
+    /// and the precalculated phenotype of a birth, read the population
+    /// between tests or flush late.
+    pub kill_ok: bool,
     /// The C library's `rand()`, shared by the whole process
     /// (`Task_ConsumePublicGood`, `UpdateRandomResources`).
     pub libc_rand: avida_tasks::LibcRand,
@@ -347,6 +352,8 @@ impl WorldHost {
         Self::apply_cleared_kaboom(&mut self.plast_kaboom_cells, &self.pending[from..]);
         std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
         let first_op = self.pending.len();
+        // The kills this test asks for are carried out when the step ends.
+        let outer_kill_ok = std::mem::replace(&mut self.kill_ok, true);
         self.cur_cell = -1;
         let trials = test.config.genotype_phenplast_calc;
         let own_kaboom = test.own_kaboom;
@@ -373,6 +380,7 @@ impl WorldHost {
             PhenPlastGenotype::new(&mut tw, &svc.genome, trials, &mut info).map(|pp| pp.summary())
         };
         self.cur_cell = saved_cell;
+        self.kill_ok = outer_kill_ok;
         // A `consume-public-good` of a test CPU cleared the tested
         // organism's own flag (`ClearKaboomExecuted()` on the live
         // organism); the evaluator writes it back.
@@ -574,6 +582,12 @@ impl TaskWorld for WorldHost {
     }
 
     fn number_of_organisms_in_group(&mut self, group_id: i32) -> i32 {
+        if self.population_kill_pending() {
+            self.unsupported(
+                "a group's size read after a MAX_PREY_BT kill from the same test CPU run \
+                 (C++: the victim has left its group)",
+            );
+        }
         self.group_sizes.get(&group_id).copied().unwrap_or(0)
     }
     fn world_x(&self) -> i32 {
@@ -605,6 +619,12 @@ impl TaskWorld for WorldHost {
     }
     /// From [`WorldHost::snapshot_kaboom_cells`].
     fn cell_kaboom_executed(&self, cell_id: i32) -> Option<bool> {
+        if self.population_kill_pending() {
+            self.unsupported_ref(
+                "consume-public-good after a MAX_PREY_BT kill from the same test CPU run \
+                 (C++: the victim's cell is empty)",
+            );
+        }
         match self.kaboom_cells.iter().find(|&&(c, _)| c == cell_id) {
             Some((_, KaboomCell::Empty)) => None,
             Some((_, KaboomCell::Occupied(flag))) => Some(*flag),
@@ -712,21 +732,17 @@ impl TestCpuHost for WorldHost {
     ) -> Result<(), String> {
         const WHERE: &str = "(C++: cHardwareExperimental.cc:cHardwareExperimental::\
                              Inst_SetRandPFTOnce)";
-        if !self.kill_in_test_ok {
+        if !self.kill_ok {
             return Err(format!(
                 "unsupported: a MAX_PREY_BT kill of a population organism from a test CPU \
-                 outside a divide-time test {WHERE}"
+                 whose end the world does not answer at once (a loop of tests, a precalculated \
+                 phenotype) {WHERE}"
             ));
         }
         if self.running_forage_target.is_some_and(|(u, _)| u == uid) {
             return Err(format!(
                 "unsupported: a MAX_PREY_BT kill of the dividing organism from its own \
                  divide-time test {WHERE}"
-            ));
-        }
-        if self.population_kill_pending() {
-            return Err(format!(
-                "unsupported: a second MAX_PREY_BT kill from one test CPU run {WHERE}"
             ));
         }
         self.pending.push(HostOp::KillCell(cell, uid));

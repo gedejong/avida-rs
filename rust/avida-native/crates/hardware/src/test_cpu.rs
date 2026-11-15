@@ -98,6 +98,9 @@ pub struct TestWorldCounts {
     pub num_pred: i32,
     /// `cPopulation::GetNumTopPredOrganisms()`
     pub num_top_pred: i32,
+    /// Whether the population keeps those counts (`PRED_PREY_SWITCH` of -2
+    /// or above -1): a kill then lowers the count of the victim's class.
+    pub track_classes: bool,
     /// `SumCreatureAge().Average()`
     pub creature_age_mean: f64,
     /// `SumCreatureAge().StdDeviation()`
@@ -793,8 +796,8 @@ pub struct TestCpuInterface<'a> {
     tot_creatures: i32,
     sense_size: usize,
     group_attack_inst_count: &'a dyn Fn(&str) -> usize,
-    counts: TestWorldCounts,
-    live_orgs: Option<&'a [(OrgUid, i32, Option<i32>)]>,
+    counts: &'a mut TestWorldCounts,
+    live_orgs: Option<&'a mut Vec<(OrgUid, i32, Option<i32>)>>,
     analyze_mode: bool,
     org_fault_reporting: bool,
     verbosity: i32,
@@ -827,8 +830,8 @@ impl<'a> TestCpuInterface<'a> {
             tot_creatures: w.tot_creatures,
             sense_size: w.sense_size,
             group_attack_inst_count: w.group_attack_inst_count,
-            counts: w.counts,
-            live_orgs: w.live_orgs.as_deref(),
+            counts: &mut w.counts,
+            live_orgs: w.live_orgs.as_mut(),
             analyze_mode: w.analyze_mode,
             org_fault_reporting: w.org_fault_reporting,
             verbosity: w.verbosity,
@@ -843,22 +846,6 @@ impl<'a> TestCpuInterface<'a> {
 
     fn io_mut(&mut self) -> &mut TestCpuIo {
         self.host.io
-    }
-}
-
-impl TestCpuInterface<'_> {
-    /// The counts this world snapshotted are the C++'s only while no
-    /// population organism has died during the run.
-    fn population_counts_current(&self) -> Result<(), String> {
-        if self.host.inner.population_kill_pending() {
-            return Err(
-                "unsupported: the predator or prey count read after a MAX_PREY_BT kill from the \
-                 same test CPU run (C++: cStats::GetNumPreyCreatures asks the population, which \
-                 has lost the organism the kill took)"
-                    .to_string(),
-            );
-        }
-        Ok(())
     }
 }
 
@@ -963,15 +950,7 @@ impl OrgInterface for TestCpuInterface<'_> {
     /// it for the test. The organism whose step runs the test is out of
     /// reach; so is the population when nothing was gathered.
     fn live_org_forage_targets(&self) -> Result<Vec<(OrgUid, i32, Option<i32>)>, String> {
-        if self.host.inner.population_kill_pending() {
-            return Err(
-                "unsupported: a second read of the live organisms after a MAX_PREY_BT kill from \
-                 the same test CPU run (C++: cHardwareExperimental.cc:cHardwareExperimental::\
-                 Inst_SetRandPFTOnce; the list the test world holds is the one before the kill)"
-                    .to_string(),
-            );
-        }
-        match self.live_orgs {
+        match self.live_orgs.as_deref() {
             Some(orgs) if orgs.iter().all(|o| o.2.is_some()) => Ok(orgs.to_vec()),
             _ => Err(
                 "unsupported: the population's live organisms from a test CPU run by a \
@@ -1165,7 +1144,24 @@ impl OrgInterface for TestCpuInterface<'_> {
     fn die(&mut self, _org: &mut OrgState) {}
     fn kill_cell_id(&mut self, _org: &mut OrgState, _target: i32) {}
     fn kill_population_org(&mut self, uid: OrgUid, cell: i32) -> Result<(), String> {
-        self.host.inner.kill_population_org(uid, cell)
+        self.host.inner.kill_population_org(uid, cell)?;
+        // The population the test sees goes on without the victim, as the
+        // C++'s does: `RemoveLiveOrg` swaps it with the last organism of
+        // the list, and the head counts drop by its class.
+        if let Some(list) = self.live_orgs.as_deref_mut() {
+            if let Some(i) = list.iter().position(|e| e.0 == uid) {
+                let (_, _, ft) = list.swap_remove(i);
+                if self.counts.track_classes {
+                    match ft {
+                        Some(ft) if ft > -2 => self.counts.num_prey -= 1,
+                        Some(-2) => self.counts.num_pred -= 1,
+                        Some(_) => self.counts.num_top_pred -= 1,
+                        None => {}
+                    }
+                }
+            }
+        }
+        Ok(())
     }
     fn kaboom(&mut self, _org: &mut OrgState, _distance: i32) {}
     fn kaboom_effect(&mut self, _org: &mut OrgState, _distance: i32, _effect: f64) {}
@@ -1556,17 +1552,14 @@ impl OrgInterface for TestCpuInterface<'_> {
     /// The C++ test CPU reads the world's statistics, which ask the
     /// population (empty in analyze mode).
     fn stats_num_prey_creatures(&self) -> Result<i32, String> {
-        self.population_counts_current()?;
         Ok(self.counts.num_prey)
     }
     /// As [`Self::stats_num_prey_creatures`]: top predators plus predators.
     fn stats_num_total_pred_creatures(&self) -> Result<i32, String> {
-        self.population_counts_current()?;
         Ok(self.counts.num_top_pred + self.counts.num_pred)
     }
     /// As [`Self::stats_num_prey_creatures`]: predators, not top predators.
     fn stats_num_pred_creatures(&self) -> Result<i32, String> {
-        self.population_counts_current()?;
         Ok(self.counts.num_pred)
     }
 }

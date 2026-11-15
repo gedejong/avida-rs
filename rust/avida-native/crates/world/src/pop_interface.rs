@@ -285,6 +285,7 @@ impl OrgInterface for PopulationInterface<'_> {
                     num_prey: w.pop.num_prey_organisms,
                     num_pred: w.pop.num_pred_organisms,
                     num_top_pred: w.pop.num_top_pred_organisms,
+                    track_classes: w.cfg.pred_prey_switch == -2 || w.cfg.pred_prey_switch > -1,
                     creature_age_mean: w.stats.sum_creature_age.average(),
                     creature_age_stddev: w.stats.sum_creature_age.std_deviation(),
                 },
@@ -323,9 +324,7 @@ impl OrgInterface for PopulationInterface<'_> {
             return 0.0;
         };
         self.w.host.running_forage_target = Some((org.uid, org.forage_target));
-        self.w.host.kill_in_test_ok = true;
         let fitness = self.w.genome_test_metrics(g).map_or(0.0, |m| m.fitness);
-        self.w.host.kill_in_test_ok = false;
         self.w.host.running_forage_target = None;
         fitness
     }
@@ -351,7 +350,7 @@ impl OrgInterface for PopulationInterface<'_> {
     fn test_offspring(&mut self, parent: &OrgState, genome: &Genome) -> OffspringTest {
         let w = &mut *self.w;
         w.host.running_forage_target = Some((parent.uid, parent.forage_target));
-        w.host.kill_in_test_ok = true;
+        w.host.kill_ok = true;
         let result = {
             let mut tw = make_test_world(
                 &w.cfg,
@@ -366,7 +365,7 @@ impl OrgInterface for PopulationInterface<'_> {
             );
             test_cpu::test_offspring(&mut tw, genome)
         };
-        w.host.kill_in_test_ok = false;
+        w.host.kill_ok = false;
         w.host.running_forage_target = None;
         w.flush_host();
         match result {

@@ -1,0 +1,2 @@
+base avatars
+args -s 17

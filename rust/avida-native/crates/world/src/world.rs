@@ -648,6 +648,7 @@ pub(crate) fn make_test_world<'a>(
         num_prey: pop.num_prey_organisms,
         num_pred: pop.num_pred_organisms,
         num_top_pred: pop.num_top_pred_organisms,
+        track_classes: cfg.pred_prey_switch == -2 || cfg.pred_prey_switch > -1,
         creature_age_mean: stats.sum_creature_age.average(),
         creature_age_stddev: stats.sum_creature_age.std_deviation(),
     };

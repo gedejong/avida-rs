@@ -884,6 +884,7 @@ impl World {
         let update = self.stats.update();
         let mut df = self.out.create_with_path(filename)?;
         let mut rng = AvidaRng::new(0);
+        self.host.kill_ok = true;
         let result = {
             let mut tw = make_test_world(
                 &self.cfg,
@@ -900,6 +901,7 @@ impl World {
                 cpu.print_genome(&mut tw, genome, &mut df, filename, update, false, 0, -1, -1)
             })
         };
+        self.host.kill_ok = false;
         self.flush_host();
         result
     }

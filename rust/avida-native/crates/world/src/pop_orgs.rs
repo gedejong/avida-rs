@@ -148,6 +148,7 @@ impl World {
             ..
         } = self;
         let mut err = None;
+        let outer_kill_ok = std::mem::replace(&mut host.kill_ok, true);
         let metrics = systematics
             .genome_test_metrics(g, |genome| {
                 let mut tw = make_test_world(
@@ -179,6 +180,7 @@ impl World {
                 }
             })
             .cloned();
+        host.kill_ok = outer_kill_ok;
         if let Some(e) = err {
             let mut f = fatal.borrow_mut();
             if f.is_none() {
