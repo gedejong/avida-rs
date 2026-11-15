@@ -1,7 +1,8 @@
 //! Drives the real binary in a pseudo-terminal (`tests/pty_driver.py`, which
 //! needs only Python's standard library) and checks start-up, a few keys and
 //! that the terminal is given back on every way out. Skips, with a note on
-//! stderr, when `python3` or a pty is not available.
+//! stderr, when `python3` or a pty is not available, or when
+//! `AVIDA_SKIP_PTY_TESTS` is set.
 
 mod common;
 
@@ -9,6 +10,11 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn run(scenario: &str) -> Option<String> {
+    // The scenarios are timing-sensitive; a shared CI runner sets this.
+    if std::env::var_os("AVIDA_SKIP_PTY_TESTS").is_some() {
+        eprintln!("skipping the pty test: AVIDA_SKIP_PTY_TESTS is set");
+        return None;
+    }
     let dir: PathBuf = common::fresh_config(&format!("pty-{scenario}"));
     let driver = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/pty_driver.py");
     let out = match Command::new("python3")

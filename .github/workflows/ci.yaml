@@ -25,6 +25,10 @@ jobs:
     - name: Lint (simulation, analysis and terminal interface)
       run: cargo clippy --workspace --exclude avida-gui --all-targets -- -D warnings
     - name: Test (simulation, analysis and terminal interface)
+      # The pseudo-terminal scenarios of the terminal interface depend on
+      # timing and fail on a shared runner; they are run locally.
+      env:
+        AVIDA_SKIP_PTY_TESTS: 1
       run: cargo test --workspace --exclude avida-gui --release
     - name: Consistency suite
       # Against a snapshot of what the C++ reference binary (tag cpp-final)
