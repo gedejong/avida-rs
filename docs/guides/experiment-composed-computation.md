@@ -81,4 +81,75 @@ These are checks of the set-up, not results.
 
 ## Results
 
-To be written when the main runs have finished.
+### Stage 3: modular set against stock set
+
+The main runs finished on 2026-11-15: 10 seeds per arm, 100,000 updates each, all 20 complete. The outcome is negative. Neither arm came near the adder, and the modular set did no better than the stock set.
+
+**How far each arm climbed.** A seed counts for a rung when at least 1 % of its organisms performed it, at any sample (ever) or at the last one (end).
+
+| Rung | Modular, ever | Stock, ever | p | Modular, end | Stock, end | p |
+|---|---|---|---|---|---|---|
+| NOT | 9 | 8 | 1.00 | 1 | 4 | 0.30 |
+| NAND | 8 | 8 | 1.00 | 1 | 4 | 0.30 |
+| XOR | 0 | 0 | 1.00 | 0 | 0 | 1.00 |
+| AND | 1 | 3 | 0.58 | 1 | 2 | 1.00 |
+| HALFADD_PLANES | 1 | 3 | 0.58 | 1 | 3 | 0.58 |
+| HALFADD | 0 | 0 | 1.00 | 0 | 0 | 1.00 |
+| ADD2_PLANES | 0 | 0 | 1.00 | 0 | 0 | 1.00 |
+| ADD2 | 0 | 0 | 1.00 | 0 | 0 | 1.00 |
+
+Counts are seeds out of 10; p is Fisher's exact test, two-sided. No difference between the arms is significant, and where the counts differ the stock arm is ahead.
+
+The highest rung reached was HALFADD_PLANES, the lowest of the four multi-bit rungs: modular seed 3 and stock seeds 2, 5 and 9. The highest rung held at the end did not differ between the arms (Mann-Whitney U = 35.5 against 64.5, n = 10 and 10, p = 0.30).
+
+**Most populations lost every task early.** In 12 of the 20 runs the population picked up NOT or NAND between updates 1,000 and 2,800, lost them again before update 4,000 (one modular seed kept NAND until 11,700), and held no rung for the remaining 96,000 updates. Three more runs never held a rung at all. In these runs the genome shrank from the ancestor's 100 instructions to between 19 and 24, and the gestation time fell from 389 cycles to about 30. A NOT or NAND multiplies merit by at most 1.41 (2 to the power of half a unit of resource) while the shrinking tripled the fitness (merit over gestation time rose from 0.25 to 0.74 in modular seed 7), so the short replicators displaced the organisms that computed.
+
+The four runs that reached HALFADD_PLANES went another way. In three of them AND (worth up to 2.8 times) and HALFADD_PLANES (up to 4 times) appeared between updates 2,000 and 2,600, before the short replicators had taken over, and these populations then kept their tasks to the end with genomes of 46 to 60 instructions. Stock seed 9 kept NOT and NAND throughout and found HALFADD_PLANES at update 20,500. Stock seed 10 held NAND from update 2,100 and NOT from 4,300 and found nothing higher.
+
+In 18 of the 20 seeds no rung was added after update 4,000; the exceptions are stock seed 9 (HALFADD_PLANES at 20,500) and stock seed 10 (NOT at 4,300). What decided the outcome was a race between shrinking the genome and finding a rung worth more than the shrinking, and the instruction set played no visible part in that race.
+
+**Secondary measures.** Medians with the range in brackets; Mann-Whitney U, two-sided, exact.
+
+| Measure | Modular | Stock | n | p |
+|---|---|---|---|---|
+| MODES complexity (last sample) | 30 (26 to 52) | 31 (26 to 44) | 10, 10 | 0.42 |
+| Genome length of the dominant genotype | 21.5 (20 to 60) | 23 (19 to 52) | 10, 10 | 0.69 |
+| Tasks performed by the dominant genotype | 0 (0 to 4) | 0 (0 to 4) | 10, 10 | 0.30 |
+| Reuse index | 0.34 | 0.35 (0.32 to 0.43) | 1, 3 | 1.00 |
+| Shared sites | 11 | 11 (3 to 13) | 1, 3 | 1.00 |
+
+The reuse measures need a dominant genotype that performs two tasks, which leaves one modular seed and three stock seeds; nothing can be concluded from them about the arms.
+
+**Was `call` used?** No. The dominant genotype of the one modular seed that climbed (seed 3, 60 instructions, performing NOT, NAND, AND and HALFADD_PLANES) contains one `call`. Knocking it out costs 0.9 % of fitness and loses no task. Its 11 shared sites are inputs (`IO`), `nand` and `swap` instructions that several tasks pass through in one straight run of code, which is the first limit of the knockout measure named above and not reuse through a subroutine.
+
+**What this does and does not show.** It shows that under this design the populations do not get far enough up the ladder for subroutines to matter: the half adder in two outputs is within reach of both sets without them, and nothing beyond it was reached by either. It does not show that subroutines are useless for composed computation, because no run reached a rung where a second use of the same code would pay. With 10 seeds per arm, a difference as large as 1 seed against 3 is well within chance.
+
+The design was not changed after the runs. The observation about the early race is a candidate for the next stage, where population size, sex and changing environments are varied one at a time.
+
+**Runs to look at.** In the lab folder `13-adder-ladder`:
+
+| Run | Why |
+|---|---|
+| modular seed 3 | best of the modular arm: HALFADD_PLANES from update 2,300 |
+| modular seed 7 | typical: NOT and NAND up to update 3,800, then nothing |
+| stock seed 2 | best of the stock arm: HALFADD_PLANES from update 2,600, highest complexity of the arm |
+| stock seed 1 | typical: NOT and NAND up to update 2,400, then nothing |
+
+The maintainer looked at these demonstrations and accepted the negative result on 2026-11-15.
+
+### Stage 4: search conditions
+
+Design, fixed on 2026-11-15 before any stage 4 run. One factor is changed at a time against the stage 3 modular arm, whose 10 runs serve as the base. The arms did not differ in stage 3; the modular set was chosen because the question is whether subroutines come into use once populations climb further.
+
+| Arm | Change against the base |
+|---|---|
+| `sex` | `divide-sex` in place of `h-divide`: offspring recombine with another offspring |
+| `pop-30` | a 30 x 30 world, resource inflow scaled to the area |
+| `pop-120` | a 120 x 120 world, resource inflow scaled to the area |
+| `seasons` | NOT, NAND, XOR and AND pay nothing in every other period of 2,000 updates |
+| `min-genome` | `MIN_GENOME_SIZE 50`: a divide that would leave fewer than 50 instructions fails |
+
+The first four are the factors planned from the start. The fifth was added after stage 3, because of the genome shrinking seen there; the value 50 is half the ancestor's length and was chosen without a trial run. Seeds 1 to 10, 100,000 updates, exact mode, and the outcomes and tests of stage 3. Each arm is compared with the base only, so five comparisons are made per measure; p values are reported uncorrected and with a Holm correction over the five.
+
+Results: to be written when the runs have finished.
+
