@@ -456,6 +456,7 @@ const EXTENSION_ACTIONS: &[(&str, &str)] = &[
     ("PrintMODESData", "Arguments: <string file> <int resolution [generations]> <int filter t [generations]> [nearest|any]\n  Port extension: the MODES open-endedness metrics (ARCHITECTURE.md)."),
     ("PrintKnockoutMap", "Arguments: [string fname=\"knockout_map.dat\"]\n  Port extension: the single-site knockout map of the dominant genotype (ARCHITECTURE.md)."),
     ("PrintReuseData", "Arguments: [string fname=\"reuse.dat\"]\n  Port extension: code-reuse measures of the dominant genotype from knockouts (ARCHITECTURE.md)."),
+    ("PrintReuseSurvey", "Arguments: [string fname=\"reuse_survey.dat\"] [int top=5]\n  Port extension: code-reuse measures and subroutine reuse of the most abundant genotypes that perform two or more tasks (ARCHITECTURE.md)."),
     ("PrintPhylogenyMetrics", "Arguments: [string fname=\"phylogeny.dat\"]\n  Port extension: phylogeny metrics of the genotype tree (ARCHITECTURE.md)."),
     ("SavePhylogeny", "Arguments: [string fname=\"phylogeny_tree.csv\"]\n  Port extension: the pruned genotype tree as an ALife standard phylogeny CSV, rewritten on every call."),
 ];

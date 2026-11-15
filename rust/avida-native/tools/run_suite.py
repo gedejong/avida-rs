@@ -23,8 +23,10 @@ S = os.environ.get('SUITE_WORK', os.path.join(WS, 'target', 'suite'))
 RSROOT = os.environ.get('SUITE_OUT', 'rs')
 os.makedirs(S, exist_ok=True)
 os.chdir(S)
-for b in (REF, RS):
-    if not os.path.exists(b): sys.exit('missing binary: ' + b)
+if not os.path.exists(RS): sys.exit('missing binary: ' + RS)
+# The reference binary is needed only for tests whose reference output is not
+# cached yet; a snapshot unpacked into SUITE_WORK/ref (tools/suite_ref.py)
+# makes the suite run without it.
 STAMP = re.compile(rb'^# [A-Z][a-z][a-z] [A-Z][a-z][a-z] .*\n', re.M)
 def args_of(t):
     for line in open(os.path.join(TESTS, t, 'test_list'), errors='replace'):
@@ -58,6 +60,7 @@ def norm(path):
 def one(t):
     refd = os.path.join(S, 'ref', t)
     if not os.path.exists(os.path.join(refd, '.rc')):
+        if not os.path.exists(REF): return t, 'NO-REF', 'no cached reference output and no reference binary ' + REF
         run(REF, t, os.path.join(S, 'ref'), 900)
     run(RS, t, os.path.join(S, RSROOT), 900)
     rsd = os.path.join(S, RSROOT, t)
@@ -88,3 +91,12 @@ for t, st, d in res:
     count[st] = count.get(st, 0) + 1
     print(f'{st:12} {t}  {d}')
 print(count)
+# For CI: SUITE_EXPECT="same=85,trivial=34,UNSUPPORTED=1,REF-TIMEOUT=1" fails
+# the run when the counts differ; a DIFF or NO-REF always fails it.
+expect = os.environ.get('SUITE_EXPECT')
+bad = count.get('DIFF', 0) + count.get('NO-REF', 0)
+if expect:
+    want = {k: int(v) for k, v in (kv.split('=') for kv in expect.split(','))}
+    if want != count:
+        print('expected', want); sys.exit(1)
+if bad: sys.exit(1)

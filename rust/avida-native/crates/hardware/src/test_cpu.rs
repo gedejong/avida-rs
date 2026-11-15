@@ -160,6 +160,7 @@ pub struct CpuTestInfo {
     use_manual_inputs: bool,
     manual_inputs: Vec<i32>,
     tracer: Option<HardwareTracerPtr>,
+    call_probe: Option<crate::call_probe::CallProbePtr>,
     mut_rates: MutationRates,
     cur_sg: i32,
 
@@ -207,6 +208,7 @@ impl CpuTestInfo {
             use_manual_inputs: false,
             manual_inputs: Vec::new(),
             tracer: None,
+            call_probe: None,
             mut_rates: MutationRates::default(),
             cur_sg: 0,
             is_viable: false,
@@ -305,6 +307,11 @@ impl CpuTestInfo {
     /// `GetTestCPUInputs()`: the inputs of the depth-0 organism.
     pub fn test_cpu_inputs(&self) -> &[i32] {
         &self.used_inputs
+    }
+    /// Port-only: watch the depth-0 organism with `probe` (see
+    /// `call_probe`). The default is no probe.
+    pub fn set_call_probe(&mut self, probe: Option<crate::call_probe::CallProbePtr>) {
+        self.call_probe = probe;
     }
     /// `GetTracer()`
     pub fn tracer(&self) -> Option<HardwareTracerPtr> {
@@ -1712,7 +1719,7 @@ impl TestCpu {
             let update = iface.update;
             organism.state.phenotype.setup_inject(cfg, size, update);
 
-            process_gestation(&mut iface, &mut organism, test_info, solo)?;
+            process_gestation(&mut iface, &mut organism, test_info, solo, cur_depth)?;
 
             organism.notify_death(&mut iface);
             organism
@@ -1902,6 +1909,7 @@ fn process_gestation(
     organism: &mut Organism,
     test_info: &CpuTestInfo,
     solo: (i32, f64),
+    cur_depth: i32,
 ) -> Result<bool, String> {
     let cfg = iface.config;
     let size = organism.state.genome().representation().size();
@@ -1928,6 +1936,11 @@ fn process_gestation(
 
     let tracer = test_info.tracer();
     organism.hardware.set_trace(tracer.clone());
+    if cur_depth == 0 {
+        organism
+            .hardware
+            .set_call_probe(test_info.call_probe.clone());
+    }
     while time_used < time_allocated
         && organism.state.phenotype.num_divides == 0
         && !organism.state.is_dead()
@@ -1940,6 +1953,7 @@ fn process_gestation(
         organism.single_process(iface, false)?;
     }
     organism.hardware.set_trace(None);
+    organism.hardware.set_call_probe(None);
 
     if let Some(t) = tracer {
         let status = organism.print_final_status(cfg, time_used, time_allocated);

@@ -226,6 +226,39 @@ fn an_organism_that_does_not_replicate_has_no_map() {
         .any(|l| l.contains("does not replicate")));
 }
 
+#[test]
+fn the_shared_subroutine_is_counted_as_subroutine_reuse() {
+    // The body `nand; return` is entered from three distinct call sites
+    // (sites 15, 23, 39), so both of its executed sites count, and both are
+    // non-neutral (the nand loses all three tasks, a knocked-out return
+    // does not replicate). The label nops before the body are skipped by the
+    // jump, the call sites and everything else run outside any call.
+    let dir = config("sub_modular", "u begin Inject modular-subroutine.org\n");
+    let mut w = build(&dir, true, &[]);
+    run(&mut w, 1);
+    let (genome, id) = w.organism_genome(0).unwrap();
+    let r = w.subroutine_reuse_of(&genome, id).unwrap().unwrap();
+    assert_eq!((r.sites, r.non_neutral), (2, 2));
+
+    // A straight-line organism that has `call` in its set but never calls.
+    let dir = config(
+        "sub_modular_plain",
+        "u begin Inject default-heads-modular.org\n",
+    );
+    let mut w = build(&dir, true, &[]);
+    run(&mut w, 1);
+    let (genome, id) = w.organism_genome(0).unwrap();
+    let r = w.subroutine_reuse_of(&genome, id).unwrap().unwrap();
+    assert_eq!((r.sites, r.non_neutral), (0, 0));
+
+    // The stock set has no call: not defined.
+    let dir = config("sub_stock", "u begin Inject default-heads.org\n");
+    let mut w = build(&dir, false, &[]);
+    run(&mut w, 1);
+    let (genome, id) = w.organism_genome(0).unwrap();
+    assert_eq!(w.subroutine_reuse_of(&genome, id).unwrap(), None);
+}
+
 // ---------------------------------------------------------------------
 // The actions
 // ---------------------------------------------------------------------
@@ -453,6 +486,102 @@ fn cost_of_one_call_by_genome_length() {
             ms / (target + 1) as f64,
             m.performed.len(),
             avida_world::knockout::summary(&m.measures())
+        );
+    }
+}
+
+// ---------------------------------------------------------------------
+// PrintReuseSurvey
+// ---------------------------------------------------------------------
+
+const SURVEY_LINES: &str = "u 0:100:end PrintReuseSurvey\n";
+
+fn survey_rows(dir: &Path) -> Vec<Vec<f64>> {
+    fs::read_to_string(dir.join("data/reuse_survey.dat"))
+        .unwrap()
+        .lines()
+        .filter(|l| !l.starts_with('#') && !l.trim().is_empty())
+        .map(|l| l.split_whitespace().map(|w| w.parse().unwrap()).collect())
+        .collect()
+}
+
+#[test]
+fn the_survey_is_an_observer_and_deterministic() {
+    let plain = run_events("survey_plain", BASE_EVENTS, &[]);
+    let events = BASE_EVENTS.replace("u 300 Exit", &format!("{SURVEY_LINES}u 300 Exit"));
+    let a = run_events("survey_a", &events, &[]);
+    let b = run_events("survey_b", &events, &[]);
+    assert_eq!(plain.1, a.1, "status lines");
+    for f in data_files(&plain.0) {
+        assert!(
+            normalized(&plain.0.join("data").join(&f)) == normalized(&a.0.join("data").join(&f)),
+            "{f} differs"
+        );
+    }
+    assert!(
+        normalized(&a.0.join("data/reuse_survey.dat"))
+            == normalized(&b.0.join("data/reuse_survey.dat")),
+        "two runs give different survey files"
+    );
+    let rows = survey_rows(&a.0);
+    // Updates 0, 100, 200, 300, at least one row each, 12 columns.
+    assert!(rows.len() >= 4, "{rows:?}");
+    for r in &rows {
+        assert_eq!(r.len(), 12);
+    }
+    // At update 0 the one organism's genotype qualifies (3 tasks) and has
+    // the subroutine's two sites.
+    let first = &rows[0];
+    assert_eq!(
+        (first[0], first[2], first[3], first[4]),
+        (0.0, 1.0, 57.0, 3.0)
+    );
+    assert_eq!((first[10], first[11]), (2.0, 2.0), "{first:?}");
+    let text = fs::read_to_string(a.0.join("data/reuse_survey.dat")).unwrap();
+    assert!(text.contains("50 most abundant"), "header names the bound");
+}
+
+#[test]
+fn the_survey_writes_a_row_of_minus_ones_when_nothing_qualifies() {
+    let dir = config(
+        "survey_none",
+        "u begin Inject default-heads-modular.org\nu 0 PrintReuseSurvey\nu 1 Exit\n",
+    );
+    let cwd = dir.to_string_lossy().into_owned();
+    let args: Vec<String> = ["avida", "-def", "INST_SET", "instset-heads-modular.cfg"]
+        .map(String::from)
+        .to_vec();
+    let cmd = process_cmdline(&args, &cwd);
+    let (mut w, _): (World, _) = World::new(cmd.config, &cwd, &cmd.defs).unwrap();
+    w.run(&mut Vec::new()).unwrap();
+    w.out.flush_all();
+    let rows = survey_rows(&dir);
+    assert_eq!(
+        rows,
+        vec![vec![
+            0.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0
+        ]]
+    );
+}
+
+#[test]
+fn survey_arguments() {
+    for (args, ok) in [
+        ("", true),
+        ("a.dat", true),
+        ("a.dat 3", true),
+        ("filename=a.dat top=2", true),
+        ("a.dat 0", false),
+        ("a.dat x", false),
+        ("a b c", false),
+    ] {
+        let dir = config("survey_args", &format!("u 0 PrintReuseSurvey {args}\n"));
+        let cwd = dir.to_string_lossy().into_owned();
+        let cmd = process_cmdline(&["avida".to_string()], &cwd);
+        assert_eq!(
+            World::new(cmd.config, &cwd, &cmd.defs).is_ok(),
+            ok,
+            "{args:?}"
         );
     }
 }

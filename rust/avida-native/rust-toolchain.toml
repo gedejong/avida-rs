@@ -1,0 +1,5 @@
+# CI and local builds use the same compiler, so that rustfmt and clippy agree
+# on what is clean. Raise the version deliberately, with the gates rerun.
+[toolchain]
+channel = "1.99.0"
+components = ["rustfmt", "clippy"]

@@ -362,6 +362,26 @@ impl HardwareCpu {
         self.head_advance(HEAD_IP);
     }
 
+    /// The call probe's view of a successful `call` at `site`.
+    #[inline]
+    pub(crate) fn probe_enter(&self, site: i32) {
+        if let Some(p) = &self.base.call_probe {
+            if let Ok(mut p) = p.lock() {
+                p.enter(site);
+            }
+        }
+    }
+
+    /// The call probe's view of a `return`.
+    #[inline]
+    pub(crate) fn probe_leave(&self) {
+        if let Some(p) = &self.base.call_probe {
+            if let Ok(mut p) = p.lock() {
+                p.leave();
+            }
+        }
+    }
+
     /// `getIP().SetFlagExecuted()`.
     #[inline]
     pub(crate) fn ip_set_flag_executed(&mut self) {
@@ -1498,6 +1518,12 @@ impl Hardware for HardwareCpu {
                     }
                 }
 
+                if let Some(p) = &self.base.call_probe {
+                    let pos = self.threads[ip_thread].heads[HEAD_IP].position();
+                    if let Ok(mut p) = p.lock() {
+                        p.executed(pos);
+                    }
+                }
                 self.ip_set_flag_executed();
 
                 // Count before executing (in case it is a terminator).

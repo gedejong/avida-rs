@@ -354,6 +354,22 @@ with and without them, in the exact mode and in the parallel mode on 1 and 4
 threads. A playback answers with a one-line reason, because a recording
 carries no instruction set, environment or configuration.
 
+`PrintReuseSurvey [file] [top]` (2026-11-15, added under the maintainer's
+ruling of that day on opt-in extensions) answers two weaknesses the stage 3
+experiment showed. It writes the same measures for the `top` most abundant
+genotypes that replicate and perform two or more tasks in the test CPU
+(looked for among the 50 most abundant), where `PrintReuseData` reports only
+the dominant genotype, which often performs none. And it adds subroutine
+sites: genome sites executed in the base test run with two or more distinct
+`call` sites as the innermost active call, with the count of those that are
+not neutral under knockout. The test CPU reports this through a call probe
+(`crates/hardware/src/call_probe.rs`) that only an instrumented test run
+attaches; every other run tests one `Option` per instruction and its output
+is unchanged (suite at no DIFF, observer test in
+`crates/avida/tests/knockout.rs`). The action works on a population loaded
+with `LoadPopulation`, so finished runs can be surveyed from their saved
+population. `PrintReuseData` and its file format are unchanged.
+
 ## Views the C++ does not have: Ladder and arm comparison (2026-11-15)
 
 Observation only; no output of the program changes. The Ladder view (Charts

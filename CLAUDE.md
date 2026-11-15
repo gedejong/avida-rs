@@ -53,6 +53,8 @@ python3 tools/run_suite.py
 ```
 Expected: 85 same, 34 trivial, 1 UNSUPPORTED, 1 REF-TIMEOUT, no DIFF.
 
+CI runs the same suite on macOS arm64 from a packed snapshot of the reference output (`tools/suite-ref.tar.xz`), without the reference binary. After adding or changing a test under `avida-core/tests`, refresh it: delete `target/suite/ref`, run the suite with the reference binary, then `python3 tools/suite_ref.py pack`. The compiler version is pinned in `rust/avida-native/rust-toolchain.toml` so that CI and local gates agree; raise it deliberately.
+
 The terminal interface's pty tests are timing-sensitive; run them on a machine that is not saturated, and check for stray `avida-tui` processes afterwards.
 
 ### 5. Documentation refresh

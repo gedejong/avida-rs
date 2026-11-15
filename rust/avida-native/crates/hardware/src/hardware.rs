@@ -99,6 +99,11 @@ pub trait Hardware: Send {
         String::new()
     }
 
+    /// Attach (or remove) a call probe (port-only, see `call_probe`).
+    fn set_call_probe(&mut self, probe: Option<crate::call_probe::CallProbePtr>) {
+        self.base_mut().call_probe = probe;
+    }
+
     /// `SetTrace(tracer)`.
     fn set_trace(&mut self, tracer: Option<HardwareTracerPtr>) {
         self.base_mut().tracer = tracer;
@@ -312,6 +317,9 @@ pub struct HardwareBase {
     pub inst_set: Arc<InstSet>,
     /// `m_tracer`
     pub tracer: Option<HardwareTracerPtr>,
+    /// Port-only: the call probe of an instrumented test run (`None` in
+    /// every run that is not one).
+    pub call_probe: Option<crate::call_probe::CallProbePtr>,
     /// `m_microtracer`
     pub microtracer: Vec<u8>,
     /// `m_navtraceloc`
@@ -441,6 +449,7 @@ impl HardwareBase {
         HardwareBase {
             inst_set,
             tracer: None,
+            call_probe: None,
             microtracer: Vec::new(),
             navtraceloc: Vec::new(),
             navtracefacing: Vec::new(),

@@ -35,6 +35,7 @@ use std::sync::Arc;
 
 use avida_apto::AvidaRng;
 use avida_genome::Genome;
+use avida_hardware::call_probe::CallProbe;
 use avida_hardware::test_cpu::{CpuTestInfo, TestCpu, RES_CONSTANT, RES_INITIAL};
 
 use crate::knockout::{call_sites, sites_from, KnockoutMap, TestOutcome};
@@ -45,7 +46,7 @@ use crate::world::World;
 pub const KNOCKOUT_TEST_SEED: i32 = 0x4b_4f_31;
 
 /// The names this module parses.
-pub const KNOCKOUT_ACTIONS: &[&str] = &["PrintKnockoutMap", "PrintReuseData"];
+pub const KNOCKOUT_ACTIONS: &[&str] = &["PrintKnockoutMap", "PrintReuseData", "PrintReuseSurvey"];
 
 /// A parsed action of this module.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -54,11 +55,20 @@ pub enum KnockoutAction {
     Map { filename: String },
     /// `PrintReuseData [string fname="reuse.dat"]`
     Reuse { filename: String },
+    /// `PrintReuseSurvey [string fname="reuse_survey.dat"] [int top=5]`
+    Survey { filename: String, top: usize },
 }
+
+/// How many of the most abundant genotypes `PrintReuseSurvey` examines for
+/// candidates.
+pub const SURVEY_CANDIDATES: usize = 50;
 
 /// The constructor of `name` (`None` when it is not an action of this
 /// module).
 pub fn parse(name: &str, args: &str) -> Option<Result<KnockoutAction, String>> {
+    if name.eq_ignore_ascii_case("PrintReuseSurvey") {
+        return Some(parse_survey(args));
+    }
     let (default, make): (&str, fn(String) -> KnockoutAction) =
         if name.eq_ignore_ascii_case("PrintKnockoutMap") {
             ("knockout_map.dat", |filename| KnockoutAction::Map {
@@ -77,6 +87,47 @@ pub fn parse(name: &str, args: &str) -> Option<Result<KnockoutAction, String>> {
         )));
     }
     Some(Ok(make(words.first().map_or(default, |w| w).to_string())))
+}
+
+/// `PrintReuseSurvey [filename=reuse_survey.dat] [top=5]`, positional or
+/// with the `filename=` and `top=` prefixes.
+fn parse_survey(args: &str) -> Result<KnockoutAction, String> {
+    let mut filename = "reuse_survey.dat".to_string();
+    let mut top = 5usize;
+    let words: Vec<&str> = args.split_whitespace().collect();
+    if words.len() > 2 {
+        return Err(format!(
+            "PrintReuseSurvey takes at most two arguments, a file name and top; got {}",
+            words.len()
+        ));
+    }
+    for (i, w) in words.iter().enumerate() {
+        if let Some(v) = w.strip_prefix("top=") {
+            top = v
+                .parse()
+                .map_err(|_| format!("PrintReuseSurvey: bad top '{v}'"))?;
+        } else if let Some(v) = w.strip_prefix("filename=") {
+            filename = v.to_string();
+        } else if i == 0 {
+            filename = w.to_string();
+        } else {
+            top = w
+                .parse()
+                .map_err(|_| format!("PrintReuseSurvey: bad top '{w}'"))?;
+        }
+    }
+    if top == 0 {
+        return Err("PrintReuseSurvey: top must be at least 1".to_string());
+    }
+    Ok(KnockoutAction::Survey { filename, top })
+}
+
+/// A knockout map and, when asked for, the call contexts of the base run.
+pub(crate) struct KnockoutRun {
+    pub map: KnockoutMap,
+    /// Per genome site, the number of distinct innermost call sites from
+    /// which it executed (see `avida_hardware::call_probe`).
+    pub call_contexts: Option<Vec<usize>>,
 }
 
 /// What the actions keep between calls: the map of the last firing, so that
@@ -113,6 +164,37 @@ impl World {
         genome: &Genome,
         genotype_id: i32,
     ) -> Result<KnockoutMap, String> {
+        self.knockout_run_of(genome, genotype_id, false, false)
+            .map(|r| r.map)
+    }
+
+    /// The subroutine reuse of `genome` (see `knockout::SubroutineReuse`):
+    /// `None` when the instruction set has no `call` (or is not the heads
+    /// CPU) or the genome does not replicate (no knockouts to classify).
+    pub fn subroutine_reuse_of(
+        &mut self,
+        genome: &Genome,
+        genotype_id: i32,
+    ) -> Result<Option<crate::knockout::SubroutineReuse>, String> {
+        let r = self.knockout_run_of(genome, genotype_id, false, true)?;
+        Ok(r.call_contexts
+            .as_ref()
+            .filter(|_| r.map.base_viable)
+            .map(|c| crate::knockout::subroutine_reuse(c, &r.map.sites)))
+    }
+
+    /// [`World::knockout_map_of`] with options: `base_only` runs the genome
+    /// once and leaves `sites` empty (a cheap look at the tasks it
+    /// performs); `probe` also records, in that base run, from which `call`
+    /// sites each site executes (`call_contexts`, `None` without `call` in
+    /// the set).
+    pub(crate) fn knockout_run_of(
+        &mut self,
+        genome: &Genome,
+        genotype_id: i32,
+        base_only: bool,
+        probe: bool,
+    ) -> Result<KnockoutRun, String> {
         self.knockout_check()?;
         let levels = self.modes_levels();
         let hw = self.modes_private_hw();
@@ -161,6 +243,7 @@ impl World {
         let mut test_genome = genome.clone();
         let mut base: Option<TestOutcome> = None;
         let mut sites = Vec::new();
+        let call_probe = (probe && has_call && hw_type == 0).then(CallProbe::new_ptr);
         avida_analyze::world::with_detached_test_world(
             cfg,
             env,
@@ -187,6 +270,9 @@ impl World {
                                 info.set_resource_options(RES_INITIAL, None, 0, 0)
                             }
                         }
+                        if site.is_none() {
+                            info.set_call_probe(call_probe.clone());
+                        }
                         cpu.test_genome(tw, &mut info, &test_genome)?;
                         Ok(TestOutcome {
                             fitness: info.genotype_fitness(),
@@ -203,7 +289,7 @@ impl World {
                     r
                 };
                 let b = run(None)?;
-                if b.viable() {
+                if b.viable() && !base_only {
                     sites = sites_from(&b, len, &mut |i| run(Some(i)))?;
                 }
                 base = Some(b);
@@ -223,7 +309,10 @@ impl World {
             .filter(|&t| base.task_counts[t] > 0)
             .collect();
         let calls = (has_call && hw_type == 0).then(|| call_sites(&names, &nop_mods, num_regs));
-        Ok(KnockoutMap {
+        let call_contexts = call_probe
+            .as_ref()
+            .and_then(|p| p.lock().ok().map(|p| p.contexts(len)));
+        let map = KnockoutMap {
             genotype_id,
             update,
             inst_names: names,
@@ -235,7 +324,8 @@ impl World {
             inputs: base.inputs,
             sites,
             calls,
-        })
+        };
+        Ok(KnockoutRun { map, call_contexts })
     }
 
     /// The genome of the organism in `cell` and its genotype id.
@@ -295,12 +385,130 @@ impl World {
         Ok(Some(map))
     }
 
+    /// `PrintReuseSurvey`: one row per qualifying genotype, see the header
+    /// the file carries and ARCHITECTURE.md.
+    fn run_reuse_survey(&mut self, filename: &str, top: usize) -> Result<(), String> {
+        let arb = self
+            .systematics
+            .genotypes()
+            .ok_or("the knockout actions need the genotype tracker (no genotype arbiter)")?;
+        if arb.disable_class() {
+            return Err("the knockout actions need genotype classification \
+                 (DISABLE_GENOTYPE_CLASSIFICATION 0)"
+                .to_string());
+        }
+        let mut living: Vec<(i32, i32, Genome)> = arb
+            .iter_groups()
+            .into_iter()
+            .filter_map(|h| arb.genotype(h))
+            .filter(|g| g.num_units() > 0)
+            .map(|g| (g.id(), g.num_units(), g.genome().clone()))
+            .collect();
+        // Most abundant first, ties by genotype id.
+        living.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        living.truncate(SURVEY_CANDIDATES);
+        let update = self.stats.update();
+        let mut rows = Vec::new();
+        for (id, count, genome) in living {
+            if rows.len() >= top {
+                break;
+            }
+            let probe = self.knockout_run_of(&genome, id, true, false)?;
+            if !probe.map.base_viable || probe.map.performed.len() < 2 {
+                continue;
+            }
+            let run = self.knockout_run_of(&genome, id, false, true)?;
+            rows.push((count, run));
+        }
+        let df = self.out.static_with_path(filename)?;
+        df.write_comment("Code reuse of several genotypes from single-site knockouts.");
+        df.write_comment(
+            "An extension of this port (the C++ program has no PrintReuseSurvey); an observer, \
+             it does not change the run. Definitions: ARCHITECTURE.md, 'Knockout map and reuse \
+             measures', 'PrintReuseSurvey'.",
+        );
+        df.write_comment(&format!(
+            "Each firing looks, among the {SURVEY_CANDIDATES} most abundant living genotypes \
+             (ties by genotype id), for the first {top} that replicate in the test CPU and \
+             perform at least two tasks, and writes a row for each. When none qualifies one row \
+             with -1 in the genotype columns is written."
+        ));
+        df.write_comment(
+            "The columns shared sites ... distinct call targets are those of PrintReuseData \
+             (knockout of one site at a time; -1 = not defined).",
+        );
+        df.write_comment(
+            "Subroutine sites: genome sites executed in the test CPU while at least two \
+             distinct call sites were, one at a time, the innermost active call (a successful \
+             `call` pushes its own site, `return` pops; the call and return sites themselves \
+             count in the context in which they run). Non-neutral subroutine sites: of those, \
+             the sites whose knockout is not neutral (lethal, shared, task or speed). Both -1 \
+             when the instruction set has no `call`.",
+        );
+        // Row: id, count, length, tasks, shared, index, calls (3), subroutine (2).
+        type Row = (i32, i32, i32, i32, i32, f64, [i32; 3], [i32; 2]);
+        let mut table: Vec<Row> = Vec::new();
+        for (count, run) in rows {
+            let m = run.map.measures();
+            let sub = run
+                .call_contexts
+                .as_ref()
+                .map(|c| crate::knockout::subroutine_reuse(c, &run.map.sites));
+            table.push((
+                run.map.genotype_id,
+                count,
+                run.map.symbols.chars().count() as i32,
+                m.tasks_performed as i32,
+                m.shared_sites.map_or(-1, |n| n as i32),
+                m.reuse_index.unwrap_or(-1.0),
+                [
+                    m.calls.map_or(-1, |c| c.call_sites as i32),
+                    m.calls.map_or(-1, |c| c.non_neutral as i32),
+                    m.calls.map_or(-1, |c| c.distinct_targets as i32),
+                ],
+                [
+                    sub.map_or(-1, |s| s.sites as i32),
+                    sub.map_or(-1, |s| s.non_neutral as i32),
+                ],
+            ));
+        }
+        if table.is_empty() {
+            table.push((-1, -1, -1, -1, -1, -1.0, [-1; 3], [-1; 2]));
+        }
+        for (id, count, len, tasks, shared, index, calls, sub) in table {
+            df.write(update, "Update");
+            df.write(id, "Genotype id");
+            df.write(count, "Number of living organisms");
+            df.write(len, "Genome length");
+            df.write(tasks, "Tasks performed");
+            df.write(shared, "Shared sites (knockout loses two or more tasks)");
+            df.write(
+                index,
+                "Reuse index (mean pairwise Jaccard overlap of the task site sets)",
+            );
+            df.write(calls[0], "Call sites");
+            df.write(calls[1], "Non-neutral call sites");
+            df.write(calls[2], "Distinct call targets");
+            df.write(
+                sub[0],
+                "Subroutine sites (executed from two or more call sites)",
+            );
+            df.write(sub[1], "Non-neutral subroutine sites");
+            df.endl();
+        }
+        Ok(())
+    }
+
     /// `PrintKnockoutMap` and `PrintReuseData`, once per event firing.
     pub(crate) fn run_knockout_action(&mut self, a: &KnockoutAction) -> Result<(), String> {
+        if let KnockoutAction::Survey { filename, top } = a {
+            return self.run_reuse_survey(filename, *top);
+        }
         let Some(map) = self.dominant_knockout_map()? else {
             return Ok(());
         };
         match a {
+            KnockoutAction::Survey { .. } => {}
             KnockoutAction::Map { filename } => {
                 let df = self.out.static_with_path(filename)?;
                 df.write_raw("");

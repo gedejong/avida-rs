@@ -484,6 +484,46 @@ pub fn summary(m: &ReuseMeasures) -> String {
 }
 
 // ----------------------------------------------------------------------
+// Subroutine reuse
+// ----------------------------------------------------------------------
+
+/// "Subroutine reuse" (`PrintReuseSurvey`): the genome sites that execute in
+/// the test CPU's base run while at least two distinct `call` sites are the
+/// innermost active call (a site reached from two or more call sites), and
+/// how many of them are non-neutral under knockout.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct SubroutineReuse {
+    /// Sites executed from two or more distinct innermost call sites.
+    pub sites: usize,
+    /// Of those, sites whose knockout class is not neutral (lethal
+    /// included); `sites` when the map has no knockouts.
+    pub non_neutral: usize,
+}
+
+/// The subroutine reuse from per-site counts of distinct innermost call
+/// sites (`contexts`, see `avida_hardware::call_probe`) and the knockout
+/// classes of the same sites (`classes` may be shorter, or empty when the
+/// base was not viable; a site without a class is not counted non-neutral).
+pub fn subroutine_reuse(contexts: &[usize], classes: &[SiteKnockout]) -> SubroutineReuse {
+    let mut r = SubroutineReuse {
+        sites: 0,
+        non_neutral: 0,
+    };
+    for (i, &n) in contexts.iter().enumerate() {
+        if n >= 2 {
+            r.sites += 1;
+            if classes
+                .get(i)
+                .is_some_and(|c| c.class != SiteClass::Neutral)
+            {
+                r.non_neutral += 1;
+            }
+        }
+    }
+    r
+}
+
+// ----------------------------------------------------------------------
 // Call targets
 // ----------------------------------------------------------------------
 
@@ -594,6 +634,34 @@ mod tests {
             classify(&base, &out(2.0, &[0, 0, 1, 0])).class,
             SiteClass::Shared
         );
+    }
+
+    fn site(class: SiteClass) -> SiteKnockout {
+        SiteKnockout {
+            class,
+            rel_fitness: 1.0,
+            lost: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn subroutine_reuse_counts_sites_with_two_or_more_contexts() {
+        let classes = [
+            site(SiteClass::Neutral),
+            site(SiteClass::Lethal),
+            site(SiteClass::Neutral),
+            site(SiteClass::Speed),
+            site(SiteClass::Shared),
+        ];
+        // Sites 1, 2 and 4 have two or more contexts, site 3 only one.
+        let r = subroutine_reuse(&[0, 2, 3, 1, 2], &classes);
+        assert_eq!((r.sites, r.non_neutral), (3, 2));
+        // No knockout classes (base not viable): none counted non-neutral.
+        let r = subroutine_reuse(&[0, 2, 3, 1, 2], &[]);
+        assert_eq!((r.sites, r.non_neutral), (3, 0));
+        // A straight-line run has no contexts.
+        let r = subroutine_reuse(&[0, 0, 0], &classes);
+        assert_eq!((r.sites, r.non_neutral), (0, 0));
     }
 
     fn map_of(classes: &[(SiteClass, &[usize])], performed: &[usize], tasks: usize) -> KnockoutMap {

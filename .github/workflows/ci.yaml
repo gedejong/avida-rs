@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@stable
+    - uses: dtolnay/rust-toolchain@1.99.0
       with:
         components: rustfmt, clippy
     - uses: Swatinem/rust-cache@v2
@@ -31,7 +31,7 @@ jobs:
     continue-on-error: true
     steps:
     - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@stable
+    - uses: dtolnay/rust-toolchain@1.99.0
       with:
         components: clippy
     - uses: Swatinem/rust-cache@v2
@@ -45,3 +45,30 @@ jobs:
       run: |
         cargo clippy -p avida-gui --all-targets -- -D warnings
         cargo test -p avida-gui
+
+  suite:
+    # The consistency suite against the output of the C++ reference binary
+    # (tag cpp-final). The reference output is a snapshot made on macOS arm64
+    # (tools/suite_ref.py), so this lane runs there too: the port reproduces
+    # that build's floating-point evaluation.
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@1.99.0
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: rust/avida-native
+    - name: Build
+      run: cargo build --release -p avida
+    - name: Consistency suite
+      env:
+        SUITE_EXPECT: same=85,trivial=34,UNSUPPORTED=1,REF-TIMEOUT=1
+        SUITE_JOBS: 3
+      run: |
+        python3 tools/suite_ref.py unpack
+        python3 tools/run_suite.py | tee target/suite/result.txt
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: suite-result
+        path: rust/avida-native/target/suite/result.txt

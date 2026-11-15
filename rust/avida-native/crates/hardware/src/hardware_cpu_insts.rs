@@ -727,11 +727,13 @@ fn inst_call(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn OrgInterf
     if hw.label().get_size() == 0 {
         let bx = hw.reg(REG_BX);
         hw.head_jump(HEAD_IP, bx);
+        hw.probe_enter(location);
         return Ok(true);
     }
     let jump_location = hw.find_label(1);
     if jump_location.position() != -1 {
         hw.head_set_from(HEAD_IP, &jump_location);
+        hw.probe_enter(location);
         return Ok(true);
     }
     org.fault(
@@ -746,6 +748,7 @@ fn inst_call(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn OrgInterf
 fn inst_return(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
     let v = hw.stack_pop();
     hw.head_set_pos(HEAD_IP, v);
+    hw.probe_leave();
     Ok(true)
 }
 

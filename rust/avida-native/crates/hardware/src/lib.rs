@@ -64,6 +64,7 @@ macro_rules! println {
     };
 }
 
+pub mod call_probe;
 pub mod code_label;
 pub mod cpu_inst_lib;
 pub mod cpu_stack;
