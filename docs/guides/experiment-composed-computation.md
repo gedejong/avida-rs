@@ -153,5 +153,71 @@ The first four are the factors planned from the start. The fifth was added after
 
 One change was made to the `sex` arm after the batch had started and before any `sex` run finished. With two parents every ancestor stays in memory as a historic genotype, and the first six `sex` runs grew to more than 4 GB each and were stopped at about 65,000 updates; their output is not used. The arm now runs with the new setting `DROP_EXTINCT_GENOTYPES 1`, which drops a genotype when its last organism dies and changes nothing that organisms compute (the data files of a run are byte-identical with and without it). The measures that need ancestry, MODES complexity and the phylogeny measures, are therefore not available for the `sex` arm. Its primary outcome, the genome length, the tasks performed and the reuse measures are reported as for the other arms.
 
-Results: to be written when the runs have finished.
+#### Results
+
+The runs finished on 2026-11-16: 10 seeds per arm, 100,000 updates each, all 50 complete. One arm changed the outcome. A minimum genome size brought every seed to HALFADD_PLANES and kept it there. Sex, population size and seasons made no difference that these runs can show. No arm got past HALFADD_PLANES, and no arm used `call` as a subroutine.
+
+**How far each arm climbed.** Seeds out of 10 that held the rung at the last sample, and in brackets at any sample.
+
+| Rung | `base` | `sex` | `pop-30` | `pop-120` | `seasons` | `min-genome` |
+|---|---|---|---|---|---|---|
+| NOT | 1 (9) | 3 (10) | 0 (6) | 0 (10) | 0 (7) | 10 (10) |
+| NAND | 1 (8) | 3 (8) | 0 (5) | 0 (9) | 0 (6) | 10 (10) |
+| XOR | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) |
+| AND | 1 (1) | 3 (3) | 0 (0) | 0 (0) | 0 (1) | 10 (10) |
+| HALFADD_PLANES | 1 (1) | 3 (3) | 0 (0) | 0 (0) | 0 (0) | 10 (10) |
+| HALFADD, ADD2_PLANES, ADD2 | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) |
+
+The test of the primary outcome is Fisher's exact test, two-sided, on the number of seeds holding HALFADD_PLANES at the end, each arm against `base`.
+
+| Arm | Seeds | p | p, Holm over five |
+|---|---|---|---|
+| `min-genome` | 10 against 1 | 0.00012 | 0.0006 |
+| `sex` | 3 against 1 | 0.58 | 1.00 |
+| `pop-30` | 0 against 1 | 1.00 | 1.00 |
+| `pop-120` | 0 against 1 | 1.00 | 1.00 |
+| `seasons` | 0 against 1 | 1.00 | 1.00 |
+
+**A minimum genome size stops the loss of tasks.** In all ten `min-genome` seeds NOT and NAND were held from before update 2,500 and never lost. AND followed between updates 2,000 and 15,500 and HALFADD_PLANES between 2,400 and 7,300, and both stayed to the end. Nine of the ten dominant genotypes have exactly 50 instructions, the smallest the setting allows; the tenth has 77. In stage 3 the populations lost their tasks because a shorter genome paid more than a low rung. With that road closed the populations kept what they found, and the next two rungs followed in every seed. The one `base` seed that held HALFADD_PLANES is also the one `base` seed with a long genome (60 instructions).
+
+The setting did not carry any seed further. No rung was added after update 15,500 in any `min-genome` run, and none of the three upper rungs was held by 1 % of a population at any sample in any of the 50 runs.
+
+**Population size.** The 16-fold range from 900 to 14,400 organisms shows no effect on the rungs. Neither arm held a rung at the end, and no rung outlived update 4,300 in either. The larger world found the low rungs more reliably (NOT in 10 seeds against 6, NAND in 9 against 5) and lost them the same way.
+
+**Sex.** Three `sex` seeds held HALFADD_PLANES at the end against one `base` seed, a difference well within chance at this number of seeds. Two things did change. Genomes stayed longer (median 41.5 instructions against 21.5, the three climbing seeds at 79, 157 and 221), and the low rungs lasted longer before they were lost: NOT was held until update 75,500, 84,400 and 92,500 in three of the seeds that ended with nothing, where no `base` seed kept it past 3,800.
+
+**Seasons.** No seed held a rung at the end. Seed 3, which in the `base` arm is the seed that climbed, touched AND at update 2,000, the moment the first season without pay began, and lost it.
+
+**Secondary measures.** Medians with the range in brackets; Mann-Whitney U against `base`, two-sided, exact; n = 10 and 10 unless stated. The Holm correction is over the comparisons that exist for the measure: five, or four where the `sex` arm has no value.
+
+| Measure | `base` | `sex` | `pop-30` | `pop-120` | `seasons` | `min-genome` |
+|---|---|---|---|---|---|---|
+| Genome length of the dominant genotype | 21.5 (20 to 60) | 41.5 (27 to 221) | 23 (22 to 26) | 23.5 (21 to 25) | 21 (19 to 25) | 50 (50 to 77) |
+| p; Holm | | 0.0004; 0.0021 | 0.12; 0.24 | 0.08; 0.24 | 0.54; 0.54 | 0.0004; 0.0021 |
+| MODES complexity (last sample) | 30 (26 to 52) | not available | 24 (22 to 29) | 34.5 (31 to 36) | 27.5 (25 to 32) | 41 (40 to 55) |
+| p; Holm | | | 0.0001; 0.0006 | 0.035; 0.070 | 0.075; 0.075 | 0.0009; 0.0026 |
+| Tasks performed by the dominant genotype | 0 (0 to 4) | 0 (0 to 3) | 0 (0 to 0) | 0 (0 to 0) | 0 (0 to 0) | 4 (3 to 4) |
+| p; Holm | | 0.58; 1.00 | 1.00; 1.00 | 1.00; 1.00 | 1.00; 1.00 | 0.0001; 0.0006 |
+| Reuse index | 0.34 (n = 1) | 0.47 (0.44 to 0.64, n = 3) | none | none | none | 0.37 (0.33 to 0.65) |
+| Shared sites | 11 (n = 1) | 10 (10 to 12, n = 3) | none | none | none | 13 (8 to 15) |
+
+Complexity follows population size (lower at 900 organisms, higher at 14,400) without any rung being held, so here it measures something other than climbing the ladder. The reuse measures need a dominant genotype that performs two tasks. With one such seed in `base` they cannot be tested against it (p = 0.36 and 0.64 for `min-genome`, n = 1 and 10).
+
+**Was `call` used?** Not as a subroutine. `PrintReuseSurvey` was run on the final population of the ten `min-genome` runs and of the three climbing `sex` runs, five genotypes each, the most abundant ones that replicate and perform two or more tasks. None of the 65 genotypes has a subroutine site, a site executed from two different `call` sites. 31 of them contain one to four `call` instructions, each genotype with one target (two in one genotype); in 8 genotypes a knockout of a `call` is not neutral. These calls work as jumps. The shared sites are, as in stage 3, inputs and `nand` instructions that several tasks pass through in one run of code.
+
+**What this does and does not show.** It shows that what held the stage 3 populations down was the shrinking of the genome: with shrinking below 50 instructions forbidden, 10 of 10 seeds reach and keep the half adder in two outputs, against 1 of 10. It shows no effect of population size, of seasons or of sex on how far the ladder is climbed; with 10 seeds per arm an effect smaller than about 1 seed against 6 would not be found. It does not show that any of these conditions brings composed computation closer. The ceiling is the same in every arm, the step from HALFADD_PLANES to HALFADD (both result bits in one output) was not taken in any of the 14 runs that held the lower rung, most of them for more than 90,000 updates, and subroutines stayed unused. The value 50 was chosen without a trial run and was not varied, so nothing is known about other values.
+
+The design was not changed after the runs, apart from the memory setting of the `sex` arm described above.
+
+**Runs to look at.** In the lab folder `14-search-conditions`, `./compare.sh runs` opens the arm comparison (`./compare.sh runs tui` in the terminal); choose `base` and one arm at a time.
+
+| Run | Why |
+|---|---|
+| `min-genome` seed 8 | fastest of the arm: all four rungs by update 2,400 |
+| `min-genome` seed 1 | slowest: HALFADD_PLANES at 7,300, AND at 15,500 |
+| `sex` seed 7 | found AND and HALFADD_PLANES late, at about update 35,000, with a genome of 157 instructions |
+| `sex` seed 8 | held NOT until update 92,500, then nothing |
+| `pop-120` seed 1 | typical of the large world: NOT and NAND up to update 2,900, then nothing |
+
+The maintainer looked at the comparison and accepted the stage on 2026-11-16.
 
