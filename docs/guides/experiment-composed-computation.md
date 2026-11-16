@@ -221,3 +221,9 @@ The design was not changed after the runs, apart from the memory setting of the 
 
 The maintainer looked at the comparison and accepted the stage on 2026-11-16.
 
+#### Correction, found on 2026-11-16 after the stage was accepted
+
+The organisms that hold HALFADD_PLANES in stages 3 and 4 are not half adders. The most abundant genotypes of the eleven climbing `base` and `min-genome` runs were run in the test CPU on 30 random input triples each, and the outputs of a sample were compared with the logic functions of the inputs. They output NAND and then AND. NAND agrees with the sum bit, XOR, on three of the four input combinations, so the pair is right on 87.5 % of the compared bits on average, a quality of 0.75, which is the threshold. The rung fired on 24 of the 30 triples for nearly every genotype (a calculation for random inputs gives 78 %). No run in either stage held XOR, the rung below, at any sample.
+
+What stands: the counts and tests above, as counts of the rung as it is defined, and the finding that a minimum genome size stops the loss of tasks (NOT, NAND and AND are real, and were kept in 10 of 10 seeds against 1 of 10). What does not stand is the reading that these populations compute a half adder in two outputs. The highest real step reached in any run is AND, and the wall is XOR. The threshold of 0.75 was raised from 0.25 before the runs to exclude trivial outputs; it was not checked against a sum plane made of NAND or OR, and it should have been.
+
