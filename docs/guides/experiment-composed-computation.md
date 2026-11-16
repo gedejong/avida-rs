@@ -227,3 +227,20 @@ The organisms that hold HALFADD_PLANES in stages 3 and 4 are not half adders. Th
 
 What stands: the counts and tests above, as counts of the rung as it is defined, and the finding that a minimum genome size stops the loss of tasks (NOT, NAND and AND are real, and were kept in 10 of 10 seeds against 1 of 10). What does not stand is the reading that these populations compute a half adder in two outputs. The highest real step reached in any run is AND, and the wall is XOR. The threshold of 0.75 was raised from 0.25 before the runs to exclude trivial outputs; it was not checked against a sum plane made of NAND or OR, and it should have been.
 
+### Stage 5: the wall below XOR
+
+Design, fixed on 2026-11-16 before any stage 5 run. The correction above moves the question. No population made XOR, and the ladder paid an approximation of the half adder. Two things are changed in turn on the `min-genome` arm of stage 4, the only condition in which populations keep what they find, and then the search is spread over islands.
+
+| Arm | Change against the arm above it |
+|---|---|
+| `exact` | against `min-genome` of stage 4: the four field rungs pay only at full quality (`thresh=1`), so NAND then AND no longer clears HALFADD_PLANES |
+| `exact+steps` | the four stock logic functions between NAND and XOR are paid: ORN 2, OR 3, ANDN 3, NOR 4, each on its own resource, once per organism |
+| `exact+steps+islands` | ten demes of 60 x 6 cells (`NUM_DEMES 10`); an offspring is born in another deme, at a random cell, with probability 0.001 (`DEMES_MIGRATION_RATE`) |
+
+The four steps are those of the stock logic environment, with its values. In the classic experiment on this question (Lenski and others, 2003) populations reached the hardest logic function only when the simpler ones in between were paid. Every arm lists the same twelve reactions in the same order (NOT, NAND, AND, ORN, OR, ANDN, NOR, XOR and the four field rungs), so that the output files agree; in `exact` the four steps are worth nothing, and an organism that performs one is counted without being paid. The migration rate was chosen without a trial run: with 360 organisms in a deme it is about one migrant per deme in three generations.
+
+Seeds 1 to 10, 100,000 updates, exact mode, modular set, a 60 x 60 world, `MIN_GENOME_SIZE 50`, the other settings of stage 4. Primary outcome: the number of seeds that hold XOR at the last sample. Secondary: the same for HALFADD_PLANES, which at full quality is a real half adder; the highest rung held; the first update at which XOR is held; and the measures of stage 4. Tests: Fisher's exact test, two-sided, for `exact+steps` against `exact` and for `exact+steps+islands` against `exact+steps`, reported uncorrected and with a Holm correction over the two. For each arm the most abundant genotypes of the runs that hold XOR or more are run in the test CPU and their outputs compared with the functions paid, which is the check that was missing in stages 3 and 4.
+
+Before the runs: a 3,000-update trial of each arm wrote every file, and the islands arm run without migration filled one deme only (358 organisms at update 2,000).
+
+Results: to be written when the runs have finished.
