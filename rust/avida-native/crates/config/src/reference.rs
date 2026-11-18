@@ -278,7 +278,7 @@ pub fn reference_page() -> String {
                 "| `{}` | {} | {} | `{}` | {} |\n",
                 s.key,
                 old,
-                s.kind().name(),
+                s.type_label(),
                 cell(&s.default_display()),
                 if s.choice().is_some() {
                     cell(&s.desc().replace('\n', "; "))

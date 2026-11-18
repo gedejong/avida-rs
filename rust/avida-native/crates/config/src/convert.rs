@@ -390,6 +390,15 @@ fn settings_yaml(cfg: &Config, full: bool) -> Result<String, String> {
                     s.path()
                 ));
             }
+            if let Some((lo, hi)) = s.range() {
+                if !(lo..=hi).contains(&crate::string_util::as_double(&raw)) {
+                    return Err(format!(
+                        "{} in the old files: {}",
+                        s.old,
+                        crate::experiment::range_message(&s.path(), &raw, lo, hi)
+                    ));
+                }
+            }
             if let Some(c) = s.choice() {
                 if v == raw {
                     return Err(format!(
@@ -1105,6 +1114,20 @@ mod tests {
         assert!(!y.contains("allow_parent"), "{y}");
         let y = convert_text("flags-on", "ALLOW_MATE_SELECTION 1\nINHERIT_MERIT 0\n").unwrap();
         assert!(y.contains("  allow_mate_selection: true\n"), "{y}");
+    }
+
+    #[test]
+    fn convert_refuses_a_probability_outside_zero_to_one() {
+        let e = convert_text("prob-bad", "COPY_MUT_PROB 1.5\n").unwrap_err();
+        assert!(
+            e.contains("mutation.copy_prob") && e.contains("1.5") && e.contains("0..1"),
+            "{e}"
+        );
+        let y = convert_text("prob-ok", "COPY_MUT_PROB 1\nDIVIDE_POISSON_MUT_MEAN 3\n").unwrap();
+        assert!(
+            y.contains("  copy_prob: 1.0\n") && y.contains("divide_poisson_mean: 3.0"),
+            "{y}"
+        );
     }
 
     #[test]

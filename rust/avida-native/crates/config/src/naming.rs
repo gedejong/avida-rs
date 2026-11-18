@@ -106,6 +106,74 @@ pub const INT_FLAGS: &[&str] = &[
     "DROP_EXTINCT_GENOTYPES",
 ];
 
+/// The number settings that are probabilities: every read draws a random
+/// number against them (`rng.p`, a binomial draw, `get_double() < p`), so a
+/// value outside 0..1 has no meaning. The loader refuses such a value.
+/// Rates that are a mean (the Poisson settings), multipliers, percentages,
+/// fractions that scale an amount and settings with a negative sentinel are
+/// not here.
+pub const PROBABILITIES: &[&str] = &[
+    "COPY_MUT_PROB",
+    "COPY_INS_PROB",
+    "COPY_DEL_PROB",
+    "COPY_UNIFORM_PROB",
+    "COPY_SLIP_PROB",
+    "POINT_MUT_PROB",
+    "POINT_INS_PROB",
+    "POINT_DEL_PROB",
+    "INST_POINT_MUT_PROB",
+    "DIV_MUT_PROB",
+    "DIV_INS_PROB",
+    "DIV_DEL_PROB",
+    "DIV_UNIFORM_PROB",
+    "DIV_SLIP_PROB",
+    "DIV_TRANS_PROB",
+    "DIV_LGT_PROB",
+    "DIVIDE_MUT_PROB",
+    "DIVIDE_INS_PROB",
+    "DIVIDE_DEL_PROB",
+    "DIVIDE_UNIFORM_PROB",
+    "DIVIDE_SLIP_PROB",
+    "DIVIDE_TRANS_PROB",
+    "DIVIDE_LGT_PROB",
+    "INJECT_MUT_PROB",
+    "INJECT_INS_PROB",
+    "INJECT_DEL_PROB",
+    "PARENT_MUT_PROB",
+    "PARENT_INS_PROB",
+    "PARENT_DEL_PROB",
+    "META_COPY_MUT",
+    "DEATH_PROB",
+    "DEATH_PROB_PARENT",
+    "RECOMBINATION_PROB",
+    "INJECT_DEFAULT_SUCCESS",
+    "VIRULENCE_MUT_RATE",
+    "GERMLINE_COPY_MUT",
+    "GERMLINE_INS_MUT",
+    "GERMLINE_DEL_MUT",
+    "DEMES_MIGRATION_RATE",
+    "DEMES_PARASITE_MIGRATION_RATE",
+    "MIGRATION_RATE",
+    "REVERT_FATAL",
+    "REVERT_DETRIMENTAL",
+    "REVERT_NEUTRAL",
+    "REVERT_BENEFICIAL",
+    "REVERT_TASKLOSS",
+    "REVERT_EQUALS",
+    "STERILIZE_FATAL",
+    "STERILIZE_DETRIMENTAL",
+    "STERILIZE_NEUTRAL",
+    "STERILIZE_BENEFICIAL",
+    "STERILIZE_TASKLOSS",
+    "NET_DROP_PROB",
+    "HGT_COMPETENCE_P",
+    "HGT_INSERTION_MUT_P",
+    "HGT_CONJUGATION_P",
+    "MIMIC_ODDS",
+    "PRED_ODDS",
+    "SYNC_FLASH_LOSSRATE",
+];
+
 /// The descriptions of flags whose C++ text names the values 0 and 1: the
 /// same sentence in terms of `true` and `false`. The other flags keep the
 /// description of `cAvidaConfig.h`.
@@ -271,6 +339,21 @@ impl SettingInfo {
                 EntryType::Str => ValueKind::Text,
             },
             SettingDef::Port(_) => ValueKind::Int,
+        }
+    }
+
+    /// The range a number must lie in (both ends allowed), for a setting
+    /// with one.
+    pub fn range(&self) -> Option<(f64, f64)> {
+        PROBABILITIES.contains(&self.old).then_some((0.0, 1.0))
+    }
+
+    /// The type as the reference page names it (`flag`, `choice`,
+    /// `number in 0..1`).
+    pub fn type_label(&self) -> String {
+        match self.range() {
+            Some((lo, hi)) => format!("number in {lo}..{hi}"),
+            None => self.kind().name().to_string(),
         }
     }
 

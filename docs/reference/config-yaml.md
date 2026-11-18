@@ -250,51 +250,51 @@ Mutation rates.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `copy_prob` | `COPY_MUT_PROB` | number | `0.0075` | Substitution rate (per copy) |
-| `copy_ins_prob` | `COPY_INS_PROB` | number | `0.0` | Insertion rate (per copy) |
-| `copy_del_prob` | `COPY_DEL_PROB` | number | `0.0` | Deletion rate (per copy) |
-| `copy_uniform_prob` | `COPY_UNIFORM_PROB` | number | `0.0` | Uniform mutation probability (per copy) - Randomly apply insertion, deletion or substition mutation |
-| `copy_slip_prob` | `COPY_SLIP_PROB` | number | `0.0` | Slip rate (per copy) |
-| `point_prob` | `POINT_MUT_PROB` | number | `0.0` | Point (Cosmic-Ray) substitution rate (per-location per update) |
-| `point_ins_prob` | `POINT_INS_PROB` | number | `0.0` | Point (Cosmic-Ray) insertion rate (per-location per update) |
-| `point_del_prob` | `POINT_DEL_PROB` | number | `0.0` | Point (Cosmic-Ray) deletion rate (per-location per update) |
-| `inst_point_prob` | `INST_POINT_MUT_PROB` | number | `0.0` | Mutation rate (per-location per time instruction (point-mut) is executed) |
+| `copy_prob` | `COPY_MUT_PROB` | number in 0..1 | `0.0075` | Substitution rate (per copy) |
+| `copy_ins_prob` | `COPY_INS_PROB` | number in 0..1 | `0.0` | Insertion rate (per copy) |
+| `copy_del_prob` | `COPY_DEL_PROB` | number in 0..1 | `0.0` | Deletion rate (per copy) |
+| `copy_uniform_prob` | `COPY_UNIFORM_PROB` | number in 0..1 | `0.0` | Uniform mutation probability (per copy) - Randomly apply insertion, deletion or substition mutation |
+| `copy_slip_prob` | `COPY_SLIP_PROB` | number in 0..1 | `0.0` | Slip rate (per copy) |
+| `point_prob` | `POINT_MUT_PROB` | number in 0..1 | `0.0` | Point (Cosmic-Ray) substitution rate (per-location per update) |
+| `point_ins_prob` | `POINT_INS_PROB` | number in 0..1 | `0.0` | Point (Cosmic-Ray) insertion rate (per-location per update) |
+| `point_del_prob` | `POINT_DEL_PROB` | number in 0..1 | `0.0` | Point (Cosmic-Ray) deletion rate (per-location per update) |
+| `inst_point_prob` | `INST_POINT_MUT_PROB` | number in 0..1 | `0.0` | Mutation rate (per-location per time instruction (point-mut) is executed) |
 | `inst_point_slope` | `INST_POINT_MUT_SLOPE` | number | `0.0` | Slope for point mutation rate |
 | `inst_point_repair_cost` | `INST_POINT_REPAIR_COST` | integer | `0` | The cost, in cycles, of avoiding mutations when the point-mut instruction is executed |
 | `point_repair_start` | `POINT_MUT_REPAIR_START` | flag | `false` | The starting condition for repairs (true = on, false = off) |
-| `div_prob` | `DIV_MUT_PROB` | number | `0.0` | Substitution rate (per site, applied on divide) |
-| `div_ins_prob` | `DIV_INS_PROB` | number | `0.0` | Insertion rate (per site, applied on divide) |
-| `div_del_prob` | `DIV_DEL_PROB` | number | `0.0` | Deletion rate (per site, applied on divide) |
-| `div_uniform_prob` | `DIV_UNIFORM_PROB` | number | `0.0` | Uniform mutation probability (per site, applied on divide) - Randomly apply insertion, deletion or point mutation |
-| `div_slip_prob` | `DIV_SLIP_PROB` | number | `0.0` | Slip rate (per site, applied on divide) |
-| `div_trans_prob` | `DIV_TRANS_PROB` | number | `0.0` | Translocation rate (per site, applied on divide) |
-| `div_lgt_prob` | `DIV_LGT_PROB` | number | `0.0` | Lateral Gene Transfer rate (per site, applied on divide) |
-| `divide_prob` | `DIVIDE_MUT_PROB` | number | `0.0` | Substitution rate (max one, per divide) |
-| `divide_ins_prob` | `DIVIDE_INS_PROB` | number | `0.05` | Insertion rate (max one, per divide) |
-| `divide_del_prob` | `DIVIDE_DEL_PROB` | number | `0.05` | Deletion rate (max one, per divide) |
-| `divide_uniform_prob` | `DIVIDE_UNIFORM_PROB` | number | `0.0` | Uniform mutation probability (per divide) - Randomly apply insertion, deletion or point mutation |
-| `divide_slip_prob` | `DIVIDE_SLIP_PROB` | number | `0.0` | Slip rate (per divide) - creates large deletions/duplications |
-| `divide_trans_prob` | `DIVIDE_TRANS_PROB` | number | `0.0` | Translocation rate (per divide) - creates large deletions/duplications |
-| `divide_lgt_prob` | `DIVIDE_LGT_PROB` | number | `0.0` | Lateral Gene Transfer rate (per divide) - creates large deletions/duplications |
+| `div_prob` | `DIV_MUT_PROB` | number in 0..1 | `0.0` | Substitution rate (per site, applied on divide) |
+| `div_ins_prob` | `DIV_INS_PROB` | number in 0..1 | `0.0` | Insertion rate (per site, applied on divide) |
+| `div_del_prob` | `DIV_DEL_PROB` | number in 0..1 | `0.0` | Deletion rate (per site, applied on divide) |
+| `div_uniform_prob` | `DIV_UNIFORM_PROB` | number in 0..1 | `0.0` | Uniform mutation probability (per site, applied on divide) - Randomly apply insertion, deletion or point mutation |
+| `div_slip_prob` | `DIV_SLIP_PROB` | number in 0..1 | `0.0` | Slip rate (per site, applied on divide) |
+| `div_trans_prob` | `DIV_TRANS_PROB` | number in 0..1 | `0.0` | Translocation rate (per site, applied on divide) |
+| `div_lgt_prob` | `DIV_LGT_PROB` | number in 0..1 | `0.0` | Lateral Gene Transfer rate (per site, applied on divide) |
+| `divide_prob` | `DIVIDE_MUT_PROB` | number in 0..1 | `0.0` | Substitution rate (max one, per divide) |
+| `divide_ins_prob` | `DIVIDE_INS_PROB` | number in 0..1 | `0.05` | Insertion rate (max one, per divide) |
+| `divide_del_prob` | `DIVIDE_DEL_PROB` | number in 0..1 | `0.05` | Deletion rate (max one, per divide) |
+| `divide_uniform_prob` | `DIVIDE_UNIFORM_PROB` | number in 0..1 | `0.0` | Uniform mutation probability (per divide) - Randomly apply insertion, deletion or point mutation |
+| `divide_slip_prob` | `DIVIDE_SLIP_PROB` | number in 0..1 | `0.0` | Slip rate (per divide) - creates large deletions/duplications |
+| `divide_trans_prob` | `DIVIDE_TRANS_PROB` | number in 0..1 | `0.0` | Translocation rate (per divide) - creates large deletions/duplications |
+| `divide_lgt_prob` | `DIVIDE_LGT_PROB` | number in 0..1 | `0.0` | Lateral Gene Transfer rate (per divide) - creates large deletions/duplications |
 | `divide_poisson_mean` | `DIVIDE_POISSON_MUT_MEAN` | number | `0.0` | Substitution rate (Poisson distributed, per divide) |
 | `divide_poisson_ins_mean` | `DIVIDE_POISSON_INS_MEAN` | number | `0.0` | Insertion rate (Poisson distributed, per divide) |
 | `divide_poisson_del_mean` | `DIVIDE_POISSON_DEL_MEAN` | number | `0.0` | Deletion rate (Poisson distributed, per divide) |
 | `divide_poisson_slip_mean` | `DIVIDE_POISSON_SLIP_MEAN` | number | `0.0` | Slip rate (Poisson distributed, per divide) |
 | `divide_poisson_trans_mean` | `DIVIDE_POISSON_TRANS_MEAN` | number | `0.0` | Translocation rate (Poisson distributed, per divide) |
 | `divide_poisson_lgt_mean` | `DIVIDE_POISSON_LGT_MEAN` | number | `0.0` | Lateral Gene Transfer rate (Poisson distributed, per divide) |
-| `inject_prob` | `INJECT_MUT_PROB` | number | `0.0` | Substitution rate (per site, applied on inject) |
-| `inject_ins_prob` | `INJECT_INS_PROB` | number | `0.0` | Insertion rate (per site, applied on inject) |
-| `inject_del_prob` | `INJECT_DEL_PROB` | number | `0.0` | Deletion rate (per site, applied on inject) |
+| `inject_prob` | `INJECT_MUT_PROB` | number in 0..1 | `0.0` | Substitution rate (per site, applied on inject) |
+| `inject_ins_prob` | `INJECT_INS_PROB` | number in 0..1 | `0.0` | Insertion rate (per site, applied on inject) |
+| `inject_del_prob` | `INJECT_DEL_PROB` | number in 0..1 | `0.0` | Deletion rate (per site, applied on inject) |
 | `slip_fill_mode` | `SLIP_FILL_MODE` | choice | `duplication` | Fill insertions from slip mutations with:; duplication: Duplication; nop_x: nop-X; random: Random; scrambled: Scrambled; nop_c: nop-C |
 | `slip_copy_mode` | `SLIP_COPY_MODE` | choice | `read_head_slip` | How to handle 'on-copy' slip mutations:; read_head_slip: actual read head slip; large_mutation: instant large mutation (obeys slip mode) |
 | `trans_fill_mode` | `TRANS_FILL_MODE` | choice | `duplication` | Fill insertions from translocation mutations with:; duplication: Duplication; scrambled: Scrambled |
 | `lgt_fill_mode` | `LGT_FILL_MODE` | choice | `duplication` | Fill insertions from lateral gene transfer mutations with:; duplication: Duplication; scrambled: scrambled |
 | `lgt_source_region` | `LGT_SOURCE_REGION` | choice | `neighborhood` | Extract gene for lateral transfer from:; neighborhood: Local Neighborhood; population: Entire Population |
-| `parent_prob` | `PARENT_MUT_PROB` | number | `0.0` | Parent substitution rate (per-site, applied on divide) |
-| `parent_ins_prob` | `PARENT_INS_PROB` | number | `0.0` | Parent insertion rate (per-site, applied on divide) |
-| `parent_del_prob` | `PARENT_DEL_PROB` | number | `0.0` | Parent deletion rate (per-site, applied on divide) |
+| `parent_prob` | `PARENT_MUT_PROB` | number in 0..1 | `0.0` | Parent substitution rate (per-site, applied on divide) |
+| `parent_ins_prob` | `PARENT_INS_PROB` | number in 0..1 | `0.0` | Parent insertion rate (per-site, applied on divide) |
+| `parent_del_prob` | `PARENT_DEL_PROB` | number in 0..1 | `0.0` | Parent deletion rate (per-site, applied on divide) |
 | `special_line` | `SPECIAL_MUT_LINE` | integer | `-1` | If this is >= 0, ONLY this line is mutated |
-| `meta_copy_prob` | `META_COPY_MUT` | number | `0.0` | Prob. of copy mutation rate changing (per gen) |
+| `meta_copy_prob` | `META_COPY_MUT` | number in 0..1 | `0.0` | Prob. of copy mutation rate changing (per gen) |
 | `meta_std_dev` | `META_STD_DEV` | number | `0.0` | Standard deviation of meta mutation size. |
 | `rate_source` | `MUT_RATE_SOURCE` | choice | `environment` | environment: Mutation rates determined by environment.; parent: Mutation rates inherited from parent. |
 
@@ -309,8 +309,8 @@ Birth and death.
 | `prefer_empty` | `PREFER_EMPTY` | flag | `true` | Overide BIRTH_METHOD to preferentially choose empty cells for offsping? |
 | `allow_parent` | `ALLOW_PARENT` | flag | `true` | Should parents be considered when deciding where to place offspring? |
 | `dispersal_rate` | `DISPERSAL_RATE` | number | `0.0` | Rate of dispersal under birth method 11 (poisson distributed random connection list hops) |
-| `death_prob` | `DEATH_PROB` | number | `0.0` | Probability of death when dividing. (@MAM: actually seems to be applied per-update?) |
-| `death_prob_parent` | `DEATH_PROB_PARENT` | number | `0.0` | Probability of death when dividing. (@MAM: proper DEATH_PROB impl) |
+| `death_prob` | `DEATH_PROB` | number in 0..1 | `0.0` | Probability of death when dividing. (@MAM: actually seems to be applied per-update?) |
+| `death_prob_parent` | `DEATH_PROB_PARENT` | number in 0..1 | `0.0` | Probability of death when dividing. (@MAM: proper DEATH_PROB impl) |
 | `death_method` | `DEATH_METHOD` | choice | `age_limit_per_site` | When should death by old age occur?; never: Never; age_limit: When executed AGE_LIMIT (+deviation) total instructions; age_limit_per_site: When executed genome_length * AGE_LIMIT (+dev) instructions |
 | `age_limit` | `AGE_LIMIT` | integer | `20` | See DEATH_METHOD |
 | `age_deviation` | `AGE_DEVIATION` | integer | `0` | Creates a normal distribution around AGE_LIMIT for time of death |
@@ -364,7 +364,7 @@ Sexual recombination and modularity.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `prob` | `RECOMBINATION_PROB` | number | `1.0` | Probability of recombination in div-sex |
+| `prob` | `RECOMBINATION_PROB` | number in 0..1 | `1.0` | Probability of recombination in div-sex |
 | `max_birth_wait_time` | `MAX_BIRTH_WAIT_TIME` | integer | `-1` | Updates incipiant orgs can wait for crossover (-1 = unlimited) |
 | `module_num` | `MODULE_NUM` | integer | `0` | Number of modules in the genome |
 | `cont_rec_regs` | `CONT_REC_REGS` | flag | `true` | Are (modular) recombination regions continuous? |
@@ -402,10 +402,10 @@ Parasites.
 | `inject_is_virulent` | `INJECT_IS_VIRULENT` | flag | `false` | Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence) |
 | `skip_reactions` | `PARASITE_SKIP_REACTIONS` | flag | `true` | Parasite tasks do not get processed in the environment (true) or they do trigger reactions (false) |
 | `inject_skip_first_task` | `INJECT_SKIP_FIRST_TASK` | flag | `false` | They cannot match the first task the host is doing to infect |
-| `inject_default_success` | `INJECT_DEFAULT_SUCCESS` | number | `0.0` | If injection is task specific, with what probability should non-matching parasites infect the host |
+| `inject_default_success` | `INJECT_DEFAULT_SUCCESS` | number in 0..1 | `0.0` | If injection is task specific, with what probability should non-matching parasites infect the host |
 | `virulence` | `PARASITE_VIRULENCE` | number | `-1` | The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment. Note that this should be set to a default even if virulence is evolving. |
 | `virulence_source` | `VIRULENCE_SOURCE` | choice | `config` | Where does the virulence come from?; config: Virulence is set by config; parent: inhereted from parent; host: host-controlled, i.e. donation |
-| `virulence_mut_rate` | `VIRULENCE_MUT_RATE` | number | `0.1` | The probability that virulence will mutate if it is inhereted from the parent or host-controlled (VIRULENCE_SOURCE = 1 & 2) |
+| `virulence_mut_rate` | `VIRULENCE_MUT_RATE` | number in 0..1 | `0.1` | The probability that virulence will mutate if it is inhereted from the parent or host-controlled (VIRULENCE_SOURCE = 1 & 2) |
 | `virulence_sd` | `VIRULENCE_SD` | number | `0.1` | New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation |
 | `mem_spaces` | `PARASITE_MEM_SPACES` | flag | `true` | Parasites get their own memory spaces |
 | `no_copy_mut` | `PARASITE_NO_COPY_MUT` | flag | `false` | Parasites do not get copy mutation rates |
@@ -456,16 +456,16 @@ Demes and germlines.
 | `max_births` | `DEMES_MAX_BIRTHS` | integer | `100` | Max number of births that can occur within a deme; used with birth-count replication |
 | `mim_events_killed_ratio` | `DEMES_MIM_EVENTS_KILLED_RATIO` | number | `0.7` | Minimum ratio of events killed required for event period to be a success. |
 | `mim_successful_event_periods` | `DEMES_MIM_SUCCESSFUL_EVENT_PERIODS` | integer | `1` | Minimum number of consecutive event periods that must be a success. |
-| `germline_copy_mut` | `GERMLINE_COPY_MUT` | number | `0.0075` | Prob. of copy mutations during germline replication |
-| `germline_ins_mut` | `GERMLINE_INS_MUT` | number | `0.05` | Prob. of insertion mutations during germline replication |
-| `germline_del_mut` | `GERMLINE_DEL_MUT` | number | `0.05` | Prob. of deletion mutations during germline replication |
+| `germline_copy_mut` | `GERMLINE_COPY_MUT` | number in 0..1 | `0.0075` | Prob. of copy mutations during germline replication |
+| `germline_ins_mut` | `GERMLINE_INS_MUT` | number in 0..1 | `0.05` | Prob. of insertion mutations during germline replication |
+| `germline_del_mut` | `GERMLINE_DEL_MUT` | number in 0..1 | `0.05` | Prob. of deletion mutations during germline replication |
 | `replicate_cpu_cycles` | `DEMES_REPLICATE_CPU_CYCLES` | number | `0.0` | Replicate a deme immediately after it has used this many cpu cycles per org in deme (0 = OFF). |
 | `replicate_time` | `DEMES_REPLICATE_TIME` | number | `0.0` | Number of CPU cycles used by a deme to trigger its replication (normalized by number of orgs in deme and organism merit; 0 = OFF). |
 | `replicate_births` | `DEMES_REPLICATE_BIRTHS` | integer | `0` | Number of offspring produced by a deme to trigger its replication (0 = OFF). |
 | `replicate_orgs` | `DEMES_REPLICATE_ORGS` | integer | `0` | Number of organisms in a deme to trigger its replication (0 = OFF). |
 | `replication_only_resets` | `DEMES_REPLICATION_ONLY_RESETS` | choice | `nothing` | Kin selection mode.  On replication:; nothing: Nothing extra; reset_resources: reset deme resources; reset_and_reinject: reset resources and re-inject organisms |
-| `migration_rate` | `DEMES_MIGRATION_RATE` | number | `0.0` | Probability of an offspring being born in a different deme. |
-| `parasite_migration_rate` | `DEMES_PARASITE_MIGRATION_RATE` | number | `0.0` | Probability of a parasite migrating to a different deme. Note: only works with DEMES_MIGRATION_METHOD 4. |
+| `migration_rate` | `DEMES_MIGRATION_RATE` | number in 0..1 | `0.0` | Probability of an offspring being born in a different deme. |
+| `parasite_migration_rate` | `DEMES_PARASITE_MIGRATION_RATE` | number in 0..1 | `0.0` | Probability of a parasite migrating to a different deme. Note: only works with DEMES_MIGRATION_METHOD 4. |
 | `migration_method` | `DEMES_MIGRATION_METHOD` | choice | `any` | Which demes can an offspring land in when it migrates?; any: Any other deme; eight_neighbors: Eight neighboring demes; adjacent: Two adjacent demes in list; points: Proportional based on the number of points; matrix: Use the weight matrix specified in demes.migration_file |
 | `parasite_migration_target_selection_method` | `DEMES_PARASITE_MIGRATION_TARGET_SELECTION_METHOD` | choice | `random_cell` | How should a target cell be chosen in the migrated-to deme?; random_cell: Select a cell randomly, if it is not occupied infection fails; random_occupied: Select an occupied cell randomly |
 | `parasite_migration_memory_score_protective_threshold` | `DEMES_PARASITE_MIGRATION_MEMORY_SCORE_PROTECTIVE_THRESHOLD` | number | `1.0` | Above what parasite memory score should hosts be protected from incoming parasite migration? |
@@ -477,7 +477,7 @@ Demes and germlines.
 | `founder_germline_propensity` | `DEMES_FOUNDER_GERMLINE_PROPENSITY` | number | `-1.0` | Default germline propensity of founder organisms in deme. For use with DEMES_DIVIDE_METHOD 2. <0 = OFF |
 | `prefer_empty` | `DEMES_PREFER_EMPTY` | flag | `false` | Give empty demes preference as targets of deme replication? |
 | `protection_points` | `DEMES_PROTECTION_POINTS` | integer | `0` | The number of points a deme receives for each suicide. |
-| `uniform_migration_rate` | `MIGRATION_RATE` | number | `0.0` | Uniform probability of offspring migrating to a new deme. |
+| `uniform_migration_rate` | `MIGRATION_RATE` | number in 0..1 | `0.0` | Uniform probability of offspring migrating to a new deme. |
 | `track_shannon_info` | `DEMES_TRACK_SHANNON_INFO` | integer | `0` | Enable shannon mutual information tracking for demes. |
 | `mut_orgs_on_replication` | `DEMES_MUT_ORGS_ON_REPLICATION` | flag | `false` | Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): false = off, true = on |
 | `orgs_start_in_germ` | `DEMES_ORGS_START_IN_GERM` | flag | `false` | Are orgs considered part of the germline at start? |
@@ -488,17 +488,17 @@ Mutation reversion (most of these slow Avida down a lot and should normally be 0
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `revert_fatal` | `REVERT_FATAL` | number | `0.0` | Prob of lethal mutations being reverted on birth |
-| `revert_detrimental` | `REVERT_DETRIMENTAL` | number | `0.0` | Prob of harmful (but non-lethal) mutations reverting on birth |
-| `revert_neutral` | `REVERT_NEUTRAL` | number | `0.0` | Prob of neutral mutations being reverted on birth |
-| `revert_beneficial` | `REVERT_BENEFICIAL` | number | `0.0` | Prob of beneficial mutations being reverted on birth |
-| `revert_taskloss` | `REVERT_TASKLOSS` | number | `0.0` | Prob of mutations that cause task loss without any tasks gained being reverted on birth |
-| `revert_equals` | `REVERT_EQUALS` | number | `0.0` | Prob of mutations which grant EQU being reverted on birth |
-| `sterilize_fatal` | `STERILIZE_FATAL` | number | `0.0` | Prob of lethal mutations steralizing an offspring (typically no effect!) |
-| `sterilize_detrimental` | `STERILIZE_DETRIMENTAL` | number | `0.0` | Prob of harmful (but non-lethal) mutations sterilizing an offspring |
-| `sterilize_neutral` | `STERILIZE_NEUTRAL` | number | `0.0` | Prob of neutral mutations sterilizing an offspring |
-| `sterilize_beneficial` | `STERILIZE_BENEFICIAL` | number | `0.0` | Prob of beneficial mutations sterilizing an offspring |
-| `sterilize_taskloss` | `STERILIZE_TASKLOSS` | number | `0.0` | Prob of mutations causing task loss without task gain sterilizing an offspring |
+| `revert_fatal` | `REVERT_FATAL` | number in 0..1 | `0.0` | Prob of lethal mutations being reverted on birth |
+| `revert_detrimental` | `REVERT_DETRIMENTAL` | number in 0..1 | `0.0` | Prob of harmful (but non-lethal) mutations reverting on birth |
+| `revert_neutral` | `REVERT_NEUTRAL` | number in 0..1 | `0.0` | Prob of neutral mutations being reverted on birth |
+| `revert_beneficial` | `REVERT_BENEFICIAL` | number in 0..1 | `0.0` | Prob of beneficial mutations being reverted on birth |
+| `revert_taskloss` | `REVERT_TASKLOSS` | number in 0..1 | `0.0` | Prob of mutations that cause task loss without any tasks gained being reverted on birth |
+| `revert_equals` | `REVERT_EQUALS` | number in 0..1 | `0.0` | Prob of mutations which grant EQU being reverted on birth |
+| `sterilize_fatal` | `STERILIZE_FATAL` | number in 0..1 | `0.0` | Prob of lethal mutations steralizing an offspring (typically no effect!) |
+| `sterilize_detrimental` | `STERILIZE_DETRIMENTAL` | number in 0..1 | `0.0` | Prob of harmful (but non-lethal) mutations sterilizing an offspring |
+| `sterilize_neutral` | `STERILIZE_NEUTRAL` | number in 0..1 | `0.0` | Prob of neutral mutations sterilizing an offspring |
+| `sterilize_beneficial` | `STERILIZE_BENEFICIAL` | number in 0..1 | `0.0` | Prob of beneficial mutations sterilizing an offspring |
+| `sterilize_taskloss` | `STERILIZE_TASKLOSS` | number in 0..1 | `0.0` | Prob of mutations causing task loss without task gain sterilizing an offspring |
 | `sterilize_unstable` | `STERILIZE_UNSTABLE`, `FAIL_IMPLICIT` | integer | `0` | Should genotypes that cannot replicate perfectly not be allowed to replicate? |
 | `neutral_max` | `NEUTRAL_MAX` | number | `0.0` | Percent benifical change from parent fitness to be considered neutral. |
 | `neutral_min` | `NEUTRAL_MIN` | number | `0.0` | Percent deleterious change from parent fitness to be considered neutral. |
@@ -580,7 +580,7 @@ Organism network communication.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `drop_prob` | `NET_DROP_PROB` | number | `0.0` | Message drop rate |
+| `drop_prob` | `NET_DROP_PROB` | number in 0..1 | `0.0` | Message drop rate |
 | `log_messages` | `NET_LOG_MESSAGES` | flag | `false` | Whether all messages are logged; false (default) or true. |
 | `log_retmessages` | `NET_LOG_RETMESSAGES` | flag | `false` | Whether retrieved messages are logged; false (default) or true. |
 
@@ -771,7 +771,7 @@ Sensing.
 | `track_look_output` | `TRACK_LOOK_OUTPUT` | flag | `false` | # track (final) output from sensor use |
 | `use_display` | `USE_DISPLAY` | integer | `0` | If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data. |
 | `use_mimics` | `USE_MIMICS` | flag | `false` | If true, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor) |
-| `mimic_odds` | `MIMIC_ODDS` | number | `1.0` | Odds that a mimic will appear to other organisms as the thing it is mimicing. |
+| `mimic_odds` | `MIMIC_ODDS` | number in 0..1 | `1.0` | Odds that a mimic will appear to other organisms as the thing it is mimicing. |
 | `set_ft_at_birth` | `SET_FT_AT_BIRTH` | flag | `false` | Should offspring set forage target at birth? false: No, true: Yes |
 
 ### `pheromone`
@@ -796,7 +796,7 @@ Synchronization.
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
 | `fitness_window` | `SYNC_FITNESS_WINDOW` | integer | `100` | Number of updates over which to calculate fitness (default=100). |
-| `flash_lossrate` | `SYNC_FLASH_LOSSRATE` | number | `0.0` | P() to lose a flash send (0.0==off). |
+| `flash_lossrate` | `SYNC_FLASH_LOSSRATE` | number in 0..1 | `0.0` | P() to lose a flash send (0.0==off). |
 | `test_flash_arrival` | `SYNC_TEST_FLASH_ARRIVAL` | integer | `-1` | CPU cycle at which an organism will receive a flash (off=-1, default=-1, analyze mode only.) |
 
 ### `consensus`
@@ -845,7 +845,7 @@ Group formation and predator-prey.
 | `pred_prey_switch` | `PRED_PREY_SWITCH` | choice | `no_predators` | track_prey: no predators, but track prey stats; no_predators: no predators in experiment; pred_to_prey_denied: don't allow a predator to switch to being a prey (prey to pred always allowed); pred_to_prey_allowed: allow predators to switch to being prey; no_switch: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) |
 | `pred_efficiency` | `PRED_EFFICIENCY` | number | `1.0` | Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value and add to current predator values (for bonus, merit, and bin consumption instructions). |
 | `pred_efficiency_poison` | `PRED_EFFICIENCY_POISON` | number | `1.0` | Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value and subtract from current predator values if this prey is poisonous (ft == 2). |
-| `pred_odds` | `PRED_ODDS` | number | `1.0` | Probability of success for predator 'attack' instructions. |
+| `pred_odds` | `PRED_ODDS` | number in 0..1 | `1.0` | Probability of success for predator 'attack' instructions. |
 | `pred_injury` | `PRED_INJURY` | number | `0.0` | If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction. |
 | `min_prey` | `MIN_PREY` | integer | `0` | If positive (recommended for prey studies), predator attacks fail if num prey falls below this (0 = off). If negative (recommended for predator studies), random prey of genotype other than target will be cloned (using birth placement methods). |
 | `max_pred` | `MAX_PRED` | integer | `0` | Population cap on number of predators (random predator will be removed when cap is exceeded). |
@@ -880,10 +880,10 @@ Horizontal gene transfer.
 | `fragment_size_variance` | `HGT_FRAGMENT_SIZE_VARIANCE` | number | `2` | Variance of fragments (default=2). |
 | `max_fragments_per_cell` | `HGT_MAX_FRAGMENTS_PER_CELL` | integer | `100` | Max. allowed number of fragments per cell (default=100). |
 | `diffusion_method` | `HGT_DIFFUSION_METHOD` | integer | `0` | Method to use for diffusion of genome fragments; 0=none (default). |
-| `competence_p` | `HGT_COMPETENCE_P` | number | `0.0` | Probability that an HGT 'natural competence' mutation will occur on divide (default=0.0). |
-| `insertion_mut_p` | `HGT_INSERTION_MUT_P` | number | `0.0` | Probability that an HGT mutation will result in an insertion (default=0.0). |
+| `competence_p` | `HGT_COMPETENCE_P` | number in 0..1 | `0.0` | Probability that an HGT 'natural competence' mutation will occur on divide (default=0.0). |
+| `insertion_mut_p` | `HGT_INSERTION_MUT_P` | number in 0..1 | `0.0` | Probability that an HGT mutation will result in an insertion (default=0.0). |
 | `conjugation_method` | `HGT_CONJUGATION_METHOD` | integer | `0` | Method used to select the receiver and/or donor of an HGT conjugation; 0=random from neighborhood (default); 1=faced. |
-| `conjugation_p` | `HGT_CONJUGATION_P` | number | `0.0` | Probability that an HGT conjugation mutation will occur on divide (default=0.0). |
+| `conjugation_p` | `HGT_CONJUGATION_P` | number in 0..1 | `0.0` | Probability that an HGT conjugation mutation will occur on divide (default=0.0). |
 | `fragment_xform` | `HGT_FRAGMENT_XFORM` | choice | `none` | Transformation to apply to each fragment prior to incorporation into offspring's genome;; none: none (default),; shuffle: random shuffle,; random_instructions: replace with random instructions. |
 
 ### `inst_resources`

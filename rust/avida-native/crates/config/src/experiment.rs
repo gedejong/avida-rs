@@ -734,7 +734,18 @@ pub fn setting_value(info: &SettingInfo, text: &str) -> Result<String, String> {
             info.path()
         ));
     }
+    if let Some((lo, hi)) = info.range() {
+        let v = as_double(text);
+        if !(lo..=hi).contains(&v) {
+            return Err(range_message(&info.path(), text, lo, hi));
+        }
+    }
     Ok(text.to_string())
+}
+
+/// The refusal of a value outside the range of its setting.
+pub fn range_message(path: &str, text: &str, lo: f64, hi: f64) -> String {
+    format!("setting '{path}' is {text}, outside its range {lo}..{hi}")
 }
 
 fn starts_like_number(text: &str) -> bool {
@@ -1454,6 +1465,43 @@ mod tests {
         assert!(!naming::setting_by_path("divide.require_single_reaction")
             .unwrap()
             .is_flag());
+    }
+
+    #[test]
+    fn a_probability_must_lie_in_zero_to_one() {
+        let path = "mutation.copy_prob";
+        let info = naming::setting_by_path(path).unwrap();
+        assert_eq!(info.range(), Some((0.0, 1.0)));
+        assert_eq!(info.type_label(), "number in 0..1");
+        for text in ["0", "0.0", "0.0075", "1", "1.0", ".5"] {
+            Config::new().set_path(path, text, ".").unwrap();
+        }
+        for text in ["1.0001", "-0.01", "2", "-1", "nan"] {
+            let e = Config::new().set_path(path, text, ".").unwrap_err();
+            assert!(e.contains(path) && e.contains(text), "{e}");
+            if text != "nan" {
+                assert!(e.contains("0..1"), "{e}");
+            }
+        }
+        // A Poisson mean has no upper bound.
+        Config::new()
+            .set_path("mutation.divide_poisson_mean", "3.5", ".")
+            .unwrap();
+        assert!(naming::setting_by_path("mutation.divide_poisson_mean")
+            .unwrap()
+            .range()
+            .is_none());
+    }
+
+    #[test]
+    fn every_probability_names_a_double_setting() {
+        for old in naming::PROBABILITIES {
+            let info = naming::settings().into_iter().find(|s| s.old == *old);
+            let info = info.unwrap_or_else(|| panic!("{old} is no setting"));
+            assert_eq!(info.kind(), ValueKind::Double, "{old}");
+            let d = as_double(info.default());
+            assert!((0.0..=1.0).contains(&d), "{old} default {d}");
+        }
     }
 
     #[test]
