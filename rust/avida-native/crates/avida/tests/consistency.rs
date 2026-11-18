@@ -9,6 +9,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn tests_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/tests")
@@ -121,15 +122,33 @@ fn consistency_tests_match_expected_output() {
         .collect();
     assert!(!names.is_empty());
 
-    let failures: Vec<String> = std::thread::scope(|scope| {
-        let handles: Vec<_> = names
-            .iter()
-            .map(|name| scope.spawn(move || run_test(name).err().map(|e| format!("{name}: {e}"))))
+    // At most `AVIDA_TEST_JOBS` runs at a time (default: the number of
+    // cores).
+    let jobs = std::env::var("AVIDA_TEST_JOBS")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or_else(|| std::thread::available_parallelism().map_or(4, |n| n.get()))
+        .max(1);
+    let next = AtomicUsize::new(0);
+    let mut failures: Vec<String> = std::thread::scope(|scope| {
+        let handles: Vec<_> = (0..jobs)
+            .map(|_| {
+                scope.spawn(|| {
+                    let mut failed = Vec::new();
+                    while let Some(name) = names.get(next.fetch_add(1, Ordering::Relaxed)) {
+                        if let Err(e) = run_test(name) {
+                            failed.push(format!("{name}: {e}"));
+                        }
+                    }
+                    failed
+                })
+            })
             .collect();
         handles
             .into_iter()
-            .filter_map(|h| h.join().unwrap())
+            .flat_map(|h| h.join().unwrap())
             .collect()
     });
+    failures.sort();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

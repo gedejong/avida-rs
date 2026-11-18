@@ -1,0 +1,33 @@
+# Converted with 'avida convert' from instset-classic.cfg. Name it in an experiment
+# file as "instruction_sets: <this file>".
+
+instruction_sets:
+  - name: instset-classic.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow

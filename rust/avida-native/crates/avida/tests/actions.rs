@@ -5,17 +5,26 @@
 //! - `case.txt`: `base <test>` names the `avida-core/tests/<test>/config`
 //!   directory the run starts from; `args <...>` gives the command line;
 //!   `rc <n>` the expected exit status (default 0).
-//! - `events.cfg` replaces the base configuration's event file.
+//! - `avida.yaml` replaces the base configuration's experiment file (the
+//!   case's settings, instruction sets, environment and events).
 //! - `extra/` (optional) holds files copied over the configuration.
 //! - `stdin.txt` (optional) is fed to the run as standard input (the
 //!   interactive analyze loop); without it standard input is empty.
 //! - `expected/` holds every file the run must write (`_stdout` is the
 //!   standard output; `_stderr`, when present, the standard error).
 //!   Timestamp comment lines are ignored.
+//!
+//! The reference runs read the old input files (`avida.cfg`, `events.cfg`,
+//! `environment.cfg` and instruction-set files), which `avida convert` made
+//! into the cases' `avida.yaml`. What the reference binary printed about
+//! the old files alone is taken out of the expected `_stdout` and `_stderr`
+//! (`avida_config::convert::without_old_input_notes`), as
+//! `tools/run_suite.py` does for the consistency suite.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn tests_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/tests")
@@ -73,21 +82,6 @@ fn normalized(bytes: &[u8]) -> Vec<Vec<u8>> {
         .collect()
 }
 
-/// The event file the configuration names (`EVENT_FILE`, default
-/// `events.cfg`).
-fn event_file_of(config: &Path) -> String {
-    let text = fs::read_to_string(config.join("avida.cfg")).unwrap_or_default();
-    for line in text.lines() {
-        let mut words = line.split_whitespace();
-        if words.next() == Some("EVENT_FILE") {
-            if let Some(f) = words.next() {
-                return f.to_string();
-            }
-        }
-    }
-    "events.cfg".to_string()
-}
-
 fn run_case(name: &str) -> Result<(), String> {
     let case = cases_root().join(name);
     let spec = fs::read_to_string(case.join("case.txt")).map_err(|e| e.to_string())?;
@@ -111,8 +105,7 @@ fn run_case(name: &str) -> Result<(), String> {
     if case.join("extra").is_dir() {
         copy_dir(&case.join("extra"), &work);
     }
-    fs::copy(case.join("events.cfg"), work.join(event_file_of(&work)))
-        .map_err(|e| e.to_string())?;
+    fs::copy(case.join("avida.yaml"), work.join("avida.yaml")).map_err(|e| e.to_string())?;
 
     let stdin = match fs::File::open(case.join("stdin.txt")) {
         Ok(f) => Stdio::from(f),
@@ -138,7 +131,11 @@ fn run_case(name: &str) -> Result<(), String> {
     files.sort();
     let mut diffs = Vec::new();
     for f in &files {
-        let want = fs::read(expected.join(f)).unwrap();
+        let mut want = fs::read(expected.join(f)).unwrap();
+        if f.as_os_str() == "_stdout" || f.as_os_str() == "_stderr" {
+            want = avida_config::convert::without_old_input_notes(&String::from_utf8_lossy(&want))
+                .into_bytes();
+        }
         let got = if f.as_os_str() == "_stdout" {
             output.stdout.clone()
         } else if f.as_os_str() == "_stderr" {
@@ -176,15 +173,33 @@ fn action_cases_match_reference_output() {
     names.sort();
     assert!(!names.is_empty(), "no cases under tests/actions");
 
-    let failures: Vec<String> = std::thread::scope(|scope| {
-        let handles: Vec<_> = names
-            .iter()
-            .map(|name| scope.spawn(move || run_case(name).err().map(|e| format!("{name}: {e}"))))
+    // At most `AVIDA_TEST_JOBS` runs at a time (default: the number of
+    // cores).
+    let jobs = std::env::var("AVIDA_TEST_JOBS")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or_else(|| std::thread::available_parallelism().map_or(4, |n| n.get()))
+        .max(1);
+    let next = AtomicUsize::new(0);
+    let mut failures: Vec<String> = std::thread::scope(|scope| {
+        let handles: Vec<_> = (0..jobs)
+            .map(|_| {
+                scope.spawn(|| {
+                    let mut failed = Vec::new();
+                    while let Some(name) = names.get(next.fetch_add(1, Ordering::Relaxed)) {
+                        if let Err(e) = run_case(name) {
+                            failed.push(format!("{name}: {e}"));
+                        }
+                    }
+                    failed
+                })
+            })
             .collect();
         handles
             .into_iter()
-            .filter_map(|h| h.join().unwrap())
+            .flat_map(|h| h.join().unwrap())
             .collect()
     });
+    failures.sort();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

@@ -39,7 +39,7 @@ fn build_world(dir: &Path) -> World {
     let cwd = dir.to_string_lossy().into_owned();
     let cmd = process_cmdline(&["avida".to_string()], &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs)
+    World::new(cmd.config, &cwd)
         .unwrap_or_else(|e| panic!("World::new: {e}"))
         .0
 }

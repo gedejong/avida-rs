@@ -730,10 +730,12 @@ fn every_screen_in_every_colour_mode_and_size() {
 fn the_open_endedness_screen_with_rows() {
     set_theme(Background::Dark, ColorMode::TrueColor);
     let dir = fresh_config("screens_oe");
-    let events = fs::read_to_string(dir.join("events.cfg")).unwrap();
-    fs::write(
-        dir.join("events.cfg"),
-        format!(
+    let events = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!(
             "u 0:1:end PrintMODESData modes.dat 1 2\n\
              u 0:1:end PrintMODESData modes_any.dat 1 1 any\n\
              u 0:5:end PrintPhylogenyMetrics phylogeny.dat\n{events}"

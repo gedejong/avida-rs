@@ -1,0 +1,64 @@
+# Heads CPU with subroutines and scratch registers (port-only extension,
+# opt-in; see rust/avida-native/PORTING.md, "Modular heads set").
+#
+# The stock heads set (heads_default) plus
+#   nop-D, nop-E, nop-F   three more register nops: the CPU has the six
+#                         registers AX..FX. The number of registers is the
+#                         number of nops the set declares (3 in the stock
+#                         set), and label complements rotate through all
+#                         of them (A->B->...->F->A).
+#   call, return          subroutines through the thread's active stack:
+#                         call pushes its own position, reads the label
+#                         that follows and jumps past the complement label
+#                         (forward search only; with no label it jumps
+#                         forward by the number in BX); return pops that position
+#                         and continues after the call.
+#
+# Name it in an experiment file as "instruction_sets: [heads_modular]".
+
+instruction_sets:
+  - name: heads_modular
+    hardware_type: 0
+    instructions:
+      # No-ops (register modifiers and label letters)
+      - nop-A                 # a
+      - nop-B                 # b
+      - nop-C                 # c
+      - nop-D                 # d
+      - nop-E                 # e
+      - nop-F                 # f
+
+      # Flow control operations
+      - if-n-equ              # g
+      - if-less               # h
+      - if-label              # i
+      - mov-head              # j
+      - jmp-head              # k
+      - get-head              # l
+      - set-flow              # m
+      - call                  # n
+      - return                # o
+
+      # Single Argument Math
+      - shift-r               # p
+      - shift-l               # q
+      - inc                   # r
+      - dec                   # s
+      - push                  # t
+      - pop                   # u
+      - swap-stk              # v
+      - swap                  # w
+
+      # Double Argument Math
+      - add                   # x
+      - sub                   # y
+      - nand                  # z
+
+      # Biological Operations
+      - h-copy                # A
+      - h-alloc               # B
+      - h-divide              # C
+
+      # I/O and Sensory
+      - IO                    # D
+      - h-search              # E

@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 3 -set TRACK_BIRTH_LOCS 1 -set WORLD_X 12 -set WORLD_Y 12
+args -s 3 -set movement.track_birth_locs 1 -set world.x 12 -set world.y 12

@@ -1,0 +1,59 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 3
+world:
+  x: 20
+  y: 20
+  geometry: bounded_grid
+movement:
+  use_avatars: interacting
+  avatar_birth: random
+
+instruction_sets:
+  - name: experimental
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - if-n-equ
+      - if-less
+      - mov-head
+      - jmp-head
+      - get-head
+      - label
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - search-lbl-direct-s
+      - if-copied-lbl-direct
+      - move
+      - rotate-x
+
+environment:
+  reactions:
+    - {name: ECHO, task: echo, process: {value: 1.0, type: pow}}
+
+events:
+  - {at: begin, action: Inject, args: anc.org 210}
+  - {at: begin, action: PrintTopNavTrace}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 30, action: FlushTopNavTrace}
+  - {at: 40, action: PrintNavTrace}
+  - {at: 60, action: FlushTopNavTrace}
+  - {at: 80, action: Exit}

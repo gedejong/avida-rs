@@ -212,7 +212,7 @@ fn editing_the_config_restarts_the_run_with_the_overrides() {
         Step::Until("two updates", Box::new(|a| a.history.len() >= 2)),
         Step::Keys("F"),
         Step::Check(Box::new(|_, t| {
-            has(t, "WORLD_X");
+            has(t, "world.x");
             has(t, "A restart would run with: -s 7");
         })),
         Step::Snap("config".into()),
@@ -236,7 +236,7 @@ fn editing_the_config_restarts_the_run_with_the_overrides() {
             assert_eq!(a.config.overrides.len(), 2);
             has(
                 t,
-                "A restart would run with: -s 7 -set WORLD_X 20 -set WORLD_Y 20",
+                "A restart would run with: -s 7 -set world.x 20 -set world.y 20",
             );
         })),
         Step::Keys("R"),
@@ -259,11 +259,11 @@ fn editing_the_config_restarts_the_run_with_the_overrides() {
             assert!(a.history.is_empty(), "history belongs to the old run");
             assert_eq!(
                 a.args,
-                ["-s", "7", "-set", "WORLD_X", "20", "-set", "WORLD_Y", "20"]
+                ["-s", "7", "-set", "world.x", "20", "-set", "world.y", "20"]
             );
             assert!(a.config.overrides.is_empty());
             let setup = a.setup.as_ref().unwrap();
-            assert_eq!(setup.setting("WORLD_X").unwrap().value, "20");
+            assert_eq!(setup.setting("world.x").unwrap().value, "20");
             assert_eq!(a.run_state(), RunState::Paused);
             has(t, "Restarted with");
         })),

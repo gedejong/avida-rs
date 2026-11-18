@@ -1578,9 +1578,9 @@ mod tests {
         }
         let wd = dir.to_string_lossy().into_owned();
         let mut cfg = Config::default();
-        assert!(cfg.load("avida.cfg", &wd, None, None, false));
+        assert!(cfg.load_experiment("avida.yaml", &wd, &mut avida_config::Feedback::new()));
         tweak(&mut cfg);
-        let mut w = World::new(cfg, &wd, &[]).unwrap().0;
+        let mut w = World::new(cfg, &wd).unwrap().0;
         // Before the first update the update is -1, which an entry's
         // timestamp cannot be told apart from "empty".
         w.stats.set_current_update(0);

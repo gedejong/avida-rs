@@ -35,9 +35,8 @@ use std::collections::BTreeMap;
 use avida_apto::datafile::get_absolute_path;
 use avida_apto::{diag, AvidaRng, OutputManager};
 use avida_config::string_util as su;
-use avida_config::{Config, Feedback, InitFile};
+use avida_config::{Config, Feedback};
 use avida_environment::{geometry, TaskRegistry};
-use avida_genome::inst_set_registry::convert_legacy_inst_set_file;
 use avida_genome::{InstCodeConfig, InstSetRegistry};
 use avida_hardware::task_adapter::{Env, OutputHost, TaskLibRegistry};
 use avida_hardware::test_cpu::{TestCpuHost, TestWorld, TestWorldCounts};
@@ -324,8 +323,6 @@ impl PhenotypeStats for NullStats {
 #[derive(Debug, Clone)]
 struct EnvRecipe {
     config: Config,
-    env_file: String,
-    defs: Vec<(String, String)>,
     lines: Vec<(String, Config)>,
 }
 
@@ -569,20 +566,16 @@ impl AnalyzeWorld {
     ///
     /// `Err` is a loud failure for a setting this port does not set up (see
     /// the module documentation).
-    pub fn initialize(
-        config: Config,
-        working_dir: &str,
-        defs: &[(String, String)],
-    ) -> Result<WorldInit> {
-        Self::initialize_with(config, working_dir, defs, &mut NoSetupHooks)
+    pub fn initialize(config: Config, working_dir: &str) -> Result<WorldInit> {
+        Self::initialize_with(config, working_dir, &mut NoSetupHooks)
     }
 
     /// `cWorld::Initialize(cfg, working_dir, new_world, feedback, defs)`,
-    /// with the migration matrix and the population set up by `hooks`.
+    /// with the migration matrix and the population set up by `hooks`. The
+    /// `defs` are gone with the old configuration format.
     pub fn initialize_with(
         mut config: Config,
         working_dir: &str,
-        defs: &[(String, String)],
         hooks: &mut dyn SetupHooks,
     ) -> Result<WorldInit> {
         let mut stdout = String::new();
@@ -598,15 +591,12 @@ impl AnalyzeWorld {
 
         // Initialize the default environment...
         let mut env = Env::new(&config, TaskLibRegistry::new());
-        let env_file = config.environment_file.clone();
         let env_recipe = EnvRecipe {
             config: config.clone(),
-            env_file: env_file.clone(),
-            defs: defs.to_vec(),
             lines: Vec::new(),
         };
         if env
-            .load(&env_file, working_dir, &mut fb, Some(defs), &config)
+            .load_lines(&config.experiment.environment, &mut fb, &config)
             .is_err()
         {
             success = false;
@@ -626,22 +616,7 @@ impl AnalyzeWorld {
         }
 
         // Initialize the hardware manager, loading all of the instruction sets
-        let mut list: Vec<String> = config.instsets().to_vec();
-        if config.inst_set_load_legacy != 0 {
-            let conv = convert_legacy_inst_set_file(
-                &config.inst_set,
-                config.hardware_type,
-                working_dir,
-                &mut list,
-                &mut fb,
-            );
-            if let Some(name) = conv.inst_set_setting {
-                config.inst_set = name;
-            }
-            if !conv.success {
-                success = false;
-            }
-        }
+        let list: Vec<String> = config.instsets().to_vec();
         let mut hw = HardwareManager::new();
         let code_cfg = InstCodeConfig {
             inst_code_length: config.inst_code_length,
@@ -655,12 +630,6 @@ impl AnalyzeWorld {
         }
         if hw.registry().num_inst_sets() == 0 {
             fb.error("no instruction sets defined");
-            if config.inst_set_load_legacy == 0
-                && !config.inst_set.is_empty()
-                && config.inst_set != "-"
-            {
-                fb.notify("It looks like you are attempting to load a legacy format instruction set file.  Try setting INST_SET_LOAD_LEGACY to 1.");
-            }
             success = false;
         }
         if !success {
@@ -703,16 +672,13 @@ impl AnalyzeWorld {
         }
 
         // Setup Event List
-        let event_file = InitFile::new(&config.event_file, working_dir, None, Some(defs));
-        let mut events_ok = event_file.was_opened();
-        if events_ok {
-            for line_id in 0..event_file.num_lines() {
-                if let Err(line) = check_event_line(&event_file.get_line(line_id as i32)) {
-                    direct_err.push_str(&line);
-                    direct_err.push('\n');
-                    events_ok = false;
-                    break;
-                }
+        let mut events_ok = true;
+        for line in &config.experiment.events {
+            if let Err(line) = check_event_line(line) {
+                direct_err.push_str(&line);
+                direct_err.push('\n');
+                events_ok = false;
+                break;
             }
         }
         if !events_ok {
@@ -921,14 +887,8 @@ impl AnalyzeWorld {
         let env = without_diagnostics(|| {
             let mut env = Env::new(&r.config, TaskLibRegistry::new());
             let mut fb = Feedback::new();
-            env.load(
-                &r.env_file,
-                &self.working_dir,
-                &mut fb,
-                Some(&r.defs),
-                &r.config,
-            )
-            .ok()?;
+            env.load_lines(&r.config.experiment.environment, &mut fb, &r.config)
+                .ok()?;
             for (line, config) in &r.lines {
                 let _ = env.load_line(line, &mut Feedback::new(), config);
             }

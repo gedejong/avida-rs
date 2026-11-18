@@ -1,0 +1,37 @@
+# Converted with 'avida convert' from instset-heads-30-parasite.cfg. Name it in an experiment
+# file as "instruction_sets: <this file>".
+
+instruction_sets:
+  - name: instset-heads-30-parasite.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - set-flow
+      - h-push
+      - h-pop
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - rotate-l
+      - rotate-r
+      - inject

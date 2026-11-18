@@ -1,0 +1,102 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 7
+world:
+  x: 12
+  y: 1
+altruism:
+  max_donates: 1000
+energy:
+  enabled: true
+  given_on_inject: 1000.0
+  given_at_birth: 50.0
+  num_cycles_exc_before_0_energy: 1000
+  cap: 5000.0
+energy_sharing:
+  increment: 0.1
+  resource_sharing_loss: 0.1
+  update_metabolic: true
+
+instruction_sets:
+  - name: heads_self
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - donate-facing
+      - donate-energy-faced
+      - donate-energy-faced5
+      - donate-energy-faced1
+      - if-faced-energy-low
+      - if-faced-energy-med
+      - if-faced-energy-high
+      - if-faced-energy-not-low
+      - if-faced-energy-not-high
+      - if-faced-energy-less
+      - if-faced-energy-more
+      - get-faced-energy-level
+      - if-faced-request-on
+      - if-faced-request-off
+      - get-faced-energy-request-status
+      - rotate-to-most-needy
+      - request-energy
+      - request-energy-on
+      - request-energy-off
+      - donate-energy
+      - receive-donated-energy
+      - increase-energy-donation
+      - update-metabolic-rate
+      - get-energy-level
+      - send-msg
+      - retrieve-msg
+      - rotate-r
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: a0.org 0}
+  - {at: begin, action: Inject, args: a1.org 4}
+  - {at: begin, action: Inject, args: a2.org 8}
+  - {at: 0, every: 20, until: end, action: PrintCountData}
+  - {at: 0, every: 20, until: end, action: PrintAverageData}
+  - {at: 0, every: 20, until: end, action: PrintTasksData}
+  - {at: 0, every: 20, until: end, action: PrintInstructionData}
+  - {at: 0, every: 20, until: end, action: PrintDonationStats}
+  - {at: 0, every: 20, until: end, action: PrintResourceData}
+  - {at: 120, action: Exit}

@@ -11,13 +11,21 @@
 //!
 //! Settings of the port that the C++ does not have (`EXECUTION_MODE`,
 //! `EXECUTION_THREADS`) live in [`crate::port_settings`], outside the
-//! generated table: [`Config::get`], [`Config::set`], `-set` and
-//! [`Config::load`] know them, the C++ printers do not list them.
+//! generated table: [`Config::get`], [`Config::set`], the experiment file
+//! and the old-format reader of `avida convert` know them, the C++ printers
+//! do not list them.
+//!
+//! The experiment file (`avida.yaml`) is read by [`crate::experiment`]. The
+//! reader of the old `avida.cfg` (`cAvidaConfig::Load`) stays in this module,
+//! private to the crate, for the converter ([`crate::convert`]) alone.
 
 use crate::feedback::Feedback;
 use crate::init_file::InitFile;
+use crate::naming::ValueKind;
 use crate::port_settings::{self, PORT_ENTRIES};
-use crate::string_util::{as_double, as_int, format_ostream_double, pop, pop_word, split_list};
+#[cfg(test)]
+use crate::string_util::split_list;
+use crate::string_util::{as_double, as_int, format_ostream_double, pop, pop_word};
 
 pub use crate::config_table::{Config, FORMATS, GROUPS, NUM_ENTRIES};
 
@@ -187,8 +195,9 @@ impl Config {
     /// `cAvidaConfig::Set(Apto::Map& sets)`: apply every pending `(name, value)`
     /// whose name matches a setting under any of its names (aliases too),
     /// removing applied ones from `sets`. Returns the lines the C++ prints to
-    /// stdout (`CmdLine Set: NAME value` when VERBOSITY > 1).
-    pub fn set_from_map(&mut self, sets: &mut Vec<(String, String)>) -> Vec<String> {
+    /// stdout (`CmdLine Set: NAME value` when VERBOSITY > 1). Used by
+    /// `avida convert` for the old names of `-set`.
+    pub(crate) fn set_from_map(&mut self, sets: &mut Vec<(String, String)>) -> Vec<String> {
         let mut out = Vec::new();
         for g in GROUPS {
             for e in g.entries {
@@ -236,12 +245,13 @@ impl Config {
             .map(|i| self.format_values[i].as_slice())
     }
 
-    /// `cAvidaConfig::Load`. Returns false when the file cannot be opened.
+    /// `cAvidaConfig::Load`: reads a configuration file of the old format,
+    /// for `avida convert`. Returns false when the file cannot be opened.
     ///
     /// Messages go to `feedback` when given, with `cUserFeedback::Append`
     /// semantics (see [`Feedback::append`]: the error/warning counters do not
     /// include appended messages). `mappings` are the `-def` variables.
-    pub fn load(
+    pub(crate) fn load_old_format(
         &mut self,
         filename: &str,
         working_dir: &str,
@@ -319,8 +329,10 @@ impl Config {
 
     /// The text `cAvidaConfig::Print` writes: a complete `avida.cfg` listing
     /// every setting with its *default* value (not the current one) and its
-    /// description.
-    pub fn print_to_string(&self) -> String {
+    /// description. Only the tests of the old-format reader use it; the
+    /// program writes the experiment file (`--generate-config`).
+    #[cfg(test)]
+    pub(crate) fn print_to_string(&self) -> String {
         let mut o = String::new();
         o.push_str(
             "#############################################################################\n",
@@ -376,11 +388,6 @@ impl Config {
         o
     }
 
-    /// `cAvidaConfig::Print(filename)`.
-    pub fn print(&self, filename: &str) -> std::io::Result<()> {
-        std::fs::write(filename, self.print_to_string())
-    }
-
     /// The text `cAvidaConfig::Status` prints to stdout.
     pub fn status(&self) -> String {
         let mut o = format!("Config contains {} groups.\n", GROUPS.len());
@@ -396,32 +403,25 @@ impl Config {
 
     /// The text `cAvidaConfig::PrintReview` prints to stdout: every setting
     /// that differs from its default.
+    ///
+    /// The settings are named by their place in the experiment file
+    /// (`group.key`) and listed in its order.
     pub fn print_review(&self) -> String {
         let mut o = String::from("\nNon-Default Settings: \n\n");
-        for g in GROUPS {
-            for e in g.entries {
-                if !self.equals_string_by_id(e.id, e.default) {
-                    o.push_str(&format!(" {} ", e.names[0]));
-                    let s = self.as_string_by_id(e.id);
-                    match e.ty {
-                        EntryType::Double => {
-                            o.push_str(&format_ostream_double(as_double(&s)));
-                            o.push(' ');
-                        }
-                        EntryType::Int => {
-                            o.push_str(&as_int(&s).to_string());
-                            o.push(' ');
-                        }
-                        _ => {
-                            o.push_str(&s);
-                            o.push(' ');
-                        }
-                    }
-                    o.push_str(&format!("(default={})\n", e.default));
-                }
+        let defaults = Config::new();
+        for info in crate::naming::settings() {
+            if self.setting_text(&info) == defaults.setting_text(&info) {
+                continue;
             }
+            o.push_str(&format!(" {} ", info.path()));
+            let s = self.setting_text(&info);
+            match info.kind() {
+                ValueKind::Double => o.push_str(&format_ostream_double(as_double(&s))),
+                ValueKind::Int => o.push_str(&as_int(&s).to_string()),
+                _ => o.push_str(&info.display(&s)),
+            }
+            o.push_str(&format!(" (default={})\n", info.default_display()));
         }
-        o.push_str(&self.port.review_lines());
         o.push('\n');
         o
     }
@@ -573,10 +573,10 @@ mod tests {
         let mut dir = std::env::temp_dir();
         dir.push(format!("avida_config_print_{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        c.print(dir.join("avida.cfg").to_str().unwrap()).unwrap();
+        std::fs::write(dir.join("avida.cfg"), c.print_to_string()).unwrap();
         let mut d = Config::new();
         let mut fb = Feedback::new();
-        assert!(d.load(
+        assert!(d.load_old_format(
             "avida.cfg",
             dir.to_str().unwrap(),
             Some(&mut fb),
@@ -599,9 +599,9 @@ mod tests {
         c.set("WORLD_X", "20");
         c.set("DATA_DIR", "out");
         let r = c.print_review();
-        assert!(r.contains(" WORLD_X 20 (default=60)\n"));
-        assert!(r.contains(" COPY_MUT_PROB 0.02 (default=0.0075)\n"));
-        assert!(r.contains(" DATA_DIR out (default=data)\n"));
+        assert!(r.contains(" world.x 20 (default=60)\n"));
+        assert!(r.contains(" mutation.copy_prob 0.02 (default=0.0075)\n"));
+        assert!(r.contains(" general.data_dir out (default=data)\n"));
     }
 
     #[test]
@@ -625,7 +625,7 @@ mod tests {
         assert!(!names.iter().any(|n| n.starts_with("EXECUTION_")));
         assert!(c
             .print_review()
-            .ends_with(" EXECUTION_MODE 1 (default=0)\n EXECUTION_THREADS 3 (default=0)\n\n"));
+            .ends_with(" execution.mode 1 (default=0)\n execution.threads 3 (default=0)\n\n"));
         // From a config file, without a warning when absent.
         let mut dir = std::env::temp_dir();
         dir.push(format!("avida_config_port_{}", std::process::id()));
@@ -635,12 +635,12 @@ mod tests {
         std::fs::write(dir.join("b.cfg"), format!("{text}EXECUTION_MODE 1\n")).unwrap();
         let mut a = Config::new();
         let mut fb = Feedback::new();
-        assert!(a.load("a.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
+        assert!(a.load_old_format("a.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
         assert_eq!(a.port.execution_mode, 0);
         assert_eq!(fb.num_messages(), 0, "{}", fb.render());
         let mut b = Config::new();
         let mut fb = Feedback::new();
-        assert!(b.load("b.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
+        assert!(b.load_old_format("b.cfg", dir.to_str().unwrap(), Some(&mut fb), None, true));
         assert_eq!(b.port.execution_mode, 1);
         assert_eq!(fb.num_messages(), 0, "{}", fb.render());
     }

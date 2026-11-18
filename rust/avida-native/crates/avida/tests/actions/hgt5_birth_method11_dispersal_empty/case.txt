@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 6 -set WORLD_X 15 -set WORLD_Y 15 -set BIRTH_METHOD 11 -set DISPERSAL_RATE 1.5
+args -s 6 -set world.x 15 -set world.y 15 -set reproduction.birth_method 11 -set reproduction.dispersal_rate 1.5

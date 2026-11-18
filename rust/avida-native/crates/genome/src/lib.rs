@@ -15,8 +15,7 @@
 //! | [`genome_loader`] | `Util::LoadGenomeDetailFile` (util/GenomeLoader.cc) |
 //! | [`feedback`] | `cUserFeedback` (tools/cUserFeedback.h), re-exported from `avida-config` |
 //!
-//! `.org` and legacy instruction set files are read with
-//! `avida_config::InitFile` (`cInitFile`).
+//! `.org` files are read with `avida_config::InitFile` (`cInitFile`).
 
 pub mod arg_schema;
 pub mod cpu_memory;

@@ -9,11 +9,9 @@ workspace = true
 
 [dependencies]
 avida-apto = { path = "../apto" }
+avida-config = { path = "../config" }
 avida-genome = { path = "../genome" }
 avida-hardware = { path = "../hardware" }
 avida-systematics = { path = "../systematics" }
 avida-tasks = { path = "../tasks" }
 avida-world = { path = "../world" }
-
-[dev-dependencies]
-avida-config = { path = "../config" }

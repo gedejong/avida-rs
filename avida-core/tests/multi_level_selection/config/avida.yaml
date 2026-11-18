@@ -1,0 +1,112 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+
+instruction_sets:
+  - name: instset.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - set-opinion
+      - get-opinion
+      - send-msg
+      - retrieve-msg
+      - bcast1
+      - collect-cell-data
+      - get-cell-xy
+      - nop-X
+
+environment:
+  reactions:
+    - {name: NOT}
+    - {name: NAND}
+    - {name: AND}
+    - {name: ORN}
+    - {name: OR}
+    - name: NOT
+      task: not
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NAND, AND, ORN, OR], max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NOT, AND, ORN, OR], max_count: 1}
+    - name: AND
+      task: and
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, ORN, OR], max_count: 1}
+    - name: ORN
+      task: orn
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, OR], max_count: 1}
+    - name: OR
+      task: or
+      process: {value: 4.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, ORN], max_count: 1}
+
+events:
+  - {at: 0, every: 1, until: end, action: PrintReactionData}
+  - {at: 0, every: 100, until: end, action: PrintEditDistance}
+  - {at: 100, every: 100, until: end, action: DemeReactionDiversity, args: 1}
+  - {at: 100, every: 100, until: end, action: AssignRandomCellData}
+  - {at: 100, every: 100, until: end, action: PrintWinningDeme}
+  - {at: 100, every: 100, until: end, action: PrintDemeCompetitionData}
+  - {at: 0, every: 1, until: end, action: PrintDemeReplicationData}
+  - {at: 0, every: 1, until: end, action: PrintDemeReactionDiversityReplicationData}
+  - {at: 0, every: 1, until: end, action: PrintInstructionData}
+  - {at: 100, action: exit}
+  - {at: 0, every: 0, action: ZeroMuts}
+  - {trigger: immediate, action: Inject, args: organisms/0_18712737.org 0}
+  - {trigger: immediate, action: Inject, args: organisms/10_18712737.org 10}
+  - {trigger: immediate, action: Inject, args: organisms/11_18712737.org 11}
+  - {trigger: immediate, action: Inject, args: organisms/1_18712737.org 1}
+  - {trigger: immediate, action: Inject, args: organisms/12_18712737.org 12}
+  - {trigger: immediate, action: Inject, args: organisms/13_18712737.org 13}
+  - {trigger: immediate, action: Inject, args: organisms/14_18712737.org 14}
+  - {trigger: immediate, action: Inject, args: organisms/15_18712737.org 15}
+  - {trigger: immediate, action: Inject, args: organisms/16_18712737.org 16}
+  - {trigger: immediate, action: Inject, args: organisms/17_18712737.org 17}
+  - {trigger: immediate, action: Inject, args: organisms/18_18712737.org 18}
+  - {trigger: immediate, action: Inject, args: organisms/19_18712737.org 19}
+  - {trigger: immediate, action: Inject, args: organisms/20_18712737.org 20}
+  - {trigger: immediate, action: Inject, args: organisms/21_18712737.org 21}
+  - {trigger: immediate, action: Inject, args: organisms/2_18712737.org 2}
+  - {trigger: immediate, action: Inject, args: organisms/22_18712737.org 22}
+  - {trigger: immediate, action: Inject, args: organisms/23_18712737.org 23}
+  - {trigger: immediate, action: Inject, args: organisms/24_18712737.org 24}
+  - {trigger: immediate, action: Inject, args: organisms/3_18712737.org 3}
+  - {trigger: immediate, action: Inject, args: organisms/4_18712737.org 4}
+  - {trigger: immediate, action: Inject, args: organisms/5_18712737.org 5}
+  - {trigger: immediate, action: Inject, args: organisms/6_18712737.org 6}
+  - {trigger: immediate, action: Inject, args: organisms/7_18712737.org 7}
+  - {trigger: immediate, action: Inject, args: organisms/8_18712737.org 8}
+  - {trigger: immediate, action: Inject, args: organisms/9_18712737.org 9}

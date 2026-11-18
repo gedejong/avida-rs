@@ -6,7 +6,6 @@
 
 mod common;
 
-use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
@@ -20,24 +19,26 @@ use ratatui::crossterm::event::KeyCode;
 const ARGS: &[&str] = &[
     "-s",
     "7",
-    "-def",
-    "INST_SET",
-    "instset-heads-modular.cfg",
     "-set",
-    "WORLD_X",
+    "instruction_sets",
+    "heads_modular",
+    "-set",
+    "world.x",
     "5",
     "-set",
-    "WORLD_Y",
+    "world.y",
     "5",
     "-set",
-    "COPY_MUT_PROB",
+    "mutation.copy_prob",
     "0",
 ];
 
 fn modular_config(name: &str) -> PathBuf {
     let dir = fresh_support_config(name);
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject modular-subroutine.org 12\nu 100000 Exit\n",
     )
     .unwrap();

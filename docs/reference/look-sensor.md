@@ -15,7 +15,7 @@ This page describes the family of instructions that share that register layout. 
 
 These instructions are in the experimental hardware (type 3) and the BCR hardware (type 5). The BCR and GP8 hardware (types 5 and 4) also have an `-ex` family (`look-ahead-ex`, `look-again-ex`, `look-around-ex` and `-ftx` forms) with another register layout and *sessions* that remember the settings of an earlier look. This page does not describe that family. The heads CPU has no look instructions.
 
-A look fails (the instruction counts as not executed and writes nothing) in the test CPU, because it has no neighbouring cells, and for a predator when `PRED_CONFUSION` is 4. On the BCR hardware it also fails unless `WORLD_GEOMETRY` is 1, a bounded grid.
+A look fails (the instruction counts as not executed and writes nothing) in the test CPU, because it has no neighbouring cells, and for a predator when `sensing.pred_confusion` is 4. On the BCR hardware it also fails unless `world.geometry` is 1, a bounded grid.
 
 ## The registers
 
@@ -49,11 +49,11 @@ The outputs always include the input values as the sensor corrected them, so an 
 | above 5 | Other kinds of food. |
 | -2 | Other organisms. |
 
-A habitat counts as valid only when some resource of the environment declares it with the `habitat` option of a [`GRADIENT_RESOURCE`](environment-file.md#gradient_resource), and -2 is always valid. An invalid value is replaced: a predator in a predator-prey experiment (`PRED_PREY_SWITCH` 0 or above, forage target -2 or lower) looks for organisms (-2), and anything else looks for food (0).
+A habitat counts as valid only when some resource of the environment declares it with the `habitat` option of a [`GRADIENT_RESOURCE`](environment-file.md#gradient_resource), and -2 is always valid. An invalid value is replaced: a predator in a predator-prey experiment (`groups.pred_prey_switch` 0 or above, forage target -2 or lower) looks for organisms (-2), and anything else looks for food (0).
 
 ### Distance
 
-A negative number becomes 1. A number above the limit becomes the limit. The limit is `LOOK_DIST` when that is not -1, and otherwise half of the longer side of the world, rounded (30 for a world of 60 by 60); `LOOK_DIST` itself is capped at the longer side. Distance 0 is only the organism's own cell. The old wiki called the default "half the long axis", which agrees.
+A negative number becomes 1. A number above the limit becomes the limit. The limit is `sensing.look_dist` when that is not -1, and otherwise half of the longer side of the world, rounded (30 for a world of 60 by 60); `sensing.look_dist` itself is capped at the longer side. Distance 0 is only the organism's own cell. The old wiki called the default "half the long axis", which agrees.
 
 ### Search type
 
@@ -70,7 +70,7 @@ Any other value is replaced: with 0 for resources (habitats other than -2) and, 
 
 ### Id sought
 
-For resources, a number from 0 up that names one resource of the environment, counted in the order of the environment file. The habitat then becomes the habitat of that resource, whatever the habitat register said. -1 means any resource of the habitat. An invalid number becomes -1. For organisms, it is the id of an organism: if that organism lives, the look reports on it alone, the search type is ignored (the output says -9) and its distance is found directly. A value that names the looker itself, or an organism that does not live, becomes -1 and the look is a general one.
+For resources, a number from 0 up that names one resource of the environment, counted in the order of the environment. The habitat then becomes the habitat of that resource, whatever the habitat register said. -1 means any resource of the habitat. An invalid number becomes -1. For organisms, it is the id of an organism: if that organism lives, the look reports on it alone, the search type is ignored (the output says -9) and its distance is found directly. A value that names the looker itself, or an organism that does not live, becomes -1 and the look is a general one.
 
 ## What comes back
 
@@ -81,13 +81,13 @@ For resources, a number from 0 up that names one resource of the environment, co
 
 The old wiki gave -9 for the value in the "nothing seen" case. In the program it is 0, as the first row of the table shows (the run below printed `0,0,0,0,-1,0,0,0,0,-9,-9`).
 
-For resources, the group register holds the number of the first resource found and the forage target register stays -9. For an organism, the value is the *bonus* of the organism seen (rounded down), the group register is its group (its opinion) or, if it has none, its relative facing, and the forage target register is its forage target. With `USE_MIMICS 1`, an organism of forage target 1 may show a different forage target, with probability `MIMIC_ODDS`.
+For resources, the group register holds the number of the first resource found and the forage target register stays -9. For an organism, the value is the *bonus* of the organism seen (rounded down), the group register is its group (its opinion) or, if it has none, its relative facing, and the forage target register is its forage target. With `sensing.use_mimics: true`, an organism of forage target 1 may show a different forage target, with probability `sensing.mimic_odds`.
 
 A look can report "seen" while the count is 0: a resource is present but is not edible, or the sweep of search type 1 found only sub-threshold amounts. The distance then still tells how far the sensor looked.
 
 ### Two runs that show the search types
 
-A bounded 20 by 20 world with the line `RESOURCE food:geometry=grid:initial=800` in the environment file (2.0 units in every cell, above the threshold 1.0) and one organism that sets the distance register to 5 and executes `look-ahead`, with `TRACK_LOOK_OUTPUT 1`:
+A bounded 20 by 20 world with the resource `{name: food, geometry: grid, initial: 800}` in the environment (2.0 units in every cell, above the threshold 1.0) and one organism that sets the distance register to 5 and executes `look-ahead`, with `sensing.track_look_output: true`:
 
 | Search type | Output (update, forage target, seen, habitat, distance, type, id, count, value, group, forage) | Reading |
 |---|---|---|
@@ -96,30 +96,30 @@ A bounded 20 by 20 world with the line `RESOURCE food:geometry=grid:initial=800`
 
 With `initial=200` instead (0.5 units in every cell, below the threshold) search type 0 reports "seen" with count 0 and value 0, and search type 1 reports distance 5, count 0 and value 9 (the sum of the sub-threshold amounts that were in reach, truncated).
 
-The first column of each row is the update; the other ten are the columns that `TRACK_LOOK_OUTPUT` writes (see below).
+The first column of each row is the update; the other ten are the columns that `sensing.track_look_output` writes (see below).
 
 ## Settings
 
 | Setting | Stock | Effect |
 |---|---|---|
-| `LOOK_DIST` | -1 | -1 leaves the distance limit to the instructions (half the longer side of the world). A number limits sight to that many cells. |
-| `LOOK_DISABLE` | 0 | Impairs the sensor, as an experiment. 1 to 4 replace the habitat, distance, search type or id input by a random number. 5 randomises the direction of `look-around`. 6 to 13 replace one output (habitat, distance, search type, id, count, value, group, forage target, in that order) by a random number. The description in the settings table counts the outputs from 5 and not from 6, so follow this page, which reads the code. |
-| `LOOK_DISABLE_TYPE` | 0 | Who is impaired: 0 predators, 1 prey, 2 both. |
-| `LOOK_DISABLE_COMBO` | 0 | Experimental hardware only. Makes the sensor report "not found" for every food query (1), every look for predators (2) or every look for prey (3). |
-| `PRED_CONFUSION` | 0 | When a predator sights prey, it may receive random numbers instead of the true ones. 1: the odds depend on the number of neighbours of that prey. 2: on the number of facings among them. 3: on the number of groups. 4: a predator's look always fails. |
-| `USE_DISPLAY`, `USE_MIMICS`, `MIMIC_ODDS` | 0, 0, 1.0 | Whether organisms display data that others read through the sensor, and whether some organisms mimic another forage target. |
-| `TRACK_LOOK_SETTINGS` | 0 | Writes `looksettings.dat`: one row for every look, with the update, the forage target of the looker, whether it saw something, and the final habitat, distance, search type and id. |
-| `TRACK_LOOK_OUTPUT` | 0 | Writes `lookoutput.dat`: the same, plus count, value, group and forage target as the registers received them. |
+| `sensing.look_dist` | -1 | -1 leaves the distance limit to the instructions (half the longer side of the world). A number limits sight to that many cells. |
+| `sensing.look_disable` | 0 | Impairs the sensor, as an experiment. 1 to 4 replace the habitat, distance, search type or id input by a random number. 5 randomises the direction of `look-around`. 6 to 13 replace one output (habitat, distance, search type, id, count, value, group, forage target, in that order) by a random number. The description in the settings table counts the outputs from 5 and not from 6, so follow this page, which reads the code. |
+| `sensing.look_disable_type` | 0 | Who is impaired: 0 predators, 1 prey, 2 both. |
+| `sensing.look_disable_combo` | 0 | Experimental hardware only. Makes the sensor report "not found" for every food query (1), every look for predators (2) or every look for prey (3). |
+| `sensing.pred_confusion` | 0 | When a predator sights prey, it may receive random numbers instead of the true ones. 1: the odds depend on the number of neighbours of that prey. 2: on the number of facings among them. 3: on the number of groups. 4: a predator's look always fails. |
+| `sensing.use_display`, `sensing.use_mimics`, `sensing.mimic_odds` | 0, false, 1.0 | Whether organisms display data that others read through the sensor, and whether some organisms mimic another forage target. |
+| `sensing.track_look_settings` | false | Writes `looksettings.dat`: one row for every look, with the update, the forage target of the looker, whether it saw something, and the final habitat, distance, search type and id. |
+| `sensing.track_look_output` | false | Writes `lookoutput.dat`: the same, plus count, value, group and forage target as the registers received them. |
 
 Both tracking files have a header, then one comma-separated row per look. Switching them on is the easiest way to learn what an organism's look instructions really do. In the 1000-update run of `lookAhead_v1` they gave, for instance, `1,-2,0,-2,-1,-1,-1,0,0,-9,-9` for a predator that looked for the closest prey and saw none, and `699,3,1,4,0,0,1,1,1,1,-9` for a prey organism that stood in a den (habitat 4, resource 1).
 
-All settings are in the [MOVEMENT_GROUP of the settings reference](settings.md#movement_group).
+All settings are in the [group `sensing` of the experiment file reference](config-yaml.md#sensing).
 
 ## A worked example from the test suite
 
 The predator of `lookAhead_v1` (`pred-rotate-org0.org`) sets the habitat register to -2 (organisms), the distance to 25 and the search type to -1 (closest prey), and then executes `look-ahead` with the nops `nop-B nop-C nop-D`, so the habitat sits in BX, the distance in CX and the search type in DX. No nop names the id register, so it is the next one in order, EX, which the organism set to -1 (any). After the look the organism tests the count register with `if-not-0` and chooses between rotating and moving; read the full program in the test folder. The prey organisms of the same test look for food (habitat 0) and for dens (habitat 4) in the same way.
 
-Predator and prey experiments need `USE_AVATARS 2` and the experimental hardware, as the [predator and prey page](../concepts/predator-prey.md) explains.
+Predator and prey experiments need `movement.use_avatars: interacting` and the experimental hardware, as the [predator and prey page](../concepts/predator-prey.md) explains.
 
 ## Not supported
 

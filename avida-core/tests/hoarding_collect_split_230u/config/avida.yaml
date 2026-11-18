@@ -1,0 +1,62 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida-splittest.cfg, instset-collect.cfg, environment.high_initial, events-splittest.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+divide:
+  required_reaction: 0
+hoarding:
+  use_resource_bins: true
+  absorb_resource_fraction: 1.0
+  return_stored_on_death: false
+
+instruction_sets:
+  - name: instset-collect.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - collect
+
+environment:
+  resources:
+    - {name: resNAND, initial: 10000.0, inflow: 0.0, outflow: 0.0}
+  reactions:
+    - name: NAND
+      task: nand
+      process: {resource: resNAND, value: 1.0, frac: 0.0025, max: 25.0, min: .001}
+
+events:
+  - {trigger: immediate, action: Inject, args: collect+nand.org}
+  - {trigger: immediate, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintReactionData}
+  - {at: 0, every: 10, until: end, action: PrintReactionExeData}
+  - {at: 300, action: exit}

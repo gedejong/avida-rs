@@ -103,25 +103,20 @@ fn setup_until(
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
     copy_dir(&src, &dir);
-    let cfg = fs::read_to_string(dir.join("avida.cfg")).unwrap();
-    fs::write(
-        dir.join("avida.cfg"),
-        cfg.replace(
-            "ENVIRONMENT_FILE environment.cfg",
-            "ENVIRONMENT_FILE environment-expect.cfg",
-        ),
-    )
-    .unwrap();
-    fs::write(
-        dir.join("environment-expect.cfg"),
-        format!("{reactions}\n{extra}\n"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "environment",
+        &format!("{reactions}\n{extra}\n"),
     )
     .unwrap();
     let org = replicator(&block(&dir));
     fs::write(dir.join("replicator.org"), org).unwrap();
-    fs::write(
-        dir.join("events.cfg"),
-        format!(
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!(
             "u begin InjectAll filename=replicator.org\n\
              u 0:1:end PrintCountData\n\
              u 0:1:end PrintTasksData\n\
@@ -146,11 +141,13 @@ fn make_world(dir: &Path, sets: &[(&str, &str)]) -> Result<World, String> {
         .iter()
         .chain(sets)
     {
-        args.extend(["-set".into(), n.to_string(), v.to_string()]);
+        // The tests name settings as the C++ did; avida.yaml has its own names.
+        let path = avida_config::naming::new_name_of(n).unwrap_or_else(|| panic!("{n}"));
+        args.extend(["-set".into(), path, v.to_string()]);
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs).map(|(w, _)| w)
+    World::new(cmd.config, &cwd).map(|(w, _)| w)
 }
 
 /// Runs to the end; the world and the status lines.

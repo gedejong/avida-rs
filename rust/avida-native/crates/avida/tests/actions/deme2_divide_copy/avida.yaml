@@ -1,0 +1,69 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 10
+  y: 1000
+  geometry: bounded_grid
+demes:
+  count: 100
+  use_germline: traditional
+  max_age: 40
+  germline_ins_mut: 0.0
+  germline_del_mut: 0.0
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: InjectDemes, args: default-classic.org}
+  - {at: 40, every: 20, until: 150, action: DivideDemes}
+  - {at: 60, action: CopyDeme, args: 0 3}
+  - {at: 70, action: CopyDeme, args: 5 2}
+  - {at: 90, every: 30, until: 150, action: ResetDemes}
+  - {at: 0, every: 20, until: 150, action: PrintCountData}
+  - {at: 0, every: 30, until: 150, action: PrintAverageData}
+  - {at: 150, action: SavePopulation}
+  - {at: 151, action: Exit}

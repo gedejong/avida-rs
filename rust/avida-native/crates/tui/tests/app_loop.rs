@@ -367,9 +367,14 @@ fn cursor_scrolling_click_and_organism_inspection() {
 #[test]
 fn a_fatal_error_is_shown_and_the_last_frame_stays_inspectable() {
     let dir = fresh_config("fatal");
-    let events = dir.join("events.cfg");
-    let text = std::fs::read_to_string(&events).unwrap();
-    std::fs::write(&events, format!("{text}u 3 Inject missing.org\n")).unwrap();
+    let text = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!("{text}u 3 Inject missing.org\n"),
+    )
+    .unwrap();
     let steps = vec![
         Step::Until("first frame", Box::new(|a| a.frame.is_some())),
         Step::Keys(" "),

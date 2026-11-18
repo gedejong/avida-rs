@@ -1,0 +1,88 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-reputation.cfg, 4bitenv.cfg, 4bitevents.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 1
+reputation:
+  raw_material_amount: 0
+  auto: donors_and_non_donors
+  alt_benefit: 2
+  specialists: true
+  string_amount_cap: 10
+  match_already_produced: true
+
+instruction_sets:
+  - name: instset-reputation.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - rotate-to-occupied-cell
+      - get-neighbors-reputation
+      - get-reputation
+      - donate-spec
+      - rotate-to-rep-lineage
+      - get-raw-mat-amount
+      - get-other-raw-mat-amount
+      - IObuf-add1
+      - IObuf-add0
+      - prod-string
+      - rotate-to-rep
+      - rotate-to-rep-and-donate
+      - donate-frm
+      - donate-if-donor
+      - pose
+
+environment:
+  resources:
+    - {name: res1, inflow: 100, outflow: .01}
+    - {name: res2, inflow: 100, outflow: .01}
+  reactions:
+    - name: MATCH1
+      task: matchprodstr
+      args: {string: 0000, partial: 0, binary: 1, pow: 2.0, tag: 0}
+      process: {resource: res1, type: pow, value: 3.0, frac: .005, max: 10, min: .025}
+      requisite: {divide_only: 1}
+    - name: MATCH4
+      task: matchprodstr
+      args: {string: 1111, partial: 0, binary: 1, pow: 2.0, tag: 1}
+      process: {resource: res2, type: pow, value: 3.0, frac: .005, max: 10, min: .025}
+      requisite: {divide_only: 1}
+    - name: ps
+      task: perfect_strings
+      process: {value: 1.0, type: add}
+      requisite: {max_count: 1, divide_only: 1}
+
+events:
+  - {trigger: immediate, action: Inject, args: default-classic.org}
+  - {trigger: immediate, action: Inject, args: string0101.org 0 -1 -1 0}
+  - {trigger: immediate, action: Inject, args: string1010.org 100 -1 -1 0}
+  - {at: 100, every: 100, until: end, action: PrintTasksQualData}
+  - {at: 100, every: 100, until: end, action: PrintReputationData}
+  - {at: 100, every: 100, until: end, action: PrintStringMatchData}
+  - {at: 100, action: exit}

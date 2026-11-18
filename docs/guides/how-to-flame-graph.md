@@ -13,15 +13,16 @@ If you were looking for a profile of where the *program* spends its CPU time, wh
 
 ## Steps
 
-1. Ask for population files in your events file. `SavePopulation` writes a file named `detail-<update>.spop` into the data folder. A time slice of 50 or 100 updates gives a smooth picture; more slices mean more disk space. The stock `events.cfg` saves every 500 updates (the old page said 50,000), which gives a coarse picture for a short run, so add a line of your own:
+1. Ask for population files in your events. `SavePopulation` writes a file named `detail-<update>.spop` into the data folder. A time slice of 50 or 100 updates gives a smooth picture; more slices mean more disk space. The stock events save every 500 updates (the old page said 50,000), which gives a coarse picture for a short run, so write events of your own, `events-flame.yaml`:
 
-   ```text
-   u begin Inject default-heads.org
-   u 50:50:1000 SavePopulation
-   u 1000 Exit
+   ```yaml
+   events:
+     - {at: begin, action: Inject, args: default-heads.org}
+     - {at: 50, every: 50, until: 1000, action: SavePopulation}
+     - {at: 1000, action: Exit}
    ```
 
-2. Run the experiment as usual. The run used for this page was `avida -s 7 -set WORLD_X 40 -set WORLD_Y 40 -set EVENT_FILE events.cfg` on the stock configuration and took about 6 seconds.
+2. Run the experiment as usual. The run used for this page was `avida -s 7 -set world.x 40 -set world.y 40 -set events events-flame.yaml` on the stock configuration and took about 6 seconds.
 
 3. Save this script as `flame.py`:
 

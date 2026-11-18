@@ -1,0 +1,69 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, inst_set.default, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 42
+mutation:
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+divide:
+  offspring_size_range: 1.0
+reversion:
+  sterilize_unstable: 1
+
+instruction_sets:
+  - name: inst_set.default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - explode
+      - explode5
+      - {name: nop-X, redundancy: 0}
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: organism.default}
+  - {at: 0, every: 100, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintTimeData}
+  - {at: 0, every: 100, until: end, action: PrintResourceData}
+  - {at: 0, every: 100, until: end, action: PrintInstructionData}
+  - {at: 200, action: Exit}

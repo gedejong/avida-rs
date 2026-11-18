@@ -494,10 +494,12 @@ fn runs_to_the_end_and_everything_stays_inspectable() {
 #[test]
 fn a_fatal_error_is_shown_and_the_last_frame_stays() {
     let dir = fresh_config("fatal");
-    let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        format!("{text}u 3 Inject missing.org\n"),
+    let text = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!("{text}u 3 Inject missing.org\n"),
     )
     .unwrap();
     let mut h = harness(open_args(&dir), vec2(1000.0, 650.0));
@@ -935,7 +937,7 @@ fn retype(h: &mut H, label: &str, text: &str) {
 fn the_config_tab_lists_settings_and_restarts_with_overrides() {
     let dir = fresh_config("config");
     let mut h = harness(
-        open_with(&dir, &["-set", "WORLD_Y", "40"]),
+        open_with(&dir, &["-set", "world.y", "40"]),
         vec2(1440.0, 900.0),
     );
     wait_until(&mut h, "the world", ready);
@@ -947,8 +949,8 @@ fn the_config_tab_lists_settings_and_restarts_with_overrides() {
     h.step();
     h.get_by_label("Search settings").type_text("world");
     settle(&mut h);
-    h.get_by_label("WORLD_X = 60");
-    h.get_by_label("WORLD_Y = 40");
+    h.get_by_label("world.x = 60");
+    h.get_by_label("world.y = 40");
     h.check_accessibility();
     screenshot(&mut h, "config-dark");
 
@@ -979,7 +981,7 @@ fn the_config_tab_lists_settings_and_restarts_with_overrides() {
     let exp = s.experiment.clone().unwrap();
     assert_eq!(
         exp.args,
-        ["-set", "WORLD_Y", "40", "-s", "7", "-set", "WORLD_X", "30"]
+        ["-set", "world.y", "40", "-s", "7", "-set", "world.x", "30"]
             .map(String::from)
             .to_vec()
     );
@@ -990,7 +992,7 @@ fn the_config_tab_lists_settings_and_restarts_with_overrides() {
         (30, 40, 7)
     );
     let setup = s.setup.clone().unwrap();
-    assert!(setup.setting("WORLD_X").unwrap().from_command_line);
+    assert!(setup.setting("world.x").unwrap().from_command_line);
     assert!(!s.config_view.is_edited(), "the form shows the new world");
 
     // Run stops at the limit.
@@ -1014,14 +1016,14 @@ fn a_dropped_folder_opens_and_the_title_follows_the_run() {
 
     // Hovering shows the drop target; dropping a file opens its folder.
     h.input_mut().hovered_files.push(egui::HoveredFile {
-        path: Some(dir.join("avida.cfg")),
+        path: Some(dir.join("avida.yaml")),
         mime: String::new(),
     });
     screenshot(&mut h, "drop-target-dark");
     h.input_mut().hovered_files.clear();
     h.input_mut()
         .dropped_files
-        .push(Arc::new(Dropped(dir.join("avida.cfg"))));
+        .push(Arc::new(Dropped(dir.join("avida.yaml"))));
     wait_until(&mut h, "the world", ready);
     assert_eq!(
         h.state().state().experiment.as_ref().unwrap().dir,

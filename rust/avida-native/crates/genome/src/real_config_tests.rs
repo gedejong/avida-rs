@@ -10,7 +10,7 @@ use crate::feedback::{ErrorMessages, Feedback};
 use crate::genome_loader::load_genome_detail_file;
 use crate::inst_lib::{inst_flag, BehavClass, InstLib, InstLibEntry, InstructionClass};
 use crate::inst_set::{InstCodeConfig, InstSet, INST_CODE_INSTNUM};
-use crate::inst_set_registry::{convert_legacy_inst_set_file, InstSetRegistry};
+use crate::inst_set_registry::InstSetRegistry;
 use crate::instruction::Instruction;
 use crate::sequence::InstructionSequence;
 use avida_apto::AvidaRng;
@@ -204,6 +204,28 @@ fn cpu_only(hw: i32) -> Option<Arc<InstLib>> {
     }
 }
 
+/// `INSTSET`/`INST` lines of the instruction sets of the experiment file
+/// `avida.yaml` in `dir`.
+fn experiment_inst_sets(dir: &Path) -> Vec<String> {
+    let mut cfg = avida_config::Config::new();
+    let mut fb = avida_config::Feedback::new();
+    assert!(
+        cfg.load_experiment("avida.yaml", &dir.to_string_lossy(), &mut fb),
+        "{}: {}",
+        dir.display(),
+        fb.render()
+    );
+    cfg.instsets().to_vec()
+}
+
+/// `INSTSET`/`INST` lines of an instruction-set section file in `dir`.
+fn section_inst_sets(dir: &Path, file: &str) -> Vec<String> {
+    let mut cfg = avida_config::Config::new();
+    cfg.set_path("instruction_sets", file, &dir.to_string_lossy())
+        .unwrap_or_else(|e| panic!("{}/{file}: {e}", dir.display()));
+    cfg.instsets().to_vec()
+}
+
 fn read_lines(dir: &Path, file: &str) -> Vec<String> {
     let f = InitFile::new(file, &dir.to_string_lossy(), None, None);
     assert!(
@@ -318,7 +340,7 @@ fn scraped_cpu_library() {
 fn support_instset_heads() {
     let dir = avida_core().join("support/config");
     let (reg, fb, ok) = load(
-        &read_lines(&dir, "instset-heads.cfg"),
+        &section_inst_sets(&dir, "instset-heads.yaml"),
         InstCodeConfig::default(),
     );
     assert!(ok, "{:?}", fb);
@@ -382,7 +404,7 @@ fn support_instset_heads() {
 fn support_instset_heads_sex() {
     let dir = avida_core().join("support/config");
     let (reg, fb, ok) = load(
-        &read_lines(&dir, "instset-heads-sex.cfg"),
+        &section_inst_sets(&dir, "instset-heads-sex.yaml"),
         InstCodeConfig::default(),
     );
     assert!(ok, "{:?}", fb);
@@ -393,8 +415,8 @@ fn support_instset_heads_sex() {
     check_consistency(is);
 }
 
-/// Every config file under avida-core/tests/*/config/ with a `hw_type=0`
-/// INSTSET block loads cleanly.
+/// The `hw_type=0` instruction sets of every experiment file under
+/// avida-core/tests/*/config/ load cleanly.
 #[test]
 fn all_test_instsets_hw0() {
     let tests_dir = avida_core().join("tests");
@@ -404,142 +426,35 @@ fn all_test_instsets_hw0() {
     dirs.sort_by_key(|d| d.file_name());
     for d in dirs {
         let cfg_dir = d.path().join("config");
-        let Ok(files) = std::fs::read_dir(&cfg_dir) else {
-            continue;
-        };
-        let mut files: Vec<_> = files.flatten().collect();
-        files.sort_by_key(|f| f.file_name());
-        for f in files {
-            let raw = std::fs::read_to_string(f.path()).unwrap_or_default();
-            if !raw
-                .lines()
-                .any(|l| l.trim_start().starts_with("INSTSET") && l.contains("hw_type=0"))
-            {
-                continue;
-            }
-            let fname = f.file_name().to_string_lossy().to_string();
-            let lines = hw0_blocks(&read_lines(&cfg_dir, &fname));
-            let (reg, fb, ok) = load(&lines, InstCodeConfig::default());
-            assert!(ok, "{}: {:?}", f.path().display(), fb);
-            assert_eq!(fb.num_errors(), 0, "{}: {:?}", f.path().display(), fb);
-            assert!(reg.num_inst_sets() >= 1);
-            for is in reg.inst_sets() {
-                assert!(is.size() > 0);
-                check_consistency(is);
-            }
-            n_files += 1;
-            n_sets += reg.num_inst_sets();
-        }
-    }
-    assert!(n_files >= 30, "only {} files", n_files);
-    assert!(n_sets >= n_files);
-}
-
-/// `INST_SET_LOAD_LEGACY 1` tests: convert their legacy file and load it.
-#[test]
-fn all_test_legacy_instsets() {
-    let tests_dir = avida_core().join("tests");
-    let mut n = 0;
-    for d in std::fs::read_dir(&tests_dir).unwrap().flatten() {
-        let cfg_dir = d.path().join("config");
-        if !cfg_dir.join("avida.cfg").exists() {
+        if !cfg_dir.join("avida.yaml").exists() {
             continue;
         }
-        let cfg = read_lines(&cfg_dir, "avida.cfg");
-        // `-set NAME VALUE` arguments from test_list override avida.cfg.
-        let test_list = std::fs::read_to_string(d.path().join("test_list")).unwrap_or_default();
-        let args: Vec<&str> = test_list
-            .lines()
-            .find_map(|l| l.trim_start().strip_prefix("args"))
-            .and_then(|l| l.trim_start().strip_prefix('='))
-            .unwrap_or("")
-            .split_whitespace()
-            .collect();
-        let mut overrides: Vec<(String, String)> = Vec::new();
-        for (i, a) in args.iter().enumerate() {
-            if *a == "-set" && i + 2 < args.len() {
-                overrides.push((args[i + 1].to_string(), args[i + 2].to_string()));
-            }
-        }
-        let setting = |name: &str| {
-            if let Some((_, v)) = overrides.iter().rev().find(|(k, _)| k == name) {
-                return Some(v.clone());
-            }
-            cfg.iter()
-                .rev()
-                .find_map(|l| l.strip_prefix(&format!("{} ", name)).map(|v| v.to_string()))
-        };
-        if setting("INST_SET_LOAD_LEGACY").as_deref() != Some("1") {
+        let lines = hw0_blocks(&experiment_inst_sets(&cfg_dir));
+        if lines.is_empty() {
             continue;
         }
-        let inst_set = setting("INST_SET").unwrap_or_else(|| "-".into());
-        let hw_type: i32 = setting("HARDWARE_TYPE")
-            .map(|v| v.parse().unwrap())
-            .unwrap_or(0);
-        let mut list = Vec::new();
-        let mut fb = Feedback::new();
-        let conv = convert_legacy_inst_set_file(
-            &inst_set,
-            hw_type,
-            &cfg_dir.to_string_lossy(),
-            &mut list,
-            &mut fb,
-        );
-        assert!(conv.success, "{}: {:?}", cfg_dir.display(), fb);
-        if inst_set == "-" {
-            assert_eq!(conv.inst_set_setting.as_deref(), Some("instset-heads.cfg"));
-            assert_eq!(
-                fb.messages()[0].1,
-                "using default instruction set: instset-heads.cfg"
-            );
-        }
-        assert!(list[0].starts_with("INSTSET "));
-        let (reg, fb, ok) = load(&list, InstCodeConfig::default());
+        let (reg, fb, ok) = load(&lines, InstCodeConfig::default());
         assert!(ok, "{}: {:?}", cfg_dir.display(), fb);
-        let is = reg.default_inst_set().unwrap();
-        assert!(is.size() > 0, "{}", cfg_dir.display());
-        check_consistency(is);
+        assert_eq!(fb.num_errors(), 0, "{}: {:?}", cfg_dir.display(), fb);
+        assert!(reg.num_inst_sets() >= 1);
+        for is in reg.inst_sets() {
+            assert!(is.size() > 0);
+            check_consistency(is);
+        }
         if cfg_dir.ends_with("optimize_multivar_lim_res/config") {
-            // IObuf-add0 1 / IObuf-add1 1 / repro 0
+            // IObuf-add0 1 / IObuf-add1 1 / repro 0 (a legacy file, converted)
+            let is = reg.default_inst_set().unwrap();
             assert_eq!(is.size(), 3);
             assert_eq!(is.redundancy(Instruction::new(2)), 0);
             assert_eq!(is.mutation_index().size(), 2);
         }
-        n += 1;
+        n_files += 1;
+        n_sets += reg.num_inst_sets();
     }
-    assert!(n >= 30, "only {} legacy configs", n);
-}
-
-#[test]
-fn legacy_conversion_format() {
-    let dir = avida_core().join("tests/analyze_dumplandscape/config");
-    let mut list = Vec::new();
-    let mut fb = Feedback::new();
-    let conv = convert_legacy_inst_set_file("-", 0, &dir.to_string_lossy(), &mut list, &mut fb);
-    assert!(conv.success);
-    assert_eq!(list[0], "INSTSET instset-heads.cfg:hw_type=0");
-    assert_eq!(
-        list[1],
-        "INST nop-A:redundancy=1:cost=0:initial_cost=0:energy_cost=0:prob_fail=0.000000:addl_time_cost=0:res_cost=0.000000:fem_res_cost=0.000000:post_cost=0"
-    );
-
-    let mut fb = Feedback::new();
-    let conv =
-        convert_legacy_inst_set_file("missing.cfg", 0, &dir.to_string_lossy(), &mut list, &mut fb);
-    assert!(!conv.success);
-    assert_eq!(
-        fb.error_messages(),
-        vec!["unable to open file 'missing.cfg'."]
-    );
-    assert_eq!(fb.num_errors(), 0); // QUIRK: Append does not count
-
-    let mut fb = Feedback::new();
-    let conv = convert_legacy_inst_set_file("-", 4, &dir.to_string_lossy(), &mut list, &mut fb);
-    assert!(!conv.success);
-    assert_eq!(
-        fb.error_messages(),
-        vec!["unknown/unsupported HARDWARE_TYPE specified"]
-    );
+    // 69 of the 94 experiment files of the suite hold a heads (hardware
+    // type 0) set; the others are TransSMT, experimental or empty.
+    assert!(n_files >= 65, "only {} experiment files", n_files);
+    assert!(n_sets >= n_files);
 }
 
 #[test]
@@ -547,7 +462,7 @@ fn redundancy_and_costs() {
     // avida_GA_sex: repro-sex and repro have redundancy 0.
     let dir = avida_core().join("tests/avida_GA_sex/config");
     let (reg, fb, ok) = load(
-        &hw0_blocks(&read_lines(&dir, "avida.cfg")),
+        &hw0_blocks(&experiment_inst_sets(&dir)),
         InstCodeConfig::default(),
     );
     assert!(ok, "{:?}", fb);
@@ -566,7 +481,7 @@ fn redundancy_and_costs() {
     // mating_types: female costs.
     let dir = avida_core().join("tests/mating_types/config");
     let (reg, fb, ok) = load(
-        &hw0_blocks(&read_lines(&dir, "instset-heads-mating-types.cfg")),
+        &hw0_blocks(&experiment_inst_sets(&dir)),
         InstCodeConfig::default(),
     );
     assert!(ok, "{:?}", fb);
@@ -723,7 +638,7 @@ fn org_files_and_spop_parity() {
     let dir = avida_core().join("tests/heads_default_100u/config");
     let wdir = dir.to_string_lossy().to_string();
     let (reg, fb, ok) = load(
-        &hw0_blocks(&read_lines(&dir, "avida.cfg")),
+        &hw0_blocks(&experiment_inst_sets(&dir)),
         InstCodeConfig::default(),
     );
     assert!(ok, "{:?}", fb);
@@ -764,7 +679,7 @@ fn org_files_and_spop_parity() {
     // support/config default-heads.org: #inst_set heads_default, #hw_type 0
     let sdir = avida_core().join("support/config");
     let (reg2, _, ok) = load(
-        &read_lines(&sdir, "instset-heads.cfg"),
+        &section_inst_sets(&sdir, "instset-heads.yaml"),
         InstCodeConfig::default(),
     );
     assert!(ok);

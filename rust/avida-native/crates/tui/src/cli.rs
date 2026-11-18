@@ -10,9 +10,10 @@ avida-tui: terminal front end for the native Avida port
 USAGE:
     avida-tui [OPTIONS] [CONFIG_DIR] [AVIDA_ARGS...]
 
-CONFIG_DIR is the run's working directory (avida.cfg, events.cfg, the
-environment file); it defaults to the current directory. Everything after it
-is passed to the avida command line (for example: -s 7 -set WORLD_X 30).
+CONFIG_DIR is the run's working directory (the experiment file avida.yaml
+and the files it names); it defaults to the current directory. Everything
+after it is passed to the avida command line (for example: -s 7
+-set world.x 30).
 
 OPTIONS (before CONFIG_DIR):
     --colors MODE   auto (default), truecolor, 256, 16 or none (NO_COLOR also
@@ -191,11 +192,11 @@ mod tests {
 
     #[test]
     fn dir_then_avida_args() {
-        let Parsed::Run(c) = p(&["/", "-s", "7", "-set", "WORLD_X", "30"]) else {
+        let Parsed::Run(c) = p(&["/", "-s", "7", "-set", "world.x", "30"]) else {
             panic!()
         };
         assert_eq!(c.work_dir, PathBuf::from("/"));
-        assert_eq!(c.args, ["-s", "7", "-set", "WORLD_X", "30"]);
+        assert_eq!(c.args, ["-s", "7", "-set", "world.x", "30"]);
     }
 
     #[test]

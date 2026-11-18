@@ -1,2 +1,2 @@
 base parasites_log_injections
-args -s 1 -set DIV_INS_PROB 0.02
+args -s 1 -set mutation.div_ins_prob 0.02

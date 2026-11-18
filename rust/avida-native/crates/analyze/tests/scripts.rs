@@ -128,21 +128,22 @@ fn init_lines(dir: &Path, file: &str) -> Vec<String> {
     (0..f.num_lines()).map(|i| f.get_line(i as i32)).collect()
 }
 
-/// `INSTSET`/`INST` lines of a new-style instruction-set file.
-fn inst_set_file(dir: &Path, file: &str) -> Vec<String> {
-    init_lines(dir, file)
-        .into_iter()
-        .filter(|l| l.starts_with("INSTSET ") || l.starts_with("INST "))
+/// `INSTSET`/`INST` lines of the instruction sets of the experiment file
+/// `avida.yaml` in `dir`.
+fn inst_sets_of(dir: &Path) -> Vec<String> {
+    avida_config::convert::section_lines(dir, "avida.yaml", "instruction_sets")
+        .unwrap()
+        .lines()
+        .map(str::to_string)
         .collect()
 }
 
-/// A legacy `name redundancy ...` instruction-set file as one `INSTSET`.
-fn legacy_inst_set_file(dir: &Path, file: &str) -> Vec<String> {
-    let mut lines = vec!["INSTSET legacy:hw_type=0".to_string()];
-    for l in init_lines(dir, file) {
-        lines.push(format!("INST {}", l.split(' ').next().unwrap()));
-    }
-    lines
+/// `INSTSET`/`INST` lines of an instruction-set section file in `dir`.
+fn inst_set_section(dir: &Path, file: &str) -> Vec<String> {
+    let mut cfg = avida_config::Config::new();
+    cfg.set_path("instruction_sets", file, &dir.to_string_lossy())
+        .unwrap();
+    cfg.instsets().to_vec()
 }
 
 // -- Helpers -----------------------------------------------------------------
@@ -254,7 +255,7 @@ fn assert_same_text(actual: &str, expected: &str, what: &str) {
 fn resize_max_batches() {
     let cfg = repo_tests().join("analyze_resize_max_batches/config");
     let data = scratch("resize");
-    let mut host = MockHost::new(&cfg, &data, &inst_set_file(&cfg, "instset-heads.cfg"));
+    let mut host = MockHost::new(&cfg, &data, &inst_sets_of(&cfg));
     let mut run = analyze_for(&mut host);
     let r = run.analyze.run_file(&mut host, "analyze_max_batches.cfg");
     assert!(matches!(r, Err(AnalyzeError::Exit(1))), "{r:?}");
@@ -299,11 +300,7 @@ fn detail_all_initial() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let expected = repo_tests().join("_analyze_detail_all/expected/data");
     let data = scratch("detail_initial");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let script = [
         "VERBOSE",
@@ -342,11 +339,7 @@ fn detail_lineage_and_alignment() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let fx = fixtures().join("detail_lineage");
     let data = scratch("detail_lineage");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let lines = init_lines(&fx, "analyze.cfg");
     let mut cmds = run.analyze.parse_commands(&host, &lines);
@@ -377,11 +370,7 @@ fn control_commands_script() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let fx = fixtures().join("lang");
     let data = scratch("lang");
-    let mut host = MockHost::new(
-        &fx,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&fx, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let r = run.analyze.run_file(&mut host, "analyze.cfg");
     run.ok(r);
@@ -403,11 +392,7 @@ fn control_commands_script() {
 fn unknown_keyword_exits() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let data = scratch("unknown");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let r = run.analyze.run_command(&mut host, "NOT_A_COMMAND", "x");
     assert!(matches!(r, Err(AnalyzeError::Exit(1))));
@@ -421,11 +406,7 @@ fn unknown_keyword_exits() {
 fn test_cpu_commands_fail_loudly() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let data = scratch("unsupported");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     run.analyze
         .run_command(&mut host, "LOAD_SEQUENCE", "rucavcc")
@@ -488,11 +469,7 @@ fn reduction_and_summary_script() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let fx = fixtures().join("reduce");
     let data = scratch("reduce");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let lines = init_lines(&fx, "analyze.cfg");
     let mut cmds = run.analyze.parse_commands(&host, &lines);
@@ -523,11 +500,7 @@ fn reduction_and_summary_script() {
 fn find_organism_endless_retry_is_fatal() {
     let cfg = repo_tests().join("_analyze_detail_all/config");
     let data = scratch("find_organism");
-    let mut host = MockHost::new(
-        &cfg,
-        &data,
-        &legacy_inst_set_file(&cfg, "instset-classic.cfg"),
-    );
+    let mut host = MockHost::new(&cfg, &data, &inst_set_section(&cfg, "instset-classic.yaml"));
     let mut run = analyze_for(&mut host);
     let r = run
         .analyze

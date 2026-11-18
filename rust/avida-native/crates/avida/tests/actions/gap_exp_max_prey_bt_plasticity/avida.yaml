@@ -1,0 +1,162 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 10
+world:
+  x: 6
+  y: 6
+mutation:
+  copy_prob: 0.0
+reproduction:
+  allow_parent: false
+  death_method: never
+  age_limit: 0
+  juvenile_period: 10
+  reset_inputs_on_divide: 1
+reversion:
+  sterilize_detrimental: 0.5
+  sterilize_neutral: 0.5
+  sterilize_beneficial: 1.0
+  sterilize_unstable: 1
+  neutral_max: 0.2
+  neutral_min: 0.2
+time:
+  ave_time_slice: 10
+  slicing_method: constant
+  base_merit_method: constant
+  merit_inc_apply_immediate: true
+  genotype_phenplast_calc: 3
+altruism:
+  max_donates: 1000
+hoarding:
+  use_resource_bins: true
+  absorb_resource_fraction: 0.01
+  multi_absorb_type: first
+  return_stored_on_death: false
+  split_on_divide: false
+movement:
+  track_birth_locs: true
+sensing:
+  look_dist: 50
+groups:
+  use_form_groups: unrestricted
+  pred_prey_switch: pred_to_prey_allowed
+  pred_efficiency: 0.37
+  pred_efficiency_poison: 0.21
+  pred_odds: 0.6
+  pred_injury: 0.13
+  max_prey_bt: 4
+  track_group_attack_details: string
+
+instruction_sets:
+  - name: instset
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - zero
+      - inc
+      - dec
+      - repro
+      - input
+      - output
+      - rotate-right-one
+      - rotate-x
+      - move
+      - set-forage-target
+      - set-rand-p-ft-once
+      - get-loc-org-density
+      - get-faced-org-density
+      - collect-edible
+      - nop2-collect-edible
+      - collect-specific
+      - donate-specific
+      - set-guard
+      - get-num-guards
+      - get-num-juvs
+      - get-res-stored
+
+environment:
+  resources:
+    - {name: food, initial: 5000, inflow: 50, outflow: 0.01}
+    - name: den
+      kind: gradient
+      height: 8
+      spread: 8
+      plateau: 1
+      decay: 1
+      min_x: 0
+      max_x: 5
+      min_y: 0
+      max_y: 5
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 2
+      peaky: 2
+      habitat: 4
+      threshold: 0.5
+    - name: food2
+      kind: gradient
+      height: 4
+      spread: 4
+      plateau: 2
+      decay: 1
+      min_x: 0
+      max_x: 5
+      min_y: 0
+      max_y: 5
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 4
+      peaky: 4
+      habitat: 0
+      threshold: 1
+  reactions:
+    - name: ECHO
+      task: echo
+      process: {value: 1.0, type: pow, phenplastbonus: fracbonus}
+      requisite: {max_count: 3}
+    - name: eat0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+    - name: eat1
+      task: eat-target
+      args: {target_id: 1}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+    - name: eat2
+      task: eat-target
+      args: {target_id: 2}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+
+events:
+  - {at: begin, action: Inject, args: r.org 22}
+  - {at: begin, action: Inject, args: r.org 33}
+  - {at: begin, action: Inject, args: r.org 8}
+  - {at: begin, action: Inject, args: r.org 1}
+  - {at: begin, action: Inject, args: r.org 2}
+  - {at: begin, action: Inject, args: r.org 3}
+  - {at: begin, action: Inject, args: r.org 4}
+  - {at: begin, action: Inject, args: r.org 5}
+  - {at: begin, action: Inject, args: r.org 6}
+  - {at: begin, action: Inject, args: r.org 7}
+  - {at: begin, action: Inject, args: r.org 9}
+  - {at: begin, action: Inject, args: r.org 10}
+  - {at: begin, action: Inject, args: r.org 11}
+  - {at: begin, action: Inject, args: r.org 12}
+  - {at: begin, action: Inject, args: r.org 13}
+  - {at: begin, action: Inject, args: r.org 14}
+  - {at: begin, action: Inject, args: r.org 15}
+  - {at: begin, action: Inject, args: r.org 16}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 0, every: 1, until: end, action: PrintAverageData}
+  - {at: 0, every: 1, until: end, action: PrintPreyAverageData}
+  - {at: 0, every: 1, until: end, action: PrintTargets}
+  - {at: 40, action: Exit}

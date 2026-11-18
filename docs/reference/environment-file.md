@@ -1,33 +1,35 @@
-# Environment file reference (`environment.cfg`)
+# Environment reference (`environment`)
 
-The environment file defines the resources, the tasks that organisms can be rewarded for, and what each reward does. The file's name is the setting `ENVIRONMENT_FILE` (stock `environment.cfg`). For the ideas behind it, see [environment, tasks and resources](../concepts/environment-and-tasks.md).
+The environment defines the resources, the tasks that organisms can be rewarded for, and what each reward does. It is the section `environment` of the experiment file (`avida.yaml`), or a file of its own that the section names (`environment: environment-adder-ladder.yaml`); the command line can name another file with `-set environment FILE`. For the ideas behind it, see [environment, tasks and resources](../concepts/environment-and-tasks.md).
 
-All syntax below was checked against the file parser in the `avida-environment` crate (`crates/environment/src/environment.rs`).
+All rules below were checked against the parser in the `avida-environment` crate (`crates/environment/src/environment.rs`). The program turns each entry into a line of the C++ environment file (`RESOURCE glucose:inflow=100:outflow=0.01`) and reads that line as the C++ did; the C++ directive of each list is named below, because messages and the old documentation use it.
 
 ## Structure
 
-The file has one directive per line. Blank lines and everything after `#` are ignored. The first word of a line is the directive, and it is not case-sensitive. The directives are:
+`environment` is a mapping with these keys, each a list:
 
-| Directive | Purpose |
-|---|---|
-| `RESOURCE` | Declare one or more resources. |
-| `GRADIENT_RESOURCE` | Declare resources whose distribution moves or has a landscape. |
-| `CELL` | Give a resource per-cell amounts or flows in chosen cells. |
-| `REACTION` | Link a task to a reward. |
-| `SET_ACTIVE` | Switch a reaction on or off. |
-| `GRID` | Define a state grid for the state-grid tasks. |
+| Key | C++ directive | Purpose |
+|---|---|---|
+| `resources` | `RESOURCE`, `CELL`, `GRADIENT_RESOURCE` | Declare resources; `kind: cell` gives a resource amounts or flows in chosen cells, `kind: gradient` declares a resource whose distribution moves or has a landscape. |
+| `grids` | `GRID` | Define a state grid for the state-grid tasks. |
+| `reactions` | `REACTION` | Link a task to a reward. |
+| `set_active` | `SET_ACTIVE` | Switch a reaction on or off. |
 
-Any other word is an error: `unknown environment keyword '...'`. The old wiki also described a `MUTATION` directive. This version of the program does not accept it (the C++ program at the tag `cpp-final` did not either).
+The lists are read in this order, whatever the order in the file. An unknown key is an error that names the nearest key. The old wiki also described a `MUTATION` directive; neither this program nor the C++ program at the tag `cpp-final` accepts it.
 
-Arguments inside a directive are separated by colons, as `name=value` pairs: `RESOURCE glucose:inflow=100:outflow=0.01`.
+`input_and_mask` holds the mask of the C++ line `INPUT_AND_MASK` (hex with `0x`, such as `0xFF6DB6DB`, or decimal), which is passed on as written.
 
-## RESOURCE
+A value is one word: a number, a name or a list of cells. Comments start with `#`.
 
-```text
-RESOURCE name[:option=value...]  [name[:option=value...] ...]
+## Resources (`RESOURCE`)
+
+```yaml
+environment:
+  resources:
+    - {name: NAME, OPTION: VALUE, ...}
 ```
 
-One line can declare several resources. The name `infinite`, or no resource at all in a reaction, means the unlimited built-in resource. The options:
+Each entry declares one resource. The name `infinite`, or no resource at all in a reaction, means the unlimited built-in resource. The options:
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -41,42 +43,63 @@ One line can declare several resources. The name `infinite`, or no resource at a
 | `xdiffuse`, `ydiffuse` | 1.0 | How fast the resource diffuses along each axis (0.0 to 1.0). |
 | `xgravity`, `ygravity` | 0 | How fast the resource moves in one direction along each axis (-1.0 to 1.0). |
 | `deme` | false | The resource belongs to each [deme](../concepts/demes.md). |
-| `energy` | false | An energy resource. Needs `ENERGY_ENABLED 1`, otherwise the file is rejected. |
+| `energy` | false | An energy resource. Needs `energy.enabled: true`, otherwise the environment is rejected. |
 | `collectable` | | Whether organisms can collect it into internal bins with instructions. See [internal resources](../concepts/internal-resources.md). |
-| `hgt` | | A pool of genome fragments for horizontal gene transfer; needs `ENABLE_HGT`, and no other options except the defaults. |
+| `hgt` | | A pool of genome fragments for horizontal gene transfer; needs `hgt.enabled: true`, and no other options except the defaults. |
 
 Examples:
 
-```text
-RESOURCE glucose:initial=10000
-RESOURCE maltose:initial=10000:inflow=100:outflow=0.01
+```yaml
+environment:
+  resources:
+    - {name: glucose, initial: 10000}
+    - {name: maltose, initial: 10000, inflow: 100, outflow: 0.01}
 ```
 
 The first is a fixed pool without flows. The second is a chemostat: with nobody consuming, the pool settles at inflow divided by outflow, 100 / 0.01 = 10,000.
 
 A spatial resource that enters at the top row and leaves at the bottom:
 
-```text
-RESOURCE lactose:geometry=grid:initial=100000:inflow=100:outflow=0.1:inflowx1=0:inflowx2=59:inflowy1=0:inflowy2=0:outflowx1=0:outflowx2=59:outflowy1=59:outflowy2=59:ygravity=0.5
+```yaml
+environment:
+  resources:
+    - name: lactose
+      geometry: grid
+      initial: 100000
+      inflow: 100
+      outflow: 0.1
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 0
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 59
+      outflowy2: 59
+      ygravity: 0.5
 ```
 
-(On one line in the file; the line is broken here only for reading.) Non-global resources assume a cell has up to eight neighbours, which may conflict with the world geometry you chose.
+Non-global resources assume a cell has up to eight neighbours, which may conflict with the world geometry you chose.
 
-## CELL
+## Cell resources (`kind: cell`, the C++ `CELL`)
 
-```text
-CELL name:cell_list[:inflow=x][:outflow=x][:initial=x]
+```yaml
+environment:
+  resources:
+    - {name: NAME, kind: cell, cells: '0..9,15', inflow: X, outflow: X, initial: X}
 ```
 
-Gives the resource `name` its inflow, outflow or initial amount in the listed cells only. If the resource does not exist yet, `CELL` creates it as a grid resource without flows.
+Gives the resource `NAME` its inflow, outflow or initial amount in the listed cells only (`inflow`, `outflow` and `initial` are optional). If the resource does not exist yet, the entry creates it as a grid resource without flows. Quote a cell list that holds a comma.
 
-## GRADIENT_RESOURCE
+## Gradient resources (`kind: gradient`, the C++ `GRADIENT_RESOURCE`)
 
-```text
-GRADIENT_RESOURCE name[:option=value...]
+```yaml
+environment:
+  resources:
+    - {name: NAME, kind: gradient, OPTION: VALUE, ...}
 ```
 
-A gradient resource is a spatial resource laid out as a cone, a halo, hills, walls or nests. Cones and halos can move over time (moving resources need a bounded grid, `WORLD_GEOMETRY 1`). The parser accepts these options; the description comes from the program's old documentation, which has more detail:
+A gradient resource is a spatial resource laid out as a cone, a halo, hills, walls or nests. Cones and halos can move over time (moving resources need a bounded grid, `world.geometry: bounded_grid`). The parser accepts these options; the description comes from the program's old documentation, which has more detail:
 
 | Option | Meaning |
 |---|---|
@@ -96,28 +119,50 @@ A gradient resource is a spatial resource laid out as a cone, a halo, hills, wal
 | `threshold` | Value above which look instructions count a cell as edible. |
 | `refuge`, `damage`, `deadly`, `path`, `hammer` | Refuges from predation, damaging, deadly and path resources. |
 
-Example, a halo food source orbiting the centre of a 60 by 60 bounded world (this line was run for 60 updates as part of the preparation of this page):
+Example, a halo food source orbiting the centre of a 60 by 60 bounded world (this entry was run for 60 updates as part of the preparation of this page):
 
-```text
-GRADIENT_RESOURCE food1:height=10:spread=18:plateau=1:decay=1:move_a_scaler=3.8:updatestep=20:halo=1:halo_inner_radius=5:halo_anchor_x=30:halo_anchor_y=30:halo_width=10:move_speed=1
+```yaml
+environment:
+  resources:
+    - name: food1
+      kind: gradient
+      height: 10
+      spread: 18
+      plateau: 1
+      decay: 1
+      move_a_scaler: 3.8
+      updatestep: 20
+      halo: 1
+      halo_inner_radius: 5
+      halo_anchor_x: 30
+      halo_anchor_y: 30
+      halo_width: 10
+      move_speed: 1
 ```
 
 Deadly, damaging and predatory gradients act on the population; path and den resources next to a habitat still stop the run. See [unsupported features](unsupported.md).
 
-## REACTION
+## Reactions (`REACTION`)
 
-```text
-REACTION name task[:task_args] [process:...] [requisite:...] [context_requisite:...]
+```yaml
+environment:
+  reactions:
+    - name: NAME
+      task: TASK
+      args: {ARGUMENT: VALUE, ...}       # optional
+      process: {OPTION: VALUE, ...}      # optional; a list for several
+      requisite: {OPTION: VALUE, ...}    # optional; a list for several
+      context_requisite: {OPTION: VALUE, ...}
 ```
 
-- `name` is the reaction's name, used in other reactions' requisites, in `SET_ACTIVE` and in the output files.
-- `task` is a task name from the [task list](tasks.md), for example `not` or `equ`. Tasks that take arguments get them after a colon, as `name=value` pairs separated by commas, for example `mult:threshold=100,halflife=50`. (Commas, not colons: the colons separate the parts of the line.)
-- A line with only a name is a pre-declaration, so that an earlier reaction can refer to a later one.
+- `name` is the reaction's name, used in other reactions' requisites, in `set_active` and in the output files.
+- `task` is a task name from the [task list](tasks.md), for example `not` or `equ`. Tasks that take arguments get them in `args`, as a mapping (`{threshold: 100, halflife: 50}`) or as the text the C++ line had after the task's colon (`threshold=100,halflife=50`). The arguments are passed on as written and the task checks them.
+- An entry with only a `name` is a pre-declaration, so that an earlier reaction can refer to a later one.
 - Redefining a reaction prints a warning.
 
-### `process:` options
+### `process` options
 
-A reaction can have one or more `process` entries; each is a colon-separated list:
+A reaction can have one or more processes (a mapping, or a list of mappings):
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -142,39 +187,44 @@ A reaction can have one or more `process` entries; each is a colon-separated lis
 | `phenplastbonus` | default | For plastic phenotypes: `nobonus`, `fracbonus` or `fullbonus`. |
 | `internal` | 0 | Consume from the organism's internal resource bins (see [internal resources](../concepts/internal-resources.md)). |
 
-### `requisite:` options
+### `requisite` options
 
-A `requisite` gives conditions under which the reaction applies. If several `requisite` entries are present, the reaction applies when at least one of them holds. Within an entry, all conditions must hold.
+A requisite gives conditions under which the reaction applies. If several requisites are given (a list), the reaction applies when at least one of them holds. Within one requisite, all conditions must hold.
 
 | Option | Meaning |
 |---|---|
-| `reaction=name` | The named reaction must have been triggered. |
-| `noreaction=name` | The named reaction must not have been triggered. |
-| `min_count=n`, `max_count=n` | The organism must have performed this task at least `n` times, or fewer than `n` times. `max_count=1` therefore means "only the first time". |
-| `reaction_min_count=n`, `reaction_max_count=n` | The same for this reaction's own count. |
-| `min_tot_count=n`, `max_tot_count=n` | The same for the total over all reactions. |
-| `divide_only=n` | 0 (the default): the reaction applies on output (`IO`) only. 1: only when the organism divides. 2: always. |
-| `parasite_only=n` | Any value other than 0 restricts the reaction to parasites. |
+| `reaction: NAME` | The named reaction must have been triggered (a list names several). |
+| `noreaction: NAME` | The named reaction must not have been triggered (a list names several). |
+| `min_count: N`, `max_count: N` | The organism must have performed this task at least `N` times, or fewer than `N` times. `max_count: 1` therefore means "only the first time". |
+| `reaction_min_count: N`, `reaction_max_count: N` | The same for this reaction's own count. |
+| `min_tot_count: N`, `max_tot_count: N` | The same for the total over all reactions. |
+| `divide_only: N` | 0 (the default): the reaction applies on output (`IO`) only. 1: only when the organism divides. 2: always. |
+| `parasite_only: N` | Any value other than 0 restricts the reaction to parasites. |
 
-A reaction with no `requisite` at all applies on output but not at divide. `context_requisite:` takes the same options, evaluated against the context of the output.
+A reaction with no `requisite` at all applies on output but not at divide. `context_requisite` takes the same options, evaluated against the context of the output.
 
 The counts are the organism's counts in its current life cycle: an offspring starts at zero.
 
-## SET_ACTIVE
+## Switching reactions (`set_active`, the C++ `SET_ACTIVE`)
 
-```text
-SET_ACTIVE REACTION name [true|false]
+```yaml
+environment:
+  set_active:
+    - {type: REACTION, name: NAME, active: 0}
 ```
 
-Switches the reaction on (the default) or off. Only reactions can be switched. Events can do the same during a run with `SetReactionValue`, `SetReactionValueMult`, `SetReactionInst`, `SetReactionMaxTaskCount`, `SetReactionMinTaskCount` and `SetReactionTask` (see [actions](actions.md)).
+Switches the reaction on (`active: 1`, the default) or off (`active: 0`). Only reactions can be switched. Events can do the same during a run with `SetReactionValue`, `SetReactionValueMult`, `SetReactionInst`, `SetReactionMaxTaskCount`, `SetReactionMinTaskCount` and `SetReactionTask` (see [actions](actions.md)).
 
 ## A small environment with a limited resource
 
 This is the NOT task of the limited-resources environment used in the [limited-resources tutorial](../guides/tutorial-limited-resources.md):
 
-```text
-RESOURCE  resNOT:inflow=100:outflow=0.01
-REACTION  NOT  not   process:resource=resNOT:value=1.0:frac=0.0025:max=25
+```yaml
+environment:
+  resources:
+    - {name: resNOT, inflow: 100, outflow: 0.01}
+  reactions:
+    - {name: NOT, task: not, process: {resource: resNOT, value: 1.0, frac: 0.0025, max: 25}}
 ```
 
 Each time an organism completes NOT, it consumes the fraction 0.0025 of the pool, but at most 25 units, and the bonus it gains is `value` times the amount consumed (the default process type is `add`, so it is added to the bonus). A pool of 10,000 units gives 25 units at once; as the pool shrinks, so does the reward. The pool refills at 100 units per update and drains by 1% per update, so with nobody consuming it settles at 10,000.

@@ -28,11 +28,11 @@ fn copy_dir(from: &Path, to: &Path) {
 
 /// A sexual 20x20 world with mutations, so that genotypes die out.
 const SETS: &[(&str, &str)] = &[
-    ("WORLD_X", "20"),
-    ("WORLD_Y", "20"),
-    ("COPY_MUT_PROB", "0.0075"),
-    ("DIVIDE_INS_PROB", "0.05"),
-    ("DIVIDE_DEL_PROB", "0.05"),
+    ("world.x", "20"),
+    ("world.y", "20"),
+    ("mutation.copy_prob", "0.0075"),
+    ("mutation.divide_ins_prob", "0.05"),
+    ("mutation.divide_del_prob", "0.05"),
 ];
 
 const UPDATES: i32 = 300;
@@ -59,7 +59,7 @@ fn setup(name: &str, events: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/tests/sex/config");
     copy_dir(&src, &dir);
-    fs::write(dir.join("events.cfg"), events).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     dir
 }
 
@@ -71,7 +71,7 @@ fn make_world(dir: &Path, sets: &[(&str, &str)]) -> Result<World, String> {
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs).map(|(w, _)| w)
+    World::new(cmd.config, &cwd).map(|(w, _)| w)
 }
 
 /// Runs to the end; the world and the largest historic list seen.
@@ -131,7 +131,7 @@ fn check_identity(name: &str, extra_sets: &[(&str, &str)]) {
     let on = setup(&format!("{name}_on"), &events(""));
     let (w_off, historic_off) = run_world(&off, extra_sets);
     let mut sets_on = extra_sets.to_vec();
-    sets_on.push(("DROP_EXTINCT_GENOTYPES", "1"));
+    sets_on.push(("genealogy.drop_extinct_genotypes", "1"));
     let (w_on, historic_on) = run_world(&on, &sets_on);
     assert_same_population(&off, &on);
     // With sexual reproduction the default keeps many extinct ancestors.
@@ -156,7 +156,7 @@ fn same_population_exact_mode() {
 fn same_population_parallel_mode() {
     check_identity(
         "parallel",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "2")],
+        &[("execution.mode", "1"), ("execution.threads", "2")],
     );
 }
 
@@ -176,7 +176,7 @@ fn ancestry_actions_stop_at_start_up() {
             make_world(&dir, &[]).is_ok(),
             "{action} without the setting"
         );
-        let Err(msg) = make_world(&dir, &[("DROP_EXTINCT_GENOTYPES", "1")]) else {
+        let Err(msg) = make_world(&dir, &[("genealogy.drop_extinct_genotypes", "1")]) else {
             panic!("{action} was accepted with the setting");
         };
         assert!(
@@ -191,7 +191,7 @@ fn ancestry_actions_stop_at_start_up() {
 #[test]
 fn save_and_load() {
     let dir = setup("save", &events(""));
-    let sets = [("DROP_EXTINCT_GENOTYPES", "1")];
+    let sets = [("genealogy.drop_extinct_genotypes", "1")];
     let (w, _) = run_world(&dir, &sets);
     let alive = w.pop.num_organisms;
     assert!(alive > 20);
@@ -249,7 +249,7 @@ fn load_a_full_save_with_the_setting_on() {
         "full_load",
         &format!("u begin LoadPopulation {}\nu 2 Exit\n", spop.display()),
     );
-    let mut w = make_world(&dir2, &[("DROP_EXTINCT_GENOTYPES", "1")]).unwrap();
+    let mut w = make_world(&dir2, &[("genealogy.drop_extinct_genotypes", "1")]).unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {

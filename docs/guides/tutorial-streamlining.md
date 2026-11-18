@@ -2,37 +2,37 @@
 
 **Question.** Can selection drive a genome toward the shortest program that still does the rewarded logic?
 
-Normally Avida makes merit proportional to genome length, which cancels the advantage a short genome has in copying time. With `BASE_MERIT_METHOD 0` the base merit is a constant (`BASE_CONST_MERIT`, stock 100): every instruction that is not needed costs time, while the task rewards still multiply merit.
+Normally Avida makes merit proportional to genome length, which cancels the advantage a short genome has in copying time. With `time.base_merit_method: constant` the base merit is a constant (`time.base_const_merit`, stock 100): every instruction that is not needed costs time, while the task rewards still multiply merit.
 
 **Arms.**
 
 | Arm | Setting |
 |---|---|
 | `size-neutral` | Stock: merit proportional to length (the control). |
-| `streamlined` | `BASE_MERIT_METHOD 0` from the first update. |
+| `streamlined` | `time.base_merit_method: constant` from the first update. |
 | `evolve-then-streamline` | Stock until update 30,000, then constant merit. |
 
 ## Steps
 
-1. Start from the stock folder and the [replicate recipe](how-to-replicates.md). All arms add slip mutations on divide (`DIVIDE_SLIP_PROB 0.05`), which cut out or double a stretch of the genome so that length can change by many instructions at once. With `0` length changes by at most one instruction per divide, and each deletion saves only about 1% of the copying time.
-2. For the third arm make `events-switch.cfg`: the stock events with one added line:
+1. Start from the stock folder and the [replicate recipe](how-to-replicates.md). All arms add slip mutations on divide (`mutation.divide_slip_prob: 0.05`), which cut out or double a stretch of the genome so that length can change by many instructions at once. With `0` length changes by at most one instruction per divide, and each deletion saves only about 1% of the copying time.
+2. For the third arm make `events-switch.yaml`: the stock events (the part of `avida.yaml` from the line `events:` to the end) with one added entry. `SetConfig` names the setting by its old name:
 
-   ```text
-   u 30000 SetConfig BASE_MERIT_METHOD 0
+   ```yaml
+     - {at: 30000, action: SetConfig, args: BASE_MERIT_METHOD 0}
    ```
 
-3. Add the line `u 0:10000:end PrintDominantGenotype` to the events files. It writes the dominant genome every 10,000 updates so you can read the program as it shrinks.
+3. Add the entry `{at: 0, every: 10000, until: end, action: PrintDominantGenotype}` to the events of `avida.yaml` and of `events-switch.yaml`. It writes the dominant genome every 10,000 updates so you can read the program as it shrinks.
 4. Run the arms for as long as you can wait (the maintainer let them run until stopped, with 2 seeds per arm):
 
    ```sh
    . ./lab.sh
    for s in 1 2; do
-     run_arm size-neutral $s 200000 -set DIVIDE_SLIP_PROB 0.05
-     run_arm streamlined $s 200000 -set DIVIDE_SLIP_PROB 0.05 -set BASE_MERIT_METHOD 0
+     run_arm size-neutral $s 200000 -set mutation.divide_slip_prob 0.05
+     run_arm streamlined $s 200000 -set mutation.divide_slip_prob 0.05 -set time.base_merit_method 0
    done
    ```
 
-   For the third arm use a copy of the recipe that reads `events-switch.cfg`.
+   The third arm reads its events from `events-switch.yaml`: `EVENTS=events-switch.yaml run_arm evolve-then-streamline $s 200000 -set mutation.divide_slip_prob 0.05`.
 
 5. Compare genome length over time (`dominant.dat` column 6, or `average.dat`), EQU counts in `tasks.dat`, and the dominant genomes.
 

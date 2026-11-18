@@ -1,2 +1,2 @@
 base avatars
-args -set TRACK_GROUP_ATTACK_DETAILS 2
+args -set groups.track_group_attack_details 2

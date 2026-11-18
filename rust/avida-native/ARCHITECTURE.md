@@ -8,7 +8,7 @@ leaf layer has to share.
 | Crate (package) | Ports |
 |---|---|
 | `apto` (`avida-apto`) | RNG, schedulers, `%g` formatting, data-file writer, accumulators |
-| `config` (`avida-config`) | `cAvidaConfig`, `cInitFile`, string utilities, command line |
+| `config` (`avida-config`) | `cAvidaConfig`, `cInitFile`, string utilities, command line; the experiment file (`avida.yaml`: grouping table, loader, converter from the old files) |
 | `genome` (`avida-genome`) | `Instruction`, `InstructionSequence`, `Genome`, `cCPUMemory`, `cInstSet`, inst-set registry |
 | `tasks` (`avida-tasks`) | `cTaskLib`, task evaluators, arg schema |
 | `environment` (`avida-environment`) | resources, reactions, `cEnvironment` parser and evaluation |
@@ -105,7 +105,8 @@ counters hardware and organisms bump.
 
 The one place where the port departs from parity on purpose (approved by
 the maintainer; see PORTING.md). Two settings that the C++ does not have,
-read from `avida.cfg` or `-set` like any other (`config/src/port_settings.rs`;
+read from the experiment file (`execution.mode`, `execution.threads`) or
+`-set` like any other (`config/src/port_settings.rs`;
 the C++-format printers leave them out, the `-r` review lists them when they
 differ from their defaults):
 
@@ -868,7 +869,7 @@ pool moves by that fraction of its inflow. A round ends at each organism's
 next pool-consuming test, so an organism cannot perform two such tests in one
 round.
 
-**Result, global pools** (`environment-9resource.cfg`, the classic limited
+**Result, global pools** (`environment-9resource.cfg`, now `misc/environment-9resource.yaml`, the classic limited
 environment with nine pools of inflow 100 and outflow 0.01, stock `default-heads.org`, 60 x 60
 world, 2000 updates, seed 42, release build, one run at a time, load average 5
 to 7 from desktop applications):
@@ -1256,7 +1257,7 @@ The commit alone is a quarter of the loop at either thread count and cannot
 be spread (see above).
 
 What changed, all byte-identical in the output of a seed (stock, 160 x 160,
-`misc/environment-9resource.cfg`, each at 1, 4 and 8 threads where run, the
+`misc/environment-9resource.cfg`, now `.yaml`, each at 1, 4 and 8 threads where run, the
 data files compared against the build before):
 
 | Change | Effect |
@@ -1754,13 +1755,13 @@ the family histogram overlay.
 
 ## Modular heads set (opt-in extension, 2026-11-14)
 
-`avida-core/support/config/instset-heads-modular.cfg` (set `heads_modular`, hardware type 0) is the stock heads set plus `nop-D`, `nop-E`, `nop-F`, `call` and `return`. It is a port-only extension for experiments on code reuse; no stock configuration reaches it, and with every existing set the heads CPU computes what it did before (the consistency suite, and the default run's time, are the checks).
+`avida-core/support/config/instset-heads-modular.yaml` (set `heads_modular`, hardware type 0) is the stock heads set plus `nop-D`, `nop-E`, `nop-F`, `call` and `return`. It is a port-only extension for experiments on code reuse; no stock configuration reaches it, and with every existing set the heads CPU computes what it did before (the consistency suite, and the default run's time, are the checks).
 
 - **Registers.** The heads CPU has `num_regs = max(3, nops of the set)` registers, at most six (`hardware_cpu::reg_count`, read once when the hardware is created). `nop-D`..`nop-F` are library entries placed just before `NULL` in `CPU_INST_DEFS` (every C++ library index is unchanged) and declared as nops through `InstLib::with_extra_nops`; a set must list its nops first, as always. `LocalThread::reg` is always `[i32; 6]`, zeroed wherever AX to CX were (thread reset, divide reset, `reset`, epigenetic save and restore, thread copy). `num_regs` is also the modulus of label complements (the C++ `NUM_NOPS`) and of the next-register rotation (`find_next_register`, now a method), so with six nops `call C C` looks for `D D`, and `A->B->...->F->A`. At three the arithmetic is the C++'s. The trace (`print_status`) prints `AX` to `FX` as it prints `AX` to `CX`, the view model (`capture.rs`) hands the front ends `num_regs` registers, and both inspectors already named registers `AX`, `BX`, ... without a fixed count (the desktop inspector puts four to six registers three to a row so ten-digit values fit; its stack items carry accessible names, `Local stack level 0: 15`).
 - **Subroutines.** The existing `call` and `return` are enough and are unchanged (the active stack, depth 10, carries the return address; `call` pushes its own position, so `return` resumes at the call's label nops, which run as no-ops). Two properties of the existing pair matter to anyone writing organisms: the label search is forward only and does not wrap, so a subroutine must lie after its callers in the genome, and a `call` without a label jumps to BX.
 - **Bursts.** `Inst_Nop`, `Inst_Call`, `Inst_Return`, `Inst_Push` and `Inst_Pop` are already in `CPU_PARALLEL_METHODS`; nothing new was classified.
 - **Organism and tests.** `modular-subroutine.org` replicates exactly and does NOT, NAND and AND through one `nand` subroutine called from three places (`crates/hardware/tests/modular.rs`: test CPU, register wrap at 3 and at 6, six-nop label complement, burst classification; `crates/avida/tests/modular.rs`: zero-mutation run and a 1, 2 and 4 thread parallel run; `crates/tui/tests/modular.rs`, `crates/gui/tests/modular.rs`: stepping through a `call` and its `return`).
-- **Running it.** `avida -def INST_SET instset-heads-modular.cfg` with an events file that injects the organism (`-def` fills the `#include INST_SET=` of `avida.cfg`; `-set INST_SET` does not).
+- **Running it.** `avida -set instruction_sets heads_modular` (the stock set by name) with events that inject the organism, or `instruction_sets: [heads_modular]` in the experiment file.
 
 ## Field arithmetic task and the adder ladder (opt-in extension, 2026-11-15)
 
@@ -1773,7 +1774,7 @@ the family histogram overlay.
 - **Quality.** With f the fraction of compared bits that are right, q = max(0, 2f - 1), and q below `thresh` counts as 0. The task returns q; the environment marks the task done when q is not 0 and passes q to the reaction's processes, where `consumed = q * min(frac * resource, max)` (`max` alone for an infinite resource) and `bonus = consumed * value`. `type=add` adds `bonus` to the bonus, `type=mult` multiplies the bonus by it, `type=pow` multiplies by `2^bonus`, `type=lin` adds `bonus * task_count`. (`crates/environment/src/evaluation.rs`, `do_processes`; pinned for `add`, `mult` and `pow` by `quality_scales_what_a_reaction_consumes_and_so_the_bonus` in `crates/hardware/tests/field_arith.rs`.) With `requisite:max_count=1` the reaction pays once, at the first output whose quality reaches `thresh`, so the quality that pays is that of the first qualifying output (for `planes` often a first plane judged against an older output as the second).
 - **Output buffer.** The organism's output buffer has the capacity `OUTPUT_SIZE_DEFAULT` = 1 unless an environment asks for more: a task reports its need through `EnvReqs::set_min_outputs` while it loads (as `matchstr`, `optimize`, `all-ones` do) and `Environment::output_size` becomes the largest need, which `Organism::new` uses. `planes` asks for r (2 for `halfadd`, up to 5 for `add` with `bits=4`), `packed` for 1, and the task asks for 2 inputs (the default is 3). An environment without a `planes` task keeps a buffer of 1, so the default path is unchanged.
 - **Parallel mode.** `TaskLib::is_organism_local` lists `FieldArith` (it reads the two buffers only, writes nothing and prints nothing), so output tests with it run in the bursts like those of the other pure tasks (`local_output::output_is_local`). Pinned by `parallel_run_with_field_arith_does_not_depend_on_the_thread_count` (1, 2 and 4 threads, stock and modular set, `crates/avida/tests/field_arith.rs`) and by `the_ladder_passes_the_parallel_mode_gate_and_sizes_the_output_buffer`.
-- **The ladder.** `environment-adder-ladder.cfg` has eight reactions in rung order, each on its own depletable grid resource and each once per organism (`requisite:max_count=1`): NOT, NAND (rung 0), XOR, AND, HALFADD_PLANES, HALFADD, ADD2_PLANES, ADD2 (rungs 1 to 6; the last four are `field_arith` with `thresh=0.75`, raised from 0.25 before any experiment because of the chance levels below). Resources are scaled to the stock 60 x 60 world (0.05 a cell and update in, 0.05 of the amount out).
+- **The ladder.** `environment-adder-ladder.yaml` has eight reactions in rung order, each on its own depletable grid resource and each once per organism (`requisite:max_count=1`): NOT, NAND (rung 0), XOR, AND, HALFADD_PLANES, HALFADD, ADD2_PLANES, ADD2 (rungs 1 to 6; the last four are `field_arith` with `thresh=0.75`, raised from 0.25 before any experiment because of the chance levels below). Resources are scaled to the stock 60 x 60 world (0.05 a cell and update in, 0.05 of the amount out).
 - **Hand-written solutions** (`ladder-*.org`, tests in `crates/hardware/tests/field_arith.rs`): for each field rung and each of the stock heads set and the modular set an organism with no `add` and no `sub` that earns quality 1 on the task for random inputs (test CPU, 30 input triples each). Constants are constructible: `inc` and `shift-l` build `0x55555555` (and the three-bit pattern) in a loop, and the carry-propagation loop `(x, y) = (x ^ y, (x & y) << 1)` made of `nand` is an adder for any field width. Packed organisms need the mask constant and a carry loop of w + 1 rounds; `planes` organisms need neither (only bit 0 of every field is read, so shifts and `nand` suffice). Genome lengths (without the no-op modifiers): HALFADD_PLANES 32 (23), HALFADD 83 (57), ADD2_PLANES 90 (66), ADD2 113 (77) in the stock set; 49 (30), 82 (50), 78 (49), 89 (53) in the modular set, where the carry round is a subroutine. Every IO that outputs also reads the next input, which moves the two newest inputs: `planes` organisms read three inputs first, so that the pair at the last output is known to them (c and a for two planes, a and b for three).
 - **Verifiable chance level.** A uniformly random output reaches q >= 0.25 for HALFADD in 10.8 % of runs (32 compared bits) and for ADD2 in 10.0 % (30 bits); q >= 0.5 in 0.35 % and 0.26 %. The result bits are not balanced (the carry bit of a half adder is 1 in a quarter of the fields), so constant outputs score above chance: the output 0 gives q = 0.25 on average for HALFADD, `a ^ b` gives 0.45 for both packed rungs, and the fixed top byte of every input fixes a quarter of the compared bits (a constant that is right there and 0 below gives 0.44 on HALFADD, 0.26 on ADD2). The best of seven naive outputs (0, -1, a, b, a ^ b, a & b, a | b) reaches q >= 0.25 in 96 to 99 % of runs, >= 0.5 in 38 %, >= 0.75 in under 1 %; so a threshold of 0.25 pays trivial outputs on the packed rungs, and 0.75 or more separates them.
 
@@ -1818,7 +1819,7 @@ Code: `viewmodel/src/compare/` (`mod.rs` the loader, types and summaries; `dat.r
 
 **Files read per run.** `tasks.dat` with `count.dat` (the ladder), `reuse.dat` (reuse index, shared sites, tasks performed of the dominant genotype), `dominant.dat` (genome length), the first `modes*.dat` (complexity) and the `.done` marker. Columns are found by the titles in the `#` header, never by position. `phylogeny.dat` and `knockout_map.dat` are not read. A missing optional file leaves its panels at "not recorded"; a file that cannot be read or lacks a column adds one line to `Run::problems` and the rest of the run still loads; a last line cut short by a run that is still writing is dropped. A run without `.done` is listed as running with the update of its last row and counts with its values so far; "Finished runs only" (`f` in the terminal) leaves such runs out. A run whose task count differs from the batch's most common one is reported and left out of the ladder.
 
-**Rung names** are the `REACTION` names, in order, of the first `environment.cfg` found at `<batch>/`, `<batch>/<arm>/`, a run folder, or `<batch>/../config-<arm>/` whose reaction count equals the task columns (`tasks.dat` names tasks, and the four field-arithmetic rungs are all "FieldArith"). Otherwise the column titles are used, with `#<rung number>` after a title that occurs twice.
+**Rung names** are the reaction names, in order, of the first environment found at `<batch>/`, `<batch>/<arm>/`, a run folder, or `<batch>/../config-<arm>/` whose reaction count equals the task columns (the environment of the folder's `avida.yaml`, or in a batch run before the experiment file, its `environment.cfg`, whose names alone are read) (`tasks.dat` names tasks, and the four field-arithmetic rungs are all "FieldArith"). Otherwise the column titles are used, with `#<rung number>` after a title that occurs twice.
 
 **Definitions.** A rung is held where `ladder::is_held` says so (at least one organism and at least 1 % of the organisms, the Ladder view's rule), judged per row of `tasks.dat` against the population in `count.dat` for the same update. Per run: the highest rung held at the last row and at any row, the first update at which each rung was held and was performed by any organism, and the last row of each measure (`-1` in a file is "undefined" and is not plotted). Per arm: per rung the number of seeds that ever held it and that hold it at the end, and for each measure the median and quartiles of the seeds that have a value (quartiles by linear interpolation at `(n - 1) p`). The rung measures are numbered from 1 for the lowest rung, 0 for none.
 
@@ -1835,7 +1836,7 @@ Tests: `viewmodel/src/compare/stats.rs` (quartiles, `erfc` against tabulated val
 
 ## Dropping extinct genotypes (`DROP_EXTINCT_GENOTYPES`, port-only, 2026-11-15)
 
-The genotype arbiter keeps a genotype that has no living organism as a "historic" genotype for as long as another genotype names it as a parent, as the C++ does. With sexual reproduction (`divide-sex`: two parents per genotype) the lineages never coalesce, so most of every generation stays: a 60x60 run held 86,936 historic genotypes beside 3,522 living ones after 3,200 updates, and memory grew about 30 MB per 1,000 updates (about 100 MB with the ancestry observers on). `DROP_EXTINCT_GENOTYPES 1` (port-only like `EXECUTION_MODE`: `crates/config/src/port_settings.rs`, set in `avida.cfg` or with `-set`; it is not listed in `avida-core/support/config/avida.cfg`, which does not list `EXECUTION_MODE` either) trades the ancestry for flat memory. The default `0` is the C++ behaviour and every existing output is unchanged.
+The genotype arbiter keeps a genotype that has no living organism as a "historic" genotype for as long as another genotype names it as a parent, as the C++ does. With sexual reproduction (`divide-sex`: two parents per genotype) the lineages never coalesce, so most of every generation stays: a 60x60 run held 86,936 historic genotypes beside 3,522 living ones after 3,200 updates, and memory grew about 30 MB per 1,000 updates (about 100 MB with the ancestry observers on). `DROP_EXTINCT_GENOTYPES 1` (port-only like `EXECUTION_MODE`: `crates/config/src/port_settings.rs`; `genealogy.drop_extinct_genotypes` in the experiment file or with `-set`) trades the ancestry for flat memory. The default `0` is the C++ behaviour and every existing output is unchanged.
 
 **What it does.** A genotype that loses its last living organism leaves the arena at the point where it would otherwise become historic, whether or not other genotypes name it as a parent. To make that possible a genotype keeps no handle to, and no passive reference on, its parents: `GenotypeArbiter::drop_extinct` makes `classify_new_unit_with_parents` skip the parent handles and the parents' passive-reference increment. What a child copies at birth stays: its own depth (parent depth plus one, so `PrintDepthHistogram` and the depth columns are exact), its parents' ids as text (`parent_str`), so the `parents` column of a `.spop` file (written from that text) and the `parents` property are exact. A genotype with another passive reference (a deme's founder genotype, `deme_founders.rs`) is still kept as historic until that reference is released, so the historic list is bounded by the number of such references and not by the run.
 
@@ -1862,6 +1863,34 @@ Left alone on purpose: the standard `Print*Data` files, `PrintKnockoutMap`, `Pri
 | 6,000 | 191.3 MB | 54.7 MB |
 
 Cost: none measurable; the removal is the one `removeGenotype` already does, a little earlier.
+
+## The experiment file (`avida.yaml`, 2026-11-18)
+
+By the maintainer's decision of 2026-11-18 one YAML file per experiment
+replaces `avida.cfg`, the environment file, the events file and the
+instruction-set files (PORTING.md, "The experiment file departs from the
+C++ input format"; the user's description is
+`docs/reference/config-yaml.md`). All of it lives in `config`:
+
+| File | Role |
+|---|---|
+| `naming.rs` | the grouping table: one row per C++ setting and per port-only setting, its group and key, the sections that replaced `EVENT_FILE`, `ENVIRONMENT_FILE` and `INST_SET`; the single source of truth for the loader, `-set`, the converter, the settings editors and the reference page |
+| `yaml.rs` | the YAML reader (on the event stream of `saphyr-parser` 0.0.6): scalars stay the text of the file, anchors and aliases are refused, every node keeps its line for messages |
+| `experiment.rs` | `Config::load_experiment` and `Config::set_path`: unknown keys refused with the nearest name, values parsed by the old `load_str_by_id`, sections rendered into the C++ lines the unchanged parsers read (`Experiment::environment`, `Experiment::events`, `Config::instsets`), stock instruction sets by name (`heads_default`, `heads_sex`, `heads_modular`, `smt`, `transsmt`, `experimental`, compiled in from their files in `avida-core/support/config`), section files |
+| `convert.rs` | `avida convert DIR` and `avida convert --section`: the old files to YAML, with the helpers tests use to vary a copied experiment (`section_lines`, `replace_section`, `without_old_input_notes`). It is the only user of the old readers: `Config::load_old_format` (`cAvidaConfig::Load`, with `#include`, `-def` and `$NAME`) and `Config::set_from_map` are private to the crate, and the converter parses old environment, events and instruction-set files itself |
+| `reference.rs` | writes `docs/reference/config-yaml.md` from the table (`AVIDA_UPDATE_REFERENCE=1` with the test `reference_page_is_current`) |
+
+The world reads only what `Config` holds: `World::new(config, working_dir)`
+takes the environment, event and instruction-set lines from it.
+`Environment::load` (the environment file through `cInitFile`),
+`convert_legacy_inst_set_file` (`ConvertLegacyInstSetFile`), `Config::print`
+(the old `avida.cfg` writer) and the `-def` variables of `World::new` and
+`AnalyzeWorld::initialize` were removed with the old format; `-def` on the
+command line stops with a message that names `-set` and `avida convert`. The front ends get the
+settings with their dotted path, group and old name through
+`session::Setting`; their settings editors make `-set group.key value`
+arguments for a restart, and the new-experiment bundle of the desktop
+application is `avida.yaml` with the stock section files and organisms.
 
 ## Config flags not yet ported
 

@@ -31,8 +31,10 @@ fn modular_config(name: &str) -> PathBuf {
         &Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config"),
         &dir,
     );
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject modular-subroutine.org 12\nu 100000 Exit\n",
     )
     .unwrap();
@@ -45,17 +47,17 @@ fn args(dir: &Path) -> StartupArgs {
         avida_args: [
             "-s",
             "7",
-            "-def",
-            "INST_SET",
-            "instset-heads-modular.cfg",
             "-set",
-            "WORLD_X",
+            "instruction_sets",
+            "heads_modular",
+            "-set",
+            "world.x",
             "5",
             "-set",
-            "WORLD_Y",
+            "world.y",
             "5",
             "-set",
-            "COPY_MUT_PROB",
+            "mutation.copy_prob",
             "0",
         ]
         .map(String::from)

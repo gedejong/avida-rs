@@ -355,10 +355,10 @@ fn avida_rec_records_headless_in_the_parallel_mode() {
         .arg(&dir)
         .args([
             "-set",
-            "EXECUTION_MODE",
+            "execution.mode",
             "1",
             "-set",
-            "EXECUTION_THREADS",
+            "execution.threads",
             "2",
         ])
         .output()
@@ -370,7 +370,7 @@ fn avida_rec_records_headless_in_the_parallel_mode() {
     assert_eq!(r.len(), 5);
     assert_eq!(r.update_of(4), Some(100));
     assert_eq!(r.meta().every, 25);
-    assert!(r.meta().args.iter().any(|a| a == "EXECUTION_MODE"));
+    assert!(r.meta().args.iter().any(|a| a == "execution.mode"));
     let last = r.frame(4).unwrap();
     assert!(last.header.stats.orgs > 1);
     assert!(last.map.unwrap().occupied() > 1);

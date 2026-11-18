@@ -1,0 +1,83 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  verbosity: 3
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  resources:
+    - name: g1
+      kind: gradient
+      height: 10
+      spread: 8
+      plateau: 1
+      decay: 2
+      move_a_scaler: 1.5
+      updatestep: 3
+      peakx: 20
+      peaky: 20
+    - name: g2
+      kind: gradient
+      height: 5
+      spread: 6
+      plateau: 1
+      decay: 1
+      min_x: 2
+      max_x: 30
+      min_y: 3
+      max_y: 40
+      move_a_scaler: 2.5
+      updatestep: 4
+      halo: 1
+      halo_inner_radius: 3
+      halo_anchor_x: 20
+      halo_anchor_y: 20
+      halo_width: 12
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+    - name: g1r
+      task: not
+      process: {resource: g1, value: 1.0, type: mult, max: 1, min: 1, depletable: 1}
+    - {name: g2r, task: nand, process: {resource: g2, value: 1.0, type: add}}
+
+events:
+  - {at: begin, action: Exit}

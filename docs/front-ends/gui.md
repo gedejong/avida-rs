@@ -8,7 +8,7 @@
 avida-gui [CONFIG_DIR] [AVIDA_ARGS...]
 ```
 
-`CONFIG_DIR` is the experiment folder that holds `avida.cfg`, `events.cfg` and the environment file. `AVIDA_ARGS` go to the world as the `avida` program takes them, for example `-s 7 -set WORLD_X 30`. They apply to every experiment you open in that run of the program. Without a folder, the start screen offers a folder picker and the list of recently opened experiments.
+`CONFIG_DIR` is the experiment folder that holds the experiment file `avida.yaml`. `AVIDA_ARGS` go to the world as the `avida` program takes them, for example `-s 7 -set world.x 30`. They apply to every experiment you open in that run of the program. Without a folder, the start screen offers a folder picker and the list of recently opened experiments.
 
 Logs go to standard error: warnings by default, more with `RUST_LOG=info` or `RUST_LOG=debug`.
 
@@ -16,7 +16,7 @@ On macOS, start it from the Finder, or through the application bundle described 
 
 ## New experiment
 
-The experiment menu at the left of the top bar (and the command palette) holds New experiment, Open experiment, Open recent, Save population, the exports, Restart and Close. **New experiment** (`Cmd N` on macOS, `Ctrl N` elsewhere) creates a folder from Avida's default configuration. The stock files are compiled into the program, so this needs nothing on disk: the configuration, events and environment files, every top-level instruction set and the matching ancestors. If you pick a folder that is not empty, the application makes a new `avida-experiment` folder inside it (`avida-experiment-2` if that exists). The alternative environments and instruction sets under `misc/` in the repository are not bundled.
+The experiment menu at the left of the top bar (and the command palette) holds New experiment, Open experiment, Open recent, Save population, the exports, Restart and Close. **New experiment** (`Cmd N` on macOS, `Ctrl N` elsewhere) creates a folder from Avida's default configuration. The stock files are compiled into the program, so this needs nothing on disk: the experiment file `avida.yaml`, `analyze.cfg`, every stock instruction set and environment as a section file (`instset-*.yaml`, `environment-*.yaml`) and the matching ancestors. If you pick a folder that is not empty, the application makes a new `avida-experiment` folder inside it (`avida-experiment-2` if that exists). The alternative environments and instruction sets under `misc/` in the repository are not bundled.
 
 ## The window
 
@@ -32,7 +32,7 @@ The experiment menu at the left of the top bar (and the command palette) holds N
 | Genotypes | The genotypes by abundance. You can highlight one on the map, inspect the dominant one, or trace a lineage. |
 | Organism | The selected organism's phenotype, CPU state and, in the debugger, its registers, heads, stacks and memory. |
 | Environment | The tasks, reactions and resources. |
-| Config | The effective configuration, with overrides, and restart. |
+| Config | The effective configuration, with overrides, and restart. Each setting is listed by its place in the experiment file (`world.x`); its group and its old name are shown below it. An override is applied at the next restart as `-set world.x 30`; the file itself is not changed. |
 
 ## Speed
 

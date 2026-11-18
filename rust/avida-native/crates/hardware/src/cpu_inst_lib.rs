@@ -601,7 +601,7 @@ pub static CPU_INST_DEFS: [CpuInstDef; 566] = [
     d("exit-germline", "Inst_ExitGermline", C::Lifecycle, F::STALL, ""),
     d("repair-on", "Inst_RepairPointMutOn", C::Lifecycle, F::STALL, ""),
     d("repair-off", "Inst_RepairPointMutOff", C::Lifecycle, F::STALL, ""),
-    // Port-only extension (opt-in, instset-heads-modular.cfg): three more
+    // Port-only extension (opt-in, instset-heads-modular.yaml): three more
     // register nops. They sit just before NULL so that every C++ library
     // index below it is unchanged.
     d("nop-D", "Inst_Nop", C::Nop, F::NOP, "No-operation instruction; modifies other instructions (DX)"),

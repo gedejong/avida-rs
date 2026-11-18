@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 4 -set WORLD_X 15 -set WORLD_Y 15 -set BIRTH_METHOD 10 -set ALLOW_PARENT 0
+args -s 4 -set world.x 15 -set world.y 15 -set reproduction.birth_method 10 -set reproduction.allow_parent 0

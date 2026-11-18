@@ -9,7 +9,10 @@
 //!
 //! Each fixture under `tests/fixtures/` is an `analyze.cfg` run with
 //! `-s 100 -a` in a copy of avida-core/tests/analyze_truncate_lineage/config
-//! (plus the fixture's `input/` files, if any); `stdout.txt`, `stderr.txt`,
+//! (plus the fixture's `input/` files, if any: an `avida.yaml` there is the
+//! base folder's experiment file with the fixture's own instruction set or
+//! environment, converted from the files the reference run read);
+//! `stdout.txt`, `stderr.txt`,
 //! every file under `expected/` (the data directory) and under
 //! `expected_cwd/` (files written to the current directory) were captured
 //! from the C++ reference binary with the same script. Files are compared
@@ -163,15 +166,22 @@ fn check(name: &str) {
             err.text()
         ),
     }
+    // The reference read the old input files; what it printed about them
+    // alone is not compared.
+    let reference = |file: &str| {
+        avida_config::convert::without_old_input_notes(
+            &std::fs::read_to_string(fx.join(file)).unwrap(),
+        )
+    };
     assert_same(
         &format!("{name}: stdout"),
         &out.text(),
-        &std::fs::read_to_string(fx.join("stdout.txt")).unwrap(),
+        &reference("stdout.txt"),
     );
     assert_same(
         &format!("{name}: stderr"),
         &err.text(),
-        &std::fs::read_to_string(fx.join("stderr.txt")).unwrap(),
+        &reference("stderr.txt"),
     );
     let expected = fx.join("expected");
     let mut want = Vec::new();

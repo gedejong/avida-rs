@@ -1,0 +1,118 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+hoarding:
+  multi_absorb_type: last
+sensing:
+  look_dist: 5
+groups:
+  pred_prey_switch: pred_to_prey_allowed
+
+instruction_sets:
+  - name: diff
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - zero
+      - dec
+      - inc
+      - one
+      - shift-l
+      - look-around
+      - look-around-ft
+      - set-forage-target
+
+environment:
+  resources:
+    - {name: res0, initial: 150}
+    - {name: pheromone, initial: 120.4}
+    - {name: res2, initial: 0.75}
+    - {name: res3, initial: 0}
+  reactions:
+    - name: NOT
+      task: not
+      process: {value: 1.0, type: pow, resource: res0, min: 100}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 1.0, type: pow, resource: res2, min: 1}
+      requisite: {max_count: 1}
+    - name: EAT0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: res0, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: EAT1
+      task: eat-target
+      args: {target_id: 1}
+      process: {resource: res2, value: 1, type: add}
+    - {name: EAT3, task: eat-target, args: {target_id: 3}, process: {value: 1, type: add}}
+
+events:
+  - {at: begin, action: LoadMiniTraceQ, args: file=gq.txt:orgs_per=2}
+  - {at: begin, action: Inject, args: g0.org 610}
+  - {at: begin, action: Inject, args: g0.org 3010}
+  - {at: begin, action: Inject, args: g0.org 3050}
+  - {at: begin, action: Inject, args: g0.org 630}
+  - {at: begin, action: Inject, args: g0.org 650}
+  - {at: begin, action: Inject, args: g0.org 1810}
+  - {at: begin, action: Inject, args: g0.org 1830}
+  - {at: begin, action: Inject, args: g0.org 1850}
+  - {at: begin, action: Inject, args: g0.org 3030}
+  - {at: begin, action: Inject, args: inert.org 670}
+  - {at: begin, action: Inject, args: inert.org 374}
+  - {at: begin, action: Inject, args: inert.org 553}
+  - {at: begin, action: Inject, args: inert.org 486}
+  - {at: begin, action: Inject, args: inert.org 667}
+  - {at: begin, action: Inject, args: inert.org 454}
+  - {at: begin, action: Inject, args: inert.org 389}
+  - {at: begin, action: Inject, args: inert.org 749}
+  - {at: begin, action: Inject, args: inert.org 510}
+  - {at: begin, action: Inject, args: inert.org 512}
+  - {at: begin, action: Inject, args: inert.org 527}
+  - {at: begin, action: Inject, args: inert.org 533}
+  - {at: begin, action: Inject, args: inert.org 408}
+  - {at: begin, action: Inject, args: inert.org 586}
+  - {at: begin, action: Inject, args: inert.org 529}
+  - {at: begin, action: Inject, args: inert.org 648}
+  - {at: begin, action: Inject, args: inert.org 591}
+  - {at: begin, action: Inject, args: inert.org 594}
+  - {at: begin, action: Inject, args: inert.org 1929}
+  - {at: begin, action: Inject, args: inert.org 1570}
+  - {at: begin, action: Inject, args: inert.org 1931}
+  - {at: begin, action: Inject, args: inert.org 1828}
+  - {at: begin, action: Inject, args: inert.org 1887}
+  - {at: begin, action: Inject, args: inert.org 1590}
+  - {at: begin, action: Inject, args: inert.org 1671}
+  - {at: begin, action: Inject, args: inert.org 1910}
+  - {at: begin, action: Inject, args: inert.org 2030}
+  - {at: begin, action: Inject, args: inert.org 1731}
+  - {at: begin, action: Inject, args: inert.org 2033}
+  - {at: begin, action: Inject, args: inert.org 1608}
+  - {at: begin, action: Inject, args: inert.org 3066}
+  - {at: begin, action: Inject, args: inert.org 2772}
+  - {at: begin, action: Inject, args: inert.org 3134}
+  - {at: begin, action: Inject, args: inert.org 3131}
+  - {at: begin, action: Inject, args: inert.org 3206}
+  - {at: begin, action: Inject, args: inert.org 2906}
+  - {at: begin, action: Inject, args: inert.org 2849}
+  - {at: begin, action: Inject, args: inert.org 3209}
+  - {at: begin, action: Inject, args: inert.org 3271}
+  - {at: begin, action: Inject, args: inert.org 2873}
+  - {at: begin, action: Inject, args: inert.org 3051}
+  - {at: begin, action: Inject, args: inert.org 3166}
+  - {at: begin, action: Inject, args: inert.org 2987}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 3, action: Exit}

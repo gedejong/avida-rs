@@ -1,0 +1,89 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+
+instruction_sets:
+  - name: instset.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - set-opinion
+      - get-opinion
+      - send-msg
+      - retrieve-msg
+      - bcast1
+      - collect-cell-data
+      - get-cell-xy
+      - nop-X
+
+environment:
+  reactions:
+    - {name: NOT}
+    - {name: NAND}
+    - {name: AND}
+    - {name: ORN}
+    - {name: OR}
+    - name: NOT
+      task: not
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NAND, AND, ORN, OR], max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NOT, AND, ORN, OR], max_count: 1}
+    - name: AND
+      task: and
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, ORN, OR], max_count: 1}
+    - name: ORN
+      task: orn
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, OR], max_count: 1}
+    - name: OR
+      task: or
+      process: {value: 4.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, ORN], max_count: 1}
+
+events:
+  - {at: begin, action: InjectDemes, args: organisms/1_18712737.org}
+  - {at: 30, every: 30, until: 200, action: ReplicateDemes, args: all}
+  - {at: 0, every: 10, until: 200, action: PrintPerDemeTasksExeData}
+  - {at: 0, every: 10, until: 200, action: PrintPerDemeTasksData}
+  - {at: 0, every: 10, until: 200, action: PrintAvgDemeTasksExeData}
+  - {at: 0, every: 10, until: 200, action: PrintPerDemeReactionData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeTasksData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeTasksExeData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeReactionData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeOrgTasksData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeOrgTasksExeData}
+  - {at: 0, every: 10, until: 200, action: PrintDemeOrgReactionData}
+  - {at: 200, action: Exit}

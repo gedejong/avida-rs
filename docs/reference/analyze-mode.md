@@ -6,13 +6,13 @@ Analyze mode is for studying a finished run. Instead of simulating a population,
 
 ```sh
 avida -a                  # run the script named by ANALYZE_FILE (stock: analyze.cfg)
-avida -a -set ANALYZE_FILE my-analysis.cfg -set DATA_DIR out
+avida -a -set analyze.file my-analysis.cfg -set general.data_dir out
 avida -i                  # interactive: type commands, see the effect at once
 ```
 
-Run it in an experiment folder, so that the configuration, the environment and the instruction set are the ones the population was evolved under; the test CPU uses them. Results go to `DATA_DIR`, except where a command names a different place. The stock `analyze.cfg` contains only comments.
+Run it in an experiment folder, so that the configuration, the environment and the instruction set are the ones the population was evolved under; the test CPU uses them. Results go to `general.data_dir`, except where a command names a different place. The stock `analyze.cfg` contains only comments.
 
-Analyze mode uses the cores of the machine for the heavy commands (landscapes and others). `MAX_CONCURRENCY` limits the number of threads (stock -1: all of them). The `ANALYZE_OPTION_1` and `ANALYZE_OPTION_2` settings are strings your script can read.
+Analyze mode uses the cores of the machine for the heavy commands (landscapes and others). `analyze.max_concurrency` limits the number of threads (stock -1: all of them). The `analyze.option_1` and `analyze.option_2` settings are strings your script can read.
 
 ## A first script
 
@@ -24,7 +24,7 @@ RECALCULATE
 DETAIL genotypes.dat length gest_time fitness
 ```
 
-Run it as `avida -a -set ANALYZE_FILE my-analysis.cfg -set DATA_DIR out`. You should see the progress lines `Loading: ...`, `Running through test CPUs...` and `Detailing...`, and a file `out/genotypes.dat` with a header and one row per genotype.
+Run it as `avida -a -set analyze.file my-analysis.cfg -set general.data_dir out`. You should see the progress lines `Loading: ...`, `Running through test CPUs...` and `Detailing...`, and a file `out/genotypes.dat` with a header and one row per genotype.
 
 ## Batches
 
@@ -58,7 +58,7 @@ The column names (also used by `FILTER`, `FIND_GENOTYPE` and others) are:
 
 `name`, `viable`, `id`, `hw_type`, `inst_set`, `src`, `src_args`, `tag`, `parents`, `parent_id`, `parent2_id`, `parent_dist`, `ancestor_dist`, `lineage`, `num_cpus`, `total_cpus`, `num_units`, `total_units`, `length`, `copy_length`, `exe_length`, `merit`, `comp_merit`, `comp_merit_ratio`, `gest_time`, `efficiency`, `efficiency_ratio`, `fitness`, `div_type`, `mate_id`, `fitness_ratio`, `update_born`, `gen_born`, `update_dead`, `update_deactivated`, `depth`, `cells`, `gest_offset`, `frac_dead`, `frac_neg`, `frac_neut`, `frac_pos`, `complexity`, `land_fitness`, `mating_type`, `mate_preference`, `mating_display_a`, `mating_display_b`, `num_phen`, `num_trials`, `phen_entropy`, `phen_max_fitness`, `phen_max_fit_freq`, `phen_min_fitness`, `phen_min_freq`, `phen_avg_fitness`, `phen_likely_freq`, `phen_likely_fitness`, `prob_viable`, `parent_muts`, `task_order`, `sequence`, `alignment`, `executed_flags`, `alignment_executed_flags`, `task_list`, `link`, `html`, `total_task_count`, `total_task_performance_count`, `update`, `dom_num_cpus`, `dom_depth`, `dom_id`, `dom_sequence`.
 
-In addition, `task.0`, `task.1` and so on give how often the genotype performed each task (numbered in the order of the reactions in `environment.cfg`), and a column name can be prefixed with `html.` for HTML output. Their headers print the task's name, as in the legend `# 5: Not`.
+In addition, `task.0`, `task.1` and so on give how often the genotype performed each task (numbered in the order of the reactions of the environment), and a column name can be prefixed with `html.` for HTML output. Their headers print the task's name, as in the legend `# 5: Not`.
 
 ## Variables, loops and functions
 
@@ -126,4 +126,4 @@ All [actions](actions.md) can be called inside an analyze script (the landscape 
 
 ## Not supported
 
-Analyze mode sets up the whole population as a normal run does, so demes, gradient resources and gene transfer set-ups work. What still stops are set-ups on which the reference binary itself crashes: `NUM_DEMES` that does not divide `WORLD_Y`, an unknown `SLICING_METHOD`, two `hgt=1` resources, `ENABLE_HGT` without an `hgt=1` resource, and a gradient halo narrower than twice its height. The ASL scripting language (`crates/script`) is parsed and checked, but its `Config`, `World` and `Driver` objects are stubs that fail when called. See [unsupported features](unsupported.md).
+Analyze mode sets up the whole population as a normal run does, so demes, gradient resources and gene transfer set-ups work. What still stops are set-ups on which the reference binary itself crashes: `demes.count` that does not divide `world.y`, an unknown `time.slicing_method`, two `hgt=1` resources, `hgt.enabled` without an `hgt=1` resource, and a gradient halo narrower than twice its height. The ASL scripting language (`crates/script`) is parsed and checked, but its `Config`, `World` and `Driver` objects are stubs that fail when called. See [unsupported features](unsupported.md).

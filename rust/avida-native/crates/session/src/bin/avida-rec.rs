@@ -2,8 +2,8 @@
 //! arena to a file that `avida-gui --play` and `avida-tui --play` can play
 //! back later.
 //!
-//! It takes what the `avida` binary takes (a configuration folder, `-s`,
-//! `-set`, `-def`, ...) and computes exactly what `avida` computes, with
+//! It takes what the `avida` binary takes (an experiment folder, `-s`,
+//! `-set`, `-c`, ...) and computes exactly what `avida` computes, with
 //! frames appended to the recording as updates end. SIGINT and SIGTERM
 //! stop it at the end of the update in progress with a complete file; the
 //! exit status is the run's (128 plus the signal after one).
@@ -25,10 +25,10 @@ avida-rec: run an Avida experiment without a window and record its arena
 USAGE:
     avida-rec --record FILE [OPTIONS] [CONFIG_DIR] [AVIDA_ARGS...]
 
-CONFIG_DIR is the run's working directory (avida.cfg, events.cfg, the
-environment file); it defaults to the current directory. Everything after it
-is passed to the avida command line (for example: -s 7 -set WORLD_X 30
--set EXECUTION_MODE 1 -set EXECUTION_THREADS 4).
+CONFIG_DIR is the run's working directory (the experiment file avida.yaml
+and the files it names); it defaults to the current directory. Everything
+after it is passed to the avida command line (for example: -s 7
+-set world.x 30 -set execution.mode 1 -set execution.threads 4).
 
 OPTIONS (before CONFIG_DIR):
 ";

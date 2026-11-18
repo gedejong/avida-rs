@@ -1,0 +1,39 @@
+# Converted with 'avida convert' from instset-heads-32-oldsearch.cfg. Name it in an experiment
+# file as "instruction_sets: <this file>".
+
+instruction_sets:
+  - name: instset-heads-32-oldsearch.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - if-bit-1
+      - jump-f
+      - jump-b
+      - call
+      - return
+      - set-head
+      - adv-head
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-read
+      - h-write
+      - h-alloc
+      - h-divide
+      - get
+      - put
+      - search-f
+      - search-b

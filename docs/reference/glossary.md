@@ -8,7 +8,7 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Ancestor.** The first organism of a run, injected from an `.org` file.
 
-**Avatar.** In experiments with movement, the body of an organism on the grid, separate from its cell. Needs `USE_AVATARS`.
+**Avatar.** In experiments with movement, the body of an organism on the grid, separate from its cell. Needs `movement.use_avatars`.
 
 **Batch.** In *analyze mode*, a group of loaded genotypes that commands work on.
 
@@ -22,11 +22,11 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Deme.** A subpopulation of the world that can replicate and compete as a group. See [demes](../concepts/demes.md).
 
-**Environment.** The set of *resources*, *tasks* and *reactions* defined in `environment.cfg`.
+**Environment.** The set of *resources*, *tasks* and *reactions* defined in the section `environment` of the experiment file.
 
-**Event.** A line of the events file: a trigger, a timing and an *action*. See [events file](events-file.md).
+**Event.** An entry of the events: a trigger, a timing and an *action*. See [events](events-file.md).
 
-**Exact mode.** `EXECUTION_MODE 0`, the default: the original scheduler, whose output is byte-identical to the C++ program's. See [execution modes](../execution/index.md).
+**Exact mode.** `execution.mode: 0`, the default: the original scheduler, whose output is byte-identical to the C++ program's. See [execution modes](../execution/index.md).
 
 **Fitness.** *Merit* divided by *gestation time*: how fast an organism converts CPU time into offspring.
 
@@ -60,11 +60,11 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Look sensor.** What the look instructions read from the grid and return in registers. See [the look sensor](look-sensor.md).
 
-**Mating type.** The sex of an organism when `MATING_TYPES 1`: juvenile, female or male, set by instructions. See [mating types](../concepts/mating-types.md).
+**Mating type.** The sex of an organism when `mating.types: true`: juvenile, female or male, set by instructions. See [mating types](../concepts/mating-types.md).
 
 **Merit.** An organism's claim on CPU time. It starts at a base value tied to genome size and is multiplied by the rewards of tasks performed.
 
-**Migration matrix.** The file named by `MIGRATION_FILE`, with a weight for each ordered pair of demes. See [the deme migration matrix](migration-matrix.md).
+**Migration matrix.** The file named by `demes.migration_file`, with a weight for each ordered pair of demes. See [the deme migration matrix](migration-matrix.md).
 
 **Mutation.** A random change to a genome. See [mutations](../concepts/mutations.md).
 
@@ -72,13 +72,13 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Organism.** A genome together with its virtual CPU, living in a cell.
 
-**Parallel mode.** `EXECUTION_MODE 1`, the opt-in mode that runs organism-local instructions on several threads and is not byte-identical to the exact mode. See [execution modes](../execution/index.md).
+**Parallel mode.** `execution.mode: 1`, the opt-in mode that runs organism-local instructions on several threads and is not byte-identical to the exact mode. See [execution modes](../execution/index.md).
 
 **Parasite.** A thread that runs inside a host, steals CPU time and infects other hosts. See [parasites](../concepts/parasites.md).
 
 **Phenotype.** What an organism has done and measured: merit, gestation time, tasks performed and more.
 
-**Reaction.** A line of the environment file that links a *task* to a reward.
+**Reaction.** An entry of the environment that links a *task* to a reward.
 
 **Requisite.** A condition on a reaction, such as "only the first time".
 
@@ -100,6 +100,6 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Torus.** A grid that wraps at the edges, the stock world geometry.
 
-**Update.** The unit of simulated time. One update is `AVE_TIME_SLICE` (stock 30) time slices per organism on average. See [the update cycle](../concepts/update-cycle.md).
+**Update.** The unit of simulated time. One update is `time.ave_time_slice` (stock 30) time slices per organism on average. See [the update cycle](../concepts/update-cycle.md).
 
 **World.** The grid of cells, with its resources and demes.

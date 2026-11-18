@@ -1,0 +1,136 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 50
+  y: 50
+mutation:
+  copy_prob: 0.0
+  div_prob: 0.000703
+  div_ins_prob: 3.906e-5
+  div_del_prob: 3.906e-5
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+  inject_prob: 0.0075
+  inject_ins_prob: 0.000825
+  inject_del_prob: 0.000825
+  meta_copy_prob: 0.2
+  meta_std_dev: 0.1
+reproduction:
+  birth_method: population_random
+  prefer_empty: false
+  age_limit: 30
+  inherit_merit: false
+parasites:
+  inject_method: reset_thread
+  virulence: 0.85
+  no_copy_mut: true
+time:
+  merit_inc_apply_immediate: true
+
+instruction_sets:
+  - name: transsmt
+    hardware_type: 2
+    instructions:
+      - Nop-A
+      - Nop-B
+      - Nop-C
+      - Nop-D
+      - Val-Shift-R
+      - Val-Shift-L
+      - Val-Nand
+      - Val-Add
+      - Val-Sub
+      - Val-Mult
+      - Val-Div
+      - Val-Mod
+      - Val-Inc
+      - Val-Dec
+      - SetMemory
+      - Divide
+      - Inst-Read
+      - Inst-Write
+      - If-Equal
+      - If-Not-Equal
+      - If-Less
+      - If-Greater
+      - Head-Push
+      - Head-Pop
+      - Head-Move
+      - Search
+      - Push-Next
+      - Push-Prev
+      - Push-Comp
+      - Val-Delete
+      - Val-Copy
+      - IO
+      - Inject
+      - Divide-Erase
+      - Nop-X
+      - Thread-Create
+      - Thread-Cancel
+      - Thread-Kill
+      - Rotate-Left
+      - Rotate-Right
+      - Call-Flow
+      - Call-Label
+      - Return
+      - If-Greater-Equal
+      - Divide-Sex-Erase
+      - Divide-Sex
+      - Divide-Asex-Wait
+      - Collect-Unit
+
+environment:
+  resources:
+    - {name: resECHO, inflow: 40, outflow: 0.10}
+  reactions:
+    - {name: NOT}
+    - {name: NAND}
+    - {name: AND}
+    - {name: ORN}
+    - {name: OR}
+    - {name: ANDN}
+    - {name: NOR}
+    - {name: XOR}
+    - {name: EQU}
+    - name: NOT
+      task: not
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: NAND
+      task: nand
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: AND
+      task: and
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: ORN
+      task: orn
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: OR
+      task: or
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: ANDN
+      task: andn
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: NOR
+      task: nor
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: XOR
+      task: xor
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+    - name: EQU
+      task: equ
+      process: {resource: resECHO, value: 0.0, type: pow, frac: 0.5, min: 1, max: 1}
+      requisite: {noreaction: [EQU, XOR, NOR, ANDN, OR, ORN, AND, NAND, NOT]}
+
+events: []

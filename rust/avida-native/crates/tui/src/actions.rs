@@ -411,7 +411,7 @@ pub static BINDINGS: &[Binding] = &[
         &[c('F'), c('f')],
         G,
         true,
-        "settings avida.cfg override restart",
+        "settings avida.yaml override restart",
     ),
     row(
         Action::Goto(Screen::Options),

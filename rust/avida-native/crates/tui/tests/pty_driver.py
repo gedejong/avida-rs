@@ -53,11 +53,22 @@ BLOCKED = "blocked_output_sigterm"
 
 argv = [binary]
 if scenario in HANGUPS or scenario in RUNNING or scenario == BLOCKED:
-    with open(os.path.join(workdir, "events.cfg")) as f:
-        lines = [l for l in f if "Exit" not in l and "SavePopulation" not in l]
-    with open(os.path.join(workdir, "events-endless.cfg"), "w") as f:
+    # The events of the experiment file (one flow mapping a line, as
+    # `avida convert` writes them) without Exit and SavePopulation, as a
+    # section file the command line names.
+    with open(os.path.join(workdir, "avida.yaml")) as f:
+        text = f.read()
+    block = text.split("\nevents:\n", 1)[1]
+    lines = []
+    for l in block.splitlines(keepends=True):
+        if l.strip() and not l.startswith(" "):
+            break
+        if "Exit" not in l and "SavePopulation" not in l:
+            lines.append(l)
+    with open(os.path.join(workdir, "events-endless.yaml"), "w") as f:
+        f.write("events:\n")
         f.writelines(lines)
-    argv += [".", "-set", "EVENT_FILE", "events-endless.cfg"]
+    argv += [".", "-set", "events", "events-endless.yaml"]
 
 try:
     pid, fd = pty.fork()

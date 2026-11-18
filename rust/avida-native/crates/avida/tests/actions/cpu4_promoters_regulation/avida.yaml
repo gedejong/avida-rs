@@ -1,0 +1,77 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+mutation:
+  copy_prob: 0.01
+promoters:
+  enabled: true
+  inst_max: 2000
+  processivity: 0.999
+  to_register: true
+  no_active_promoter_effect: kill
+  exe_threshold: 1
+  inst_code_default_type: instruction_number
+  constitutive_regulation: true
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - promoter
+      - terminate
+      - regulate
+      - regulate-sp
+      - s-regulate
+      - numberate
+
+environment:
+  resources:
+    - {name: res0, inflow: 10, outflow: 0.1, initial: 100}
+    - {name: res1, inflow: 1, outflow: 0.5}
+    - {name: res2, initial: 0}
+  reactions:
+    - name: NOT
+      task: not
+      process: {value: 1.0, type: pow, resource: res0}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 1.0, type: pow, resource: res1}
+      requisite: {max_count: 1}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: default-classic.org}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 300, action: Exit}

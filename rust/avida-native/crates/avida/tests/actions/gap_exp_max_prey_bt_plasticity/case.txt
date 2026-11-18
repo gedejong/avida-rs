@@ -1,2 +1,2 @@
 base avatars
-args -s 1 -set GENOTYPE_PHENPLAST_CALC 3 -set STERILIZE_UNSTABLE 0 -set STERILIZE_BENEFICIAL 0 -set STERILIZE_NEUTRAL 0 -set STERILIZE_DETRIMENTAL 0
+args -s 1 -set time.genotype_phenplast_calc 3 -set reversion.sterilize_unstable 0 -set reversion.sterilize_beneficial 0 -set reversion.sterilize_neutral 0 -set reversion.sterilize_detrimental 0

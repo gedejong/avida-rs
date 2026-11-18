@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 7 -set WORLD_X 20 -set WORLD_Y 20 -set TRACK_CCLADES 1
+args -s 7 -set world.x 20 -set world.y 20 -set second_pass.track_cclades 1

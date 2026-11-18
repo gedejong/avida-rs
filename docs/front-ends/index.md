@@ -12,7 +12,7 @@ The two viewers (`avida-gui` and `avida-tui`) run the simulation on a thread of 
 
 ```mermaid
 flowchart LR
-  cfg[Experiment folder<br>avida.cfg, events.cfg, environment.cfg, instruction set, ancestor] --> core[Simulation engine]
+  cfg[Experiment folder<br>avida.yaml: settings, instruction set, environment, events; ancestor] --> core[Simulation engine]
   core --> files[Data files<br>average.dat, tasks.dat, detail-N.spop, ...]
   core --> snap[Snapshots]
   snap --> gui[avida-gui]

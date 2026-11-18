@@ -6,7 +6,6 @@ use avida_apto::AvidaRng;
 use avida_config::config::Config;
 use avida_config::feedback::{Feedback, FeedbackKind};
 use avida_environment::{geometry, proc_type, Environment, Resource, SimpleTaskLib};
-use std::path::PathBuf;
 
 fn new_env(config: &Config) -> Environment<SimpleTaskLib> {
     Environment::new(config, SimpleTaskLib::new())
@@ -19,12 +18,6 @@ fn fail(line: &str, config: &Config) -> (String, Vec<String>) {
     let err = env.load_line(line, &mut fb, config).unwrap_err();
     let msgs = fb.messages().iter().map(|(_, m)| m.clone()).collect();
     (err, msgs)
-}
-
-fn temp_dir(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("avida_env_parser_{}_{}", tag, std::process::id()));
-    std::fs::create_dir_all(&dir).unwrap();
-    dir
 }
 
 #[test]
@@ -400,37 +393,25 @@ fn set_active_errors() {
 }
 
 #[test]
-fn load_files() {
+fn load_lines_reports_the_failing_line() {
     let c = Config::new();
-    let dir = temp_dir("files");
-    let d = dir.to_str().unwrap();
-    std::fs::write(
-        dir.join("env.cfg"),
-        "# comment\nREACTION A not process:value=$V   # trailing\n\nREACTION B\n",
-    )
-    .unwrap();
     let mut env = new_env(&c);
     let mut fb = Feedback::new();
-    let defs = vec![("V".to_string(), "3.5".to_string())];
-    let err = env
-        .load("env.cfg", d, &mut fb, Some(&defs), &c)
-        .unwrap_err();
+    let lines: Vec<String> = ["REACTION A not process:value=3.5", "REACTION B"]
+        .iter()
+        .map(|l| l.to_string())
+        .collect();
+    let err = env.load_lines(&lines, &mut fb, &c).unwrap_err();
     assert_eq!(err, "pre-declared reaction 'B' never defined");
     assert_eq!(env.reaction_value_by_name("A"), 3.5);
 
+    let lines: Vec<String> = ["REACTION A not", "GROWTH x", "REACTION B nand"]
+        .iter()
+        .map(|l| l.to_string())
+        .collect();
     let mut env = new_env(&c);
     let mut fb = Feedback::new();
-    let err = env.load("missing.cfg", d, &mut fb, None, &c).unwrap_err();
-    assert_eq!(err, "failed to load environment 'missing.cfg'");
-
-    std::fs::write(
-        dir.join("bad.cfg"),
-        "REACTION A not\nGROWTH x\nREACTION B nand\n",
-    )
-    .unwrap();
-    let mut env = new_env(&c);
-    let mut fb = Feedback::new();
-    let err = env.load("bad.cfg", d, &mut fb, None, &c).unwrap_err();
+    let err = env.load_lines(&lines, &mut fb, &c).unwrap_err();
     assert_eq!(err, "unknown environment keyword 'GROWTH'");
     // Loading stops at the failing line.
     assert_eq!(env.num_reactions(), 1);

@@ -1,2 +1,2 @@
 base avatars-pred_look
-args -s 3 -set JUV_PERIOD 3000
+args -s 3 -set reproduction.juvenile_period 3000

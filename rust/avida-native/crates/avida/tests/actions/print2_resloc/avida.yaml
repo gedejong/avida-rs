@@ -1,0 +1,85 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 9
+world:
+  x: 10
+  y: 10
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  resources:
+    - name: ResA
+      geometry: grid
+      initial: 120
+      inflow: 10
+      outflow: 0.1
+      inflowx1: 0
+      inflowx2: 9
+      inflowy: 0
+      inflowy2: 9
+      outflowx1: 0
+      outflowx2: 9
+      outflowy: 0
+      outflowy2: 9
+      xdiffuse: 0
+      ydiffuse: 0
+      xgravity: 0
+      ygravity: 0
+    - {name: ResB, geometry: grid, xdiffuse: 0, ydiffuse: 0, xgravity: 0, ygravity: 0}
+    - {name: ResB, kind: cell, cells: 40..59, initial: 3, inflow: 1, outflow: 0.1}
+    - {name: ResGlobal, geometry: global, initial: 99, inflow: 10, outflow: 0.1}
+  reactions:
+    - name: NOT
+      task: not
+      process: {resource: ResA, value: 1.0, type: pow}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {resource: ResB, value: 1.0, type: pow}
+      requisite: {max_count: 1}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: default-classic.org}
+  - {at: 0, every: 20, until: 40, action: PrintResourceLocData}
+  - {at: 0, every: 20, until: 40, action: PrintResWallLocData}
+  - {at: 40, action: PrintSpatialResources}
+  - {at: 41, action: Exit}

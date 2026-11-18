@@ -9,7 +9,7 @@ pub struct StartupArgs {
     /// directory), if one was given.
     pub dir: Option<PathBuf>,
     /// Arguments passed on to the world as the `avida` binary takes them
-    /// (`-s 7`, `-set WORLD_X 30`, ...). They apply to every experiment
+    /// (`-s 7`, `-set world.x 30`, ...). They apply to every experiment
     /// opened in this run of the program.
     pub avida_args: Vec<String>,
     /// `--play FILE`: a recording to play back instead of an experiment.
@@ -36,8 +36,8 @@ usage: avida-gui [CONFIG_DIR] [AVIDA_ARGS...]
        avida-gui --play FILE
        avida-gui --compare BATCH_DIR
 
-Opens the Avida experiment in CONFIG_DIR (the folder holding avida.cfg,
-events.cfg and environment.cfg) in the desktop viewer. Without a folder
+Opens the Avida experiment in CONFIG_DIR (the folder holding the experiment
+file avida.yaml) in the desktop viewer. Without a folder
 the start screen offers a folder picker and the recently opened ones.
 
 --play FILE opens a recording made with --record or avida-rec and plays it
@@ -53,7 +53,7 @@ seeds, how far up the reward ladder each arm gets and how the arms differ in
 complexity and code reuse. Nothing is simulated.
 
 AVIDA_ARGS are passed to the world as the avida binary takes them, for
-example `-s 7 -set WORLD_X 30`.
+example `-s 7 -set world.x 30`.
 
 Logs go to stderr: warnings by default, more with RUST_LOG=info or debug.
 
@@ -124,10 +124,10 @@ mod tests {
     #[test]
     fn without_a_folder_every_argument_goes_to_avida() {
         assert_eq!(
-            parse(strings(&["-set", "WORLD_X", "30"])),
+            parse(strings(&["-set", "world.x", "30"])),
             Parsed::Run(StartupArgs {
                 dir: None,
-                avida_args: strings(&["-set", "WORLD_X", "30"]),
+                avida_args: strings(&["-set", "world.x", "30"]),
                 ..Default::default()
             })
         );

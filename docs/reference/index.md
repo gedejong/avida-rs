@@ -4,14 +4,14 @@ Look-up pages for every file format, setting, action and command. They are writt
 
 | Page | What it covers |
 |---|---|
-| [Settings reference (avida.cfg)](settings.md) | All 431 settings of `avida.cfg` plus the two port-only settings, with types, defaults and descriptions, grouped as the file groups them. |
-| [Environment file (environment.cfg)](environment-file.md) | The directives `RESOURCE`, `GRADIENT_RESOURCE`, `CELL`, `REACTION`, `SET_ACTIVE` and `GRID`, and the options of resources, processes and requisites. |
+| [The experiment file (avida.yaml)](config-yaml.md) | The layout of the one file of an experiment, its groups and sections, the command line, `avida convert`, and every setting with its group, old name, type, default and description. |
+| [Environment](environment-file.md) | The section `environment`: resources (plain, cell and gradient), grids, reactions and `set_active`, and the options of resources, processes and requisites. |
 | [Task reference](tasks.md) | The tasks you can attach to a reaction, and the arguments of those that take any. |
 | [Deme migration matrix](migration-matrix.md) | The file format of `MIGRATION_FILE`, the settings that use it and the actions that change and report it. |
 | [The look sensor](look-sensor.md) | What the look instructions read and return, and the settings that govern them. |
-| [Events file (events.cfg)](events-file.md) | The event line format, the timing syntax, the stock file and the most used actions. |
+| [Events](events-file.md) | The section `events`: the entry format, triggers and timing, the stock events and the most used actions. |
 | [Actions reference](actions.md) | All 423 actions with their arguments. |
-| [Instruction sets and organism files](instruction-sets.md) | The format of `instset-*.cfg` files and `.org` files, and how to write an ancestor. |
+| [Instruction sets and organism files](instruction-sets.md) | The section `instruction_sets`, the stock sets, the format of `.org` files, and how to write an ancestor. |
 | [Analyze mode](analyze-mode.md) | Running analyze mode, batches, variables and functions, the data columns and the command list. |
 | [Features that stop with unsupported](unsupported.md) | What the port refuses to run, and why. |
 | [Glossary](glossary.md) | Every term of this documentation, defined. |

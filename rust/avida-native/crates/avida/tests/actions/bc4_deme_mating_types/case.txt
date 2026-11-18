@@ -1,2 +1,2 @@
 base mating_types
-args -s 100 -set NUM_DEMES 2 -set BIRTH_METHOD 4 -set LEGACY_GRID_LOCAL_SELECTION 1
+args -s 100 -set demes.count 2 -set reproduction.birth_method 4 -set reproduction.legacy_grid_local_selection 1

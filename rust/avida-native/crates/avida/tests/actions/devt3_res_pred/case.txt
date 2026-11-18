@@ -1,2 +1,2 @@
 base energy_deme_level_res
-args -s 7 -set DEMES_MAX_AGE 50
+args -s 7 -set demes.max_age 50

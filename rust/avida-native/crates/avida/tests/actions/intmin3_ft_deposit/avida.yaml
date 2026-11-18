@@ -1,0 +1,75 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+hoarding:
+  multi_absorb_type: last
+groups:
+  pred_prey_switch: pred_to_prey_allowed
+
+instruction_sets:
+  - name: diff
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - one
+      - shift-l
+      - set-forage-target
+      - get-forage-target
+      - show-ft
+      - look-around
+      - look-around-ft
+      - rotate-x
+      - move
+      - collect-specific
+      - deposit-resource
+      - nop-deposit-resource
+      - get-res-stored
+      - set-rand-ft-once
+      - zero
+
+environment:
+  resources:
+    - {name: res0, initial: 150}
+    - {name: pheromone, initial: 120.4}
+    - {name: res2, initial: 0.75}
+    - {name: res3, initial: 0}
+  reactions:
+    - name: NOT
+      task: not
+      process: {value: 1.0, type: pow, resource: res0, min: 100}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 1.0, type: pow, resource: res2, min: 1}
+      requisite: {max_count: 1}
+    - name: EAT0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: res0, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: EAT1
+      task: eat-target
+      args: {target_id: 1}
+      process: {resource: res2, value: 1, type: add}
+    - {name: EAT3, task: eat-target, args: {target_id: 3}, process: {value: 1, type: add}}
+
+events:
+  - {at: begin, action: LoadMiniTraceQ, args: file=gq.txt:orgs_per=1}
+  - {at: begin, action: Inject, args: g0.org 21}
+  - {at: begin, action: Inject, args: g1.org 68}
+  - {at: begin, action: Inject, args: g3.org 162}
+  - {at: begin, action: Inject, args: g4.org 209}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 2, action: Exit}

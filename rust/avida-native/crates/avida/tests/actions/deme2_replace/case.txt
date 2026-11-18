@@ -1,2 +1,2 @@
 base demes_germline
-args -s 100 -set WORLD_Y 20 -set NUM_DEMES 10
+args -s 100 -set world.y 20 -set demes.count 10

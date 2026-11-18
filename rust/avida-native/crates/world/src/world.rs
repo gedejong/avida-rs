@@ -18,8 +18,6 @@ use avida_apto::OutputManager;
 use avida_apto::{Accumulator, AvidaRng};
 use avida_config::config::Config;
 use avida_config::feedback::Feedback as ConfigFeedback;
-use avida_config::init_file::InitFile;
-use avida_genome::inst_set_registry::convert_legacy_inst_set_file;
 use avida_genome::{Feedback as GenomeFeedback, InstCodeConfig};
 use avida_hardware::org_interface::WorldServices;
 use avida_hardware::task_adapter::{Env, TaskLibRegistry};
@@ -203,14 +201,12 @@ pub fn check_supported(cfg: &Config, env: &Env) -> Result<(), String> {
 
 impl World {
     /// `cWorld::Initialize(cfg, working_dir, new_world, feedback, defs)`.
+    /// The `defs` (the `-def` values of the C++ command line) are gone with
+    /// the old configuration format: the experiment file has no `$NAME`.
     ///
     /// `Err` carries the text for stderr when the C++ returns NULL (the
     /// front end then exits with -1) or when a setting is not supported.
-    pub fn new(
-        mut cfg: Config,
-        working_dir: &str,
-        defs: &[(String, String)],
-    ) -> Result<(World, WorldSetupReport), String> {
+    pub fn new(mut cfg: Config, working_dir: &str) -> Result<(World, WorldSetupReport), String> {
         let mut report = WorldSetupReport::default();
         let mut success = true;
 
@@ -224,9 +220,8 @@ impl World {
         // Initialize the default environment...
         let mut fb = ConfigFeedback::new();
         let mut env = Env::new(&cfg, TaskLibRegistry::new());
-        let env_file = cfg.environment_file.clone();
         if env
-            .load(&env_file, working_dir, &mut fb, Some(defs), &cfg)
+            .load_lines(&cfg.experiment.environment, &mut fb, &cfg)
             .is_err()
         {
             success = false;
@@ -284,19 +279,7 @@ impl World {
 
         // Initialize the hardware manager, loading all of the instruction sets
         let mut gfb = GenomeFeedback::new();
-        let mut list: Vec<String> = cfg.instsets().to_vec();
-        if cfg.inst_set_load_legacy != 0
-            && !convert_legacy_inst_set_file(
-                &cfg.inst_set,
-                cfg.hardware_type,
-                working_dir,
-                &mut list,
-                &mut gfb,
-            )
-            .success
-        {
-            success = false;
-        }
+        let list: Vec<String> = cfg.instsets().to_vec();
         let mut hw = HardwareManager::new();
         let code_cfg = InstCodeConfig {
             inst_code_length: cfg.inst_code_length,
@@ -316,9 +299,7 @@ impl World {
                 let feedback = format!("{}{}", fb.render(), gfb.render());
                 return Err(actions::prefer_event_file_failure(
                     e,
-                    &cfg.event_file,
-                    defs,
-                    working_dir,
+                    &cfg.experiment.events,
                     &default_inst_set,
                     &feedback,
                 ));
@@ -331,11 +312,6 @@ impl World {
             report
                 .stderr
                 .push_str("error: no instruction sets defined\n");
-            if cfg.inst_set_load_legacy == 0 && !cfg.inst_set.is_empty() && cfg.inst_set != "-" {
-                report.stderr.push_str(
-                    "It looks like you are attempting to load a legacy format instruction set file.  Try setting INST_SET_LOAD_LEGACY to 1.\n",
-                );
-            }
             success = false;
         }
 
@@ -354,9 +330,7 @@ impl World {
         if let Err(e) = hw.check_ported().and_then(|()| check_supported(&cfg, &env)) {
             return Err(actions::prefer_event_file_failure(
                 e,
-                &cfg.event_file,
-                defs,
-                working_dir,
+                &cfg.experiment.events,
                 &default_inst_set,
                 &report.stderr,
             ));
@@ -450,8 +424,7 @@ impl World {
 
         // Setup Event List
         let mut events = EventList::new();
-        let event_file = InitFile::with_mappings(&cfg.event_file, defs, working_dir);
-        let mut events_ok = event_file.was_opened();
+        let mut events_ok = true;
         // `cEventList` reports a bad line with `cerr`, before the driver
         // prints the accumulated feedback.
         let mut event_cerr = String::new();
@@ -460,9 +433,8 @@ impl World {
                 default_inst_set: &default_inst_set,
             };
             let mut afb = ConfigFeedback::new();
-            for line_id in 0..event_file.num_lines() {
-                let line = event_file.get_line(line_id as i32);
-                let spec = match parse_event_line(&line) {
+            for line in &cfg.experiment.events {
+                let spec = match parse_event_line(line) {
                     Ok(spec) => spec,
                     Err(msg) => {
                         event_cerr.push_str(&msg);

@@ -4,15 +4,15 @@ Every organism runs on a virtual CPU. The kind of CPU is the *hardware type*, an
 
 ## Hardware types
 
-| Type | Name | Instruction-set file in the stock configuration | Use |
+| Type | Name | Stock instruction sets | Use |
 |---|---|---|---|
-| 0 | Heads CPU (original) | `instset-heads.cfg`, `instset-heads-sex.cfg` | The default. Three registers, two stacks and four "heads" that point into the genome. Most Avida research uses it. |
-| 2 | TransSMT | `instset-transsmt.cfg` | A memory-space based CPU with better thread support; used for the parasite experiments. |
-| 3 | Experimental | `instset-experimental.cfg` | The CPU with avatars, predator and prey, sensors and messaging. |
+| 0 | Heads CPU (original) | `heads_default`, `heads_sex`, `heads_modular` | The default. Three registers, two stacks and four "heads" that point into the genome. Most Avida research uses it. |
+| 2 | TransSMT | `transsmt` | A memory-space based CPU with better thread support; used for the parasite experiments. |
+| 3 | Experimental | `experimental` | The CPU with avatars, predator and prey, sensors and messaging. |
 | 4 | GP8 | none in the stock folder | A multi-threaded behavioural CPU (the setting description's words). |
 | 5 | BCR | none in the stock folder | Another behavioural CPU, with its own instruction library. |
 
-Hardware type 1 (the "new SMT" CPU) is not available: `instset-smt.cfg` and `default-smt.org` are still in the stock configuration folder, but the port reports an unsupported hardware type for an instruction set that asks for type 1.
+Hardware type 1 (the "new SMT" CPU) is not available: the stock set `smt` (`instset-smt.yaml`) and `default-smt.org` are still in the stock configuration folder, but the port reports an unsupported hardware type for an instruction set that asks for type 1.
 
 The five types 0, 2, 3, 4 and 5 run, and the port's tests compare them with the C++ program. An instruction set that names an instruction whose handler is not ported stops at start-up with an `unsupported:` message. Parallel execution only speeds up the heads CPU; see [execution modes](../execution/index.md).
 
@@ -35,7 +35,7 @@ A run of nops after certain instructions forms a *label*. `h-search` looks forwa
 
 ### The default instruction set
 
-The 26 instructions of `instset-heads.cfg`, in their order (which is also the order of letters in saved genomes):
+The 26 instructions of the stock set `heads_default`, in their order (which is also the order of letters in saved genomes):
 
 | Letter | Instruction | What it does |
 |---|---|---|
@@ -72,16 +72,16 @@ The only way for an organism to put a number into the world is `IO`. To compute 
 
 ## Choosing an instruction set
 
-An instruction set is a block of the configuration. The stock `avida.cfg` pulls one in with this line:
+An instruction set is a section of the experiment file. The stock `avida.yaml` names the stock set:
 
-```text
-#include INST_SET=instset-heads.cfg
+```yaml
+instruction_sets: [heads_default]
 ```
 
-`INST_SET` is a variable name, and you can point it at another file from the command line:
+You can name another stock set, or a file with a set of your own, from the command line:
 
 ```sh
-avida -def INST_SET instset-heads-sex.cfg
+avida -set instruction_sets heads_sex
 ```
 
 The organism file names its instruction set at the top (`#inst_set heads_default` and `#hw_type 0` in `default-heads.org`), and the instruction set it names must exist and have the same hardware type as the organism, otherwise the organism cannot be created and the program reports an error. The file format is on the [instruction sets](../reference/instruction-sets.md) reference page.

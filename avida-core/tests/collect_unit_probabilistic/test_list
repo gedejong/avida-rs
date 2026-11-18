@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -c avida-probcollect-test.cfg -s 100 -set EVENT_FILE events-probcollect.cfg -set COPY_MUT_PROB 0.0 -set DIVIDE_INS_PROB 0.0 -set DIVIDE_DEL_PROB 0.0 -set USE_RESOURCE_BINS 1 -set RETURN_STORED_ON_DEATH 0 -set ENVIRONMENT_FILE environment-9resource-noinflow.cfg -def INST_SET instset-heads-probcollect.cfg -set REQUIRED_RESOURCE 8 -set REQUIRED_RESOURCE_LEVEL 1 -set COLLECT_PROB_DIVISOR 100
+args = -s 100 -set mutation.copy_prob 0.0 -set mutation.divide_ins_prob 0.0 -set mutation.divide_del_prob 0.0 -set hoarding.use_resource_bins 1 -set hoarding.return_stored_on_death 0 -set divide.required_resource 8 -set divide.required_resource_level 1 -set hoarding.collect_prob_divisor 100
 
 ; Note that all the command line options above (except -c, of course) are
 ; duplicated in avida-probcollect-test.cfg

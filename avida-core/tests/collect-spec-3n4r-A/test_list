@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 100 -set USE_RESOURCE_BINS 1 -set EVENT_FILE events-full-collect-A.cfg -set ENVIRONMENT_FILE environment-4resource-noinflow.cfg -def INST_SET instset-heads-collect.cfg                 
+args = -s 100 -set hoarding.use_resource_bins 1
 
 app = %(default_app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

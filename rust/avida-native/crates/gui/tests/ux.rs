@@ -55,12 +55,7 @@ fn a_new_experiment_starts_from_the_default_settings() {
     h.get_by_label("New experiment…").click();
     wait_until(&mut h, "the new world", ready);
     let made = chosen.join("avida-experiment");
-    for f in [
-        "avida.cfg",
-        "events.cfg",
-        "environment.cfg",
-        "default-heads.org",
-    ] {
+    for f in ["avida.yaml", "default-heads.org"] {
         assert!(made.join(f).is_file(), "{f}");
     }
     assert_eq!(
@@ -111,7 +106,7 @@ fn a_missing_folder_offers_a_new_experiment() {
     // Creating the missing folder is one way forward (no dialog).
     h.get_by_label("Create a new experiment here").click();
     wait_until(&mut h, "the new world", ready);
-    assert!(missing.join("avida.cfg").is_file());
+    assert!(missing.join("avida.yaml").is_file());
     assert!(h.state().state().open_error.is_none());
 }
 

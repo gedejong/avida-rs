@@ -7,7 +7,6 @@
 use avida_apto::AvidaRng;
 use avida_config::config::Config;
 use avida_config::feedback::Feedback as ConfigFeedback;
-use avida_genome::inst_set_registry::convert_legacy_inst_set_file;
 use avida_genome::{Feedback as GenomeFeedback, Genome, InstCodeConfig, InstructionSequence};
 use avida_hardware::task_adapter::{Env, OutputHost, PlasticityTest, TaskLibRegistry};
 use avida_hardware::test_cpu::{CpuTestInfo, TestCpu, TestCpuHost, TestWorld, TestWorldCounts};
@@ -213,13 +212,14 @@ pub struct Fixture {
 }
 
 impl Fixture {
-    /// `cWorld::setup` for `dir` (avida.cfg, `sets` applied on top).
+    /// `cWorld::setup` for `dir` (its avida.yaml, with `sets`, pairs of a
+    /// dotted setting path or section and a value, applied on top).
     pub fn load(dir: &Path, sets: &[(&str, &str)]) -> Result<Fixture, String> {
         Fixture::load_inner(dir, sets, None)
     }
 
-    /// As [`Fixture::load`], with the `INSTSET`/`INST` lines of avida.cfg
-    /// replaced by `instset`.
+    /// As [`Fixture::load`], with the instruction sets of avida.yaml
+    /// replaced by `instset` (`INSTSET`/`INST` lines).
     pub fn load_with_instset(dir: &Path, instset: Vec<String>) -> Result<Fixture, String> {
         Fixture::load_inner(dir, &[], Some(instset))
     }
@@ -232,38 +232,23 @@ impl Fixture {
         let wdir = dir.to_str().ok_or("non-UTF-8 path")?;
         let mut cfg = Config::new();
         let mut fb = ConfigFeedback::new();
-        if !cfg.load("avida.cfg", wdir, Some(&mut fb), None, false) {
-            return Err(format!("avida.cfg in {}", dir.display()));
+        if !cfg.load_experiment("avida.yaml", wdir, &mut fb) {
+            return Err(format!("avida.yaml in {}: {}", dir.display(), fb.render()));
         }
-        let mut s: Vec<(String, String)> = sets
-            .iter()
-            .map(|(a, b)| (a.to_string(), b.to_string()))
-            .collect();
-        cfg.set_from_map(&mut s);
+        for (path, value) in sets {
+            cfg.set_path(path, value, wdir)?;
+        }
 
         let mut env = Env::new(&cfg, TaskLibRegistry::new());
         let mut efb = ConfigFeedback::new();
-        let env_file = cfg.environment_file.clone();
-        env.load(&env_file, wdir, &mut efb, None, &cfg)?;
+        let env_lines = cfg.experiment.environment.clone();
+        env.load_lines(&env_lines, &mut efb, &cfg)?;
         if efb.num_errors() > 0 {
             return Err(efb.render());
         }
 
-        let replaced = instset.is_some();
-        let mut list: Vec<String> = instset.unwrap_or_else(|| cfg.instsets().to_vec());
+        let list: Vec<String> = instset.unwrap_or_else(|| cfg.instsets().to_vec());
         let mut gfb = GenomeFeedback::new();
-        if cfg.inst_set_load_legacy != 0 && !replaced {
-            let conv = convert_legacy_inst_set_file(
-                &cfg.inst_set,
-                cfg.hardware_type,
-                wdir,
-                &mut list,
-                &mut gfb,
-            );
-            if !conv.success {
-                return Err(format!("legacy inst set: {:?}", gfb));
-            }
-        }
         let mut hwm = HardwareManager::new();
         let code_cfg = InstCodeConfig {
             inst_code_length: cfg.inst_code_length,

@@ -219,6 +219,7 @@ def main():
     w.append("// %d groups, %d settings, %d custom formats." % (len(groups), len(entries), len(formats)))
     w.append("")
     w.append("use crate::config::{EntryDef, EntryType, FormatDef, FormatEntryDef, GroupDef};")
+    w.append("use crate::experiment::exact_double;")
     w.append("use crate::string_util::{as_double, as_int, convert_double, convert_int};")
     w.append("")
     w.append("/// Every `CONFIG_ADD_GROUP` of `cAvidaConfig.h`, in declaration order, with its")
@@ -283,6 +284,9 @@ def main():
     w.append("    /// (see [`crate::port_settings`]); kept out of [`GROUPS`] so that")
     w.append("    /// nothing the C++ prints about its settings changes.")
     w.append("    pub port: crate::port_settings::PortSettings,")
+    w.append("    /// What an experiment file (`avida.yaml`) holds besides the settings:")
+    w.append("    /// the environment and the events (see [`crate::experiment`]).")
+    w.append("    pub experiment: crate::experiment::Experiment,")
     w.append("}")
     w.append("")
     w.append("impl Config {")
@@ -304,6 +308,7 @@ def main():
             w.append("            %s: String::from(%s)," % (f, d))
     w.append("            format_values: vec![Vec::new(); FORMATS.len()],")
     w.append("            port: crate::port_settings::PortSettings::new(),")
+    w.append("            experiment: crate::experiment::Experiment::default(),")
     w.append("        }")
     w.append("    }")
     w.append("")
@@ -343,22 +348,23 @@ def main():
     w.append("        }")
     w.append("    }")
     w.append("")
-    w.append("    /// `cEntry_NAME::EqualsString` for the entry with table id `id`.")
-    w.append("    #[allow(clippy::float_cmp)]")
-    w.append("    pub(crate) fn equals_string_by_id(&self, id: usize, s: &str) -> bool {")
+    w.append("    /// The value of the entry with table id `id` as text that loads back")
+    w.append("    /// to the same value (doubles in their shortest exact form, unlike")
+    w.append("    /// `as_string_by_id`).")
+    w.append("    pub(crate) fn exact_string_by_id(&self, id: usize) -> String {")
     w.append("        match id {")
     for i, e in enumerate(entries):
         f = e["names"][0].lower()
         t = e["type"]
         if t == "int":
-            w.append("            %d => self.%s == as_int(s)," % (i, f))
+            w.append("            %d => self.%s.to_string()," % (i, f))
         elif t == "double":
-            w.append("            %d => self.%s == as_double(s)," % (i, f))
+            w.append("            %d => exact_double(self.%s)," % (i, f))
         elif t == "bool":
-            w.append("            %d => self.%s == (as_int(s) != 0)," % (i, f))
+            w.append('            %d => String::from(if self.%s { "1" } else { "0" }),' % (i, f))
         else:
-            w.append("            %d => self.%s == s," % (i, f))
-    w.append("            _ => false,")
+            w.append("            %d => self.%s.clone()," % (i, f))
+    w.append("            _ => String::new(),")
     w.append("        }")
     w.append("    }")
     for fi, (fname, fdesc, fentries) in enumerate(formats):

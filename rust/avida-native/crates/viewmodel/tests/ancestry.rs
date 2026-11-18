@@ -6,11 +6,12 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
+use avida_config::convert::{replace_section, section_lines};
 use avida_viewmodel::{capture, render_rgba, LayerId, Palette, Scale, Subscription};
 
 /// A run of the stock configuration, or of the configuration directory
-/// in `ANCESTRY_CONFIG` (with `ANCESTRY_ENV`, a file in it, as its
-/// environment).
+/// in `ANCESTRY_CONFIG` (with `ANCESTRY_ENV`, an environment section file
+/// in it, as its environment).
 fn stock_run(name: &str, updates: i32) -> avida_world::world::World {
     let dir = Path::new(env!("CARGO_TARGET_TMPDIR"))
         .join("viewmodel")
@@ -22,7 +23,9 @@ fn stock_run(name: &str, updates: i32) -> avida_world::world::World {
     );
     common::copy_dir(&config, &dir);
     if let Some(env) = std::env::var_os("ANCESTRY_ENV") {
-        fs::copy(dir.join(env), dir.join("environment.cfg")).unwrap();
+        let env = env.to_string_lossy();
+        let text = section_lines(&dir, &env, "environment").unwrap();
+        replace_section(&dir, "avida.yaml", "environment", &text).unwrap();
     }
     common::append_events(&dir, &format!("u {updates} Exit\n"));
     let mut world = common::build_world(&dir);

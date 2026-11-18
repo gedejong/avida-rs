@@ -1,0 +1,87 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+mutation:
+  copy_prob: 0.0
+  divide_prob: 0.25
+reproduction:
+  birth_method: population_random
+  allow_parent: false
+  death_method: age_limit
+  age_limit: 15000
+  reset_inputs_on_divide: 1
+  inherit_merit: false
+  inherit_multithread: true
+divide:
+  required_bonus: 11.0
+time:
+  max_cpu_threads: 4
+  thread_slicing_method: 1
+hoarding:
+  absorb_resource_fraction: 1.0
+  multi_absorb_type: first
+  return_stored_on_death: false
+  split_on_divide: false
+movement:
+  collisions_lethal: fail
+sensing:
+  look_dist: 10
+groups:
+  pred_prey_switch: no_switch
+  pred_efficiency: 0.1
+  pred_injury: 0.1
+  min_prey: 700
+
+instruction_sets: []
+
+environment:
+  resources:
+    - {name: res0, initial: 150}
+    - {name: pheromone, initial: 120.4}
+    - {name: res2, initial: 0.75}
+    - {name: res3, initial: 0}
+  grids:
+    - name: sg1
+      width: 4
+      height: 3
+      initx: 1
+      inity: 2
+      initfacing: 2
+      states: a,b=5,c=-2
+      grid: a,b,c,a,b,b,c,a,a,c,b,b
+  reactions:
+    - name: NOT
+      task: not
+      process: {value: 1.0, type: pow, resource: res0, min: 100}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 1.0, type: pow, resource: res2, min: 1}
+      requisite: {max_count: 1}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+    - name: GRFOOD0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: res0, value: 1, type: add, min: 1, max: 1, depletable: 1, inst: one}
+
+events:
+  - {at: begin, action: Inject, args: default-classic.org}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 50, until: end, action: PrintDominantGenotype}
+  - {at: 0, every: 10, until: end, action: PrintTasksExeData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 100, action: SavePopulation}
+  - {at: 100, action: Exit}

@@ -1,2 +1,2 @@
 base lookAhead_v1
-args -set TRACK_LOOK_SETTINGS 1 -set TRACK_LOOK_OUTPUT 1
+args -set sensing.track_look_settings 1 -set sensing.track_look_output 1

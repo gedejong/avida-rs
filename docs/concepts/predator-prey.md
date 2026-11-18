@@ -6,9 +6,9 @@ This page describes the settings and files involved. The program contains worked
 
 ## What you need
 
-- An instruction set of hardware type 3, such as `instset-experimental.cfg` in the stock folder, and an experimental ancestor (`experimental.org` is in the stock folder).
-- *Avatars*: `USE_AVATARS 1` lets organisms move and navigate in worlds where each organism's avatar occupies a cell; `USE_AVATARS 2` also lets organisms interact with one another. Predator and prey tests use `USE_AVATARS 2`.
-- `PRED_PREY_SWITCH`, which switches predators on and chooses whether organisms may change role:
+- An instruction set of hardware type 3, such as the stock set `experimental`, and an experimental ancestor (`experimental.org` is in the stock folder).
+- *Avatars*: `movement.use_avatars: on` lets organisms move and navigate in worlds where each organism's avatar occupies a cell; `movement.use_avatars: interacting` also lets organisms interact with one another. Predator and prey tests use `movement.use_avatars: interacting`.
+- `groups.pred_prey_switch`, which switches predators on and chooses whether organisms may change role:
 
 | Value | Meaning |
 |---|---|
@@ -22,15 +22,15 @@ This page describes the settings and files involved. The program contains worked
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `PRED_ODDS` | 1.0 | Probability that a predator's attack instruction succeeds. |
-| `PRED_EFFICIENCY` | 1.0 | The fraction of the consumed prey's bonus, merit and resource bins that the predator gains. |
-| `PRED_EFFICIENCY_POISON` | 1.0 | The same, subtracted, when the prey was poisonous. |
-| `PRED_INJURY` | 0.0 | If an attack fails, the target's bonus, merit and internal resources are reduced by this fraction. |
-| `PRED_CONFUSION` | 0 | Makes predators receive random data when they see prey that have several neighbours. |
-| `MIN_PREY` | 0 | A positive value makes predator attacks fail when the number of prey falls below it; a negative value clones random prey. |
-| `MAX_PREY` | 0 | Cap on prey; random prey are removed when it is exceeded. |
+| `groups.pred_odds` | 1.0 | Probability that a predator's attack instruction succeeds. |
+| `groups.pred_efficiency` | 1.0 | The fraction of the consumed prey's bonus, merit and resource bins that the predator gains. |
+| `groups.pred_efficiency_poison` | 1.0 | The same, subtracted, when the prey was poisonous. |
+| `groups.pred_injury` | 0.0 | If an attack fails, the target's bonus, merit and internal resources are reduced by this fraction. |
+| `sensing.pred_confusion` | 0 | Makes predators receive random data when they see prey that have several neighbours. |
+| `groups.min_prey` | 0 | A positive value makes predator attacks fail when the number of prey falls below it; a negative value clones random prey. |
+| `groups.max_prey` | 0 | Cap on prey; random prey are removed when it is exceeded. |
 
-The full set is in [MOVEMENT_GROUP and the neighbouring groups](../reference/settings.md#movement_group) of the settings reference; search the page for `PRED_` and `PREY`.
+The full set is in the [group `movement` and the neighbouring groups](../reference/config-yaml.md#movement) of the experiment file reference; search the page for `pred_` and `prey`.
 
 ## Seeing: the look instructions
 
@@ -42,4 +42,4 @@ Predators and prey find food, dens and each other with the look instructions. Wh
 
 ## Not supported
 
-Some paths stop with `unsupported:` where the C++ program is undefined: a `MAX_PREY_BT` kill from a plasticity test or from a test CPU run by an event, and a few others listed in [unsupported features](../reference/unsupported.md).
+Some paths stop with `unsupported:` where the C++ program is undefined: a `groups.max_prey_bt` kill from a plasticity test or from a test CPU run by an event, and a few others listed in [unsupported features](../reference/unsupported.md).

@@ -1,0 +1,67 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 3
+world:
+  x: 20
+  y: 20
+  geometry: bounded_grid
+movement:
+  use_avatars: interacting
+  avatar_birth: random
+
+instruction_sets:
+  - name: experimental
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - if-n-equ
+      - if-less
+      - mov-head
+      - jmp-head
+      - get-head
+      - label
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide-sex
+      - IO
+      - search-lbl-direct-s
+      - if-copied-lbl-direct
+      - move
+      - rotate-x
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: anc.org 0}
+  - {at: begin, action: Inject, args: anc.org 210}
+  - {at: begin, action: Inject, args: anc.org 399}
+  - {at: 0, every: 25, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintOrgLocData}
+  - {at: 300, action: DumpTargetGrid}
+  - {at: 300, action: Exit}

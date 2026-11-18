@@ -1,6 +1,8 @@
 //! The `avida` command-line program: port of
 //! avida-core/source/targets/avida/primitive.cc.
 
+mod convert_cmd;
+
 use std::io::{BufWriter, Write};
 use std::process::ExitCode;
 
@@ -20,6 +22,10 @@ fn main() -> ExitCode {
     let cwd = std::env::current_dir()
         .map(|p| p.to_string_lossy().into_owned())
         .unwrap_or_else(|_| ".".to_string());
+
+    if args.get(1).map(String::as_str) == Some("convert") {
+        return status(convert_cmd::run(&args[2..], &cwd));
+    }
 
     // Initialize the configuration data...
     let cmd = process_cmdline_args(&args);
@@ -62,7 +68,7 @@ fn main() -> ExitCode {
         return status(code);
     }
 
-    let (mut world, report) = match World::new(cmd.config, &cwd, &cmd.defs) {
+    let (mut world, report) = match World::new(cmd.config, &cwd) {
         Ok(w) => w,
         Err(text) => {
             let _ = out.flush();

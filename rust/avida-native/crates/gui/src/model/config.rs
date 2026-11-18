@@ -2,7 +2,7 @@
 //! that restarts the experiment with changed settings.
 //!
 //! A restart builds the world again from the same folder with the
-//! arguments the `avida` binary takes (`-s 7`, `-set WORLD_X 30`); the
+//! arguments the `avida` binary takes (`-s 7`, `-set world.x 30`); the
 //! form only adds or replaces the arguments of the fields that differ from
 //! the running world, so arguments it does not know survive.
 
@@ -13,24 +13,24 @@ use avida_session::{ExperimentSetup, Setting};
 use crate::model::Experiment;
 
 /// The settings the restart form offers, besides the seed and the update
-/// limit: `(config name, label, help)`.
+/// limit: `(place in the experiment file, label, help)`.
 pub const FORM_SETTINGS: [(&str, &str, &str); 5] = [
-    ("WORLD_X", "World width", "Cells across (WORLD_X)."),
-    ("WORLD_Y", "World height", "Cells down (WORLD_Y)."),
+    ("world.x", "World width", "Cells across (world.x)."),
+    ("world.y", "World height", "Cells down (world.y)."),
     (
-        "COPY_MUT_PROB",
+        "mutation.copy_prob",
         "Copy mutation rate",
-        "Chance that copying one instruction copies a random one instead (COPY_MUT_PROB).",
+        "Chance that copying one instruction copies a random one instead (mutation.copy_prob).",
     ),
     (
-        "DIVIDE_INS_PROB",
+        "mutation.divide_ins_prob",
         "Insertion rate",
-        "Chance of inserting a random instruction at division (DIVIDE_INS_PROB).",
+        "Chance of inserting a random instruction at division (mutation.divide_ins_prob).",
     ),
     (
-        "DIVIDE_DEL_PROB",
+        "mutation.divide_del_prob",
         "Deletion rate",
-        "Chance of deleting an instruction at division (DIVIDE_DEL_PROB).",
+        "Chance of deleting an instruction at division (mutation.divide_del_prob).",
     ),
 ];
 
@@ -75,7 +75,7 @@ impl Overrides {
                 .unwrap_or_default()
         };
         Overrides {
-            seed: value("RANDOM_SEED"),
+            seed: value("general.random_seed"),
             values: FORM_SETTINGS.map(|(name, _, _)| value(name)),
             update_limit: limit.map(|l| l.to_string()).unwrap_or_default(),
         }
@@ -100,13 +100,13 @@ impl Overrides {
             if v == baseline.values[i].trim() {
                 continue;
             }
-            let ok = if name.starts_with("WORLD_") {
+            let ok = if name.starts_with("world.") {
                 v.parse::<i32>().is_ok_and(|n| n > 0)
             } else {
                 v.parse::<f64>().is_ok_and(|p| (0.0..=1.0).contains(&p))
             };
             if !ok {
-                return Err(if name.starts_with("WORLD_") {
+                return Err(if name.starts_with("world.") {
                     format!("{label} must be a whole number above zero, not \"{v}\".")
                 } else {
                     format!("{label} must be a probability from 0 to 1, not \"{v}\".")
@@ -135,7 +135,7 @@ impl Overrides {
 pub enum Arg {
     /// `-s <seed>`
     Seed(String),
-    /// `-set <NAME> <value>`
+    /// `-set <group.key> <value>`
     Set(String, String),
 }
 
@@ -214,8 +214,8 @@ pub fn cli_line(dir: &Path, args: &[String]) -> String {
 }
 
 /// Indices of the settings matching `query` (every word, ignoring case,
-/// in the name, value, group or description), changed ones only when
-/// asked.
+/// in the place in the file, the old name, value, group or description),
+/// changed ones only when asked.
 pub fn filter_settings(settings: &[Setting], query: &str, changed_only: bool) -> Vec<usize> {
     let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
     settings
@@ -226,7 +226,11 @@ pub fn filter_settings(settings: &[Setting], query: &str, changed_only: bool) ->
             if words.is_empty() {
                 return true;
             }
-            let hay = format!("{} {} {} {}", s.name, s.value, s.group, s.desc).to_lowercase();
+            let hay = format!(
+                "{} {} {} {} {} {}",
+                s.name, s.old_name, s.value, s.group, s.group_desc, s.desc
+            )
+            .to_lowercase();
             words.iter().all(|w| hay.contains(w.as_str()))
         })
         .map(|(i, _)| i)
@@ -239,11 +243,12 @@ mod tests {
 
     use super::*;
 
-    fn setting(name: &'static str, value: &str, default: &str) -> Setting {
+    fn setting(name: &str, old_name: &'static str, value: &str, default: &str) -> Setting {
         Setting {
-            group: "GENERAL_GROUP",
-            group_desc: "General settings",
-            name,
+            group: "general",
+            group_desc: "General",
+            name: name.to_string(),
+            old_name,
             kind: "int",
             value: value.into(),
             default: default.into(),
@@ -257,16 +262,26 @@ mod tests {
             work_dir: PathBuf::from("/x"),
             args: Vec::new(),
             data_dir: PathBuf::from("/x/data"),
-            config_file: PathBuf::from("/x/avida.cfg"),
+            config_file: PathBuf::from("/x/avida.yaml"),
             settings: vec![
-                setting("RANDOM_SEED", "101", "0"),
-                setting("WORLD_X", "60", "60"),
-                setting("WORLD_Y", "60", "60"),
-                setting("COPY_MUT_PROB", "0.0075", "0.0075"),
-                setting("DIVIDE_INS_PROB", "0.05", "0.05"),
-                setting("DIVIDE_DEL_PROB", "0.05", "0.05"),
+                setting("general.random_seed", "RANDOM_SEED", "101", "0"),
+                setting("world.x", "WORLD_X", "60", "60"),
+                setting("world.y", "WORLD_Y", "60", "60"),
+                setting("mutation.copy_prob", "COPY_MUT_PROB", "0.0075", "0.0075"),
+                setting(
+                    "mutation.divide_ins_prob",
+                    "DIVIDE_INS_PROB",
+                    "0.05",
+                    "0.05",
+                ),
+                setting(
+                    "mutation.divide_del_prob",
+                    "DIVIDE_DEL_PROB",
+                    "0.05",
+                    "0.05",
+                ),
             ],
-            event_file: PathBuf::from("/x/events.cfg"),
+            event_file: PathBuf::from("/x/avida.yaml"),
             events: Vec::new(),
         }
     }
@@ -289,7 +304,7 @@ mod tests {
             args,
             vec![
                 Arg::Seed("7".into()),
-                Arg::Set("WORLD_X".into(), "30".into())
+                Arg::Set("world.x".into(), "30".into())
             ]
         );
         assert_eq!(limit, Some(1000));
@@ -317,7 +332,7 @@ mod tests {
     #[test]
     fn merging_replaces_matching_arguments_and_keeps_the_rest() {
         let base: Vec<String> = [
-            "-v2", "-s", "3", "-set", "WORLD_X", "10", "-set", "WORLD_Y", "9",
+            "-v2", "-s", "3", "-set", "world.x", "10", "-set", "world.y", "9",
         ]
         .map(String::from)
         .to_vec();
@@ -325,12 +340,12 @@ mod tests {
             &base,
             &[
                 Arg::Seed("7".into()),
-                Arg::Set("WORLD_X".into(), "30".into()),
+                Arg::Set("world.x".into(), "30".into()),
             ],
         );
         assert_eq!(
             out,
-            ["-v2", "-set", "WORLD_Y", "9", "-s", "7", "-set", "WORLD_X", "30"]
+            ["-v2", "-set", "world.y", "9", "-s", "7", "-set", "world.x", "30"]
                 .map(String::from)
                 .to_vec()
         );

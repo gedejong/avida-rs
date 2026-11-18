@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 7 -set SET_FT_AT_BIRTH 1 -set WORLD_X 15 -set WORLD_Y 15
+args -s 7 -set sensing.set_ft_at_birth 1 -set world.x 15 -set world.y 15

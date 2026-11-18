@@ -1,0 +1,11 @@
+# Converted with 'avida convert' from environment_res.cfg. Name it in an experiment
+# file as "environment: <this file>".
+
+environment:
+  resources:
+    - {name: resA, initial: 5, inflow: 1, outflow: 0.1}
+    - {name: resB, initial: 0.5}
+    - {name: resC, initial: 30}
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}}

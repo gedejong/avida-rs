@@ -22,7 +22,7 @@ fn record(name: &str) -> PathBuf {
     let session = Session::spawn_with_wake(
         SessionConfig {
             work_dir: dir.clone(),
-            args: ["-s", "5", "-set", "WORLD_X", "20", "-set", "WORLD_Y", "20"]
+            args: ["-s", "5", "-set", "world.x", "20", "-set", "world.y", "20"]
                 .map(String::from)
                 .to_vec(),
         },

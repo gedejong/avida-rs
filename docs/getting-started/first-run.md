@@ -4,16 +4,15 @@ In this page you copy the stock configuration, run 1,000 updates of it and read 
 
 ## What a run needs
 
-Avida reads its settings from files in the *current directory*, so every experiment lives in a folder of its own. The stock set of files is in `avida-core/support/config` in the repository. The ones that matter first are:
+Avida reads its experiment from the *current directory*, so every experiment lives in a folder of its own. The stock folder is `avida-core/support/config` in the repository. The files that matter first are:
 
 | File | Purpose |
 |---|---|
-| `avida.cfg` | All settings: world size, mutation rates, scheduling and many more. See the [settings reference](../reference/settings.md). |
-| `environment.cfg` | The tasks the organisms can be rewarded for. See the [environment file](../reference/environment-file.md). |
-| `events.cfg` | What happens when: the first organism, the data files and the end of the run. See the [events file](../reference/events-file.md). |
-| `instset-heads.cfg` | The instruction set the organisms use. See [instruction sets](../reference/instruction-sets.md). |
+| `avida.yaml` | The experiment file. It holds the settings in groups (world size, mutation rates, scheduling and many more), the instruction set the organisms use, the environment (the tasks the organisms can be rewarded for) and the events (what happens when: the first organism, the data files and the end of the run). See [the experiment file](../reference/config-yaml.md), and the pages on the [environment](../reference/environment-file.md), the [events](../reference/events-file.md) and [instruction sets](../reference/instruction-sets.md). |
 | `default-heads.org` | The first organism, the *ancestor*, as a list of instructions. |
 | `analyze.cfg` | A script for [analyze mode](../reference/analyze-mode.md), which is not used in a normal run. |
+
+The other `instset-*.yaml` and `environment-*.yaml` files of the folder are sets and environments an experiment can name instead of its own.
 
 ## Steps
 
@@ -24,9 +23,9 @@ Avida reads its settings from files in the *current directory*, so every experim
    cd my-run
    ```
 
-   You should now be in a folder that holds `avida.cfg` and the other files above.
+   You should now be in a folder that holds `avida.yaml` and the other files above.
 
-2. Shorten the run. The stock `events.cfg` ends the run at update 100,000, which takes hours. Open `events.cfg` and change the last line from `u 100000 Exit` to `u 1000 Exit`. The `Exit` action ends the run at the update named before it.
+2. Shorten the run. The stock events end the run at update 100,000, which takes hours. Open `avida.yaml`, find the last entry of `events` at the end of the file, and change it from `{at: 100000, action: Exit}` to `{at: 1000, action: Exit}`. The `Exit` action ends the run at the update named in `at`.
 
 3. Run it with a fixed random seed, so that you can repeat the run exactly:
 
@@ -64,15 +63,16 @@ With seed 1 on the stock configuration, `Orgs` grows from 1 to 74 at update 100,
 ## Useful variations
 
 - A different random seed: `avida -s 6`. The same seed on the same build and configuration gives the same run.
-- A smaller world: `avida -s 5 -set WORLD_X 30 -set WORLD_Y 30`. Any setting in `avida.cfg` can be overridden with `-set NAME VALUE`.
-- A different output folder: `avida -set DATA_DIR run-a`.
+- A smaller world: `avida -s 5 -set world.x 30 -set world.y 30`. Any setting of the experiment file can be overridden with `-set GROUP.KEY VALUE`.
+- A different output folder: `avida -set general.data_dir run-a`.
 - Quieter output: `avida -v0` drops the per-update progress lines. See [the command-line page](../front-ends/cli.md).
 - Watch it live: `avida-tui .` in the same folder. See [the terminal interface](../front-ends/tui.md).
 
 ## If something goes wrong
 
-- `error: configuration file 'avida.cfg' not found`: you are in the wrong folder. Avida looks for `avida.cfg` in the current directory unless you name another file with `-c`.
-- A run that never seems to end: the stock `events.cfg` runs to update 100,000. Shorten it as in step 2, or stop the run with Ctrl-C.
+- `error: configuration file 'avida.yaml' not found`: you are in the wrong folder. Avida looks for `avida.yaml` in the current directory unless you name another file with `-c`.
+- `'avida.cfg' is in the old configuration format`: the folder was made for an older version of the program. Run `avida convert .` in it once; see [converting an old folder](../reference/config-yaml.md#converting-an-old-folder).
+- A run that never seems to end: the stock events run to update 100,000. Shorten them as in step 2, or stop the run with Ctrl-C.
 
 ## Next step
 

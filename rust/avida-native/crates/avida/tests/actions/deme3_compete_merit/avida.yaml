@@ -1,0 +1,82 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+
+instruction_sets:
+  - name: instset.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - set-opinion
+      - get-opinion
+      - send-msg
+      - retrieve-msg
+      - bcast1
+      - collect-cell-data
+      - get-cell-xy
+      - nop-X
+
+environment:
+  reactions:
+    - {name: NOT}
+    - {name: NAND}
+    - {name: AND}
+    - {name: ORN}
+    - {name: OR}
+    - name: NOT
+      task: not
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NAND, AND, ORN, OR], max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NOT, AND, ORN, OR], max_count: 1}
+    - name: AND
+      task: and
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, ORN, OR], max_count: 1}
+    - name: ORN
+      task: orn
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, OR], max_count: 1}
+    - name: OR
+      task: or
+      process: {value: 4.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, ORN], max_count: 1}
+
+events:
+  - {at: begin, action: InjectDemes, args: organisms/1_18712737.org}
+  - {at: 50, every: 50, until: 300, action: CompeteDemesByMerit}
+  - {at: 0, every: 20, until: 300, action: PrintCountData}
+  - {at: 0, every: 50, until: 300, action: PrintDemeReplicationData}
+  - {at: 300, action: SavePopulation}
+  - {at: 301, action: Exit}

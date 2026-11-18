@@ -95,7 +95,7 @@ pub fn drop_target(ctx: &egui::Context, name: Option<&str>) {
     painter.text(
         inner.center() + vec2(0.0, 16.0),
         Align2::CENTER_CENTER,
-        name.unwrap_or("a folder with avida.cfg, or a file inside it"),
+        name.unwrap_or("a folder with avida.yaml, or a file inside it"),
         egui::FontId::proportional(14.0),
         t.text_weak,
     );

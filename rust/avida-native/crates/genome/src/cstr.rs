@@ -10,9 +10,7 @@
 
 use avida_config::string_util as su;
 
-pub(crate) use avida_config::string_util::{
-    as_double, as_int, edit_distance, format_f, pop, pop_word,
-};
+pub(crate) use avida_config::string_util::{as_double, as_int, edit_distance, pop, pop_word};
 
 /// `cString::Trim()` on a copy.
 pub(crate) fn trim(s: &str) -> String {
@@ -113,6 +111,7 @@ pub(crate) fn apto_near_match(v: &str, keys: &[&str]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use avida_config::string_util::format_f;
 
     #[test]
     fn pop_and_pop_word() {

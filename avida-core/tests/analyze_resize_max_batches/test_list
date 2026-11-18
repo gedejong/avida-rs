@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -a                
+args = -a
 
 app = %(default_app)s            ; Application path to test
 nonzeroexit = require    ; Exit code handling (disallow, allow, or require)

@@ -2,70 +2,47 @@
 
 An *instruction set* is the list of instructions that organisms of an experiment can use, with an optional cost, failure probability and frequency for each. An *organism file* (`.org`) holds one genome as a list of instructions. This page gives the formats of both. For what the instructions of the default set do, see [virtual CPUs and instruction sets](../concepts/hardware.md).
 
-## Including an instruction set in `avida.cfg`
+## Naming the instruction sets of an experiment
 
-Instruction sets are part of the configuration, but they are written in separate files that `avida.cfg` pulls in with a preprocessor line:
+The instruction sets are the section `instruction_sets` of the experiment file (`avida.yaml`). The section is a list; an entry is the name of a stock set or a set written out in full. The stock folder's file names one stock set:
 
-```text
-#include INST_SET=instset-heads.cfg
+```yaml
+instruction_sets: [heads_default]
 ```
 
-After `#include` comes a file name, optionally preceded by a variable name and `=`. `INST_SET` is only a name; it lets you swap the file from the command line:
+The stock sets are `heads_default`, `heads_sex`, `heads_modular`, `smt`, `transsmt` and `experimental` (see the table below). The first set of the list is the default set of the run. A list of several sets lets organisms with different instruction sets live in one run.
 
-```sh
-avida -def INST_SET instset-heads-sex.cfg
+The section can also be a file of its own, which several experiments share:
+
+```yaml
+instruction_sets: instset-heads-sex.yaml
 ```
 
-You can include several sets (for example `#include instset-heads.cfg` and `#include instset-heads-sex.cfg`), which lets organisms with different instruction sets live in one run.
+The command line replaces the section with a stock set or a file, for example `avida -set instruction_sets heads_sex`.
 
-## File format
+## Writing a set
 
-```text
-INSTSET name:hw_type=N[:stack_size=N][:uops_per_cycle=N]
-INST instruction-name[:option=value...]
-INST ...
+```yaml
+instruction_sets:
+  - name: my_heads
+    hardware_type: 0
+    stack_size: 10          # optional
+    uops_per_cycle: 20      # optional
+    instructions:
+      - nop-A
+      - {name: nand, redundancy: 2, cost: 2}
+      - h-copy
 ```
 
-- `INSTSET` starts a set and gives it a name and the hardware type (`hw_type`, required; see the [hardware types](../concepts/hardware.md#hardware-types)). The optional `stack_size` defaults to 10 and `uops_per_cycle` to 20 (the latter for the hardware types whose CPU cycle runs several micro-operations).
-- Each `INST` line adds one instruction. The instruction must exist in the instruction library of that hardware type. The order of the lines is the order of the letters in saved genomes: `a`, `b`, `c`, and so on, then capitals and digits.
-- A file can hold several `INSTSET` blocks; each `INST` belongs to the nearest `INSTSET` above it. An `INST` before any `INSTSET` is an error.
+- `name` and `hardware_type` are required (see the [hardware types](../concepts/hardware.md#hardware-types)). The optional `stack_size` defaults to 10 and `uops_per_cycle` to 20 (the latter for the hardware types whose CPU cycle runs several micro-operations).
+- Each entry of `instructions` adds one instruction: its name, or a mapping with its `name` and the options below. The instruction must exist in the instruction library of that hardware type. The order of the entries is the order of the letters in saved genomes: `a`, `b`, `c`, and so on, then capitals and digits.
 - Comments start with `#`.
 
-The stock set (`instset-heads.cfg`):
+The stock set `heads_default` is written out in `avida-core/support/config/instset-heads.yaml`; its 26 instructions are `nop-A`, `nop-B`, `nop-C`, `if-n-equ`, `if-less`, `if-label`, `mov-head`, `jmp-head`, `get-head`, `set-flow`, `shift-r`, `shift-l`, `inc`, `dec`, `push`, `pop`, `swap-stk`, `swap`, `add`, `sub`, `nand`, `h-copy`, `h-alloc`, `h-divide`, `IO` and `h-search`.
 
-```text
-INSTSET heads_default:hw_type=0
-INST nop-A
-INST nop-B
-INST nop-C
-INST if-n-equ
-INST if-less
-INST if-label
-INST mov-head
-INST jmp-head
-INST get-head
-INST set-flow
-INST shift-r
-INST shift-l
-INST inc
-INST dec
-INST push
-INST pop
-INST swap-stk
-INST swap
-INST add
-INST sub
-INST nand
-INST h-copy
-INST h-alloc
-INST h-divide
-INST IO
-INST h-search
-```
+### Options of an instruction
 
-### Options of an `INST` line
-
-Options follow the instruction name, separated by colons, as `name=value`:
+An instruction written as a mapping takes these keys besides `name`:
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -83,26 +60,26 @@ Options follow the instruction name, separated by colons, as `name=value`:
 
 An unknown option is an error (`unrecognized argument`). `SetRedundancy` and `SetProbFail` change an instruction's redundancy and failure probability during a run, for every organism at once.
 
-Example: make `nand` twice as common and twice as expensive:
+Example: make `nand` twice as common and twice as expensive by writing it as
 
-```text
-INST nand:redundancy=2:cost=2
+```yaml
+      - {name: nand, redundancy: 2, cost: 2}
 ```
 
-A short run with this line in the stock instruction set starts and finishes normally.
+in a copy of the stock set. A short run with this entry starts and finishes normally.
 
 ## Instruction sets in the stock folder
 
-| File | `INSTSET` name, hardware type | Notes |
+| File | Set name, hardware type | Notes |
 |---|---|---|
-| `instset-heads.cfg` | `heads_default`, 0 | The default. |
-| `instset-heads-sex.cfg` | `heads_sex`, 0 | Same as the default, but `divide-sex` replaces `h-divide`. |
-| `instset-transsmt.cfg` | `transsmt`, 2 | For parasites. |
-| `instset-experimental.cfg` | `experimental`, 3 | Avatars, predator and prey. |
-| `instset-gx.cfg` | (old format) | A gene-expression set in a legacy format. |
-| `instset-smt.cfg` | `smt`, 1 | Hardware type 1 is not available. |
+| `instset-heads.yaml` | `heads_default`, 0 | The default. |
+| `instset-heads-sex.yaml` | `heads_sex`, 0 | Same as the default, but `divide-sex` replaces `h-divide`. |
+| `instset-heads-modular.yaml` | `heads_modular`, 0 | The default plus `nop-D` to `nop-F`, `call` and `return` (an extension of the port). |
+| `instset-transsmt.yaml` | `transsmt`, 2 | For parasites. |
+| `instset-experimental.yaml` | `experimental`, 3 | Avatars, predator and prey. |
+| `instset-smt.yaml` | `smt`, 1 | Hardware type 1 is not available. |
 
-More sets are in `avida-core/support/config/misc`: `instset-heads-30-parasite.cfg`, `instset-no-heads-*.cfg` and others.
+Each of these sets can be named in an experiment file without its file. More sets are in `avida-core/support/config/misc`: `instset-heads-30-parasite.yaml`, `instset-no-heads-*.yaml` and others; name one by its file. The old C++ folder also had `instset-gx.cfg`, a set for the gene-expression hardware, which neither the C++ binary of the tag `cpp-final` nor the port has.
 
 ## Organism files
 
@@ -124,15 +101,15 @@ nop-C
 error: invalid instruction set 'heads_default' defined in organism 'default-heads.org'
 ```
 
-This is the usual error when you switch the instruction set with `-def INST_SET ...` but still inject the stock ancestor. Use an ancestor written for the new set (`default-heads-sex.org` for `instset-heads-sex.cfg`).
+This is the usual error when you switch the instruction set (`-set instruction_sets heads_sex`) but still inject the stock ancestor. Use an ancestor written for the new set (`default-heads-sex.org` for `heads_sex`).
 
-The ancestors in the stock folder: `default-heads.org`, `default-heads-sex.org`, `default-transsmt.org`, `default-smt.org`, `default-gx.org` and `experimental.org`.
+The ancestors in the stock folder: `default-heads.org`, `default-heads-sex.org`, `default-heads-modular.org`, `default-transsmt.org`, `default-smt.org` and `experimental.org`.
 
 ### Writing your own ancestor
 
 1. Copy `default-heads.org`.
 2. Edit the instructions. Keep the copy loop intact: `h-alloc`, `h-search`, the `mov-head` that places the write head, the loop (`h-search`, `h-copy`, `if-label`, `h-divide`, `mov-head`) and the closing `nop-A nop-B` label.
-3. Inject it from the events file: `u begin Inject my-ancestor.org`.
+3. Inject it from the events: `- {at: begin, action: Inject, args: my-ancestor.org}`.
 4. Test it with a short run and look at `count.dat`: if the number of organisms stays at 1, the organism cannot reproduce.
 
 The [analyze-mode](analyze-mode.md) command `LOAD_ORGANISM` and the `TRACE` command run an organism in the test CPU and show how it executes, which helps to debug an ancestor.

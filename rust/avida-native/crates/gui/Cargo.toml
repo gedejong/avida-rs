@@ -30,4 +30,5 @@ rfd = "0.18.0"
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
+avida-config = { path = "../config" }
 egui_kittest = { version = "0.37.0", features = ["eframe", "wgpu", "snapshot"] }

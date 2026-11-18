@@ -88,7 +88,7 @@ pub fn display_name(dir: &Path) -> String {
 }
 
 /// The experiment folder a dropped path stands for: a folder itself, or
-/// the folder of a dropped file (`avida.cfg`, say). `None` for a path that
+/// the folder of a dropped file (`avida.yaml`, say). `None` for a path that
 /// does not exist.
 pub fn dropped_folder(path: &Path) -> Option<PathBuf> {
     if path.is_dir() {
@@ -121,7 +121,7 @@ pub struct OpenProblem {
     /// fixed-width font).
     pub detail: Option<String>,
     /// The folder a new experiment could be created in, when the folder
-    /// is missing or holds no configuration.
+    /// is missing or holds no experiment file.
     pub create_here: Option<PathBuf>,
 }
 
@@ -130,8 +130,10 @@ impl OpenProblem {
     pub fn explain(dir: Option<&Path>, raw: &str) -> OpenProblem {
         let raw = raw.trim();
         let missing_dir = dir.is_some_and(|d| !d.exists());
-        let no_config = raw.contains("configuration file 'avida.cfg' not found")
-            || dir.is_some_and(|d| d.is_dir() && !d.join("avida.cfg").exists());
+        let no_config = raw.contains("configuration file 'avida.yaml' not found")
+            || dir.is_some_and(|d| d.is_dir() && !d.join("avida.yaml").exists());
+        let old_format = raw.contains("avida convert")
+            || dir.is_some_and(|d| d.join("avida.cfg").is_file() && !d.join("avida.yaml").exists());
         if missing_dir {
             OpenProblem {
                 title: "This folder does not exist.".to_string(),
@@ -139,10 +141,20 @@ impl OpenProblem {
                 detail: dir.map(|d| d.display().to_string()),
                 create_here: dir.map(Path::to_path_buf),
             }
+        } else if old_format {
+            OpenProblem {
+                title: "This folder holds the old configuration files.".to_string(),
+                hint: "Avida now reads one experiment file, avida.yaml. Run avida convert with this folder to write it from avida.cfg and the files it names, then open the folder again.".to_string(),
+                detail: Some(match dir {
+                    Some(d) => format!("avida convert {}", d.display()),
+                    None => raw.to_string(),
+                }),
+                create_here: None,
+            }
         } else if no_config {
             OpenProblem {
-                title: "There is no avida.cfg in this folder.".to_string(),
-                hint: "An experiment folder holds avida.cfg, events.cfg and environment.cfg. Choose the folder that has them, or create a new experiment from the default settings.".to_string(),
+                title: "There is no avida.yaml in this folder.".to_string(),
+                hint: "An experiment folder holds the experiment file avida.yaml. Choose the folder that has it, or create a new experiment from the default settings.".to_string(),
                 detail: dir.map(|d| d.display().to_string()),
                 create_here: dir.map(Path::to_path_buf),
             }
@@ -163,7 +175,7 @@ pub struct RunEnd {
     pub failed: bool,
     /// One sentence: `The run finished at update 100.`
     pub title: String,
-    /// Why, when known: `The Exit event in events.cfg ended it.`
+    /// Why, when known: `The Exit event ended it.`
     pub reason: String,
     /// The status the `avida` binary would exit with.
     pub exit_code: Option<i32>,
@@ -1591,9 +1603,9 @@ mod tests {
             work_dir: PathBuf::from("/x/heads/config"),
             args: next.args.clone(),
             data_dir: PathBuf::from("/x/heads/config/data"),
-            config_file: PathBuf::from("/x/heads/config/avida.cfg"),
+            config_file: PathBuf::from("/x/heads/config/avida.yaml"),
             settings: Vec::new(),
-            event_file: PathBuf::from("/x/heads/config/events.cfg"),
+            event_file: PathBuf::from("/x/heads/config/avida.yaml"),
             events: Vec::new(),
         });
         s.apply_events(vec![SessionEvent::Restarted(Arc::clone(&setup))]);
@@ -1871,8 +1883,8 @@ mod tests {
         );
         assert_eq!(p.title, "This folder does not exist.");
         assert_eq!(p.create_here.as_deref(), Some(Path::new("/no/such/folder")));
-        let p = OpenProblem::explain(None, "error: unable to open file 'avida.cfg'.\nerror: configuration file 'avida.cfg' not found");
-        assert_eq!(p.title, "There is no avida.cfg in this folder.");
+        let p = OpenProblem::explain(None, "error: unable to open file 'avida.yaml'.\nerror: configuration file 'avida.yaml' not found");
+        assert_eq!(p.title, "There is no avida.yaml in this folder.");
         let p = OpenProblem::explain(None, "error: unknown/unprocessed task entry 'bogus'");
         assert!(p.title.starts_with("Avida could not build the world"));
         assert_eq!(
@@ -1894,9 +1906,9 @@ mod tests {
             update_limit: None,
         });
         assert_eq!(s.phase, Phase::Opening);
-        s.open_failed("no avida.cfg".into());
+        s.open_failed("no avida.yaml".into());
         assert_eq!(s.phase, Phase::Start);
-        assert_eq!(s.open_error.as_deref(), Some("no avida.cfg"));
+        assert_eq!(s.open_error.as_deref(), Some("no avida.yaml"));
         assert_eq!(s.open_error_dir.as_deref(), Some(Path::new("/nowhere")));
         assert_eq!(
             s.open_problem().unwrap().title,

@@ -1,0 +1,40 @@
+# The stock instruction set of the transposon SMT CPU (hardware type 2).
+#
+# Name it in an experiment file as "instruction_sets: [transsmt]".
+
+instruction_sets:
+  - name: transsmt
+    hardware_type: 2
+    instructions:
+      - Nop-A                 # 1  (a)
+      - Nop-B                 # 2  (b)
+      - Nop-C                 # 3  (c)
+      - Nop-D                 # 4  (d)
+      - Val-Shift-R           # 5  (e)
+      - Val-Shift-L           # 6  (f)
+      - Val-Nand              # 7  (g)
+      - Val-Add               # 8  (h)
+      - Val-Sub               # 9  (i)
+      - Val-Mult              # 10 (j)
+      - Val-Div               # 11 (k)
+      - Val-Mod               # 12 (l)
+      - Val-Inc               # 13 (m)
+      - Val-Dec               # 14 (n)
+      - SetMemory             # 15 (o)
+      - Divide                # 16 (p)
+      - Inst-Read             # 17 (q)
+      - Inst-Write            # 18 (r)
+      - If-Equal              # 19 (s)
+      - If-Not-Equal          # 20 (t)
+      - If-Less               # 21 (u)
+      - If-Greater            # 22 (v)
+      - Head-Push             # 23 (w)
+      - Head-Pop              # 24 (x)
+      - Head-Move             # 25 (y)
+      - Search                # 26 (z)
+      - Push-Next             # 27 (A)
+      - Push-Prev             # 28 (B)
+      - Push-Comp             # 29 (C)
+      - Val-Delete            # 30 (D)
+      - Val-Copy              # 31 (E)
+      - IO                    # 32 (F)

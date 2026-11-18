@@ -1,0 +1,62 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  resources:
+    - {name: food, inflow: 0}
+    - name: bad0
+      kind: gradient
+      height: 10
+      spread: 40
+      plateau: 20
+      decay: 1
+      move_a_scaler: 3.8
+      max_x: 12
+      min_x: 0
+      max_y: 12
+      min_y: 0
+      damage: 0.02
+      threshold: 1
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: default-classic.org}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 20, until: end, action: PrintResourceData}
+  - {at: 300, action: Exit}

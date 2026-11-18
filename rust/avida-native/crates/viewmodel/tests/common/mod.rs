@@ -8,6 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use avida_config::cmdline::process_cmdline;
+use avida_config::convert::{replace_section, section_lines};
 use avida_world::world::World;
 
 /// `avida-core/tests`
@@ -38,25 +39,29 @@ pub fn fresh_config(test: &str, name: &str) -> PathBuf {
     dir
 }
 
-/// Appends lines to the copy's `events.cfg`.
+/// Appends lines of the C++ event-file format to the events of the copy's
+/// experiment file.
 pub fn append_events(dir: &Path, lines: &str) {
-    let path = dir.join("events.cfg");
-    let mut text = fs::read_to_string(&path).unwrap();
-    if !text.ends_with('\n') {
-        text.push('\n');
-    }
+    let mut text = section_lines(dir, "avida.yaml", "events").unwrap();
     text.push_str(lines);
-    fs::write(&path, text).unwrap();
+    replace_section(dir, "avida.yaml", "events", &text).unwrap();
 }
 
 /// `primitive.cc` up to the run: command line (no arguments), config,
 /// `cWorld::Initialize`.
 pub fn build_world(dir: &Path) -> World {
+    build_world_with(dir, &[])
+}
+
+/// [`build_world`] with the command-line arguments `args`.
+pub fn build_world_with(dir: &Path, args: &[&str]) -> World {
     let cwd = dir.to_string_lossy().into_owned();
-    let cmd = process_cmdline(&["avida".to_string()], &cwd);
+    let mut argv = vec!["avida".to_string()];
+    argv.extend(args.iter().map(|a| a.to_string()));
+    let cmd = process_cmdline(&argv, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
     let (world, _report) =
-        World::new(cmd.config, &cwd, &cmd.defs).unwrap_or_else(|e| panic!("World::new: {e}"));
+        World::new(cmd.config, &cwd).unwrap_or_else(|e| panic!("World::new: {e}"));
     world
 }
 
@@ -65,7 +70,7 @@ pub fn build_world(dir: &Path) -> World {
 ///
 /// `World::run` returns from the top of its loop, after the events of the
 /// update just finished and before the next update starts, so `Exit`
-/// events added to the copy's `events.cfg` give stops between updates.
+/// events added to the copy's events give stops between updates.
 /// Clearing `done` and calling `run` again resumes the loop: the events
 /// that already fired at this update have moved on to their next trigger,
 /// so the extra `process_events` call fires nothing (an event with interval
@@ -176,18 +181,10 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
     } else {
         "pp5_gp8_u0"
     };
-    let extra = Path::new(env!("CARGO_MANIFEST_DIR"))
+    let case = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../avida/tests/actions")
-        .join(case)
-        .join("extra");
-    fs::copy(extra.join("environment.cfg"), dir.join("environment.cfg")).unwrap();
-    // The recorded configuration is older than the code: no version warning.
-    let cfg = fs::read_to_string(extra.join("avida.cfg")).unwrap();
-    fs::write(
-        dir.join("avida.cfg"),
-        cfg.replace("VERSION_ID 2.11.0", "VERSION_ID 2.14.0"),
-    )
-    .unwrap();
+        .join(case);
+    fs::copy(case.join("avida.yaml"), dir.join("avida.yaml")).unwrap();
     let insts = if hw_type == 5 {
         GENE_BCR_INSTS
     } else {
@@ -197,7 +194,7 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
     for i in insts {
         set.push_str(&format!("INST {i}\n"));
     }
-    fs::write(dir.join("instset.cfg"), set).unwrap();
+    replace_section(&dir, "avida.yaml", "instruction_sets", &set).unwrap();
     let one = if hw_type == 5 { "one" } else { "inc" };
     let genome = [
         "promoter",
@@ -225,8 +222,10 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
         "terminator",
     ];
     fs::write(dir.join("genes.org"), genome.join("\n") + "\n").unwrap();
-    fs::write(
-        dir.join("events.cfg"),
+    replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject genes.org 12\nu 100000 Exit\n",
     )
     .unwrap();

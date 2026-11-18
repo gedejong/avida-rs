@@ -4,7 +4,7 @@ An evolution run is one sample from a random process. To say anything about an e
 
 ## Layout
 
-Work in a copy of the stock folder (see [your first run](../getting-started/first-run.md)). Each run gets its own data folder, `runs/ARM/seed-N`, and its own copy of the events file with the run length filled in.
+Work in a copy of the stock folder (see [your first run](../getting-started/first-run.md)). Each run gets its own data folder, `runs/ARM/seed-N`, and its own copy of the events with the run length filled in.
 
 ## The recipe
 
@@ -14,17 +14,19 @@ Put this function in a file `lab.sh`, in the experiment folder, and load it with
 AVIDA=${AVIDA:-avida}
 
 # run_arm ARM SEED UPDATES [extra avida arguments...]
+# The events are read from avida.yaml, or from the file named by EVENTS.
 run_arm() {
   arm=$1; seed=$2; updates=$3; shift 3
   out=runs/$arm/seed-$seed
   mkdir -p "$out"
-  # the run's own copy of events.cfg, with the Exit update replaced
-  sed -E "s/^u [0-9]+ Exit/u $updates Exit/" events.cfg > "$out/events.cfg"
-  "$AVIDA" -s "$seed" -set EVENT_FILE "$out/events.cfg" -set DATA_DIR "$out" "$@" > "$out/log.txt"
+  # the run's own copy of the events, with the Exit update replaced
+  sed -n '/^events:/,$p' "${EVENTS:-avida.yaml}" |
+    sed -E "s/at: [0-9]+, action: Exit/at: $updates, action: Exit/" > "$out/events.yaml"
+  "$AVIDA" -s "$seed" -set events "$out/events.yaml" -set general.data_dir "$out" "$@" > "$out/log.txt"
 }
 ```
 
-For the replacement to work, `events.cfg` must contain a line of the form `u 100000 Exit`, as the stock file does. The function was tested with two seeds and two arms: it produced the four run folders, each with its own `events.cfg` whose `Exit` line carried the chosen update.
+The function copies everything from the line `events:` to the end of the file, so `events` must be the last section of the file, as it is in the stock file and in every file that `avida convert` writes. For the replacement to work, the events must hold an entry of the form `{at: 100000, action: Exit}`, as the stock file does. The function was tested with two seeds and two arms: it produced the four run folders, each with its own `events.yaml` whose `Exit` entry carried the chosen update.
 
 ## Using it
 
@@ -34,11 +36,11 @@ Two arms, four seeds each, 20,000 updates, one run after another:
 . ./lab.sh
 for s in 1 2 3 4; do
   run_arm control $s 20000
-  run_arm variant $s 20000 -set ENVIRONMENT_FILE environment-variant.cfg
+  run_arm variant $s 20000 -set environment environment-variant.yaml
 done
 ```
 
-Everything after the three fixed arguments goes to `avida`, so an arm can differ in any setting (`-set NAME VALUE`), in its environment file or events file, or in the instruction set (`-def INST_SET file`).
+Everything after the three fixed arguments goes to `avida`, so an arm can differ in any setting (`-set GROUP.KEY VALUE`), in its environment (`-set environment FILE`) or in its instruction set (`-set instruction_sets NAME`). An arm with events of its own names their file in `EVENTS` instead of passing `-set events`, which would replace the copy with the run length: `EVENTS=events-variant.yaml run_arm variant $s 20000`.
 
 Run several at once, one per core, with `xargs`:
 
@@ -47,7 +49,7 @@ export -f run_arm; export AVIDA
 printf '%s\n' 1 2 3 4 5 6 7 8 | xargs -P 4 -I{} bash -c '. ./lab.sh; run_arm control {} 20000'
 ```
 
-(Adjust `-P 4` to the number of cores you can spare. The exact mode runs each population on one thread, so one run per core is the efficient way to use a machine. If you use the [parallel mode](../execution/index.md), give each run `-set EXECUTION_THREADS 1`.)
+(Adjust `-P 4` to the number of cores you can spare. The exact mode runs each population on one thread, so one run per core is the efficient way to use a machine. If you use the [parallel mode](../execution/index.md), give each run `-set execution.threads 1`.)
 
 ## Reading the results
 

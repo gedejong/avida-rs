@@ -1,0 +1,62 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: default-classic.org}
+  - {at: 1, action: Echo, args: hello world}
+  - {at: 2, action: SetVerbose, args: details}
+  - {at: 3, action: VERBOSE, args: quiet}
+  - {at: 0, every: 20, until: 60, action: PrintNumDivides}
+  - {at: 60, action: PrintTaskSnapshot, args: ts.dat}
+  - {at: 0, every: 30, until: 60, action: PrintViableTasksData}
+  - {at: 0, every: 30, until: 60, action: PrintAveNumTasks}
+  - {at: 0, every: 30, until: 60, action: PrintSoloTaskSnapshot}
+  - {at: 30, action: PrintDebug}
+  - {at: 0, every: 30, until: 60, action: PrintMaleInstructionData}
+  - {at: 61, action: Exit}

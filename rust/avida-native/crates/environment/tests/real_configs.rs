@@ -1,23 +1,22 @@
-//! Loads every environment file shipped with Avida (avida-core/support/config
-//! and each consistency test's config directory) through the native parser,
-//! with the avida.cfg settings and `-set` / `-def` arguments the test uses.
+//! Loads every environment shipped with Avida (the experiment files of
+//! avida-core/support/config and of each consistency test's config
+//! directory, and the environment section files) through the native
+//! parser, with the settings and `-set` arguments the test uses.
 
 use avida_config::config::Config;
 use avida_config::feedback::Feedback;
 use avida_environment::{proc_type, Environment, SimpleTaskLib, TaskRegistry};
-use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 fn avida_core() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core")
 }
 
-/// `-c`, `-set` and `-def` arguments from a test's `test_list`.
+/// `-c` and `-set` arguments from a test's `test_list`.
 #[derive(Default)]
 struct TestArgs {
     cfg: Option<String>,
     sets: Vec<(String, String)>,
-    defs: Vec<(String, String)>,
 }
 
 fn test_args(test_dir: &Path) -> TestArgs {
@@ -31,7 +30,12 @@ fn test_args(test_dir: &Path) -> TestArgs {
     let Some((_, args)) = line.split_once('=') else {
         return out;
     };
-    let words: Vec<&str> = args.split_whitespace().collect();
+    let words: Vec<&str> = args
+        .split(';')
+        .next()
+        .unwrap_or("")
+        .split_whitespace()
+        .collect();
     let mut i = 0;
     while i < words.len() {
         match words[i] {
@@ -44,76 +48,55 @@ fn test_args(test_dir: &Path) -> TestArgs {
                     .push((words[i + 1].to_string(), words[i + 2].to_string()));
                 i += 3;
             }
-            "-def" if i + 2 < words.len() => {
-                out.defs
-                    .push((words[i + 1].to_string(), words[i + 2].to_string()));
-                i += 3;
-            }
             _ => i += 1,
         }
     }
     out
 }
 
-fn load_config(dir: &Path, args: &TestArgs) -> Config {
+/// The experiment file of `dir` with the test's `-set` arguments, or the
+/// defaults when the folder has none.
+fn load_config(dir: &Path, args: &TestArgs) -> Option<Config> {
     let mut config = Config::new();
-    let cfg = args.cfg.clone().unwrap_or_else(|| "avida.cfg".to_string());
-    if dir.join(&cfg).exists() {
-        let mut fb = Feedback::new();
-        assert!(
-            config.load(
-                &cfg,
-                dir.to_str().unwrap(),
-                Some(&mut fb),
-                Some(&args.defs),
-                false
-            ),
-            "config {} in {}",
-            cfg,
-            dir.display()
-        );
+    let cfg = args.cfg.clone().unwrap_or_else(|| "avida.yaml".to_string());
+    if !dir.join(&cfg).exists() {
+        return None;
     }
-    let mut sets = args.sets.clone();
-    config.set_from_map(&mut sets);
-    config
-}
-
-/// Environment files in `dir`: the configured ENVIRONMENT_FILE plus every
-/// file whose name starts with "env" or ends in "env.cfg".
-fn env_files(dir: &Path, config: &Config) -> BTreeSet<String> {
-    let mut files = BTreeSet::new();
-    if dir.join(&config.environment_file).is_file() {
-        files.insert(config.environment_file.clone());
-    }
-    for e in std::fs::read_dir(dir).unwrap() {
-        let name = e.unwrap().file_name().to_string_lossy().to_string();
-        if name.starts_with("env") || name.ends_with("env.cfg") {
-            files.insert(name);
+    let mut fb = Feedback::new();
+    assert!(
+        config.load_experiment(&cfg, dir.to_str().unwrap(), &mut fb),
+        "config {} in {}: {}",
+        cfg,
+        dir.display(),
+        fb.render()
+    );
+    for (path, value) in &args.sets {
+        // A placeholder of the test runner (`%(cpus)s`) is not a value.
+        if !value.starts_with('%') {
+            config
+                .set_path(path, value, dir.to_str().unwrap())
+                .unwrap_or_else(|e| panic!("{}: -set {path}: {e}", dir.display()));
         }
     }
-    files
+    Some(config)
 }
 
-fn load_env(dir: &Path, file: &str, config: &Config, defs: &[(String, String)]) {
+fn load_env(what: &str, config: &Config) -> Environment<SimpleTaskLib> {
     let mut env = Environment::new(config, SimpleTaskLib::new());
     let mut fb = Feedback::new();
-    let r = env.load(file, dir.to_str().unwrap(), &mut fb, Some(defs), config);
-    assert!(
-        r.is_ok(),
-        "{}/{}: {:?}\n{}",
-        dir.display(),
-        file,
-        r,
-        fb.render()
-    );
-    assert_eq!(
-        fb.num_errors(),
-        0,
-        "{}/{}: {}",
-        dir.display(),
-        file,
-        fb.render()
-    );
+    let r = env.load_lines(&config.experiment.environment, &mut fb, config);
+    assert!(r.is_ok(), "{what}: {:?}\n{}", r, fb.render());
+    assert_eq!(fb.num_errors(), 0, "{what}: {}", fb.render());
+    env
+}
+
+/// The environment section file `file` of `dir`, read with the defaults.
+fn load_env_file(dir: &Path, file: &str) -> Environment<SimpleTaskLib> {
+    let mut config = Config::new();
+    config
+        .set_path("environment", file, dir.to_str().unwrap())
+        .unwrap_or_else(|e| panic!("{}/{file}: {e}", dir.display()));
+    load_env(&format!("{}/{file}", dir.display()), &config)
 }
 
 #[test]
@@ -131,47 +114,39 @@ fn load_every_test_environment() {
             continue;
         }
         let args = test_args(&test_dir);
-        let config = load_config(&dir, &args);
-        for file in env_files(&dir, &config) {
-            load_env(&dir, &file, &config, &args.defs);
-            loaded += 1;
-        }
+        let Some(config) = load_config(&dir, &args) else {
+            continue;
+        };
+        load_env(&dir.display().to_string(), &config);
+        loaded += 1;
     }
-    // 89 environment*.cfg files plus the other ENVIRONMENT_FILE targets.
-    assert!(loaded >= 95, "only {} environment files loaded", loaded);
+    // Every test folder but the 28 analyze-script (ASL) ones.
+    assert!(loaded >= 90, "only {} environments loaded", loaded);
 }
 
 #[test]
 fn load_support_environments() {
     let support = avida_core().join("support/config");
-    let config = load_config(&support, &TestArgs::default());
-    load_env(&support, "environment.cfg", &config, &[]);
-    let misc = support.join("misc");
+    let config = load_config(&support, &TestArgs::default()).unwrap();
+    load_env("support/config/avida.yaml", &config);
     let mut n = 0;
-    for e in std::fs::read_dir(&misc).unwrap() {
-        let name = e.unwrap().file_name().to_string_lossy().to_string();
-        if name.starts_with("environment") {
-            load_env(&misc, &name, &config, &[]);
-            n += 1;
+    for dir in [support.clone(), support.join("misc")] {
+        for e in std::fs::read_dir(&dir).unwrap() {
+            let name = e.unwrap().file_name().to_string_lossy().to_string();
+            if name.starts_with("environment") && name.ends_with(".yaml") {
+                load_env_file(&dir, &name);
+                n += 1;
+            }
         }
     }
-    assert_eq!(n, 4);
+    assert_eq!(n, 6);
 }
 
 #[test]
 fn default_environment() {
     let support = avida_core().join("support/config");
-    let config = load_config(&support, &TestArgs::default());
-    let mut env = Environment::new(&config, SimpleTaskLib::new());
-    let mut fb = Feedback::new();
-    env.load(
-        "environment.cfg",
-        support.to_str().unwrap(),
-        &mut fb,
-        None,
-        &config,
-    )
-    .unwrap();
+    let config = load_config(&support, &TestArgs::default()).unwrap();
+    let env = load_env("support/config/avida.yaml", &config);
 
     let names = [
         "NOT", "NAND", "AND", "ORN", "OR", "ANDN", "NOR", "XOR", "EQU",
@@ -227,17 +202,7 @@ fn default_environment() {
 #[test]
 fn nine_resource_environment() {
     let misc = avida_core().join("support/config/misc");
-    let config = Config::new();
-    let mut env = Environment::new(&config, SimpleTaskLib::new());
-    let mut fb = Feedback::new();
-    env.load(
-        "environment-9resource.cfg",
-        misc.to_str().unwrap(),
-        &mut fb,
-        None,
-        &config,
-    )
-    .unwrap();
+    let env = load_env_file(&misc, "environment-9resource.yaml");
     assert_eq!(env.resource_lib().size(), 9);
     let res = env.resource_lib().resource(0);
     assert_eq!(res.name(), "resNOT");

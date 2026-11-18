@@ -1,2 +1,2 @@
 base heads_default_100u
-args -set VERBOSITY 4
+args -set general.verbosity 4

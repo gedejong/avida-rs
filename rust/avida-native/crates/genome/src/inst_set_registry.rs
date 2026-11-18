@@ -1,14 +1,15 @@
 //! The instruction-set registry part of `cHardwareManager`
 //! (avida-core/source/cpu/cHardwareManager.{h,cc}): loading every
 //! `INSTSET` block from the `INSTSETS` config lines, name lookup, the
-//! default set, the genome -> inst set check of `Create`, and the legacy
-//! instruction-set file conversion.
+//! default set and the genome -> inst set check of `Create`. The legacy
+//! instruction-set file conversion (`ConvertLegacyInstSetFile`) lives in
+//! `avida convert` (`avida_config::convert`).
 //!
 //! Hardware construction and the `cStats` bookkeeping done in
 //! `loadInstSet` belong to the hardware and world crates.
 
 use crate::arg_schema::{ArgContainer, ArgSchema, ArgType};
-use crate::cstr::{as_double, as_int, format_f, pop, pop_word, trim};
+use crate::cstr::{pop, pop_word, trim};
 use crate::feedback::Feedback;
 use crate::genome::{Genome, DEFAULT_INST_SET_NAME};
 use crate::inst_lib::InstLib;
@@ -27,17 +28,6 @@ pub const HARDWARE_TYPE_CPU_EXPERIMENTAL: i32 = 3;
 pub const HARDWARE_TYPE_CPU_GP8: i32 = 4;
 /// `HARDWARE_TYPE_CPU_BCR`
 pub const HARDWARE_TYPE_CPU_BCR: i32 = 5;
-
-/// `cHardware*::GetDefaultInstFilename()` for the hardware types
-/// `ConvertLegacyInstSetFile` supports.
-pub fn default_inst_filename(hw_type: i32) -> Option<&'static str> {
-    match hw_type {
-        HARDWARE_TYPE_CPU_ORIGINAL => Some("instset-heads.cfg"),
-        HARDWARE_TYPE_CPU_TRANSSMT => Some("instset-transsmt.cfg"),
-        HARDWARE_TYPE_CPU_EXPERIMENTAL => Some("instset-experimental.cfg"),
-        _ => None,
-    }
-}
 
 /// Supplies the instruction library of a hardware type
 /// (`cHardwareCPU::GetInstLib()` etc.), or `None` for an unknown or
@@ -321,95 +311,5 @@ impl InstSetRegistry {
             return None;
         }
         Some((id, is.as_ref()))
-    }
-}
-
-/// Result of [`convert_legacy_inst_set_file`].
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LegacyConversion {
-    /// Return value of `ConvertLegacyInstSetFile`.
-    pub success: bool,
-    /// New value for the `INST_SET` setting when the default file was
-    /// substituted (`m_world->GetConfig().INST_SET.Set(filename)`).
-    pub inst_set_setting: Option<String>,
-}
-
-/// `cHardwareManager::ConvertLegacyInstSetFile(filename, str_list, feedback)`:
-/// read a legacy `name redundancy cost initial_cost energy_cost prob_fail
-/// addl_time_cost res_cost fem_res_cost post_cost` file and append the
-/// equivalent `INSTSET` / `INST` lines to `str_list`.
-///
-/// `hardware_type` is the `HARDWARE_TYPE` setting; `filename` the
-/// `INST_SET` setting (`""` or `"-"` selects the hardware's default file).
-/// QUIRK: an open failure is reported through `Feedback::append`, so it
-/// does not count towards `num_errors` (as in C++).
-pub fn convert_legacy_inst_set_file(
-    filename: &str,
-    hardware_type: i32,
-    working_dir: &str,
-    str_list: &mut Vec<String>,
-    feedback: &mut Feedback,
-) -> LegacyConversion {
-    let Some(default_filename) = default_inst_filename(hardware_type) else {
-        feedback.error("unknown/unsupported HARDWARE_TYPE specified");
-        return LegacyConversion {
-            success: false,
-            inst_set_setting: None,
-        };
-    };
-
-    let mut filename = filename.to_string();
-    let mut inst_set_setting = None;
-    if filename.is_empty() || filename == "-" {
-        filename = default_filename.to_string();
-        feedback.notify(format!("using default instruction set: {}", filename));
-        inst_set_setting = Some(filename.clone());
-    }
-
-    // cInitFile file(filename, working_dir): the file keeps its own feedback.
-    let file = avida_config::InitFile::new(&filename, working_dir, None, None);
-    if !file.was_opened() {
-        // QUIRK: cUserFeedback::Append copies the messages without counting
-        // them as errors.
-        feedback.append(file.feedback());
-        return LegacyConversion {
-            success: false,
-            inst_set_setting,
-        };
-    }
-
-    str_list.push(format!("INSTSET {}:hw_type={}", filename, hardware_type));
-    for line_id in 0..file.num_lines() {
-        let mut cur_line = file.get_line(line_id as i32);
-        let inst_name = pop_word(&mut cur_line);
-        let redundancy = as_int(&pop_word(&mut cur_line));
-        let cost = as_int(&pop_word(&mut cur_line));
-        let ft_cost = as_int(&pop_word(&mut cur_line));
-        let energy_cost = as_int(&pop_word(&mut cur_line));
-        let prob_fail = as_double(&pop_word(&mut cur_line));
-        let addl_time_cost = as_int(&pop_word(&mut cur_line));
-        let res_cost = as_double(&pop_word(&mut cur_line));
-        let fem_res_cost = as_double(&pop_word(&mut cur_line));
-        // `int post_cost = ...AsDouble();` truncates
-        let post_cost = as_double(&pop_word(&mut cur_line)) as i32;
-
-        str_list.push(format!(
-            "INST {}:redundancy={}:cost={}:initial_cost={}:energy_cost={}:prob_fail={}:addl_time_cost={}:res_cost={}:fem_res_cost={}:post_cost={}",
-            inst_name,
-            redundancy,
-            cost,
-            ft_cost,
-            energy_cost,
-            format_f(prob_fail),
-            addl_time_cost,
-            format_f(res_cost),
-            format_f(fem_res_cost),
-            post_cost
-        ));
-    }
-
-    LegacyConversion {
-        success: true,
-        inst_set_setting,
     }
 }

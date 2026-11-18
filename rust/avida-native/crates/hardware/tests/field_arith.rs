@@ -1,7 +1,7 @@
-//! The adder ladder (`environment-adder-ladder.cfg`, task `field_arith`):
+//! The adder ladder (`environment-adder-ladder.yaml`, task `field_arith`):
 //! the hand-written organisms `ladder-*.org` for the stock heads set and the
 //! modular set earn full quality on the field rungs, with no `add` or `sub`
-//! in them. The wider adders (ADD3, ADD4, `environment-adder-wide.cfg`) and
+//! in them. The wider adders (ADD3, ADD4, `environment-adder-wide.yaml`) and
 //! the self-replicating ADD2 organisms of `data/wide-adder` are covered too.
 
 mod common;
@@ -16,8 +16,8 @@ fn config_dir() -> PathBuf {
     avida_core().join("support/config")
 }
 
-const LADDER: &str = "environment-adder-ladder.cfg";
-const WIDE: &str = "environment-adder-wide.cfg";
+const LADDER: &str = "environment-adder-ladder.yaml";
+const WIDE: &str = "environment-adder-wide.yaml";
 
 /// The stock configuration with the ladder as its environment.
 fn ladder_dir(tag: &str) -> PathBuf {
@@ -35,22 +35,23 @@ fn env_dir(tag: &str, env_file: &str) -> PathBuf {
             std::fs::copy(e.path(), dir.join(e.file_name())).unwrap();
         }
     }
-    let cfg = std::fs::read_to_string(dir.join("avida.cfg")).unwrap();
-    let cfg = cfg.replace(
-        "ENVIRONMENT_FILE environment.cfg",
-        &format!("ENVIRONMENT_FILE {env_file}"),
-    );
-    assert!(cfg.contains(env_file));
-    std::fs::write(dir.join("avida.cfg"), cfg).unwrap();
+    // The stock file's `environment:` block becomes the name of `env_file`.
+    let cfg = std::fs::read_to_string(dir.join("avida.yaml")).unwrap();
+    let (head, rest) = cfg.split_once("\nenvironment:\n").unwrap();
+    let (_, tail) = rest.split_once("\nevents:").unwrap();
+    let cfg = format!("{head}\nenvironment: {env_file}\n\nevents:{tail}");
+    std::fs::write(dir.join("avida.yaml"), cfg).unwrap();
     dir
 }
 
 fn instset_lines(file: &str) -> Vec<String> {
-    let text = std::fs::read_to_string(config_dir().join(file)).unwrap();
-    text.lines()
-        .map(|l| l.split('#').next().unwrap().trim().to_string())
-        .filter(|l| !l.is_empty())
-        .collect()
+    section_inst_sets(&config_dir(), file)
+}
+
+/// The `INSTSET`/`INST` lines of an instruction-set file in `dir`.
+fn section_inst_sets(dir: &Path, file: &str) -> Vec<String> {
+    let text = avida_config::convert::section_lines(dir, file, "instruction_sets");
+    text.unwrap().lines().map(str::to_string).collect()
 }
 
 fn fixture(modular: bool, tag: &str) -> Fixture {
@@ -60,7 +61,7 @@ fn fixture(modular: bool, tag: &str) -> Fixture {
 fn fixture_in(modular: bool, tag: &str, env_file: &str) -> Fixture {
     let dir = env_dir(tag, env_file);
     if modular {
-        Fixture::load_with_instset(&dir, instset_lines("instset-heads-modular.cfg")).unwrap()
+        Fixture::load_with_instset(&dir, instset_lines("instset-heads-modular.yaml")).unwrap()
     } else {
         Fixture::load(&dir, &[]).unwrap()
     }
@@ -365,9 +366,11 @@ fn quality_scales_what_a_reaction_consumes_and_so_the_bonus() {
         ("pow", |q| 2f64.powf(2.0 * q)),
     ] {
         let dir = ladder_dir(&format!("q_{kind}"));
-        std::fs::write(
-            dir.join("environment-adder-ladder.cfg"),
-            format!(
+        avida_config::convert::replace_section(
+            &dir,
+            "avida.yaml",
+            "environment",
+            &format!(
                 "REACTION R field_arith:fn=halfadd:bits=1:mode=planes:thresh=0.1 \
                  process:value=2.0:type={kind} requisite:max_count=1\n"
             ),
@@ -439,12 +442,13 @@ fn a_narrower_adder_does_not_earn_the_wider_rung() {
 fn the_wide_environment_has_three_packed_reactions_on_their_own_resources() {
     let fx = fixture_in(false, "wide_env", WIDE);
     assert_eq!(fx.env.output_size(), 1, "packed tasks need one output");
-    let text = std::fs::read_to_string(config_dir().join(WIDE)).unwrap();
+    // The environment lines the experiment file renders from the section.
+    let text = fx.cfg.experiment.environment.join("\n");
     for (n, value) in [(2, 7), (3, 8), (4, 9)] {
         let line = text
             .lines()
             .find(|l| l.starts_with(&format!("REACTION ADD{n} ")))
-            .unwrap();
+            .unwrap_or_else(|| panic!("no ADD{n} in\n{text}"));
         assert!(line.contains(&format!(
             "field_arith:fn=add:bits={n}:mode=packed:thresh=1 "
         )));
@@ -468,20 +472,16 @@ fn wide_adder_dir() -> PathBuf {
 }
 
 fn wide_adder_instset(file: &str) -> Vec<String> {
-    let text = std::fs::read_to_string(wide_adder_dir().join(file)).unwrap();
-    text.lines()
-        .map(|l| l.split('#').next().unwrap().trim().to_string())
-        .filter(|l| !l.is_empty())
-        .collect()
+    section_inst_sets(&wide_adder_dir(), file)
 }
 
 #[test]
 fn the_wide_adder_replicators_replicate_and_do_add2() {
     for (file, set_file, expected_len) in [
-        ("replicator-add2-heads.org", "instset-heads.cfg", 125usize),
+        ("replicator-add2-heads.org", "instset-heads.yaml", 125usize),
         (
             "replicator-add2-modular.org",
-            "instset-heads-modular.cfg",
+            "instset-heads-modular.yaml",
             102,
         ),
     ] {

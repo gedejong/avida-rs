@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 3 -set WORLD_X 15 -set WORLD_Y 15 -set PRECALC_PHENOTYPE 3 -set RESET_INPUTS_ON_DIVIDE 1
+args -s 3 -set world.x 15 -set world.y 15 -set time.precalc_phenotype 3 -set reproduction.reset_inputs_on_divide 1

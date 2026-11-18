@@ -12,8 +12,8 @@ use avida_apto::diag;
 use avida_config::cmdline::{
     prints_data_directory, process_cmdline, random_seed_line, CmdLineOutcome,
 };
-use avida_config::config::{find_entry, Config};
-use avida_config::init_file::InitFile;
+use avida_config::config::Config;
+use avida_config::naming;
 use avida_viewmodel::{
     all_layers, capture_with_progress, find_organism, ip_positions, ip_sites, probe, update_row,
     KnockoutMap, LayerId, OrgProbe, Subscription, UpdateProgress,
@@ -45,69 +45,66 @@ fn push_lines(events: &mut Vec<SessionEvent>, text: &str, make: fn(String) -> Se
     events.extend(text.lines().map(|l| make(l.to_string())));
 }
 
-/// The settings named on the command line: `-set NAME value` (any of a
-/// setting's names), `-s` (`RANDOM_SEED`) and `-vN` (`VERBOSITY`).
-fn command_line_settings(args: &[String]) -> Vec<&'static str> {
-    let mut names = Vec::new();
+/// The settings named on the command line, by their place in the
+/// experiment file: `-set group.key value`, `-s` (`general.random_seed`)
+/// and `-vN` (`general.verbosity`).
+fn command_line_settings(args: &[String]) -> Vec<String> {
+    let mut paths = Vec::new();
     let mut i = 0;
     while i < args.len() {
         let a = args[i].as_str();
         if a == "-set" && i + 2 < args.len() {
-            let name = args[i + 1].as_str();
-            if let Some(e) = avida_config::config::all_entries().find(|e| e.names.contains(&name)) {
-                names.push(e.names[0]);
-            }
+            paths.push(args[i + 1].clone());
             i += 3;
             continue;
         }
-        if a == "-def" || a == "-c" || a == "-config" {
-            i += if a == "-def" { 3 } else { 2 };
+        if a == "-c" || a == "-config" {
+            i += 2;
             continue;
         }
         if a == "-s" || a == "-seed" {
-            names.push("RANDOM_SEED");
+            paths.extend(naming::new_name_of("RANDOM_SEED"));
             i += 2;
             continue;
         }
         if a.starts_with("-v") && a != "-v" && a != "-version" {
-            names.push("VERBOSITY");
+            paths.extend(naming::new_name_of("VERBOSITY"));
         }
         i += 1;
     }
-    names
+    paths
 }
 
-/// The effective configuration, setting by setting.
+/// The effective configuration, setting by setting, in the order of the
+/// experiment file.
 fn settings_of(cmd: &CmdLineOutcome, args: &[String]) -> Vec<Setting> {
     let defaults = Config::new();
     let from_cmdline = command_line_settings(args);
-    cmd.config
-        .iter()
-        .map(|e| {
-            let name = e.def.names[0];
+    naming::settings()
+        .into_iter()
+        .map(|info| {
+            let path = info.path();
             Setting {
-                group: e.group.name,
-                group_desc: e.group.desc,
-                name,
-                kind: e.def.ty.type_name(),
-                default: find_entry(name)
-                    .and_then(|_| defaults.get(name))
-                    .unwrap_or_else(|| e.def.default.to_string()),
-                value: e.value,
-                desc: e.def.desc,
-                from_command_line: from_cmdline.contains(&name),
+                group: info.group,
+                group_desc: naming::group_title(info.group),
+                from_command_line: from_cmdline.contains(&path),
+                name: path,
+                old_name: info.old,
+                kind: info.kind().type_name(),
+                default: info.display(&defaults.setting_text(&info)),
+                value: info.display(&cmd.config.setting_text(&info)),
+                desc: info.desc(),
             }
         })
         .collect()
 }
 
-/// The events file's lines, split into trigger, timing, action and
+/// The events of the experiment, split into trigger, timing, action and
 /// arguments the way `cEventList::AddEventFileFormat` reads them.
-fn events_of(event_file: &str, defs: &[(String, String)], cwd: &str) -> Vec<EventLine> {
-    let file = InitFile::with_mappings(event_file, defs, cwd);
-    (0..file.num_lines())
-        .map(|i| {
-            let text = file.get_line(i as i32);
+fn events_of(lines: &[String]) -> Vec<EventLine> {
+    lines
+        .iter()
+        .map(|text| {
             let mut words = text.split_whitespace();
             let trigger = words.next().unwrap_or("").to_string();
             let immediate = matches!(trigger.as_str(), "i" | "immediate");
@@ -163,7 +160,7 @@ fn build_world(
     }
     if cmd.config.analyze_mode > 0 {
         return Err(
-            "ANALYZE_MODE > 0 runs an analyze script, not a population; a session cannot drive it"
+            "analyze.mode > 0 runs an analyze script, not a population; a session cannot drive it"
                 .to_string(),
         );
     }
@@ -172,12 +169,12 @@ fn build_world(
     push_lines(&mut events, &cmd.stdout, SessionEvent::Stdout);
     push_lines(&mut events, &cmd.stderr, SessionEvent::Stderr);
     let settings = settings_of(&cmd, &config.args);
-    let event_file = cmd.config.event_file.clone();
-    let event_lines = events_of(&event_file, &cmd.defs, &cwd);
+    let event_file = work_dir.join(&cmd.config.experiment.events_file);
+    let event_lines = events_of(&cmd.config.experiment.events);
     let config_file = work_dir.join(&cmd.config_filename);
     // What set-up prints through `avida_apto::diag` (the thread captures
     // it), in the order the binary prints it: before the report.
-    let built = World::new(cmd.config, &cwd, &cmd.defs);
+    let built = World::new(cmd.config, &cwd);
     let printed = diag::take_captured();
     let (world, report) = built.map_err(|e| {
         format!("{}{}{}{e}", cmd.stderr, printed.stdout, printed.stderr)
@@ -206,7 +203,7 @@ fn build_world(
         data_dir: PathBuf::from(world.out.output_path()),
         config_file,
         settings,
-        event_file: work_dir.join(&event_file),
+        event_file,
         events: event_lines,
     };
     Ok((world, events, setup))

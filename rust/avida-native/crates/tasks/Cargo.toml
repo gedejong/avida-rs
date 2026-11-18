@@ -8,3 +8,6 @@ workspace = true
 
 [dependencies]
 avida-apto = { path = "../apto" }
+
+[dev-dependencies]
+avida-config = { path = "../config" }

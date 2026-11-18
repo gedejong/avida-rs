@@ -175,11 +175,11 @@ fn a_dead_organism_is_marked() {
 
 fn configuring() -> App {
     let mut a = app_with(frame_with_map());
-    let mut mut_prob = setting("COPY_MUT_PROB", "double", "0.02", "0.0075");
+    let mut mut_prob = setting("mutation.copy_prob", "double", "0.02", "0.0075");
     mut_prob.desc = "Mutation rate\nper copy";
     a.set_setup(Arc::new(setup(vec![
-        setting("WORLD_X", "int", "60", "60"),
-        setting("WORLD_Y", "int", "60", "60"),
+        setting("world.x", "int", "60", "60"),
+        setting("world.y", "int", "60", "60"),
         mut_prob,
     ])));
     a.goto(Screen::Config);
@@ -191,22 +191,22 @@ fn the_config_screen_lists_filters_and_previews_the_restart() {
     let mut a = configuring();
     let t = render(&mut a, 80, 24);
     has(&t, "3 of 3 settings, 0 overrides");
-    has(&t, "WORLD_X");
-    has(&t, "COPY_MUT_PROB");
+    has(&t, "world.x");
+    has(&t, "mutation.copy_prob");
     has(&t, "A restart would run with: no extra arguments");
     a.config.query = "copy".into();
     a.config.filtering = true;
     let t = render(&mut a, 80, 24);
     has(&t, "1 of 3 settings");
-    assert!(!t.contains("WORLD_X"), "{t}");
+    assert!(!t.contains("world.x"), "{t}");
     a.config.filtering = false;
     a.config.query.clear();
     a.config.sel = 1;
-    a.config.overrides.push(("WORLD_Y".into(), "25".into()));
+    a.config.overrides.push(("world.y".into(), "25".into()));
     let t = render(&mut a, 80, 24);
     has(&t, "60 > 25");
     has(&t, "1 override");
-    has(&t, "A restart would run with: -set WORLD_Y 25");
+    has(&t, "A restart would run with: -set world.y 25");
 }
 
 #[test]
@@ -216,11 +216,11 @@ fn the_config_edit_prompt_shows_the_value_and_the_error() {
     a.config.edit.as_mut().unwrap().buffer = "abc".into();
     a.config_commit_edit();
     let t = render(&mut a, 80, 24);
-    has(&t, "WORLD_X (int) = abc_");
+    has(&t, "world.x (int) = abc_");
     has(&t, "is not a whole number");
     let (w, h) = MIN_SIZE;
     let t = render(&mut a, w, h);
-    has(&t, "WORLD_X");
+    has(&t, "world.x");
 }
 
 #[test]
@@ -344,13 +344,13 @@ fn the_lineage_view_lists_the_ancestry_founder_first() {
 fn speculative_execution_needs_no_warning_and_a_step_inside_a_slice_says_so() {
     let mut a = debugging();
     a.set_setup(Arc::new(setup(vec![setting(
-        "SPECULATIVE",
+        "general.speculative",
         "int",
         "1",
         "1",
     )])));
     let t = render(&mut a, 100, 24);
-    assert!(!t.contains("SPECULATIVE"), "{t}");
+    assert!(!t.contains("general.speculative"), "{t}");
     has(&t, "Watching organism #5");
 
     let mut status = crate::fixtures::status(avida_session::RunState::Paused, 12);

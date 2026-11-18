@@ -1,0 +1,187 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 10
+world:
+  x: 10
+  y: 10
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+reproduction:
+  allow_parent: false
+  death_method: never
+  age_limit: 0
+  reset_inputs_on_divide: 1
+time:
+  ave_time_slice: 10
+  slicing_method: constant
+  base_merit_method: constant
+  merit_inc_apply_immediate: true
+hoarding:
+  use_resource_bins: true
+  absorb_resource_fraction: 1.0
+  multi_absorb_type: first
+  return_stored_on_death: false
+  split_on_divide: false
+movement:
+  avatar_birth: faced
+  track_birth_locs: true
+sensing:
+  look_dist: 50
+groups:
+  use_form_groups: unrestricted
+  pred_prey_switch: pred_to_prey_allowed
+  pred_efficiency: 0.37
+  pred_efficiency_poison: 0.21
+  pred_odds: 0.6
+  pred_injury: 0.13
+  track_group_attack_details: string
+
+instruction_sets:
+  - name: instset
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - if-n-equ
+      - if-less
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - label
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - input
+      - output
+      - repro
+      - zero
+      - rotate-right-one
+      - rotate-left-one
+      - rotate-x
+      - move
+      - set-forage-target
+      - get-forage-target
+      - set-opinion
+      - get-opinion
+      - collect-specific
+      - show-ft
+      - attack-prey
+      - attack-prey-area
+      - attack-prey-group
+      - attack-prey-share
+      - attack-prey-no-share
+      - attack-prey-fake-share
+      - attack-prey-group-share
+      - attack-prey-fake-group-share
+      - attack-spec-prey
+      - attack-spec-prey-chance
+      - attack-ft-prey
+      - attack-poison-prey
+      - attack-poison-ft-prey
+      - attack-poison-ft-prey-genetic
+      - attack-poison-ft-mixed-prey
+      - attack-pred
+      - kill-pred
+      - fight-pred
+      - fight-merit-org
+      - fight-bonus-org
+      - get-merit-fight-odds
+      - fight-org
+      - mark-cell
+      - mark-group-cell
+      - mark-pred-cell
+      - read-faced-cell
+      - read-faced-pred-cell
+      - read-group-cell
+      - get-faced-org-id
+      - teach-offspring
+      - learn-parent
+
+environment:
+  resources:
+    - {name: food, initial: 5000, inflow: 50, outflow: 0.01}
+  reactions:
+    - {name: ECHO, task: echo, process: {value: 1.0, type: add}, requisite: {max_count: 3}}
+    - name: eat0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+    - name: eat1
+      task: eat-target
+      args: {target_id: 1}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+    - name: eat2
+      task: eat-target
+      args: {target_id: 2}
+      process: {resource: food, value: 0.5, type: add, min: 1, max: 1, depletable: 1}
+
+events:
+  - {at: begin, action: LoadMiniTraceQ, args: file=gq.txt:orgs_per=1}
+  - {at: begin, action: Inject, args: g0.org 22}
+  - {at: begin, action: Inject, args: g0.org 42}
+  - {at: begin, action: Inject, args: g0.org 62}
+  - {at: begin, action: Inject, args: g0.org 23}
+  - {at: begin, action: Inject, args: g0.org 43}
+  - {at: begin, action: Inject, args: g0.org 63}
+  - {at: begin, action: Inject, args: g0.org 24}
+  - {at: begin, action: Inject, args: g0.org 64}
+  - {at: begin, action: Inject, args: g0.org 25}
+  - {at: begin, action: Inject, args: g0.org 65}
+  - {at: begin, action: Inject, args: g0.org 26}
+  - {at: begin, action: Inject, args: g0.org 46}
+  - {at: begin, action: Inject, args: g0.org 66}
+  - {at: begin, action: Inject, args: g0.org 27}
+  - {at: begin, action: Inject, args: g0.org 47}
+  - {at: begin, action: Inject, args: g0.org 67}
+  - {at: begin, action: Inject, args: g1.org 32}
+  - {at: begin, action: Inject, args: g1.org 52}
+  - {at: begin, action: Inject, args: g1.org 72}
+  - {at: begin, action: Inject, args: g1.org 33}
+  - {at: begin, action: Inject, args: g1.org 53}
+  - {at: begin, action: Inject, args: g1.org 73}
+  - {at: begin, action: Inject, args: g1.org 34}
+  - {at: begin, action: Inject, args: g1.org 74}
+  - {at: begin, action: Inject, args: g1.org 35}
+  - {at: begin, action: Inject, args: g1.org 75}
+  - {at: begin, action: Inject, args: g1.org 36}
+  - {at: begin, action: Inject, args: g1.org 56}
+  - {at: begin, action: Inject, args: g1.org 76}
+  - {at: begin, action: Inject, args: g1.org 37}
+  - {at: begin, action: Inject, args: g1.org 57}
+  - {at: begin, action: Inject, args: g1.org 77}
+  - {at: begin, action: Inject, args: g2.org 44}
+  - {at: begin, action: Inject, args: g3.org 45}
+  - {at: begin, action: Inject, args: g4.org 54}
+  - {at: begin, action: Inject, args: g5.org 55}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 0, every: 1, until: end, action: PrintTasksData}
+  - {at: 0, every: 1, until: end, action: PrintReactionData}
+  - {at: 0, every: 5, until: end, action: PrintAverageData}
+  - {at: 0, every: 5, until: end, action: PrintPredatorAverageData}
+  - {at: 0, every: 5, until: end, action: PrintPreyAverageData}
+  - {at: 0, every: 5, until: end, action: PrintTargets}
+  - {at: 0, every: 5, until: end, action: PrintAttacks}
+  - {at: 0, every: 5, until: end, action: PrintKilledPreyFTData}
+  - {at: 0, every: 5, until: end, action: PrintGroupAttackData, args: group_attacks.dat instset}
+  - {at: 0, every: 5, until: end, action: PrintCellData}
+  - {at: 0, every: 10, until: end, action: DumpTargetGrid}
+  - {at: 20, action: Exit}

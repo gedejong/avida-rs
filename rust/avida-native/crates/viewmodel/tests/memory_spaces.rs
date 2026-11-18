@@ -13,18 +13,10 @@ const TEST: &str = "parasites_limited_resources";
 #[test]
 fn a_hosted_parasite_has_its_own_listed_memory_space() {
     let dir = fresh_config(TEST, "memory_spaces");
-    let cfg = std::fs::read_to_string(dir.join("avida.cfg")).unwrap();
-    let cfg: String = cfg
-        .lines()
-        .map(|l| {
-            if l.starts_with("RANDOM_SEED") {
-                "RANDOM_SEED 7\n".to_string()
-            } else {
-                format!("{l}\n")
-            }
-        })
-        .collect();
-    std::fs::write(dir.join("avida.cfg"), cfg).unwrap();
+    let cfg = std::fs::read_to_string(dir.join("avida.yaml")).unwrap();
+    assert!(cfg.contains("\n  random_seed: 0\n"));
+    let cfg = cfg.replace("\n  random_seed: 0\n", "\n  random_seed: 7\n");
+    std::fs::write(dir.join("avida.yaml"), cfg).unwrap();
     append_events(&dir, "u 640 Exit\n");
     let mut w = build_world(&dir);
     let mut sink = Vec::new();

@@ -11,7 +11,7 @@ Two tools use them:
 - `cargo test` includes `crates/avida/tests/consistency.rs`, which runs the port on the tests that have checked-in expected output and compares every file. `crates/avida/tests/consistency_passing.txt` lists the pinned names.
 - `tools/run_suite.py` runs every test with the C++ reference binary (the output is cached) and with the Rust binary, and compares standard output and every file written, ignoring timestamps, the time-based seed and the data-directory path.
 
-The last recorded result: 85 byte-identical (84 that run to a zero exit in C++, plus `analyze_resize_max_batches`, whose exit code 1 the port reproduces), 34 more that fail the same way the C++ does, none different, 1 stop on a named unported feature (`SLICING_METHOD 4`, on which the C++ crashes), and 1 where the reference binary times out (`_mutn_rate`).
+The last recorded result: 85 byte-identical (84 that run to a zero exit in C++, plus `analyze_resize_max_batches`, whose exit code 1 the port reproduces), 34 more that fail the same way the C++ does, none different, 1 stop on a named unported feature (`time.slicing_method: cross_deme_probabilistic`, on which the C++ crashes), and 1 where the reference binary times out (`_mutn_rate`).
 
 ## 2. Action fixtures and traces
 

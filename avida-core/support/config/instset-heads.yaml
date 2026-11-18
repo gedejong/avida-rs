@@ -1,0 +1,45 @@
+# The stock instruction set of the heads CPU (hardware type 0).
+#
+# Name it in an experiment file as "instruction_sets: [heads_default]".
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      # No-ops
+      - nop-A                 # a
+      - nop-B                 # b
+      - nop-C                 # c
+
+      # Flow control operations
+      - if-n-equ              # d
+      - if-less               # e
+      - if-label              # f
+      - mov-head              # g
+      - jmp-head              # h
+      - get-head              # i
+      - set-flow              # j
+
+      # Single Argument Math
+      - shift-r               # k
+      - shift-l               # l
+      - inc                   # m
+      - dec                   # n
+      - push                  # o
+      - pop                   # p
+      - swap-stk              # q
+      - swap                  # r
+
+      # Double Argument Math
+      - add                   # s
+      - sub                   # t
+      - nand                  # u
+
+      # Biological Operations
+      - h-copy                # v
+      - h-alloc               # w
+      - h-divide              # x
+
+      # I/O and Sensory
+      - IO                    # y
+      - h-search              # z

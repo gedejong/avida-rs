@@ -1,0 +1,59 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+world:
+  x: 2
+  y: 1
+time:
+  merit_inc_apply_immediate: true
+kaboom:
+  prob: 0.0
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - coop-SA
+
+environment:
+  reactions:
+    - {name: CPG, task: consume-public-good, process: {value: 1.0, type: add}}
+    - {name: PPG, task: produce-public-good, process: {value: 0.5, type: add}}
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: P.org 0}
+  - {at: begin, action: Inject, args: C.org 1}
+  - {at: 0, every: 1, until: end, action: PrintCurrentTaskCounts}
+  - {at: 0, every: 1, until: end, action: PrintAverageData}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 40, action: SavePopulation}
+  - {at: 40, action: Exit}
