@@ -38,6 +38,8 @@ pub struct InitFile {
     /// insertion order, which only differs when several mappings overlap.
     mappings: Vec<(String, String)>,
     custom_directives: Vec<(String, String)>,
+    /// Every file read (the file itself, then its includes), as named.
+    files_read: Vec<String>,
 }
 
 fn map_set(m: &mut Vec<(String, String)>, k: &str, v: &str) {
@@ -89,7 +91,14 @@ impl InitFile {
             imported_files: Vec::new(),
             mappings: Vec::new(),
             custom_directives: Vec::new(),
+            files_read: Vec::new(),
         }
+    }
+
+    /// Every file read: the file itself, then each `#include`d file, as
+    /// named (relative to the working directory unless absolute).
+    pub fn files_read(&self) -> &[String] {
+        &self.files_read
     }
 
     fn init(
@@ -253,6 +262,7 @@ impl InitFile {
             }
         };
         self.found = true;
+        self.files_read.push(filename.to_string());
         let text = String::from_utf8_lossy(&content).into_owned();
         let mut linenum = 0;
         for raw in text.split('\n') {

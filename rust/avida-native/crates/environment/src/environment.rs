@@ -631,8 +631,24 @@ impl<T: TaskRegistry> Environment<T> {
             return Err(last_error(feedback));
         }
 
-        for line_id in 0..infile.num_lines() {
-            if !self.load_line_inner(&infile.get_line(line_id as i32), feedback, config) {
+        let lines: Vec<String> = (0..infile.num_lines())
+            .map(|line_id| infile.get_line(line_id as i32))
+            .collect();
+        self.load_lines(&lines, feedback, config)
+    }
+
+    /// The environment of an experiment file: every line of the C++
+    /// environment-file format in `lines` (as the experiment loader renders
+    /// them), then the check that every pre-declared reaction was defined.
+    /// What `load` does once the file is read.
+    pub fn load_lines(
+        &mut self,
+        lines: &[String],
+        feedback: &mut Feedback,
+        config: &Config,
+    ) -> Result<(), String> {
+        for line in lines {
+            if !self.load_line_inner(line, feedback, config) {
                 return Err(last_error(feedback));
             }
         }

@@ -1,0 +1,46 @@
+# The stock instruction set of the experimental CPU (hardware type 3).
+#
+# Name it in an experiment file as "instruction_sets: [experimental]".
+
+instruction_sets:
+  - name: experimental
+    hardware_type: 3
+    instructions:
+      # No-ops
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+
+      # Flow control operations
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - label
+
+      # Single Argument Math
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+
+      # Double Argument Math
+      - add
+      - sub
+      - nand
+
+      # Biological Operations
+      - h-copy
+      - h-alloc
+      - h-divide
+
+      # I/O and Sensory
+      - IO
+      - h-search
