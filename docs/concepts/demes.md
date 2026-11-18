@@ -4,15 +4,17 @@ A *deme* is a subpopulation: a group of cells that the program treats as a unit.
 
 ## Setting up demes
 
-The world is one grid, which the program cuts into `NUM_DEMES` equal parts. The deme's width is the world's width (`WORLD_X`) and its height is `WORLD_Y` divided by `NUM_DEMES`. For 4 demes of 10 by 10 cells, use:
+The world is one grid, which the program cuts into `demes.count` equal parts. The deme's width is the world's width (`world.x`) and its height is `world.y` divided by `demes.count`. For 4 demes of 10 by 10 cells, use:
 
-```text
-WORLD_X 10
-WORLD_Y 40
-NUM_DEMES 4
+```yaml
+world:
+  x: 10
+  y: 40
+demes:
+  count: 4
 ```
 
-`WORLD_Y` must be divisible by `NUM_DEMES`. In analyze mode a setting where it is not stops with an `unsupported:` message, because the C++ program crashes there.
+`world.y` must be divisible by `demes.count`. In analyze mode a setting where it is not stops with an `unsupported:` message, because the C++ program crashes there.
 
 ## Starting a run with demes
 
@@ -29,36 +31,37 @@ The `Inject` action places one organism in one cell. Several actions do it per d
 A deme can *replicate*: its organisms seed another deme, which they replace. When it replicates is decided either by an event or by a setting.
 
 - By event: `ReplicateDemes` takes a trigger (the default is `full_deme`: replicate when the deme is full). `ReplicateDemesHighestBirthCount` and `ReplicateDemesHighestFecundity` replicate the demes with the highest births or fecundity.
-- By setting (implicit replication): `DEMES_REPLICATE_CPU_CYCLES`, `DEMES_REPLICATE_TIME`, `DEMES_REPLICATE_BIRTHS` and `DEMES_REPLICATE_ORGS` trigger a deme's replication when it has used that many CPU cycles per organism, that much normalised time, that many births, or that many organisms. A value of 0 switches a trigger off.
-- By competition: `CompeteDemes` chooses which demes replicate by fitness proportional (`DEMES_COMPETITION_STYLE 0`) or tournament selection (`1`, with `DEMES_TOURNAMENT_SIZE`). The fitness of a deme is computed from its organisms' behaviour (variants: `CompeteDemesByTaskCount`, `CompeteDemesByEnergyDistribution`, `CompeteDemesByNetwork`, `CompeteDemes_AttackKillAndEnergyConserve`).
+- By setting (implicit replication): `demes.replicate_cpu_cycles`, `demes.replicate_time`, `demes.replicate_births` and `demes.replicate_orgs` trigger a deme's replication when it has used that many CPU cycles per organism, that much normalised time, that many births, or that many organisms. A value of 0 switches a trigger off.
+- By competition: `CompeteDemes` chooses which demes replicate by fitness proportional (`demes.competition_style: 0`) or tournament selection (`1`, with `demes.tournament_size`). The fitness of a deme is computed from its organisms' behaviour (variants: `CompeteDemesByTaskCount`, `CompeteDemesByEnergyDistribution`, `CompeteDemesByNetwork`, `CompeteDemes_AttackKillAndEnergyConserve`).
 
 `ResetDemes` resets all demes to their founders.
 
 ### Germlines
 
-With `DEMES_USE_GERMLINE` set, a deme keeps a distinct *germline*: a line of genomes that founds the next deme, separate from the soma that does the work. Replication uses the `GERMLINE_*_MUT` rates.
+With `demes.use_germline` set, a deme keeps a distinct *germline*: a line of genomes that founds the next deme, separate from the soma that does the work. Replication uses the rates `demes.germline_copy_mut`, `demes.germline_ins_mut` and `demes.germline_del_mut`.
 
 ### Migration
 
-An offspring can be born in a different deme: `DEMES_MIGRATION_RATE` is the probability, and `DEMES_MIGRATION_METHOD` chooses the targets (any other deme, the eight neighbouring demes, two adjacent demes, weighted by points, or a weight matrix that `SetMigrationMatrix` and `AlterMigrationConnection` can change). The matrix file, its rules and the actions that report migration counts are described in [the deme migration matrix](../reference/migration-matrix.md).
+An offspring can be born in a different deme: `demes.migration_rate` is the probability, and `demes.migration_method` chooses the targets (any other deme, the eight neighbouring demes, two adjacent demes, weighted by points, or a weight matrix that `SetMigrationMatrix` and `AlterMigrationConnection` can change). The matrix file, its rules and the actions that report migration counts are described in [the deme migration matrix](../reference/migration-matrix.md).
 
 ## An example you can run
 
-This events file puts one organism in each of four demes of 10 by 10 cells, replicates each deme when it is full, and prints the deme statistics:
+These events put one organism in each of four demes of 10 by 10 cells, replicate each deme when it is full, and print the deme statistics:
 
-```text
-u begin InjectDemes default-heads.org
-u 0:50:end PrintCountData
-u 0:50:end PrintDemeStats
-u 1:1:end ReplicateDemes full_deme
-u 300 Exit
+```yaml
+events:
+  - {at: begin, action: InjectDemes, args: default-heads.org}
+  - {at: 0, every: 50, until: end, action: PrintCountData}
+  - {at: 0, every: 50, until: end, action: PrintDemeStats}
+  - {at: 1, every: 1, until: end, action: ReplicateDemes, args: full_deme}
+  - {at: 300, action: Exit}
 ```
 
-Run it in a copy of the stock folder with `avida -s 3 -set WORLD_X 10 -set WORLD_Y 40 -set NUM_DEMES 4`. You should see a number of `deme_*.dat` files appear next to `count.dat` in the data folder (`deme_fitness.dat`, `deme_gest_time.dat`, `deme_merit.dat`, `deme_task.dat`, `deme_resources.dat`, `deme_instruction-0-heads_default.dat` to `deme_instruction-3-...` and others). In `count.dat` the number of organisms rises as demes fill and falls when a replication replaces demes with founders.
+Run it in a copy of the stock folder with `avida -s 3 -set world.x 10 -set world.y 40 -set demes.count 4`. You should see a number of `deme_*.dat` files appear next to `count.dat` in the data folder (`deme_fitness.dat`, `deme_gest_time.dat`, `deme_merit.dat`, `deme_task.dat`, `deme_resources.dat`, `deme_instruction-0-heads_default.dat` to `deme_instruction-3-...` and others). In `count.dat` the number of organisms rises as demes fill and falls when a replication replaces demes with founders.
 
 ## Deme resources and the energy model
 
-Resources can be kept per deme (`deme` option of a `RESOURCE` line, and the `SetDemeResource...` actions), and organisms can share energy through their deme. See [environment, tasks and resources](environment-and-tasks.md) and [the energy model](energy.md).
+Resources can be kept per deme (the option `deme` of a resource, and the `SetDemeResource...` actions), and organisms can share energy through their deme. See [environment, tasks and resources](environment-and-tasks.md) and [the energy model](energy.md).
 
 ## In the parallel execution mode
 

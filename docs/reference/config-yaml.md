@@ -122,7 +122,10 @@ optional. An instruction is its name, or a mapping with its `name` and any of
 ## Environment
 
 `environment` is a mapping with up to four lists, which are loaded in this
-order: `resources`, `grids`, `reactions` and `set_active`.
+order: `resources`, `grids`, `reactions` and `set_active`. Its key
+`input_and_mask` holds the mask of the environment line `INPUT_AND_MASK`
+(hex with `0x`, such as `0xFF6DB6DB`, or decimal), which the file passes on
+as written.
 
 A resource has a `name` and its parameters. A plain resource (the C++
 `RESOURCE`) takes `inflow`, `outflow`, `initial`, `geometry`, `cells`, `inflowx1`, `inflowx`, `inflowx2`, `inflowy1`, `inflowy`, `inflowy2`, `outflowx1`, `outflowx`, `outflowx2`, `outflowy1`, `outflowy`, `outflowy2`, `xdiffuse`, `xgravity`, `ydiffuse`, `ygravity`, `deme`, `collectable`, `energy` and `hgt`. `kind: cell` makes a resource of
@@ -135,7 +138,8 @@ A state grid (`GRID`) has a `name` and `width`, `height`, `initx`, `inity`, `ini
 
 A reaction has the keys `name`, `task`, `args`, `process`, `requisite` and `context_requisite`. `args` holds the task's
 arguments, as a mapping (`{function: 9, binary: 1}`) or as the text the C++
-line had after the task's colon. `process`, `requisite` and
+line had after the task's colon. The file passes the arguments on as
+written, and the task checks them. `process`, `requisite` and
 `context_requisite` are a mapping or a list of mappings, one per C++
 `process:`, `requisite:` or `context_requisite:` entry. A process takes
 `resource`, `value`, `type`, `max`, `min`, `frac`, `ksubm`, `product`, `conversion`, `inst`, `random`, `lethal`, `sterilize`, `deme`, `germline`, `detect`, `threshold`, `detectionerror`, `string`, `depletable`, `phenplastbonus` and `internal`. A requisite takes `reaction`, `noreaction`, `min_count`, `max_count`, `reaction_min_count`, `reaction_max_count`, `divide_only`, `min_tot_count`, `max_tot_count`, `parasite_only` and `cellbox` (`cellbox` only

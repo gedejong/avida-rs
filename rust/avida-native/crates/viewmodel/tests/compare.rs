@@ -115,16 +115,23 @@ fn batch(name: &str) -> PathBuf {
     let mut t = fs::read_to_string(b.join("beta/seed-2/tasks.dat")).unwrap();
     t.push_str("200 2");
     fs::write(b.join("beta/seed-2/tasks.dat"), t).unwrap();
-    // The lab's convention: a config-<arm> folder next to the batch names the rungs.
-    for arm in ["alpha", "beta"] {
-        let c = r.join(format!("config-{arm}"));
-        fs::create_dir_all(&c).unwrap();
-        fs::write(
-            c.join("environment.cfg"),
-            "# rungs\nREACTION NOT not process:x\nREACTION NAND nand process:y\nREACTION HALF field_arith:fn=halfadd process:z\nREACTION ADD field_arith:fn=add process:w\n",
-        )
-        .unwrap();
-    }
+    // The lab's convention: a config-<arm> folder next to the batch names the
+    // rungs, in its experiment file (alpha) or, for a batch run before the
+    // experiment file, in its environment.cfg (beta).
+    let alpha = r.join("config-alpha");
+    fs::create_dir_all(&alpha).unwrap();
+    fs::write(
+        alpha.join("avida.yaml"),
+        "environment:\n  reactions:\n    - {name: NOT, task: not}\n    - {name: NAND, task: nand}\n    - {name: HALF, task: field_arith, args: fn=halfadd}\n    - {name: ADD, task: field_arith, args: fn=add}\n",
+    )
+    .unwrap();
+    let beta = r.join("config-beta");
+    fs::create_dir_all(&beta).unwrap();
+    fs::write(
+        beta.join("environment.cfg"),
+        "# rungs\nREACTION NOT not process:x\nREACTION NAND nand process:y\nREACTION HALF field_arith:fn=halfadd process:z\nREACTION ADD field_arith:fn=add process:w\n",
+    )
+    .unwrap();
     b
 }
 

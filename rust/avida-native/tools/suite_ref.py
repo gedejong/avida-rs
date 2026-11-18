@@ -8,7 +8,10 @@ the suite can run where the C++ reference binary is not built (CI).
 The snapshot holds what the reference binary (built from the git tag
 cpp-final) wrote for every test of avida-core/tests, made on macOS arm64.
 Refresh it after a test is added or changed: delete SUITE_WORK/ref, run
-tools/run_suite.py with the reference binary present, then pack.
+tools/run_suite.py with the reference binary present and SUITE_REF_TESTS
+naming a copy of avida-core/tests in the old input format (the reference
+binary does not read avida.yaml; the tests of a cpp-final worktree, with the
+changed test written in the old files too), then pack.
 """
 import io, os, re, sys, tarfile
 WS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -123,7 +123,7 @@ fn content(
             tile_w,
             icons::ICON_FOLDER_OPEN,
             "Open an experiment",
-            "Open a folder that holds avida.cfg, events.cfg and environment.cfg. The run writes its data folder there.",
+            "Open a folder that holds an experiment file, avida.yaml. The run writes its data folder there.",
             t,
             |ui| {
                 let r = ui
@@ -209,7 +209,7 @@ fn content(
     );
     job.append(&command("-s 7"), 0.0, code.clone());
     job.append(" or ", 0.0, plain.clone());
-    job.append(&command("-set WORLD_X 30"), 0.0, code);
+    job.append(&command("-set world.x 30"), 0.0, code);
     job.append(" are passed on to Avida.", 0.0, plain);
     ui.add(egui::Label::new(job));
 }

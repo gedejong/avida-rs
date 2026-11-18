@@ -135,7 +135,10 @@ INST_KEY_LIST. The first set is the default set of the run, as the first
 ## Environment
 
 `environment` is a mapping with up to four lists, which are loaded in this
-order: `resources`, `grids`, `reactions` and `set_active`.
+order: `resources`, `grids`, `reactions` and `set_active`. Its key
+`input_and_mask` holds the mask of the environment line `INPUT_AND_MASK`
+(hex with `0x`, such as `0xFF6DB6DB`, or decimal), which the file passes on
+as written.
 
 A resource has a `name` and its parameters. A plain resource (the C++
 `RESOURCE`) takes RESOURCE_KEY_LIST. `kind: cell` makes a resource of
@@ -148,7 +151,8 @@ A state grid (`GRID`) has a `name` and GRID_KEY_LIST.
 
 A reaction has the keys REACTION_KEY_LIST. `args` holds the task's
 arguments, as a mapping (`{function: 9, binary: 1}`) or as the text the C++
-line had after the task's colon. `process`, `requisite` and
+line had after the task's colon. The file passes the arguments on as
+written, and the task checks them. `process`, `requisite` and
 `context_requisite` are a mapping or a list of mappings, one per C++
 `process:`, `requisite:` or `context_requisite:` entry. A process takes
 PROCESS_KEY_LIST. A requisite takes REQUISITE_KEY_LIST (`cellbox` only

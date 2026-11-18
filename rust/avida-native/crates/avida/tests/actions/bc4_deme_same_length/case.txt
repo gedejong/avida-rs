@@ -1,2 +1,2 @@
 base sex
-args -s 3 -set WORLD_X 30 -set WORLD_Y 30 -set NUM_DEMES 3 -set BIRTH_METHOD 6 -set SAME_LENGTH_SEX 1 -set DIVIDE_DEL_PROB 0.01 -set DIV_MUT_PROB 0.01
+args -s 3 -set world.x 30 -set world.y 30 -set demes.count 3 -set reproduction.birth_method 6 -set recombination.same_length_sex 1 -set mutation.divide_del_prob 0.01 -set mutation.div_prob 0.01

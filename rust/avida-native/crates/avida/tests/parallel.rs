@@ -47,7 +47,7 @@ fn try_world(dir: &Path, sets: &[(&str, &str)]) -> Result<World, String> {
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs).map(|(w, _)| w)
+    World::new(cmd.config, &cwd).map(|(w, _)| w)
 }
 
 fn is_timestamp(line: &[u8]) -> bool {
@@ -115,7 +115,7 @@ fn run(
     run_with_events(test, name, sets, None)
 }
 
-/// [`run`] with `events` in place of the test's `events.cfg`.
+/// [`run`] with `events` in place of the events of the test's experiment file.
 fn run_with_events(
     test: &str,
     name: &str,
@@ -124,7 +124,7 @@ fn run_with_events(
 ) -> (PathBuf, Vec<u8>, Option<ParallelStats>, u64) {
     let dir = fresh_config(test, &format!("{test}_{name}"));
     if let Some(events) = events {
-        fs::write(dir.join("events.cfg"), events).unwrap();
+        avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     }
     let mut w = try_world(&dir, sets).unwrap_or_else(|e| panic!("World::new: {e}"));
     let mut stepper = Stepper::new(&w);
@@ -142,12 +142,12 @@ fn run_with_events(
     (dir, out, stepper.parallel_stats(), instructions)
 }
 
-const PARALLEL: (&str, &str) = ("EXECUTION_MODE", "1");
+const PARALLEL: (&str, &str) = ("execution.mode", "1");
 
 #[test]
 fn parallel_run_does_not_depend_on_the_thread_count() {
     let test = "heads_default_100u";
-    let (d1, o1, s1, n1) = run(test, "t1", &[PARALLEL, ("EXECUTION_THREADS", "1")]);
+    let (d1, o1, s1, n1) = run(test, "t1", &[PARALLEL, ("execution.threads", "1")]);
     let s1 = s1.expect("EXECUTION_MODE 1 runs the parallel mode");
     // The run executed the instructions of all its updates (up to the
     // carry-over into the next one), most of them in bursts. The carry-over
@@ -162,7 +162,7 @@ fn parallel_run_does_not_depend_on_the_thread_count() {
         let (d, o, s, n) = run(
             test,
             &format!("t{threads}"),
-            &[PARALLEL, ("EXECUTION_THREADS", threads)],
+            &[PARALLEL, ("execution.threads", threads)],
         );
         let s = s.unwrap();
         assert_eq!(n, n1);
@@ -203,11 +203,11 @@ fn full_world_does_not_depend_on_the_thread_count() {
                   u 40 SavePopulation\n\
                   u 40 Exit\n";
     let test = "heads_default_100u";
-    let one = &[PARALLEL, ("EXECUTION_THREADS", "1")];
+    let one = &[PARALLEL, ("execution.threads", "1")];
     let (d1, o1, s1, _) = run_with_events(test, "full_t1", one, Some(events));
     let s1 = s1.unwrap();
     assert_eq!(s1.inline_bursts, s1.bursts);
-    let four = &[PARALLEL, ("EXECUTION_THREADS", "4")];
+    let four = &[PARALLEL, ("execution.threads", "4")];
     let (d4, o4, s4, _) = run_with_events(test, "full_t4", four, Some(events));
     let s4 = s4.unwrap();
     // The worker pool ran most of them.
@@ -236,7 +236,7 @@ fn execution_threads_does_not_change_the_exact_mode() {
     let (db, ob, sb, _) = run(
         test,
         "exact_b",
-        &[("EXECUTION_MODE", "0"), ("EXECUTION_THREADS", "4")],
+        &[("execution.mode", "0"), ("execution.threads", "4")],
     );
     assert!(sb.is_none());
     compare_runs((&da, &oa), (&db, &ob)).unwrap();
@@ -251,8 +251,8 @@ fn transsmt_with_parasites_runs_bursts_and_does_not_depend_on_the_thread_count()
     let test = "parasites_inject_stride";
     // (This test's configuration says VERBOSITY 3, which keeps the whole
     // run sequential: slip mutations would print from the workers.)
-    let quiet = ("VERBOSITY", "0");
-    let (d1, o1, s1, n1) = run(test, "t1", &[PARALLEL, ("EXECUTION_THREADS", "1"), quiet]);
+    let quiet = ("general.verbosity", "0");
+    let (d1, o1, s1, n1) = run(test, "t1", &[PARALLEL, ("execution.threads", "1"), quiet]);
     let s1 = s1.unwrap();
     let executed = s1.parallel_insts + s1.sequential_insts;
     assert_eq!(executed as i64, n1 as i64 + s1.carry_over);
@@ -265,7 +265,7 @@ fn transsmt_with_parasites_runs_bursts_and_does_not_depend_on_the_thread_count()
         let (d, o, s, _) = run(
             test,
             &format!("t{threads}"),
-            &[PARALLEL, ("EXECUTION_THREADS", threads), quiet],
+            &[PARALLEL, ("execution.threads", threads), quiet],
         );
         let s = s.unwrap();
         assert_eq!(
@@ -287,7 +287,11 @@ fn transsmt_without_bursts_when_a_setting_reaches_the_world() {
     let (_, _, s, n) = run(
         test,
         "slicing1",
-        &[PARALLEL, ("THREAD_SLICING_METHOD", "1"), ("VERBOSITY", "0")],
+        &[
+            PARALLEL,
+            ("time.thread_slicing_method", "1"),
+            ("general.verbosity", "0"),
+        ],
     );
     let s = s.unwrap();
     assert_eq!(s.parallel_insts, 0, "{}", s.summary());
@@ -341,8 +345,8 @@ fn transsmt_equivalence(parasites: bool) {
             ""
         }
     );
-    let world = ("WORLD_X", "30");
-    let world_y = ("WORLD_Y", "30");
+    let world = ("world.x", "30");
+    let world_y = ("world.y", "30");
     // (organisms, average gestation time, parasites) per seed and mode
     let mut outcomes: [Vec<[f64; 3]>; 2] = [Vec::new(), Vec::new()];
     for seed in 1..=8 {
@@ -351,8 +355,8 @@ fn transsmt_equivalence(parasites: bool) {
             let mut sets = vec![
                 world,
                 world_y,
-                ("VERBOSITY", "0"),
-                ("RANDOM_SEED", seed_text.as_str()),
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
             ];
             sets.extend(extra);
             let name = format!("equiv{}_{mode}_{seed}", u8::from(parasites));
@@ -408,7 +412,7 @@ fn transsmt_hosts_and_parasites_match_the_exact_mode_statistically() {
 #[test]
 fn parallel_update_is_one_slice() {
     let dir = fresh_config("heads_default_100u", "one_slice");
-    let mut w = try_world(&dir, &[PARALLEL, ("EXECUTION_THREADS", "2")]).unwrap();
+    let mut w = try_world(&dir, &[PARALLEL, ("execution.threads", "2")]).unwrap();
     let mut stepper = Stepper::new(&w);
     assert!(stepper.parallel());
     assert!(!stepper.speculative());
@@ -439,7 +443,7 @@ fn deme_replications(dir: &Path) -> u64 {
 #[test]
 fn demes_replicate_on_the_time_their_bursts_used() {
     // The test's configuration seeds from the clock.
-    const SEED: (&str, &str) = ("RANDOM_SEED", "7");
+    const SEED: (&str, &str) = ("general.random_seed", "7");
     // A hundred demes of one organism each, replicating (through the
     // germline) on the instructions or the normalized time their organisms
     // used: what the bursts of the parallel phases add up, checked at the
@@ -455,18 +459,18 @@ fn demes_replicate_on_the_time_their_bursts_used() {
                   u 100 Exit\n";
     let test = "demes_germline";
     for (trigger, value) in [
-        ("DEMES_REPLICATE_CPU_CYCLES", "3000"),
-        ("DEMES_REPLICATE_TIME", "20"),
+        ("demes.replicate_cpu_cycles", "3000"),
+        ("demes.replicate_time", "20"),
     ] {
         let exact = &[SEED, (trigger, value)];
         let (de, _, se, _) =
             run_with_events(test, &format!("{trigger}_exact"), exact, Some(events));
         assert!(se.is_none());
-        let one = &[SEED, PARALLEL, ("EXECUTION_THREADS", "1"), (trigger, value)];
+        let one = &[SEED, PARALLEL, ("execution.threads", "1"), (trigger, value)];
         let (d1, o1, s1, n1) = run_with_events(test, &format!("{trigger}_t1"), one, Some(events));
         let s1 = s1.expect("NUM_DEMES 100 runs in the parallel mode");
         assert!(s1.sequential_insts * 5 < n1, "{}", s1.summary());
-        let four = &[SEED, PARALLEL, ("EXECUTION_THREADS", "4"), (trigger, value)];
+        let four = &[SEED, PARALLEL, ("execution.threads", "4"), (trigger, value)];
         let (d4, o4, s4, _) = run_with_events(test, &format!("{trigger}_t4"), four, Some(events));
         let s4 = s4.unwrap();
         assert_eq!(
@@ -498,7 +502,7 @@ fn demes_replicate_on_the_time_their_bursts_used() {
 #[test]
 fn unsupported_settings_are_rejected_at_start_up() {
     let dir = fresh_config("heads_default_100u", "mode2");
-    let err = try_world(&dir, &[("EXECUTION_MODE", "2")])
+    let err = try_world(&dir, &[("execution.mode", "2")])
         .err()
         .expect("EXECUTION_MODE 2 is rejected");
     assert!(err.contains("unsupported: EXECUTION_MODE 2"), "{err}");
@@ -507,7 +511,7 @@ fn unsupported_settings_are_rejected_at_start_up() {
 #[test]
 fn divides_and_output_tests_run_in_the_bursts() {
     let test = "heads_default_100u";
-    let one = ("EXECUTION_THREADS", "1");
+    let one = ("execution.threads", "1");
     let (_, _, local, n) = run(test, "local", &[PARALLEL, one]);
     let local = local.unwrap();
     // Every divide of this run ran its organism-local half in a burst and
@@ -518,7 +522,11 @@ fn divides_and_output_tests_run_in_the_bursts() {
     assert!(local.sequential_insts * 200 < n, "{}", local.summary());
     // A setting a divide in a burst cannot honour keeps every divide in the
     // sequential phase: the same run without commits.
-    let (_, _, held, _) = run(test, "held", &[PARALLEL, one, ("EPIGENETIC_METHOD", "1")]);
+    let (_, _, held, _) = run(
+        test,
+        "held",
+        &[PARALLEL, one, ("reproduction.epigenetic_method", "1")],
+    );
     let held = held.unwrap();
     assert_eq!(held.commits, 0, "{}", held.summary());
     assert!(held.sequential_insts > local.sequential_insts);
@@ -544,10 +552,10 @@ fn heads_cpu_with_bursts_for_divides_matches_the_exact_mode_statistically() {
         let seed_text = seed.to_string();
         for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
             let mut sets = vec![
-                ("WORLD_X", "30"),
-                ("WORLD_Y", "30"),
-                ("VERBOSITY", "0"),
-                ("RANDOM_SEED", seed_text.as_str()),
+                ("world.x", "30"),
+                ("world.y", "30"),
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
             ];
             sets.extend(extra);
             let name = format!("heads_equiv_{mode}_{seed}");
@@ -595,12 +603,18 @@ fn local_output_test_matches_the_world_path() {
     }
 
     let dir = fresh_config("heads_default_100u", "local_output");
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject default-classic.org\nu 30 Exit\n",
     )
     .unwrap();
-    let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+    let mut w = try_world(
+        &dir,
+        &[("general.verbosity", "0"), ("general.random_seed", "7")],
+    )
+    .unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -717,7 +731,13 @@ REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
 /// `fresh_config` of the stock 30 x 30 test with [`CELL_RESOURCE_ENVIRONMENT`].
 fn cell_resource_config(name: &str) -> PathBuf {
     let dir = fresh_config("heads_default_100u", name);
-    fs::write(dir.join("environment.cfg"), CELL_RESOURCE_ENVIRONMENT).unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "environment",
+        CELL_RESOURCE_ENVIRONMENT,
+    )
+    .unwrap();
     dir
 }
 
@@ -747,12 +767,18 @@ fn cell_resource_output_tests_match_the_world_path() {
     }
 
     let dir = cell_resource_config("cell_resource_output");
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject default-classic.org\nu 30 Exit\n",
     )
     .unwrap();
-    let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+    let mut w = try_world(
+        &dir,
+        &[("general.verbosity", "0"), ("general.random_seed", "7")],
+    )
+    .unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -903,8 +929,12 @@ fn cell_resource_world_does_not_depend_on_the_thread_count() {
                   u 60 Exit\n";
     let run_threads = |threads: &str| {
         let dir = cell_resource_config(&format!("cell_res_full_t{threads}"));
-        fs::write(dir.join("events.cfg"), events).unwrap();
-        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
+        let sets = [
+            PARALLEL,
+            ("execution.threads", threads),
+            ("general.verbosity", "0"),
+        ];
         let mut w = try_world(&dir, &sets).unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
@@ -954,11 +984,14 @@ fn cell_resources_in_bursts_match_the_exact_mode_statistically() {
     for seed in 1..=6 {
         let seed_text = seed.to_string();
         for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
-            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            let mut sets = vec![
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
+            ];
             sets.extend(extra);
             let name = format!("cell_res_equiv_{mode}_{seed}");
             let dir = cell_resource_config(&name);
-            fs::write(dir.join("events.cfg"), events).unwrap();
+            avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
             let mut w = try_world(&dir, &sets).unwrap();
             let mut stepper = Stepper::new(&w);
             let mut out = Vec::new();
@@ -1024,7 +1057,7 @@ REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
 /// (`not-ancestor.org`).
 fn global_resource_config(name: &str, environment: &str) -> PathBuf {
     let dir = fresh_config("heads_default_100u", name);
-    fs::write(dir.join("environment.cfg"), environment).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "environment", environment).unwrap();
     let classic = fs::read_to_string(dir.join("default-classic.org")).unwrap();
     let mut insts: Vec<&str> = classic
         .lines()
@@ -1060,12 +1093,18 @@ fn global_pool_output_tests_settle_as_the_exact_path_does() {
 
     let make = |name: &str| {
         let dir = global_resource_config(name, SCARCE_POOL_ENVIRONMENT);
-        fs::write(
-            dir.join("events.cfg"),
+        avida_config::convert::replace_section(
+            &dir,
+            "avida.yaml",
+            "events",
             "u begin InjectAll filename=default-classic.org\nu 3 Exit\n",
         )
         .unwrap();
-        let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+        let mut w = try_world(
+            &dir,
+            &[("general.verbosity", "0"), ("general.random_seed", "7")],
+        )
+        .unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
         while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -1234,8 +1273,12 @@ fn global_pool_world_does_not_depend_on_the_thread_count() {
             &format!("gpool_full_t{threads}"),
             GLOBAL_RESOURCE_ENVIRONMENT,
         );
-        fs::write(dir.join("events.cfg"), events).unwrap();
-        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
+        let sets = [
+            PARALLEL,
+            ("execution.threads", threads),
+            ("general.verbosity", "0"),
+        ];
         let mut w = try_world(&dir, &sets).unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
@@ -1292,11 +1335,14 @@ fn global_pools_in_bursts_match_the_exact_mode_statistically() {
     for seed in 1..=6 {
         let seed_text = seed.to_string();
         for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
-            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            let mut sets = vec![
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
+            ];
             sets.extend(extra);
             let name = format!("gpool_equiv_{mode}_{seed}");
             let dir = global_resource_config(&name, GLOBAL_RESOURCE_ENVIRONMENT);
-            fs::write(dir.join("events.cfg"), events).unwrap();
+            avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
             let mut w = try_world(&dir, &sets).unwrap();
             let mut stepper = Stepper::new(&w);
             let mut out = Vec::new();
@@ -1389,12 +1435,18 @@ fn mixed_resource_output_tests_settle_as_the_exact_path_does() {
 
     let make = |name: &str| {
         let dir = global_resource_config(name, MIXED_SCARCE_ENVIRONMENT);
-        fs::write(
-            dir.join("events.cfg"),
+        avida_config::convert::replace_section(
+            &dir,
+            "avida.yaml",
+            "events",
             "u begin InjectAll filename=default-classic.org\nu 3 Exit\n",
         )
         .unwrap();
-        let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+        let mut w = try_world(
+            &dir,
+            &[("general.verbosity", "0"), ("general.random_seed", "7")],
+        )
+        .unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
         while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -1589,8 +1641,12 @@ fn mixed_resource_world_does_not_depend_on_the_thread_count() {
                   u 80 Exit\n";
     let run_threads = |threads: &str| {
         let dir = mixed_resource_config(&format!("mixed_full_t{threads}"));
-        fs::write(dir.join("events.cfg"), events).unwrap();
-        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
+        let sets = [
+            PARALLEL,
+            ("execution.threads", threads),
+            ("general.verbosity", "0"),
+        ];
         let mut w = try_world(&dir, &sets).unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
@@ -1646,11 +1702,14 @@ fn mixed_resources_in_bursts_match_the_exact_mode_statistically() {
     for seed in 1..=6 {
         let seed_text = seed.to_string();
         for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
-            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            let mut sets = vec![
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
+            ];
             sets.extend(extra);
             let name = format!("mixed_equiv_{mode}_{seed}");
             let dir = mixed_resource_config(&name);
-            fs::write(dir.join("events.cfg"), events).unwrap();
+            avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
             let mut w = try_world(&dir, &sets).unwrap();
             let mut stepper = Stepper::new(&w);
             let mut out = Vec::new();
@@ -1783,12 +1842,18 @@ REACTION AND and process:value=2.0:type=pow  requisite:max_count=1
 /// exact mode.
 fn small_full_world(name: &str, environment: &str, updates: u32) -> World {
     let dir = global_resource_config(name, environment);
-    fs::write(
-        dir.join("events.cfg"),
-        format!("u begin InjectAll filename=default-classic.org\nu {updates} Exit\n"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!("u begin InjectAll filename=default-classic.org\nu {updates} Exit\n"),
     )
     .unwrap();
-    let mut w = try_world(&dir, &[("VERBOSITY", "0"), ("RANDOM_SEED", "7")]).unwrap();
+    let mut w = try_world(
+        &dir,
+        &[("general.verbosity", "0"), ("general.random_seed", "7")],
+    )
+    .unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -2286,8 +2351,12 @@ fn thread_independent_world_of(prefix: &str, environment: &str, resources: usize
                   u 80 Exit\n";
     let run_threads = |threads: &str| {
         let dir = global_resource_config(&format!("{prefix}_t{threads}"), environment);
-        fs::write(dir.join("events.cfg"), events).unwrap();
-        let sets = [PARALLEL, ("EXECUTION_THREADS", threads), ("VERBOSITY", "0")];
+        avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
+        let sets = [
+            PARALLEL,
+            ("execution.threads", threads),
+            ("general.verbosity", "0"),
+        ];
         let mut w = try_world(&dir, &sets).unwrap();
         let mut stepper = Stepper::new(&w);
         let mut out = Vec::new();
@@ -2365,10 +2434,13 @@ fn bursts_match_the_exact_mode_statistically(prefix: &str, environment: &str, mi
     for seed in 1..=6 {
         let seed_text = seed.to_string();
         for (mode, extra) in [("0", None), ("1", Some(PARALLEL))] {
-            let mut sets = vec![("VERBOSITY", "0"), ("RANDOM_SEED", seed_text.as_str())];
+            let mut sets = vec![
+                ("general.verbosity", "0"),
+                ("general.random_seed", seed_text.as_str()),
+            ];
             sets.extend(extra);
             let dir = global_resource_config(&format!("{prefix}_{mode}_{seed}"), environment);
-            fs::write(dir.join("events.cfg"), events).unwrap();
+            avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
             let mut w = try_world(&dir, &sets).unwrap();
             let mut stepper = Stepper::new(&w);
             let mut out = Vec::new();

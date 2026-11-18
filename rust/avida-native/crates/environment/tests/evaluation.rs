@@ -173,16 +173,12 @@ fn run_simple(
 
 fn default_env(config: &Config) -> Environment<SimpleTaskLib> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
+    let mut stock = Config::new();
+    assert!(stock.load_experiment("avida.yaml", dir.to_str().unwrap(), &mut Feedback::new()));
     let mut env = Environment::new(config, SimpleTaskLib::new());
     let mut fb = Feedback::new();
-    env.load(
-        "environment.cfg",
-        dir.to_str().unwrap(),
-        &mut fb,
-        None,
-        config,
-    )
-    .unwrap();
+    env.load_lines(&stock.experiment.environment, &mut fb, config)
+        .unwrap();
     env
 }
 
@@ -277,17 +273,23 @@ fn inactive_reaction_and_set_active() {
 
 #[test]
 fn resource_limited_nine_resource_reactions() {
-    // support/config/misc/environment-9resource.cfg: resNOT inflow=100
+    // support/config/misc/environment-9resource.yaml: resNOT inflow=100
     // outflow=0.01; NOT process resource=resNOT value=1.0 frac=0.0025 max=25.
     let config = Config::new();
     let dir =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config/misc");
+    let mut section = Config::new();
+    section
+        .set_path(
+            "environment",
+            "environment-9resource.yaml",
+            dir.to_str().unwrap(),
+        )
+        .unwrap();
     let mut env = Environment::new(&config, SimpleTaskLib::new());
-    env.load(
-        "environment-9resource.cfg",
-        dir.to_str().unwrap(),
+    env.load_lines(
+        &section.experiment.environment,
         &mut Feedback::new(),
-        None,
         &config,
     )
     .unwrap();

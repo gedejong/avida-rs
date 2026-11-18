@@ -238,10 +238,10 @@ impl App {
             self.toast(ToastKind::Info, "No setting selected.".to_string());
             return;
         };
-        let name = s.name;
+        let name = s.name.clone();
         let buffer = self
             .config
-            .override_of(name)
+            .override_of(&name)
             .map_or_else(|| s.value.clone(), str::to_string);
         self.config.edit = Some(Edit {
             name,
@@ -251,10 +251,10 @@ impl App {
     }
 
     pub fn config_revert(&mut self) {
-        let Some(name) = self.selected_setting().map(|s| s.name) else {
+        let Some(name) = self.selected_setting().map(|s| s.name.clone()) else {
             return;
         };
-        if self.config.clear_override(name) {
+        if self.config.clear_override(&name) {
             self.toast(ToastKind::Info, format!("Override of {name} dropped."));
         } else {
             self.toast(ToastKind::Info, format!("{name} has no override."));
@@ -269,7 +269,7 @@ impl App {
         let Some(setting) = self
             .setup
             .as_ref()
-            .and_then(|s| s.setting(edit.name))
+            .and_then(|s| s.setting(&edit.name))
             .cloned()
         else {
             self.config.edit = None;

@@ -88,14 +88,13 @@ pub fn run_analyze_with(
         return Ok(code);
     }
 
-    let init =
-        match AnalyzeWorld::initialize_with(outcome.config, working_dir, &outcome.defs, hooks) {
-            Ok(init) => init,
-            Err(e) => {
-                flush(&mut out, &mut err);
-                return Err(e);
-            }
-        };
+    let init = match AnalyzeWorld::initialize_with(outcome.config, working_dir, hooks) {
+        Ok(init) => init,
+        Err(e) => {
+            flush(&mut out, &mut err);
+            return Err(e);
+        }
+    };
     out.write_all(init.stdout.as_bytes())?;
     err.write_all(init.stderr.as_bytes())?;
     let Some(mut world) = init.world else {

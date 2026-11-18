@@ -71,18 +71,23 @@ fn config(name: &str, modular: bool, org: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
     copy_dir(&src, &dir);
-    let cfg = fs::read_to_string(dir.join("avida.cfg")).unwrap();
+    let cfg = fs::read_to_string(dir.join("avida.yaml")).unwrap();
+    let start = cfg.find("\nenvironment:\n").unwrap();
+    let end = cfg[start + 1..].find("\nevents:").unwrap() + start + 1;
     fs::write(
-        dir.join("avida.cfg"),
-        cfg.replace(
-            "ENVIRONMENT_FILE environment.cfg",
-            "ENVIRONMENT_FILE environment-adder-ladder.cfg",
+        dir.join("avida.yaml"),
+        format!(
+            "{}\nenvironment: environment-adder-ladder.yaml\n{}",
+            &cfg[..start],
+            &cfg[end..]
         ),
     )
     .unwrap();
     fs::write(dir.join("replicator.org"), replicator(&dir, org, modular)).unwrap();
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin InjectAll filename=replicator.org\n\
          u 0:10:end PrintCountData\n\
          u 0:10:end PrintTasksData\n\
@@ -96,17 +101,21 @@ fn run(dir: &Path, modular: bool, sets: &[(&str, &str)]) -> (Vec<u8>, Option<Par
     let cwd = dir.to_string_lossy().into_owned();
     let mut args: Vec<String> = vec!["avida".into()];
     if modular {
-        args.extend(["-def", "INST_SET", "instset-heads-modular.cfg"].map(String::from));
+        args.extend(["-set", "instruction_sets", "heads_modular"].map(String::from));
     }
-    for (n, v) in [("WORLD_X", "30"), ("WORLD_Y", "30"), ("RANDOM_SEED", "42")]
-        .iter()
-        .chain(sets)
+    for (n, v) in [
+        ("world.x", "30"),
+        ("world.y", "30"),
+        ("general.random_seed", "42"),
+    ]
+    .iter()
+    .chain(sets)
     {
         args.extend(["-set".into(), n.to_string(), v.to_string()]);
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    let (mut w, _): (World, _) = World::new(cmd.config, &cwd, &cmd.defs).expect("World::new");
+    let (mut w, _): (World, _) = World::new(cmd.config, &cwd).expect("World::new");
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -128,9 +137,9 @@ fn last_row(dir: &Path, file: &str) -> Vec<f64> {
 }
 
 const ZERO: [(&str, &str); 3] = [
-    ("COPY_MUT_PROB", "0"),
-    ("DIVIDE_INS_PROB", "0"),
-    ("DIVIDE_DEL_PROB", "0"),
+    ("mutation.copy_prob", "0"),
+    ("mutation.divide_ins_prob", "0"),
+    ("mutation.divide_del_prob", "0"),
 ];
 
 /// tasks.dat: update, then the eight reactions of the ladder in file order
@@ -166,7 +175,7 @@ fn parallel_run_with_field_arith_does_not_depend_on_the_thread_count() {
             let (out, stats) = run(
                 &dir,
                 modular,
-                &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", threads)],
+                &[("execution.mode", "1"), ("execution.threads", threads)],
             );
             let s = stats.expect("EXECUTION_MODE 1 runs the parallel mode");
             // The IO instructions, which carry the output tests, run in the

@@ -1,6 +1,6 @@
 # Actions reference
 
-An *action* is something an event can do: inject an organism, print a data file, change a resource, end the run. You schedule actions in the [events file](events-file.md), and many of them can also be used in [analyze mode](analyze-mode.md).
+An *action* is something an event can do: inject an organism, print a data file, change a resource, end the run. You schedule actions in the [events](events-file.md), and many of them can also be used in [analyze mode](analyze-mode.md).
 
 This page lists all 423 distinct action names that the program knows, with the argument signatures that `avida -e` prints. The list was generated from the action table in `crates/world/src/action_library.rs`, and the argument text is the program's own. The C++ program registers 432 names, nine of them twice, which is why the count is 423.
 
@@ -8,7 +8,7 @@ This page lists all 423 distinct action names that the program knows, with the a
 
 - `<type name>` is a required argument; `[type name=default]` is optional with its default.
 - `No Arguments`, `No arguments.` and `none` mean the action takes none.
-- Action names are not case-sensitive in an events file.
+- Action names are not case-sensitive in the events.
 - Every action on this page is known to the port. Where a path of an action is not ported, the program stops with an `unsupported:` message instead of running with different behaviour. The one action that always stops is `PrintDemeEnergySharingStats`; the others stop only in narrow cases. See [features that stop with unsupported](unsupported.md).
 
 ## The categories
@@ -21,7 +21,7 @@ This page lists all 423 distinct action names that the program knows, with the a
 - [Print actions](#print-actions) (234)
 - [Save and load actions](#save-and-load-actions) (11)
 
-For the actions most experiments use, with examples, see [the events file page](events-file.md#the-most-used-actions).
+For the actions most experiments use, with examples, see [the events page](events-file.md#the-most-used-actions).
 
 ## Driver actions
 

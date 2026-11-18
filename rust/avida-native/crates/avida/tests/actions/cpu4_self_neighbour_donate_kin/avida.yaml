@@ -1,0 +1,85 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 11
+world:
+  x: 12
+  y: 1
+altruism:
+  merit_given: 0.5
+  merit_received: 1.5
+  max_donate_kin_dist: 2
+  max_donate_edit_dist: 6
+  min_gb_donate_threshold: 0
+  donate_thresh_quanta: 2
+  max_donates: 1000
+
+instruction_sets:
+  - name: heads_self
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - donate-rnd
+      - donate-kin
+      - donate-edt
+      - donate-gbg
+      - donate-shadedgb
+      - donate-threshgb
+      - donate-quantagb
+      - donate-gbsl
+      - donate-NUL
+      - get-faced-edit-dist
+      - rotate-to-tag
+      - if-donor
+      - donate-facing
+      - rotate-r
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: a0.org 0}
+  - {at: begin, action: Inject, args: a1.org 5}
+  - {at: begin, action: Inject, args: a2.org 7}
+  - {at: 0, every: 25, until: end, action: PrintCountData}
+  - {at: 0, every: 25, until: end, action: PrintAverageData}
+  - {at: 0, every: 25, until: end, action: PrintTasksData}
+  - {at: 0, every: 25, until: end, action: PrintInstructionData}
+  - {at: 0, every: 25, until: end, action: PrintDonationStats}
+  - {at: 0, every: 25, until: end, action: PrintResourceData}
+  - {at: 150, action: Exit}

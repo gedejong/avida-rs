@@ -6,6 +6,7 @@ mod common;
 use std::time::{Duration, Instant};
 
 use avida_config::cmdline::process_cmdline;
+use avida_config::convert::section_lines;
 use avida_session::{
     Command, LayerId, RunState, Session, SessionConfig, SessionEvent, Speed, Subscription,
 };
@@ -13,13 +14,13 @@ use avida_viewmodel::update_row;
 use avida_world::run::Stepper;
 use avida_world::world::World;
 
-use common::{endless_config, fresh_config, Harness, LAST_UPDATE};
+use common::{endless_config, fresh_config, set_events, Harness, LAST_UPDATE};
 
 /// The rows a stepper-driven run produces, one after each `end_update`.
 fn reference_rows(dir: &std::path::Path) -> Vec<String> {
     let cwd = dir.to_string_lossy().into_owned();
     let cmd = process_cmdline(&["avida".to_string()], &cwd);
-    let (mut w, _) = World::new(cmd.config, &cwd, &cmd.defs).unwrap();
+    let (mut w, _) = World::new(cmd.config, &cwd).unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     let mut rows = Vec::new();
@@ -134,7 +135,7 @@ fn steps_advance_exactly_one_unit() {
 
 /// Updates of 100000 slices per organism: an update of a few organisms
 /// takes far longer than a slice batch, so a pause lands inside it.
-const HUGE_UPDATES: [&str; 3] = ["-set", "AVE_TIME_SLICE", "100000"];
+const HUGE_UPDATES: [&str; 3] = ["-set", "time.ave_time_slice", "100000"];
 
 /// Waits until the session is running with at least `min_slices / 2`
 /// slices of its update still to go (the status is polled, so the margin
@@ -213,8 +214,7 @@ fn set_up_errors_are_returned_from_spawn() {
     assert!(err.contains("does not exist"), "{err}");
 
     let empty = fresh_config("errors_empty");
-    std::fs::remove_file(empty.join("avida.cfg")).unwrap();
-    std::fs::remove_file(empty.join("events.cfg")).unwrap();
+    std::fs::remove_file(empty.join("avida.yaml")).unwrap();
     assert!(spawn(&empty, &[]).is_err());
 
     let dir = fresh_config("errors");
@@ -225,32 +225,30 @@ fn set_up_errors_are_returned_from_spawn() {
     let err = spawn(&dir, &["-bogus"]).err().expect("unknown option");
     assert!(err.contains("Unknown Option"), "{err}");
     let err = spawn(&dir, &["-a"]).err().expect("analyze mode");
-    assert!(err.contains("ANALYZE_MODE"), "{err}");
+    assert!(err.contains("analyze.mode"), "{err}");
 
     // Arguments reach the world, and the setup reports them.
-    let session = spawn(&dir, &["-s", "7", "-set", "WORLD_X", "20"]).unwrap();
+    let session = spawn(&dir, &["-s", "7", "-set", "world.x", "20"]).unwrap();
     let frame = session.latest_frame().unwrap();
     assert_eq!((frame.header.random_seed, frame.header.world_x), (7, 20));
     let setup = session.setup();
     assert_eq!(session.data_dir(), dir.join("data"));
-    assert_eq!(setup.config_file, dir.join("avida.cfg"));
-    let world_x = setup.setting("WORLD_X").unwrap();
+    assert_eq!(setup.config_file, dir.join("avida.yaml"));
+    let world_x = setup.setting("world.x").unwrap();
     assert_eq!(
         (world_x.value.as_str(), world_x.from_command_line),
         ("20", true)
     );
     assert!(world_x.is_changed());
-    let seed = setup.setting("RANDOM_SEED").unwrap();
+    let seed = setup.setting("general.random_seed").unwrap();
     assert_eq!((seed.value.as_str(), seed.from_command_line), ("7", true));
     // `COPY_MUT_PROB` is a double printed as `%f` both ways.
-    let copy = setup.setting("COPY_MUT_PROB").unwrap();
+    let copy = setup.setting("mutation.copy_prob").unwrap();
     assert_eq!(copy.value, copy.default, "{copy:?}");
     assert!(!copy.from_command_line);
-    assert_eq!(
-        setup.settings.len(),
-        avida_config::config::all_entries().count()
-    );
-    assert_eq!(setup.event_file, dir.join("events.cfg"));
+    assert_eq!(setup.settings.len(), avida_config::naming::settings().len());
+    // The events are part of the experiment file.
+    assert_eq!(setup.event_file, dir.join("avida.yaml"));
     let first = &setup.events[0];
     assert_eq!(
         (
@@ -327,12 +325,8 @@ fn shutdown_reports_whether_the_thread_stopped() {
 #[test]
 fn a_fatal_error_leaves_the_session_inspectable() {
     let dir = fresh_config("fatal");
-    let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        format!("{text}u 3 Inject missing.org\n"),
-    )
-    .unwrap();
+    let text = section_lines(&dir, "avida.yaml", "events").unwrap();
+    set_events(&dir, &format!("{text}u 3 Inject missing.org\n"));
 
     let mut h = Harness::spawn(&dir, &[]);
     assert_eq!(h.session.exit_code(), None, "the run can still advance");
@@ -391,7 +385,14 @@ fn restart_replaces_the_run_in_the_same_thread() {
     };
     assert!(why.contains("NO_SUCH_SETTING"), "{why}");
     assert_eq!(h.session.status().update, 5);
-    assert_eq!(h.session.setup().setting("RANDOM_SEED").unwrap().value, "7");
+    assert_eq!(
+        h.session
+            .setup()
+            .setting("general.random_seed")
+            .unwrap()
+            .value,
+        "7"
+    );
     h.send(Command::StepUpdate);
     assert_eq!(h.next_state_event(), SessionEvent::Paused { update: 6 });
 
@@ -399,14 +400,14 @@ fn restart_replaces_the_run_in_the_same_thread() {
     // run's rows gone, the subscription's layers kept, the watch dropped.
     h.pump();
     h.send(Command::Restart {
-        args: ["-s", "9", "-set", "WORLD_X", "20", "-set", "WORLD_Y", "20"]
+        args: ["-s", "9", "-set", "world.x", "20", "-set", "world.y", "20"]
             .map(String::from)
             .to_vec(),
     });
     let SessionEvent::Restarted(setup) = h.next_state_event() else {
         panic!("expected Restarted");
     };
-    assert_eq!(setup.setting("WORLD_X").unwrap().value, "20");
+    assert_eq!(setup.setting("world.x").unwrap().value, "20");
     assert_eq!(*setup, *h.session.setup());
     assert_eq!(h.session.data_dir(), dir.join("data"));
     assert_eq!(h.next_state_event(), SessionEvent::Paused { update: -1 });
@@ -440,7 +441,7 @@ fn restart_replaces_the_run_in_the_same_thread() {
     drop(h);
     let mut fresh = Harness::spawn(
         &fresh_config("restart_fresh"),
-        &["-s", "9", "-set", "WORLD_X", "20", "-set", "WORLD_Y", "20"],
+        &["-s", "9", "-set", "world.x", "20", "-set", "world.y", "20"],
     );
     fresh.send(Command::RunToUpdate(10));
     fresh.wait_event(|e| *e == SessionEvent::Paused { update: 10 });
@@ -452,12 +453,11 @@ fn restart_replaces_the_run_in_the_same_thread() {
 #[test]
 fn what_the_simulation_prints_arrives_as_events() {
     let dir = fresh_config("diagnostics");
-    let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        format!("{text}u 2 PrintData odd.dat update,no_such_entry\n"),
-    )
-    .unwrap();
+    let text = section_lines(&dir, "avida.yaml", "events").unwrap();
+    set_events(
+        &dir,
+        &format!("{text}u 2 PrintData odd.dat update,no_such_entry\n"),
+    );
     let mut h = Harness::spawn(&dir, &[]);
     h.send(Command::RunToUpdate(3));
     h.wait_event(|e| *e == SessionEvent::Paused { update: 3 });

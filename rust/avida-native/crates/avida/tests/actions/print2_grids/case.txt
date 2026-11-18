@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 11 -set WORLD_X 10 -set WORLD_Y 10 -set COLLECT_SPECIFIC_RESOURCE -1
+args -s 11 -set world.x 10 -set world.y 10 -set hoarding.collect_specific_resource -1

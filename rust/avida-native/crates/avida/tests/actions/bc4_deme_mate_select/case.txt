@@ -1,2 +1,2 @@
 base sex
-args -set WORLD_X 30 -set WORLD_Y 30 -set NUM_DEMES 3 -set ALLOW_MATE_SELECTION 1 -set DIV_MUT_PROB 0.05
+args -set world.x 30 -set world.y 30 -set demes.count 3 -set recombination.allow_mate_selection 1 -set mutation.div_prob 0.05

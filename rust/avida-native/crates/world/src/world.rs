@@ -181,14 +181,12 @@ pub fn check_supported(cfg: &Config, _env: &Env) -> Result<(), String> {
 
 impl World {
     /// `cWorld::Initialize(cfg, working_dir, new_world, feedback, defs)`.
+    /// The `defs` (the `-def` values of the C++ command line) are gone with
+    /// the old configuration format: the experiment file has no `$NAME`.
     ///
     /// `Err` carries the text for stderr when the C++ returns NULL (the
     /// front end then exits with -1) or when a setting is not supported.
-    pub fn new(
-        mut cfg: Config,
-        working_dir: &str,
-        _defs: &[(String, String)],
-    ) -> Result<(World, WorldSetupReport), String> {
+    pub fn new(mut cfg: Config, working_dir: &str) -> Result<(World, WorldSetupReport), String> {
         let mut report = WorldSetupReport::default();
         let mut success = true;
 

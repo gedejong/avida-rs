@@ -109,8 +109,10 @@ struct Run {
     stats: WorkerStats,
 }
 
-/// Run `script` as `analyze.cfg` with `MAX_CONCURRENCY max_concurrency`
-/// in a fresh copy of the base configuration plus `extra` files.
+/// Run `script` as `analyze.cfg` with `analyze.max_concurrency
+/// max_concurrency` in a fresh copy of the base configuration plus `extra`
+/// files (an `instruction_sets`, `environment` or `events` entry replaces
+/// that section of the experiment file, given as lines of the old format).
 fn run(name: &str, script: &str, extra: &[(&str, &str)], max_concurrency: i32, rep: usize) -> Run {
     let work = Path::new(env!("CARGO_TARGET_TMPDIR"))
         .join("parallel")
@@ -120,7 +122,11 @@ fn run(name: &str, script: &str, extra: &[(&str, &str)], max_concurrency: i32, r
     }
     copy_dir(&base_config(), &work);
     for (file, text) in extra {
-        std::fs::write(work.join(file), text).unwrap();
+        if avida_config::naming::SECTIONS.contains(file) {
+            avida_config::convert::replace_section(&work, "avida.yaml", file, text).unwrap();
+        } else {
+            std::fs::write(work.join(file), text).unwrap();
+        }
     }
     std::fs::write(work.join("analyze.cfg"), script).unwrap();
     let dir = work.to_str().unwrap();
@@ -129,7 +135,7 @@ fn run(name: &str, script: &str, extra: &[(&str, &str)], max_concurrency: i32, r
         "-s",
         "100",
         "-set",
-        "MAX_CONCURRENCY",
+        "analyze.max_concurrency",
         &max_concurrency.to_string(),
         "-a",
     ]
@@ -138,7 +144,7 @@ fn run(name: &str, script: &str, extra: &[(&str, &str)], max_concurrency: i32, r
     .collect();
     let outcome = avida_config::cmdline::process_cmdline(&args, dir);
     assert!(outcome.exit.is_none(), "{name}: {}", outcome.stderr);
-    let init = AnalyzeWorld::initialize(outcome.config, dir, &outcome.defs).unwrap();
+    let init = AnalyzeWorld::initialize(outcome.config, dir).unwrap();
     let mut world = init
         .world
         .unwrap_or_else(|| panic!("{name}: {}", init.stderr));
@@ -299,8 +305,9 @@ PairTestLandscape land-pairs.dat 20
 #[test]
 fn recalculate_speculation() {
     let instset = format!(
-        "{}if-p-0.50  1   # A\n",
-        std::fs::read_to_string(base_config().join("instset-heads.cfg")).unwrap()
+        "{}INST if-p-0.50\n",
+        avida_config::convert::section_lines(&base_config(), "avida.yaml", "instruction_sets")
+            .unwrap()
     );
     let pop = std::fs::read_to_string(base_config().join("detail-50000.pop")).unwrap();
     let mut seqs: Vec<&str> = pop
@@ -336,7 +343,7 @@ DETAIL offspring.dat id num_cpus length sequence
     let serial = check(
         "recalculate",
         &script,
-        &[("instset-heads.cfg", &instset)],
+        &[("instruction_sets", &instset)],
         &[2, 3, 8],
         &|w, s| {
             if w < 3 {

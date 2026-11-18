@@ -2,7 +2,7 @@
 //! editing a value, and the overrides a restart applies.
 //!
 //! A restart builds the world again from the same folder with the
-//! arguments the `avida` binary takes (`-s 7`, `-set WORLD_X 30`), the
+//! arguments the `avida` binary takes (`-s 7`, `-set world.x 30`), the
 //! mechanism the desktop viewer uses. An override replaces any `-set` of
 //! the same name already on the command line and leaves every other
 //! argument alone.
@@ -12,7 +12,8 @@ use avida_session::{ExperimentSetup, Setting};
 /// A value being typed for one setting.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Edit {
-    pub name: &'static str,
+    /// The setting's place in the experiment file (`world.x`).
+    pub name: String,
     pub buffer: String,
     /// Why the buffer was refused.
     pub error: Option<String>,
@@ -28,7 +29,7 @@ pub struct ConfigState {
     pub sel: usize,
     /// First row shown (kept between draws so scrolling is steady).
     pub offset: usize,
-    /// Overrides in the order they were made: `(name, value)`.
+    /// Overrides in the order they were made: `(group.key, value)`.
     pub overrides: Vec<(String, String)>,
     pub edit: Option<Edit>,
 }
@@ -41,7 +42,7 @@ impl ConfigState {
             .into_iter()
             .filter(|&i| {
                 let s = &setup.settings[i];
-                !self.changed_only || s.is_changed() || self.override_of(s.name).is_some()
+                !self.changed_only || s.is_changed() || self.override_of(&s.name).is_some()
             })
             .collect()
     }
@@ -56,9 +57,9 @@ impl ConfigState {
     /// Records `value` for `name`; a value equal to the running world's
     /// drops the override instead.
     pub fn set_override(&mut self, setting: &Setting, value: String) {
-        self.overrides.retain(|(n, _)| n != setting.name);
+        self.overrides.retain(|(n, _)| *n != setting.name);
         if value != setting.value {
-            self.overrides.push((setting.name.to_string(), value));
+            self.overrides.push((setting.name.clone(), value));
         }
     }
 
@@ -106,11 +107,15 @@ pub fn validate(kind: &str, text: &str) -> Result<String, String> {
     }
 }
 
+/// The random seed's place in the experiment file; its override becomes
+/// `-s`.
+pub const SEED: &str = "general.random_seed";
+
 /// `base` with the overrides applied: a seed replaces every `-s`/`-seed`, a
 /// setting replaces every `-set` of the same name; the new arguments come
 /// last. Other arguments are kept in order.
 pub fn merge_args(base: &[String], overrides: &[(String, String)]) -> Vec<String> {
-    let seed = overrides.iter().find(|(n, _)| n == "RANDOM_SEED");
+    let seed = overrides.iter().find(|(n, _)| n == SEED);
     let replaced: Vec<&str> = overrides.iter().map(|(n, _)| n.as_str()).collect();
     let mut out = Vec::with_capacity(base.len() + 3 * overrides.len());
     let mut i = 0;
@@ -133,7 +138,7 @@ pub fn merge_args(base: &[String], overrides: &[(String, String)]) -> Vec<String
         i += 1;
     }
     for (n, v) in overrides {
-        if n == "RANDOM_SEED" {
+        if n == SEED {
             out.extend(["-s".to_string(), v.clone()]);
         } else {
             out.extend(["-set".to_string(), n.clone(), v.clone()]);
@@ -143,8 +148,8 @@ pub fn merge_args(base: &[String], overrides: &[(String, String)]) -> Vec<String
 }
 
 /// Indices of the settings matching `query` (every word, ignoring case,
-/// in the name, value, group or description), changed ones only when
-/// asked.
+/// in the place in the file, the old name, value, group or description),
+/// changed ones only when asked.
 pub fn filter_settings(settings: &[Setting], query: &str, changed_only: bool) -> Vec<usize> {
     let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
     settings
@@ -155,7 +160,11 @@ pub fn filter_settings(settings: &[Setting], query: &str, changed_only: bool) ->
             if words.is_empty() {
                 return true;
             }
-            let hay = format!("{} {} {} {}", s.name, s.value, s.group, s.desc).to_lowercase();
+            let hay = format!(
+                "{} {} {} {} {} {}",
+                s.name, s.old_name, s.value, s.group, s.group_desc, s.desc
+            )
+            .to_lowercase();
             words.iter().all(|w| hay.contains(w.as_str()))
         })
         .map(|(i, _)| i)
@@ -168,11 +177,12 @@ pub(crate) mod tests {
 
     use super::*;
 
-    pub fn setting(name: &'static str, kind: &'static str, value: &str, default: &str) -> Setting {
+    pub fn setting(name: &str, kind: &'static str, value: &str, default: &str) -> Setting {
         Setting {
-            group: "GENERAL_GROUP",
-            group_desc: "General settings",
-            name,
+            group: "general",
+            group_desc: "General",
+            name: name.to_string(),
+            old_name: "",
             kind,
             value: value.into(),
             default: default.into(),
@@ -186,9 +196,9 @@ pub(crate) mod tests {
             work_dir: PathBuf::from("/x"),
             args: Vec::new(),
             data_dir: PathBuf::from("/x/data"),
-            config_file: PathBuf::from("/x/avida.cfg"),
+            config_file: PathBuf::from("/x/avida.yaml"),
             settings,
-            event_file: PathBuf::from("/x/events.cfg"),
+            event_file: PathBuf::from("/x/avida.yaml"),
             events: Vec::new(),
         }
     }
@@ -212,15 +222,15 @@ pub(crate) mod tests {
     #[test]
     fn overrides_replace_matching_arguments_only() {
         let base = strings(&[
-            "-s", "7", "-set", "WORLD_X", "30", "-set", "WORLD_Y", "30", "-c", "x.cfg",
+            "-s", "7", "-set", "world.x", "30", "-set", "world.y", "30", "-c", "x.yaml",
         ]);
         let ov = vec![
-            ("WORLD_X".to_string(), "20".to_string()),
-            ("RANDOM_SEED".to_string(), "9".to_string()),
+            ("world.x".to_string(), "20".to_string()),
+            (SEED.to_string(), "9".to_string()),
         ];
         assert_eq!(
             merge_args(&base, &ov),
-            strings(&["-set", "WORLD_Y", "30", "-c", "x.cfg", "-set", "WORLD_X", "20", "-s", "9"])
+            strings(&["-set", "world.y", "30", "-c", "x.yaml", "-set", "world.x", "20", "-s", "9"])
         );
         assert_eq!(merge_args(&base, &[]), base);
     }
@@ -228,11 +238,11 @@ pub(crate) mod tests {
     #[test]
     fn filtering_matches_every_word_and_changed_only() {
         let s = vec![
-            setting("WORLD_X", "int", "60", "60"),
-            setting("COPY_MUT_PROB", "double", "0.02", "0.0075"),
+            setting("world.x", "int", "60", "60"),
+            setting("mutation.copy_prob", "double", "0.02", "0.0075"),
         ];
         assert_eq!(filter_settings(&s, "", false), vec![0, 1]);
-        assert_eq!(filter_settings(&s, "copy MUT", false), vec![1]);
+        assert_eq!(filter_settings(&s, "copy MUTATION", false), vec![1]);
         assert_eq!(filter_settings(&s, "", true), vec![1]);
         assert_eq!(
             filter_settings(&s, "general nothing", false),
@@ -242,14 +252,14 @@ pub(crate) mod tests {
 
     #[test]
     fn an_override_equal_to_the_running_value_disappears() {
-        let s = setting("WORLD_X", "int", "60", "60");
+        let s = setting("world.x", "int", "60", "60");
         let mut c = ConfigState::default();
         c.set_override(&s, "20".into());
-        assert_eq!(c.override_of("WORLD_X"), Some("20"));
+        assert_eq!(c.override_of("world.x"), Some("20"));
         c.set_override(&s, "60".into());
         assert!(c.overrides.is_empty());
         c.set_override(&s, "20".into());
-        assert!(c.clear_override("WORLD_X"));
-        assert!(!c.clear_override("WORLD_X"));
+        assert!(c.clear_override("world.x"));
+        assert!(!c.clear_override("world.x"));
     }
 }

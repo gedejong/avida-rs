@@ -480,6 +480,7 @@ dependencies = [
 name = "avida-gui"
 version = "0.1.0"
 dependencies = [
+ "avida-config",
  "avida-genome",
  "avida-session",
  "avida-viewmodel",
@@ -558,6 +559,7 @@ name = "avida-tasks"
 version = "0.1.0"
 dependencies = [
  "avida-apto",
+ "avida-config",
 ]
 
 [[package]]

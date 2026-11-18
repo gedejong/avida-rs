@@ -888,10 +888,10 @@ mod tests {
     fn configuring() -> App {
         let mut a = app();
         a.set_setup(Arc::new(setup(vec![
-            setting("WORLD_X", "int", "60", "60"),
-            setting("WORLD_Y", "int", "60", "60"),
-            setting("COPY_MUT_PROB", "double", "0.0075", "0.0075"),
-            setting("RANDOM_SEED", "int", "-1", "-1"),
+            setting("world.x", "int", "60", "60"),
+            setting("world.y", "int", "60", "60"),
+            setting("mutation.copy_prob", "double", "0.0075", "0.0075"),
+            setting("general.random_seed", "int", "-1", "-1"),
         ])));
         a.goto(Screen::Config);
         a
@@ -902,7 +902,7 @@ mod tests {
         let mut a = configuring();
         press(&mut a, "/");
         assert!(a.config.filtering);
-        press(&mut a, "world_y");
+        press(&mut a, "world.y");
         a.on_key(key(KeyCode::Enter));
         assert!(!a.config.filtering);
         let setup = a.setup.clone().unwrap();
@@ -921,8 +921,8 @@ mod tests {
         press(&mut a, "25");
         a.on_key(key(KeyCode::Enter));
         assert!(a.config.edit.is_none());
-        assert_eq!(a.config.override_of("WORLD_Y"), Some("25"));
-        assert_eq!(a.restart_args(), vec!["-set", "WORLD_Y", "25"]);
+        assert_eq!(a.config.override_of("world.y"), Some("25"));
+        assert_eq!(a.restart_args(), vec!["-set", "world.y", "25"]);
         // R asks first; n declines, y queues the request.
         press(&mut a, "R");
         assert!(a.confirm_restart);
@@ -933,7 +933,7 @@ mod tests {
             a.take_requests(),
             vec![Request::Restart(vec![
                 "-set".into(),
-                "WORLD_Y".into(),
+                "world.y".into(),
                 "25".into()
             ])]
         );
@@ -957,10 +957,10 @@ mod tests {
     #[test]
     fn restarting_resets_the_run_state() {
         let mut a = debugging();
-        a.config.overrides.push(("WORLD_X".into(), "9".into()));
+        a.config.overrides.push(("world.x".into(), "9".into()));
         a.debugger.breakpoints.insert((0, 3));
         a.reset_run(
-            vec!["-set".into(), "WORLD_X".into(), "9".into()],
+            vec!["-set".into(), "world.x".into(), "9".into()],
             Arc::new(setup(vec![])),
         );
         assert!(a.frame.is_none() && a.selection.is_none());
@@ -968,7 +968,7 @@ mod tests {
         let cmds = a.take_commands();
         assert!(cmds.iter().any(|c| matches!(c, Command::Subscribe(_))));
         assert!(cmds.iter().any(|c| matches!(c, Command::SetSpeed(_))));
-        assert_eq!(a.args, ["-set", "WORLD_X", "9"]);
+        assert_eq!(a.args, ["-set", "world.x", "9"]);
     }
 
     #[test]

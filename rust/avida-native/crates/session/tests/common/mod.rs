@@ -9,6 +9,7 @@ use std::sync::mpsc::{self, Receiver};
 use std::time::{Duration, Instant};
 
 use avida_config::cmdline::process_cmdline;
+use avida_config::convert::{replace_section, section_lines};
 use avida_session::{Session, SessionConfig, SessionEvent, UpdateRow};
 use avida_world::world::World;
 
@@ -55,10 +56,10 @@ pub fn fresh_config(name: &str) -> PathBuf {
     dir
 }
 
-/// Rewrites the copy's `events.cfg` line by line.
+/// Rewrites the events of the copy's experiment file line by line (lines
+/// of the C++ event-file format, such as `u 100 Exit`).
 pub fn edit_events(dir: &Path, edit: impl Fn(&str) -> Option<String>) {
-    let path = dir.join("events.cfg");
-    let text = fs::read_to_string(&path).unwrap();
+    let text = section_lines(dir, "avida.yaml", "events").unwrap();
     let mut out = String::new();
     for line in text.lines() {
         if let Some(l) = edit(line) {
@@ -66,7 +67,13 @@ pub fn edit_events(dir: &Path, edit: impl Fn(&str) -> Option<String>) {
             out.push('\n');
         }
     }
-    fs::write(&path, out).unwrap();
+    set_events(dir, &out);
+}
+
+/// Gives the copy's experiment file the events `text` (lines of the C++
+/// event-file format).
+pub fn set_events(dir: &Path, text: &str) {
+    replace_section(dir, "avida.yaml", "events", text).unwrap();
 }
 
 /// A copy whose run does not stop at update 100.
@@ -85,7 +92,7 @@ pub fn plain_run(dir: &Path) -> String {
     let cmd = process_cmdline(&["avida".to_string()], &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
     let (mut world, _report) =
-        World::new(cmd.config, &cwd, &cmd.defs).unwrap_or_else(|e| panic!("World::new: {e}"));
+        World::new(cmd.config, &cwd).unwrap_or_else(|e| panic!("World::new: {e}"));
     let mut out = Vec::new();
     world.run(&mut out).unwrap_or_else(|e| panic!("run: {e}"));
     world.out.flush_all();
@@ -322,18 +329,10 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
     } else {
         "pp5_gp8_u0"
     };
-    let extra = Path::new(env!("CARGO_MANIFEST_DIR"))
+    let case = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../avida/tests/actions")
-        .join(case)
-        .join("extra");
-    fs::copy(extra.join("environment.cfg"), dir.join("environment.cfg")).unwrap();
-    // The recorded configuration is older than the code: no version warning.
-    let cfg = fs::read_to_string(extra.join("avida.cfg")).unwrap();
-    fs::write(
-        dir.join("avida.cfg"),
-        cfg.replace("VERSION_ID 2.11.0", "VERSION_ID 2.14.0"),
-    )
-    .unwrap();
+        .join(case);
+    fs::copy(case.join("avida.yaml"), dir.join("avida.yaml")).unwrap();
     let insts = if hw_type == 5 {
         GENE_BCR_INSTS
     } else {
@@ -343,7 +342,7 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
     for i in insts {
         set.push_str(&format!("INST {i}\n"));
     }
-    fs::write(dir.join("instset.cfg"), set).unwrap();
+    replace_section(&dir, "avida.yaml", "instruction_sets", &set).unwrap();
     let one = if hw_type == 5 { "one" } else { "inc" };
     let genome = [
         "promoter",
@@ -371,10 +370,6 @@ pub fn gene_config(hw_type: i32, name: &str) -> PathBuf {
         "terminator",
     ];
     fs::write(dir.join("genes.org"), genome.join("\n") + "\n").unwrap();
-    fs::write(
-        dir.join("events.cfg"),
-        "u begin Inject genes.org 12\nu 100000 Exit\n",
-    )
-    .unwrap();
+    set_events(&dir, "u begin Inject genes.org 12\nu 100000 Exit\n");
     dir
 }

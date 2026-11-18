@@ -1,6 +1,6 @@
 # Environment, tasks and resources
 
-The *environment* decides what behaviour pays. It is described in `environment.cfg` and has three kinds of parts: *tasks* (things an organism can do), *reactions* (what happens when it does one) and *resources* (what a reaction can consume). This page explains how they fit together; the file syntax is in the [environment file reference](../reference/environment-file.md).
+The *environment* decides what behaviour pays. It is the section `environment` of the experiment file and has three kinds of parts: *tasks* (things an organism can do), *reactions* (what happens when it does one) and *resources* (what a reaction can consume). This page explains how they fit together; the syntax is in the [environment reference](../reference/environment-file.md).
 
 ## Inputs, outputs and tasks
 
@@ -8,7 +8,7 @@ Each organism has a small list of *input numbers*, three of them in the stock en
 
 A *task* is a test on an output, given the inputs. The nine classic logic tasks ask whether the output equals a bitwise logic function of one, two or three of the inputs:
 
-| Task name in `environment.cfg` | Output must equal | Using |
+| Task name in a reaction | Output must equal | Using |
 |---|---|---|
 | `not` | NOT of an input | any one input |
 | `nand` | NOT (a AND b) | any two inputs |
@@ -28,8 +28,10 @@ Beyond these nine, the port registers 187 fixed task names (echo, add, sub, all 
 
 A *reaction* links a task to a reward. The stock environment has one line per task, for example:
 
-```text
-REACTION  EQU  equ   process:value=5.0:type=pow  requisite:max_count=1
+```yaml
+environment:
+  reactions:
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
 ```
 
 Read it as: a reaction named `EQU`, triggered by the task `equ`; its *process* gives a reward of type `pow` with value 5; its *requisite* says the reward can be earned only once (`max_count=1`).

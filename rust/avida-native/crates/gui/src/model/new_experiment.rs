@@ -3,10 +3,11 @@
 //! The files of `avida-core/support/config` (the configuration the C++
 //! build installs next to the `avida` binary) are compiled into the
 //! program, so a new experiment needs nothing on disk and works the same
-//! from an app bundle. Only the top-level files are bundled: the
-//! configuration, events and environment, every instruction set and the
-//! matching ancestor organisms. `misc/` (alternative environments and
-//! instruction sets) is left out.
+//! from an app bundle. Only the top-level files are bundled: the experiment
+//! file `avida.yaml` (settings, instruction set, environment and events),
+//! `analyze.cfg`, the stock instruction sets and environments as section
+//! files, and the matching ancestor organisms. `misc/` (alternative
+//! environments and instruction sets) is left out.
 
 use std::path::{Path, PathBuf};
 
@@ -32,26 +33,22 @@ macro_rules! bundled {
 
 /// Avida's default configuration, as `avida-core/support/config` holds it.
 pub const DEFAULT_CONFIG: &[BundledFile] = bundled!(
-    "avida.cfg",
-    "events.cfg",
-    "environment.cfg",
+    "avida.yaml",
     "analyze.cfg",
-    "instset-heads.cfg",
+    "instset-heads.yaml",
     "default-heads.org",
-    "instset-heads-sex.cfg",
+    "instset-heads-sex.yaml",
     "default-heads-sex.org",
-    "instset-smt.cfg",
+    "instset-smt.yaml",
     "default-smt.org",
-    "instset-transsmt.cfg",
+    "instset-transsmt.yaml",
     "default-transsmt.org",
-    "instset-gx.cfg",
-    "default-gx.org",
-    "instset-experimental.cfg",
+    "instset-experimental.yaml",
     "experimental.org",
-    "instset-heads-modular.cfg",
+    "instset-heads-modular.yaml",
     "modular-subroutine.org",
     "default-heads-modular.org",
-    "environment-adder-ladder.cfg",
+    "environment-adder-ladder.yaml",
     "ladder-halfadd-planes-heads.org",
     "ladder-halfadd-heads.org",
     "ladder-add2-planes-heads.org",
@@ -60,7 +57,7 @@ pub const DEFAULT_CONFIG: &[BundledFile] = bundled!(
     "ladder-halfadd-modular.org",
     "ladder-add2-planes-modular.org",
     "ladder-add2-modular.org",
-    "environment-adder-wide.cfg",
+    "environment-adder-wide.yaml",
     "ladder-add3-heads.org",
     "ladder-add3-modular.org",
     "ladder-add4-heads.org",
@@ -158,11 +155,11 @@ mod tests {
     fn creates_the_files_and_never_overwrites() {
         let dir = scratch("create").join("exp");
         assert_eq!(create_experiment(&dir).unwrap(), dir);
-        assert!(dir.join("avida.cfg").is_file());
+        assert!(dir.join("avida.yaml").is_file());
         assert!(dir.join("default-heads.org").is_file());
         let err = create_experiment(&dir).unwrap_err();
         assert!(
-            err.contains("already has avida.cfg and 32 other files"),
+            err.contains("already has avida.yaml and 28 other files"),
             "{err}"
         );
     }

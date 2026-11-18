@@ -2,7 +2,7 @@
 
 **Question.** Too little mutation adapts slowly; too much destroys the genome faster than selection can repair it. Where is the *error threshold*, the rate above which the population can no longer keep its genome?
 
-**Arms.** One arm per value of the copy mutation rate, `COPY_MUT_PROB`.
+**Arms.** One arm per value of the copy mutation rate, `mutation.copy_prob`.
 
 ## Steps
 
@@ -13,7 +13,7 @@
    . ./lab.sh
    for m in 0.0005 0.002 0.0075 0.02 0.04 0.07 0.1 0.15; do
      for s in 1 2; do
-       run_arm copy-mut-$m $s 20000 -set COPY_MUT_PROB $m
+       run_arm copy-mut-$m $s 20000 -set mutation.copy_prob $m
      done
    done
    ```

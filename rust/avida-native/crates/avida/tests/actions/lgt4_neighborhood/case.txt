@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 3 -set DIV_LGT_PROB 0.1
+args -s 3 -set mutation.div_lgt_prob 0.1

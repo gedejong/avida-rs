@@ -35,7 +35,7 @@ fn config(name: &str, events: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
     copy_dir(&src, &dir);
-    fs::write(dir.join("events.cfg"), events).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     dir
 }
 
@@ -46,19 +46,23 @@ const EVENTS: &str = "u begin InjectAll filename=modular-subroutine.org\n\
 
 fn run(dir: &Path, sets: &[(&str, &str)]) -> (Vec<u8>, Option<ParallelStats>) {
     let cwd = dir.to_string_lossy().into_owned();
-    let mut args: Vec<String> = ["avida", "-def", "INST_SET", "instset-heads-modular.cfg"]
+    let mut args: Vec<String> = ["avida", "-set", "instruction_sets", "heads_modular"]
         .iter()
         .map(|s| s.to_string())
         .collect();
-    for (n, v) in [("WORLD_X", "30"), ("WORLD_Y", "30"), ("RANDOM_SEED", "42")]
-        .iter()
-        .chain(sets)
+    for (n, v) in [
+        ("world.x", "30"),
+        ("world.y", "30"),
+        ("general.random_seed", "42"),
+    ]
+    .iter()
+    .chain(sets)
     {
         args.extend(["-set".into(), n.to_string(), v.to_string()]);
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    let (mut w, _): (World, _) = World::new(cmd.config, &cwd, &cmd.defs).expect("World::new");
+    let (mut w, _): (World, _) = World::new(cmd.config, &cwd).expect("World::new");
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -84,9 +88,9 @@ fn last_row(dir: &Path, file: &str) -> Vec<f64> {
 fn without_mutations_the_organism_stays_one_genotype_and_does_its_tasks() {
     let dir = config("exact", EVENTS);
     let zero = [
-        ("COPY_MUT_PROB", "0"),
-        ("DIVIDE_INS_PROB", "0"),
-        ("DIVIDE_DEL_PROB", "0"),
+        ("mutation.copy_prob", "0"),
+        ("mutation.divide_ins_prob", "0"),
+        ("mutation.divide_del_prob", "0"),
     ];
     let (_, stats) = run(&dir, &zero);
     assert!(stats.is_none(), "exact mode");
@@ -110,7 +114,7 @@ fn parallel_run_with_the_modular_set_does_not_depend_on_the_thread_count() {
         let dir = config(&format!("t{threads}"), EVENTS);
         let (out, stats) = run(
             &dir,
-            &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", threads)],
+            &[("execution.mode", "1"), ("execution.threads", threads)],
         );
         let s = stats.expect("EXECUTION_MODE 1 runs the parallel mode");
         // The new instructions run in the bursts.

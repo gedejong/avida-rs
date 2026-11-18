@@ -1,0 +1,93 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-TEST.cfg, environment-5tasks.cfg, events-ConstResource.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 7
+reproduction:
+  birth_method: 4
+  death_method: 0
+time:
+  ave_time_slice: 1
+energy:
+  enabled: 1
+  given_on_inject: 100000.0
+  frac_energy_decay_at_org_birth: 0.05
+  num_cycles_exc_before_0_energy: 1000000
+
+instruction_sets:
+  - name: instset-TEST.cfg
+    hardware_type: 0
+    instructions:
+      - {name: nop-A, cost: 1, energy_cost: 100}
+      - {name: nop-B, cost: 1, energy_cost: 100}
+      - {name: nop-C, cost: 1, energy_cost: 100}
+      - {name: if-n-equ, cost: 1, energy_cost: 100}
+      - {name: if-less, cost: 1, energy_cost: 100}
+      - {name: pop, cost: 1, energy_cost: 100}
+      - {name: push, cost: 1, energy_cost: 100}
+      - {name: swap-stk, cost: 1, energy_cost: 100}
+      - {name: swap, cost: 1, energy_cost: 100}
+      - {name: shift-r, cost: 1, energy_cost: 100}
+      - {name: shift-l, cost: 1, energy_cost: 100}
+      - {name: inc, cost: 1, energy_cost: 100}
+      - {name: dec, cost: 1, energy_cost: 100}
+      - {name: add, cost: 1, energy_cost: 100}
+      - {name: sub, cost: 1, energy_cost: 100}
+      - {name: nand, cost: 1, energy_cost: 100}
+      - {name: IO, cost: 1, energy_cost: 100}
+      - {name: h-alloc, cost: 1, energy_cost: 100}
+      - {name: h-divide, cost: 1, energy_cost: 100}
+      - {name: h-copy, cost: 1, energy_cost: 100}
+      - {name: h-search, cost: 1, energy_cost: 100}
+      - {name: mov-head, cost: 1, energy_cost: 100}
+      - {name: jmp-head, cost: 1, energy_cost: 100}
+      - {name: get-head, cost: 1, energy_cost: 100}
+      - {name: if-label, cost: 1, energy_cost: 100}
+      - {name: set-flow, cost: 1, energy_cost: 100}
+      - {name: sense-m100, cost: 1, energy_cost: 100}
+      - {name: if-equ-0, cost: 1, energy_cost: 100}
+      - {name: time, cost: 1, energy_cost: 100}
+      - {name: sleep1, cost: 10, energy_cost: 1}
+      - {name: sleep2, cost: 20, energy_cost: 1}
+      - {name: sleep3, cost: 40, energy_cost: 1}
+      - {name: sleep4, cost: 80, energy_cost: 1}
+
+environment:
+  resources:
+    - {name: sun_light, initial: 1.0}
+  reactions:
+    - name: ECHO
+      task: echo
+      process: {resource: sun_light, value: 1000.0, type: energy, frac: 1.0, product: sun_light, conversion: 1.0}
+      requisite: {max_count: 35}
+    - name: NAND
+      task: nand
+      process: {resource: sun_light, value: 1500.0, type: energy, frac: 1.0, product: sun_light, conversion: 1.0}
+      requisite: {max_count: 20}
+    - name: NOT
+      task: not
+      process: {resource: sun_light, value: 1500.0, type: energy, frac: 1.0, product: sun_light, conversion: 1.0}
+      requisite: {max_count: 20}
+    - name: AND
+      task: and
+      process: {resource: sun_light, value: 2000.0, type: energy, frac: 1.0, product: sun_light, conversion: 1.0}
+      requisite: {max_count: 13}
+    - name: ORN
+      task: orn
+      process: {resource: sun_light, value: 2000.0, type: energy, frac: 1.0, product: sun_light, conversion: 1.0}
+      requisite: {max_count: 13}
+
+events:
+  - {at: begin, action: Inject, args: echo40.org}
+  - {at: 0, every: 100, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintTimeData}
+  - {at: 0, every: 4, until: end, action: PrintResourceData}
+  - {at: 100, every: 100, until: end, action: PrintTasksExeData}
+  - {at: 0, every: 100, until: end, action: PrintInstructionAbundanceHistogram}
+  - {at: 0, every: 100, until: end, action: PrintInstructionData}
+  - {at: 16, every: 16, until: end, action: PrintSleepData}
+  - {at: 1000, action: Exit}
+  - {at: 0, every: 10, until: end, action: PrintCountData, args: count10.dat}

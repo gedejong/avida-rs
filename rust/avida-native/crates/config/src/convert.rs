@@ -65,7 +65,7 @@ fn push_unique(v: &mut Vec<String>, s: &str) {
 pub fn convert_folder(dir: &str, opts: &Options) -> Result<Conversion, String> {
     let mut cfg = Config::new();
     let mut fb = Feedback::new();
-    if !cfg.load(
+    if !cfg.load_old_format(
         &opts.config_file,
         dir,
         Some(&mut fb),
@@ -187,6 +187,152 @@ pub fn convert_section_file(
         }
     };
     Ok(header + &body)
+}
+
+/// A section file (`events:`, `environment:` or `instruction_sets:`) from
+/// lines of the old format held in memory (event lines, environment lines,
+/// or `INSTSET`/`INST` lines), as [`convert_section_file`] writes it for a
+/// file (without the header). Comments (`#` to the end of the line) and
+/// blank lines are dropped.
+pub fn section_from_lines(section: &str, text: &str) -> Result<String, String> {
+    let lines: Vec<String> = text
+        .lines()
+        .map(|l| l.split('#').next().unwrap_or("").trim().to_string())
+        .filter(|l| !l.is_empty())
+        .collect();
+    match section {
+        naming::SECTION_ENVIRONMENT => Ok(environment_yaml(&parse_environment(&lines)?, false)),
+        naming::SECTION_EVENTS => Ok(events_yaml(&parse_events(&lines)?, false)),
+        naming::SECTION_INSTRUCTION_SETS => Ok(inst_sets_yaml(&parse_inst_sets(&lines)?, false)),
+        _ => Err(format!("section_from_lines: unknown section '{section}'")),
+    }
+}
+
+/// Output of the C++ reference binary without what it printed about its
+/// old input files alone, for comparing it with a run from the converted
+/// experiment file: the version-number and unknown-line warnings of
+/// `avida.cfg`, the note of a legacy instruction-set file, the name of a
+/// missing `avida.cfg` (which becomes `avida.yaml`) and the old names in
+/// the echo of `-set` (the file-selecting settings, which the experiment
+/// file holds, are no longer echoed). `tools/run_suite.py` does the same
+/// for the consistency suite.
+pub fn without_old_input_notes(text: &str) -> String {
+    let mut out = String::new();
+    let mut in_unknown = false;
+    for line in text.split_inclusive('\n') {
+        let body = line.trim_end_matches('\n');
+        if in_unknown && body.starts_with("  ") && body.contains(':') {
+            let mut parts = body.trim_start().splitn(3, ':');
+            let (_, num) = (parts.next(), parts.next().unwrap_or(""));
+            if !num.is_empty() && num.chars().all(|c| c.is_ascii_digit()) {
+                continue;
+            }
+        }
+        in_unknown = false;
+        if body.starts_with("warning: config file version number mismatch -- ")
+            || body.starts_with("using default instruction set: ")
+        {
+            continue;
+        }
+        if body.starts_with("warning: unknown lines in input file '") {
+            in_unknown = true;
+            continue;
+        }
+        if let Some(rest) = body.strip_prefix("CmdLine Set: ") {
+            let (name, value) = rest.split_once(' ').unwrap_or((rest, ""));
+            if matches!(name, "EVENT_FILE" | "ENVIRONMENT_FILE" | "INST_SET") {
+                continue;
+            }
+            let path = naming::new_name_of(name).unwrap_or_else(|| name.to_string());
+            out.push_str(&format!("CmdLine Set: {path} {value}"));
+            out.push_str(&line[body.len()..]);
+            continue;
+        }
+        out.push_str(
+            &line
+                .replace(
+                    "error: unable to open file 'avida.cfg'.",
+                    "error: unable to open file 'avida.yaml'.",
+                )
+                .replace(
+                    "error: configuration file 'avida.cfg' not found",
+                    "error: configuration file 'avida.yaml' not found",
+                ),
+        );
+    }
+    out
+}
+
+/// The `section` (`events`, `environment` or `instruction_sets`) of the
+/// experiment file `file` in `dir` as lines of the old format, each ending
+/// in a newline: what the C++ read from its event or environment file, or
+/// the `INSTSET`/`INST` lines of the instruction sets. With [`replace_section`], a test or a tool changes a
+/// copy of an experiment folder this way.
+pub fn section_lines(dir: &std::path::Path, file: &str, section: &str) -> Result<String, String> {
+    let mut cfg = Config::new();
+    let mut feedback = crate::feedback::Feedback::new();
+    if !cfg.load_experiment(file, &dir.to_string_lossy(), &mut feedback) {
+        return Err(feedback.render());
+    }
+    let lines = match section {
+        naming::SECTION_ENVIRONMENT => &cfg.experiment.environment,
+        naming::SECTION_EVENTS => &cfg.experiment.events,
+        naming::SECTION_INSTRUCTION_SETS => cfg.instsets(),
+        _ => return Err(format!("section_lines: unknown section '{section}'")),
+    };
+    Ok(lines.iter().map(|l| format!("{l}\n")).collect())
+}
+
+/// Gives the experiment file `file` of `dir` a new `section` (`events`,
+/// `environment` or `instruction_sets`): the section file `<section>.yaml`
+/// is written from
+/// `old_text` (lines of the old format, see [`section_from_lines`]) and the
+/// experiment file's own `section:` entry is replaced by its name (or added
+/// at the end). For tests and tools that build a variant of an experiment
+/// folder from lines they hold in memory.
+pub fn replace_section(
+    dir: &std::path::Path,
+    file: &str,
+    section: &str,
+    old_text: &str,
+) -> Result<(), String> {
+    let body = section_from_lines(section, old_text)?;
+    let name = format!("{section}.yaml");
+    let io = |e: std::io::Error| e.to_string();
+    std::fs::write(dir.join(&name), body).map_err(io)?;
+    let path = dir.join(file);
+    let text = std::fs::read_to_string(&path).map_err(io)?;
+    let root = yaml::parse(&text)
+        .map_err(|e| format!("{file}: {e}"))?
+        .ok_or_else(|| format!("{file} is empty"))?;
+    let keys = root
+        .as_map()
+        .ok_or_else(|| format!("{file} is not a mapping"))?;
+    let lines: Vec<&str> = text.lines().collect();
+    let entry = format!("{section}: {name}");
+    let mut out: Vec<String> = Vec::new();
+    match keys.iter().position(|(k, _)| k.text == section) {
+        Some(i) => {
+            let start = keys[i].0.line - 1;
+            let end = keys.get(i + 1).map_or(lines.len(), |(k, _)| k.line - 1);
+            out.extend(lines[..start].iter().map(|l| l.to_string()));
+            out.push(entry);
+            // Keep the comments that lead into the next key.
+            let mut tail = end;
+            while tail > start + 1 && lines[tail - 1].trim_start().starts_with('#') {
+                tail -= 1;
+            }
+            if end < lines.len() {
+                out.push(String::new());
+            }
+            out.extend(lines[tail..].iter().map(|l| l.to_string()));
+        }
+        None => {
+            out.extend(lines.iter().map(|l| l.to_string()));
+            out.push(entry);
+        }
+    }
+    std::fs::write(&path, out.join("\n") + "\n").map_err(io)
 }
 
 /// The lines of an old file after `cInitFile` processing, with the files
@@ -478,6 +624,8 @@ enum EnvItem {
         parts: Vec<(String, Vec<(String, String)>)>,
     },
     SetActive(String, String, String),
+    /// `INPUT_AND_MASK <mask>`, kept as written.
+    InputAndMask(String),
 }
 
 /// `parse_setting` over the `:`-separated entries: lower-case keys.
@@ -559,6 +707,13 @@ fn parse_environment(lines: &[String]) -> Result<Vec<EnvItem>, String> {
                     task: Some((task, trigger_info)),
                     parts,
                 });
+            }
+            "INPUT_AND_MASK" => {
+                let mask = pop_word(&mut desc);
+                if mask.is_empty() || !desc.trim().is_empty() {
+                    return Err(format!("cannot convert '{line}': the mask is one number"));
+                }
+                items.push(EnvItem::InputAndMask(mask));
             }
             "SET_ACTIVE" => {
                 let ty = pop_word(&mut desc);
@@ -677,8 +832,16 @@ fn environment_yaml(items: &[EnvItem], full: bool) -> String {
     let mut grids = String::new();
     let mut reactions = String::new();
     let mut set_active = String::new();
+    // A later mask line replaced an earlier one.
+    if let Some(mask) = items.iter().rev().find_map(|it| match it {
+        EnvItem::InputAndMask(m) => Some(m),
+        _ => None,
+    }) {
+        o.push_str(&format!("  input_and_mask: {}\n", quote(mask, false)));
+    }
     for it in items {
         match it {
+            EnvItem::InputAndMask(_) => {}
             EnvItem::Resource {
                 kind,
                 name,
@@ -871,6 +1034,27 @@ mod tests {
         );
         assert_eq!(task_args_val("a=1,a=2").render(false), "a=1,a=2");
         assert_eq!(task_args_val("a=1,a=2").render(true), "'a=1,a=2'");
+    }
+
+    #[test]
+    fn the_input_mask_and_unknown_task_arguments_convert_as_written() {
+        let text = "INPUT_AND_MASK 0x00FF\nREACTION A field_arith:fn=carry:width=8 process:value=1\nREACTION B field_arith:fn=partial,width=16\nINPUT_AND_MASK 0xFF6DB6DB\n";
+        let yaml = section_from_lines("environment", text).unwrap();
+        assert!(yaml.contains("  input_and_mask: 0xFF6DB6DB\n"), "{yaml}");
+        assert!(!yaml.contains("0x00FF"), "{yaml}");
+        assert!(yaml.contains("args: fn=carry:width=8"), "{yaml}");
+        assert!(yaml.contains("args: {fn: partial, width: 16}"), "{yaml}");
+        let node = crate::yaml::parse(&yaml).unwrap().unwrap();
+        let env = node.get("environment").unwrap();
+        let lines = crate::experiment::render_environment_node(env, "e.yaml", ".").unwrap();
+        assert_eq!(
+            lines,
+            [
+                "INPUT_AND_MASK 0xFF6DB6DB",
+                "REACTION A field_arith:fn=carry:width=8 process:value=1",
+                "REACTION B field_arith:fn=partial,width=16",
+            ]
+        );
     }
 
     #[test]

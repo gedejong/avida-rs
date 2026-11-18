@@ -566,20 +566,16 @@ impl AnalyzeWorld {
     ///
     /// `Err` is a loud failure for a setting this port does not set up (see
     /// the module documentation).
-    pub fn initialize(
-        config: Config,
-        working_dir: &str,
-        defs: &[(String, String)],
-    ) -> Result<WorldInit> {
-        Self::initialize_with(config, working_dir, defs, &mut NoSetupHooks)
+    pub fn initialize(config: Config, working_dir: &str) -> Result<WorldInit> {
+        Self::initialize_with(config, working_dir, &mut NoSetupHooks)
     }
 
     /// `cWorld::Initialize(cfg, working_dir, new_world, feedback, defs)`,
-    /// with the migration matrix and the population set up by `hooks`.
+    /// with the migration matrix and the population set up by `hooks`. The
+    /// `defs` are gone with the old configuration format.
     pub fn initialize_with(
         mut config: Config,
         working_dir: &str,
-        _defs: &[(String, String)],
         hooks: &mut dyn SetupHooks,
     ) -> Result<WorldInit> {
         let mut stdout = String::new();

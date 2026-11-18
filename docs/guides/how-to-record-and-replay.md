@@ -18,14 +18,18 @@ The programs are in `target/release/`.
 
 ## Record without a window
 
-`avida-rec` runs an experiment at full speed without a user interface and writes the recording. It takes what `avida` takes: a configuration folder (default: the current folder), `-s`, `-set`, `-def`. It computes exactly what `avida` computes, so the data files of a recorded run are the ones an unrecorded run writes.
+`avida-rec` runs an experiment at full speed without a user interface and writes the recording. It takes what `avida` takes: an experiment folder (default: the current folder), `-s` and `-set`. It computes exactly what `avida` computes, so the data files of a recorded run are the ones an unrecorded run writes.
 
 ```sh
 cp -R avida-core/support/config my-run
 avida-rec --record run.avrec --record-every 50 my-run -s 42
 ```
 
-The stock `events.cfg` ends the run at update 100000. For a first try, copy it to `events-short.cfg`, change that line to `u 2000 Exit`, and add `-set EVENT_FILE events-short.cfg`. A line like this appears every ten seconds on standard error:
+The stock events end the run at update 100000. For a first try, copy them to a file of their own, change that entry to `{at: 2000, action: Exit}`, and add `-set events events-short.yaml`:
+
+```sh
+sed -n '/^events:/,$p' my-run/avida.yaml | sed 's/at: 100000, action: Exit/at: 2000, action: Exit/' > my-run/events-short.yaml
+``` A line like this appears every ten seconds on standard error:
 
 ```text
 update 1450  organisms 3591  frames 29  file 1.7 MiB  recording 0.3 s
@@ -37,8 +41,8 @@ For a big world in the parallel execution mode (see [Execution modes](../executi
 
 ```sh
 avida-rec --record big.avrec --record-every 100 my-run -s 42 \
-    -set WORLD_X 160 -set WORLD_Y 160 \
-    -set EXECUTION_MODE 1 -set EXECUTION_THREADS 4
+    -set world.x 160 -set world.y 160 \
+    -set execution.mode 1 -set execution.threads 4
 ```
 
 `Ctrl-C` (SIGINT) or SIGTERM stops the run at the end of the update in progress, writes that update as a last frame and leaves a complete file; the exit status is 128 plus the signal number (130 and 143). A run that is killed outright (SIGKILL, a power cut) leaves a file that is readable up to its last complete frame.

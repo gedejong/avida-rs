@@ -8,10 +8,10 @@
 avida-tui [OPTIONS] [CONFIG_DIR] [AVIDA_ARGS...]
 ```
 
-`CONFIG_DIR` is the experiment folder (the one with `avida.cfg`, `events.cfg` and the environment file). It defaults to the current directory. Everything after it goes to the `avida` command line, for example:
+`CONFIG_DIR` is the experiment folder (the one with the experiment file `avida.yaml`). It defaults to the current directory. Everything after it goes to the `avida` command line, for example:
 
 ```sh
-avida-tui my-run -s 7 -set WORLD_X 30
+avida-tui my-run -s 7 -set world.x 30
 ```
 
 You should see the map of an empty world with a tab strip along the top. The run starts paused. Press Space to start it.
@@ -42,7 +42,7 @@ Each screen has a letter key. The tab strip shows them in this order, and `Tab` 
 | `E` | Env | The environment: tasks, reactions and resources. |
 | `H` | Hist | Histograms. |
 | `D` | Log | The log of messages and warnings. |
-| `F` | Cfg | The effective configuration, with overrides and restart. |
+| `F` | Cfg | The effective configuration, with overrides and restart. Each setting is listed by its place in the experiment file (`world.x`), with its group and its old name. An override is applied at the next restart as `-set world.x 30`; the file itself is not changed. |
 | `O` | Opts | Options of the viewer. |
 | `B` | Blank | A blank screen with only the status line. |
 

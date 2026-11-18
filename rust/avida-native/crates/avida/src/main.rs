@@ -68,7 +68,7 @@ fn main() -> ExitCode {
         return status(code);
     }
 
-    let (mut world, report) = match World::new(cmd.config, &cwd, &cmd.defs) {
+    let (mut world, report) = match World::new(cmd.config, &cwd) {
         Ok(w) => w,
         Err(text) => {
             let _ = out.flush();

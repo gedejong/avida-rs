@@ -78,10 +78,6 @@ pub struct CmdLineOutcome {
     /// The configuration after loading the file and applying the flags
     /// (defaults only, if parsing ended before the load).
     pub config: Config,
-    /// What `cWorld::Initialize` got as `-def` variables: always empty, since
-    /// an experiment file has no `#include` or `$NAME` (kept for the callers
-    /// of `World::new`).
-    pub defs: Vec<(String, String)>,
     /// `Some(code)` when the C++ would call `exit(code)` (note `exit(-1)` is
     /// process status 255); `None` when the program proceeds to run.
     pub exit: Option<i32>,
@@ -139,7 +135,6 @@ pub fn process_cmdline_args(args: &[String]) -> CmdLineOutcome {
 pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
     let mut out = CmdLineOutcome {
         config: Config::new(),
-        defs: Vec::new(),
         exit: None,
         stdout: String::new(),
         stderr: String::new(),
@@ -545,7 +540,6 @@ mod tests {
         let o = run(&d, &["-def", "INST_SET", "instset-b.cfg"]);
         assert_eq!(o.exit, Some(1));
         assert!(o.stderr.contains("'-def' is gone"), "{}", o.stderr);
-        assert!(o.defs.is_empty());
     }
 
     #[test]

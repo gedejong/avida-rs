@@ -134,11 +134,11 @@ const SIM_STACK_SIZE: usize = 16 * 1024 * 1024;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SessionConfig {
     /// The run's working directory (the `avida` binary's current
-    /// directory): `avida.cfg`, the event and environment files and the
-    /// `data/` output are resolved against it.
+    /// directory): the experiment file `avida.yaml`, the files it names
+    /// and the `data/` output are resolved against it.
     pub work_dir: PathBuf,
     /// Command-line arguments as the `avida` binary takes them, without the
-    /// program name: `["-s", "7", "-set", "WORLD_X", "30", "-c", "x.cfg"]`.
+    /// program name: `["-s", "7", "-set", "world.x", "30", "-c", "x.yaml"]`.
     pub args: Vec<String>,
 }
 
@@ -496,12 +496,15 @@ pub enum SessionEvent {
 /// One setting of the effective configuration.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Setting {
-    /// `CONFIG_ADD_GROUP` name (`GENERAL_GROUP`).
+    /// The group of the experiment file (`world`).
     pub group: &'static str,
-    /// The group's description (`General Settings`).
+    /// The group's title (`World`).
     pub group_desc: &'static str,
-    /// The setting's primary name (`WORLD_X`).
-    pub name: &'static str,
+    /// The setting's place in the experiment file, `group.key`
+    /// (`world.x`); `-set` takes it.
+    pub name: String,
+    /// The C++ name (`WORLD_X`), which the old `avida.cfg` used.
+    pub old_name: &'static str,
     /// The C++ type name (`int`, `double`, `bool`, `cString`).
     pub kind: &'static str,
     /// The value in force, as `cAvidaConfig` prints it.
@@ -521,7 +524,8 @@ impl Setting {
     }
 }
 
-/// One line of the events file, split the way `cEventList` reads it.
+/// One event, as a line of the C++ event file, split the way `cEventList`
+/// reads it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EventLine {
     /// The line as read (comments and blank lines removed).
@@ -545,18 +549,20 @@ pub struct ExperimentSetup {
     pub args: Vec<String>,
     /// Where the run writes its output (`DATA_DIR`, absolute).
     pub data_dir: PathBuf,
-    /// The configuration file (`-c`, default `avida.cfg`).
+    /// The experiment file (`-c`, default `avida.yaml`).
     pub config_file: PathBuf,
-    /// Every setting in declaration order, with the command line applied.
+    /// Every setting in the order of the experiment file, with the command
+    /// line applied.
     pub settings: Vec<Setting>,
-    /// The events file (`EVENT_FILE`).
+    /// The file the events come from: the experiment file, or the section
+    /// file its `events` names.
     pub event_file: PathBuf,
-    /// Its lines, includes expanded.
+    /// The events, one event-file line each (`u 100 Inject a.org`).
     pub events: Vec<EventLine>,
 }
 
 impl ExperimentSetup {
-    /// The setting with this primary name.
+    /// The setting at this place of the experiment file (`world.x`).
     pub fn setting(&self, name: &str) -> Option<&Setting> {
         self.settings.iter().find(|s| s.name == name)
     }

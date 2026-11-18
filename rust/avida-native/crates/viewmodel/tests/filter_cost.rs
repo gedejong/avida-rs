@@ -6,6 +6,7 @@ mod common;
 
 use std::time::Instant;
 
+use avida_config::convert::{replace_section, section_lines};
 use avida_viewmodel::{capture, LayerId, Prop, Subscription};
 
 fn median_ms(mut v: Vec<f64>) -> f64 {
@@ -17,22 +18,17 @@ fn median_ms(mut v: Vec<f64>) -> f64 {
 #[ignore = "a measurement; run it explicitly in a release build"]
 fn capture_with_the_filter_layers_on_a_160_by_160_world() {
     let dir = common::fresh_config("heads_default_100u", "filter_cost");
-    let cfg = dir.join("avida.cfg");
-    let text = std::fs::read_to_string(&cfg).unwrap();
-    std::fs::write(&cfg, format!("{text}\nWORLD_X 160\nWORLD_Y 160\n")).unwrap();
-    let events = dir.join("events.cfg");
-    let text = std::fs::read_to_string(&events).unwrap();
-    std::fs::write(
-        &events,
-        text.replace(
+    let events = section_lines(&dir, "avida.yaml", "events").unwrap();
+    let events = events
+        .replace(
             "u begin Inject default-classic.org",
             "u begin InjectAll filename=default-classic.org",
         )
         .replace("u 100 Exit", "u 8 Exit")
-        .replace("u 100 SavePopulation", ""),
-    )
-    .unwrap();
-    let mut world = common::build_world(&dir);
+        .replace("u 100 SavePopulation", "");
+    replace_section(&dir, "avida.yaml", "events", &events).unwrap();
+    let mut world =
+        common::build_world_with(&dir, &["-set", "world.x", "160", "-set", "world.y", "160"]);
     let mut out = Vec::new();
     common::run_with_stops(&mut world, 8, &mut out, |_| {});
     eprintln!("organisms: {}", world.pop.num_organisms);

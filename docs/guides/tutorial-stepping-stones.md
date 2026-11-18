@@ -17,13 +17,15 @@
    cp -r avida-core/support/config stepping && cd stepping
    ```
 
-2. Create the second environment, `environment-equ-only.cfg`, containing the one line:
+2. Create the second environment, `environment-equ-only.yaml`, with one reaction:
 
-   ```text
-   REACTION  EQU  equ   process:value=5.0:type=pow  requisite:max_count=1
+   ```yaml
+   environment:
+     reactions:
+       - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
    ```
 
-   You should see a file of one line. It is the stock EQU reaction, without the other eight.
+   It is the stock EQU reaction, without the other eight.
 
 3. Run both arms for several seeds. The original study ran 50,000 updates; the maintainer's default is 8 seeds per arm, about 45 minutes on a performance-core machine:
 
@@ -31,7 +33,7 @@
    . ./lab.sh
    for s in 1 2 3 4 5 6 7 8; do
      run_arm all-rewarded $s 50000
-     run_arm equ-only $s 50000 -set ENVIRONMENT_FILE environment-equ-only.cfg
+     run_arm equ-only $s 50000 -set environment environment-equ-only.yaml
    done
    ```
 

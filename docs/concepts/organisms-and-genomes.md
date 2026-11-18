@@ -4,7 +4,7 @@ An *organism* in Avida is a program together with a virtual CPU that runs it. Th
 
 ## The ancestor
 
-A run starts empty. The events file injects the first organism, the *ancestor*, from a file with the extension `.org`. In the stock configuration the ancestor is `default-heads.org`: 100 instructions long, of which 14 do the work and 86 are the do-nothing instruction `nop-C`. Its structure is:
+A run starts empty. The events inject the first organism, the *ancestor*, from a file with the extension `.org`. In the stock configuration the ancestor is `default-heads.org`: 100 instructions long, of which 14 do the work and 86 are the do-nothing instruction `nop-C`. Its structure is:
 
 1. `h-alloc` allocates room for an offspring genome.
 2. `h-search` finds where the genome ends, and a few instructions set up the write position of the copy.
@@ -31,8 +31,8 @@ stateDiagram-v2
 
 In words: an organism is born into a cell and starts receiving CPU time. At each time slice it executes one instruction of its genome. When its genome has copied itself and executes the divide instruction, a copy of the genome (the offspring) is cut off and placed in a cell chosen by the birth rules, and the parent restarts its cycle. An organism dies when it grows too old, when another organism's offspring replaces it, or when an event kills it.
 
-- Age limit: with the stock setting `DEATH_METHOD 2`, an organism dies after it has executed `AGE_LIMIT` (20) times its own genome length in instructions. This removes organisms that never divide.
-- `DIVIDE_METHOD 1` (the default) resets the parent at division, so that both parent and offspring begin a new cycle. See [reproduction](reproduction.md).
+- Age limit: with the stock setting `reproduction.death_method: 2`, an organism dies after it has executed `reproduction.age_limit` (20) times its own genome length in instructions. This removes organisms that never divide.
+- `reproduction.divide_method: 1` (the default) resets the parent at division, so that both parent and offspring begin a new cycle. See [reproduction](reproduction.md).
 
 ## Phenotype: what the organism has achieved
 
@@ -47,7 +47,7 @@ The *phenotype* is everything measured about an organism's behaviour, as opposed
 | Age | Updates the organism has lived. |
 | Copied size, executed size | How many instructions of the genome the organism copied and executed. |
 
-You can check the relation for the ancestor on a real run: in `average.dat` of the first stock run, row 0 reads merit 97 and gestation time 389, and the fitness printed in the progress lines is 0.2494 (97 divided by 389). The base merit follows `BASE_MERIT_METHOD`; the stock value 4 makes it proportional to the smaller of the copied and the executed size.
+You can check the relation for the ancestor on a real run: in `average.dat` of the first stock run, row 0 reads merit 97 and gestation time 389, and the fitness printed in the progress lines is 0.2494 (97 divided by 389). The base merit follows `time.base_merit_method`; the stock value 4 makes it proportional to the smaller of the copied and the executed size.
 
 ## Genotype and species
 

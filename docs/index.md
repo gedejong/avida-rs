@@ -41,6 +41,6 @@ This documentation covers the native Rust port of Avida, which lives in `rust/av
 ## Conventions in these pages
 
 - Commands are shown for a Unix shell (macOS or Linux). On Windows, use the same commands in a shell that provides them, or adapt the paths.
-- `NAME_IN_CAPITALS` is a setting of `avida.cfg`. Names in `CamelCase` such as `PrintAverageData` are actions that an events file schedules. Actions are not case-sensitive.
+- `group.key`, such as `world.x`, is a setting of the experiment file `avida.yaml`. `NAME_IN_CAPITALS` is the same setting's name in the old `avida.cfg`, which `SetConfig` and some messages still use. Names in `CamelCase` such as `PrintAverageData` are actions that an events file schedules. Actions are not case-sensitive.
 - Paths such as `rust/avida-native` are relative to the repository root.
 - A page marks anything that stops with an `unsupported:` message. See [Features that stop with unsupported](reference/unsupported.md).

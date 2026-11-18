@@ -1,0 +1,80 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 101
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - sg-move
+      - sg-rotate-r
+      - sg-rotate-l
+      - sg-sense
+
+environment:
+  grids:
+    - name: g1
+      width: 5
+      height: 4
+      initx: 1
+      inity: 2
+      initfacing: 2
+      states: open,poison=7
+      grid: open,open,poison,open,open,open,poison,open,open,open,open,open,open,poison,open,poison,open,open,open,open
+    - name: g2
+      width: 3
+      height: 3
+      initx: 0
+      inity: 0
+      initfacing: 0
+      states: poison,open
+      grid: open,open,open,poison,open,open,open,open,poison
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - name: SG1
+      task: sg_path_traversal
+      args: {sgname: g1, poison: poison, pathlen: 6}
+      process: {value: 2.0, type: pow}
+    - name: SG2
+      task: sg_path_traversal
+      args: {sgname: g2, poison: poison, pathlen: 4}
+      process: {value: 1.5, type: add}
+
+events:
+  - {at: begin, action: Inject, args: sg.org}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 0, every: 50, until: end, action: PrintDominantGenotype}
+  - {at: 150, action: SavePopulation}
+  - {at: 150, action: Exit}

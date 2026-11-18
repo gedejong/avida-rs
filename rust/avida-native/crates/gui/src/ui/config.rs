@@ -55,7 +55,7 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
                 (
                     List::Events,
                     events_label.as_str(),
-                    "The events of events.cfg, as the world read them",
+                    "The events of the experiment file, as the world read them",
                 ),
             ],
         ) {
@@ -331,7 +331,7 @@ fn setting_row(ui: &mut Ui, s: &avida_session::Setting, t: &Tokens) {
     p.text(
         egui::pos2(left, top),
         Align2::LEFT_CENTER,
-        s.name,
+        s.name.as_str(),
         FontId::new(12.5, semibold()),
         t.text,
     );
@@ -365,7 +365,7 @@ fn setting_row(ui: &mut Ui, s: &avida_session::Setting, t: &Tokens) {
     name_widget(&r, Role::Row, &format!("{} = {}", s.name, s.value));
     r.on_hover_ui(|ui| {
         ui.set_max_width(360.0);
-        ui.label(RichText::new(s.name).family(semibold()));
+        ui.label(RichText::new(s.name.as_str()).family(semibold()));
         ui.label(format!("{} ({})", s.value, s.kind));
         if changed {
             ui.label(
@@ -377,9 +377,12 @@ fn setting_row(ui: &mut Ui, s: &avida_session::Setting, t: &Tokens) {
         }
         ui.label(RichText::new(s.desc).color(t.text_weak));
         ui.label(
-            RichText::new(format!("{} · {}", s.group, s.group_desc))
-                .small()
-                .color(t.text_faint),
+            RichText::new(format!(
+                "Group {} ({}) of the experiment file; called {} in the old avida.cfg.",
+                s.group_desc, s.group, s.old_name
+            ))
+            .small()
+            .color(t.text_faint),
         );
     });
 }
@@ -403,7 +406,7 @@ fn events_list(ui: &mut Ui, setup: &avida_session::ExperimentSetup, t: &Tokens) 
             ui,
             icons::ICON_EVENT_NOTE,
             "No events",
-            "The event file schedules nothing: the run goes on until you stop it.",
+            "The experiment schedules no events, so the run goes on until you stop it.",
         );
         return;
     }

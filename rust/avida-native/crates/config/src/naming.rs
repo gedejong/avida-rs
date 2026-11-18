@@ -223,6 +223,15 @@ pub fn is_group(key: &str) -> bool {
     GROUPS.iter().any(|g| g.key == key)
 }
 
+/// The title of the group `key` (`Mutation rates`), or `key` itself for a
+/// key that is not a group.
+pub fn group_title(key: &str) -> &str {
+    GROUPS
+        .iter()
+        .find(|g| g.key == key)
+        .map_or(key, |g| g.title)
+}
+
 /// Every top-level key of an experiment file: the groups, then the sections.
 pub fn top_level_keys() -> Vec<&'static str> {
     GROUPS

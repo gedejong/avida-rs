@@ -20,7 +20,7 @@ Each tutorial compares two or more *arms* (variants of one experiment) over seve
 |---|---|---|
 | [Stepping stones](tutorial-stepping-stones.md) | Do complex features need simpler ones to evolve first? | The stock folder. |
 | [Mutation rate](tutorial-mutation-rate.md) | How much mutation is too much (the error threshold)? | The stock folder. |
-| [Limited resources](tutorial-limited-resources.md) | Does competition for resources keep more kinds of organism alive? | The stock folder plus one environment file. |
+| [Limited resources](tutorial-limited-resources.md) | Does competition for resources keep more kinds of organism alive? | The stock folder plus one environment file (`environment-limited.yaml`). |
 | [Host and parasite](tutorial-host-parasite.md) | Do parasites drive hosts to change their tasks? | A configuration of the consistency suite. |
 | [Sex and asex](tutorial-sex-vs-asex.md) | Does recombination speed up adaptation? | The stock folder. |
 | [Population structure](tutorial-population-structure.md) | Does local reproduction change what evolves? | The stock folder. |

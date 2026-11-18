@@ -7,7 +7,7 @@ The native Rust port is a Cargo workspace of 17 crates in `rust/avida-native/cra
 | Layer | Crate (package) | Role |
 |---|---|---|
 | 1 | `apto` (`avida-apto`) | Random number generator, schedulers, `%g`-style number formatting, the data-file writer, running statistics. |
-| 2 | `config` (`avida-config`) | The configuration table (`avida.cfg` settings), the init-file reader, string utilities, the command line. |
+| 2 | `config` (`avida-config`) | The configuration table (the settings and their groups), the experiment file (`avida.yaml`) and its YAML reader, the converter of old folders, string utilities, the command line. |
 | 3 | `genome` (`avida-genome`) | Instructions, instruction sequences, genomes, instruction sets and the instruction-set registry. |
 | 4 | `tasks` (`avida-tasks`) | The task library and its evaluators. |
 | 5 | `environment` (`avida-environment`) | Resources, reactions and the environment-file parser and evaluation. |

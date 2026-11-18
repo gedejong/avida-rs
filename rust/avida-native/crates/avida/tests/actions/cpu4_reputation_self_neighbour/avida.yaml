@@ -1,0 +1,77 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-reputation.cfg, environment.cfg, 4bitevents.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 1
+reputation:
+  raw_material_amount: 0
+  auto: 3
+  alt_benefit: 2
+  specialists: 1
+  string_amount_cap: 10
+  match_already_produced: 1
+
+instruction_sets:
+  - name: instset-reputation.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - rotate-to-occupied-cell
+      - get-reputation
+      - rotate-to-rep-lineage
+      - get-raw-mat-amount
+      - get-other-raw-mat-amount
+      - IObuf-add1
+      - IObuf-add0
+      - prod-string
+      - rotate-to-rep
+      - pose
+      - rotate-to-rep-tag
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {trigger: immediate, action: Inject, args: default-classic.org}
+  - {trigger: immediate, action: Inject, args: string0101.org 0 -1 0 0}
+  - {trigger: immediate, action: Inject, args: string1010.org 100 -1 1 0}
+  - {at: 0, every: 10, until: end, action: PrintReputationData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 600, action: Exit}

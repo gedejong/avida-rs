@@ -177,10 +177,12 @@ fn every_screen_in_both_themes_and_sizes() {
 #[ignore = "a screenshot sweep for design review; run it explicitly"]
 fn a_failed_run_in_both_themes_and_sizes() {
     let dir = fresh_config("audit-fatal");
-    let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        format!("{text}u 3 Inject missing.org\n"),
+    let text = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &format!("{text}u 3 Inject missing.org\n"),
     )
     .unwrap();
     let mut h = harness(
@@ -206,9 +208,15 @@ fn a_failed_run_in_both_themes_and_sizes() {
 fn open_endedness_in_both_themes_and_sizes() {
     let start = |name: &str, extra: &str| {
         let dir = fresh_config(name);
-        let text = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
+        let text = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
         // Before the `Exit` line, so that the actions fire.
-        std::fs::write(dir.join("events.cfg"), format!("{extra}{text}")).unwrap();
+        avida_config::convert::replace_section(
+            &dir,
+            "avida.yaml",
+            "events",
+            &format!("{extra}{text}"),
+        )
+        .unwrap();
         let mut h = harness(
             StartupArgs {
                 dir: Some(dir),

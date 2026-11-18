@@ -1,0 +1,73 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 10
+  y: 1000
+  geometry: 1
+demes:
+  count: 100
+  use_germline: 1
+  max_age: 40
+  germline_ins_mut: 0.0
+  germline_del_mut: 0.0
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: InjectDemes, args: default-classic.org}
+  - {at: 2, action: AssignRandomCellData}
+  - {at: 10, every: 5, until: 150, action: ReplaceFromGermline, args: 0.7 1}
+  - {at: 12, every: 7, until: 150, action: ReplaceFromGermline, args: 0.3}
+  - {at: 10, every: 70, until: 150, action: DumpCellDataGrid}
+  - {at: 1, every: 3, until: 150, action: DecayPoints, args: 50}
+  - {at: 1, every: 3, until: 150, action: Flash}
+  - {at: 5, action: SetFracDemeTreatable, args: 0.5}
+  - {at: 10, every: 10, until: 150, action: KillDemePercent, args: 0.3}
+  - {at: 0, every: 20, until: 150, action: PrintCountData}
+  - {at: 0, every: 30, until: 150, action: PrintAverageData}
+  - {at: 150, action: SavePopulation}
+  - {at: 151, action: Exit}

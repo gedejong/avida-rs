@@ -45,7 +45,9 @@ in `avida-core/tests/`.
   against the C++ and may be used as reference or copied and de-FFI'd.
 - The C++ reference binary is `cbuild/work/avida` (run from a directory
   containing `avida.cfg` etc.; `-s <seed>` sets the seed, `-set NAME VALUE`
-  overrides a setting, `-a` runs analyze mode).
+  overrides a setting, `-a` runs analyze mode). It reads the old input
+  files, the port reads `avida.yaml` (see "The experiment file departs from
+  the C++ input format"); `tools/run_suite.py` keeps both forms of each test.
 
 ## Report format
 
@@ -128,7 +130,8 @@ What that changes for parity work:
 ## The one approved departure from parity: `EXECUTION_MODE 1` (2026-11-12)
 
 Rule 1 has one exception, which the maintainer approved explicitly: the
-opt-in parallel execution mode (`EXECUTION_MODE 1`, a port-only setting with
+opt-in parallel execution mode (`EXECUTION_MODE 1`, `execution.mode: 1` in
+the experiment file since 2026-11-18, a port-only setting with
 no C++ counterpart). It reschedules the instructions of an update so that
 organism-local ones run on worker threads, and its output is therefore not
 byte-identical to the C++ or to the exact mode. Everything else stays under
@@ -231,6 +234,52 @@ rule 1:
 ARCHITECTURE.md ("Parallel execution mode") describes what the mode
 guarantees and what it does not.
 
+## The experiment file departs from the C++ input format (2026-11-18)
+
+By the maintainer's decision of 2026-11-18 the port no longer reads the C++
+input files. One YAML file per experiment (`avida.yaml`, read with
+`saphyr-parser`) holds the settings in groups, the instruction sets, the
+environment and the events; organism files (`.org`) and analyze scripts
+(`analyze.cfg`) stay as they were and are named by path. `-set` takes a
+dotted path (`-set mutation.copy_prob 0.0025`), `-def` and `#include` are
+gone, and a section can be a file of its own (`environment:
+environment-adder-ladder.yaml`). There is no backward compatibility: an old
+`avida.cfg`, or an old-format file named where YAML is expected, is refused
+with a message that names `avida convert`, which writes `avida.yaml` from a
+folder of old files (`docs/reference/config-yaml.md`, "Converting an old
+folder"). The grouping table is `crates/config/src/naming.rs`, one row per
+C++ setting (`crates/config/src/config_table.rs`, generated from
+`cAvidaConfig.h`) and per port-only setting; the reference page is written
+from it, and a test keeps the two equal.
+
+What a run computes is unchanged. The loader keeps every scalar as the text
+of the file and parses it with the same routine the old reader used
+(`load_str_by_id`, with the C++ `atoi`/`atof` semantics), and it renders the
+sections into the lines the unchanged parsers read: environment lines,
+event lines and `INSTSET`/`INST` lines. Checked two ways: at commit
+`a6cb5d842` a test converted every folder of the consistency suite and the
+stock configuration and compared the settings, instruction sets,
+environment and events with what the old readers produced (all equal; the
+test was retired with the old files), and the whole suite gives the same
+counts before and after the switch (85 same, 34 trivial, 1 UNSUPPORTED,
+1 REF-TIMEOUT, no DIFF).
+
+What does change is what the program says about its input. The C++ warned
+about a version mismatch, about unused lines and about the default
+instruction set, and it echoed each `-set` as `CmdLine Set: NAME value`;
+the port prints the dotted path instead (`CmdLine Set: world.x 30`), in the
+order of the C++ settings table, and has none of the input-file warnings.
+`tools/run_suite.py` (`old_format`) and the crate tests
+(`avida_config::convert::without_old_input_notes`) take those lines out of
+the reference output before comparing; the expected files themselves are
+the reference binary's output and stay as they were. `VERSION_ID`,
+`HARDWARE_TYPE` and `INST_SET_LOAD_LEGACY` are read by the converter only;
+`EVENT_FILE`, `ENVIRONMENT_FILE` and `INST_SET` became the sections. A
+legacy instruction-set file becomes a set named after the file, as
+`INST_SET_LOAD_LEGACY 1` made it. `instset-gx.cfg` and `default-gx.org`
+were removed: they were written for the gene-expression hardware, which
+neither the port nor the reference binary has.
+
 ## Extensions beyond the C++ no longer need a decision each (2026-11-15)
 
 The maintainer's ruling of 2026-11-15: "From here on it's ok to depart from
@@ -296,7 +345,7 @@ action library does not know them.
 
 ## Extension beyond the C++: the modular heads set (opt-in, 2026-11-15)
 
-`avida-core/support/config/instset-heads-modular.cfg` (`heads_modular`,
+`avida-core/support/config/instset-heads-modular.yaml` (`heads_modular`,
 hardware type 0) adds `nop-D`, `nop-E`, `nop-F` (registers DX, EX, FX) to
 the stock heads set and enables the C++'s own `call` and `return`, so that
 a subroutine and scratch storage are cheap. The C++ has no such set, so
@@ -308,8 +357,8 @@ sit just before `NULL` in `CPU_INST_DEFS`, so every C++ library index is
 unchanged. The checks are the consistency suite, the default run (output
 identical, time within noise: 44.5 s before, 43.6 to 44.1 s after) and
 `crates/hardware/tests/modular.rs`. Select the set with
-`-def INST_SET instset-heads-modular.cfg`; `-set INST_SET` does not select
-it, because `avida.cfg` includes the set by a directive.
+`-set instruction_sets heads_modular` (a stock set by name) or name the file
+in the experiment file.
 `modular-subroutine.org` is a hand-written replicator that does NOT, NAND
 and AND through one shared `nand; return` subroutine. Two properties of the
 C++'s `call` shape such organisms: it searches for its label forward only,
@@ -327,7 +376,7 @@ function of two inputs field by field: arguments `fn` (`xor`, `and`, `or`,
 result bits of every field in the newest output; `planes`: one result bit per
 output, over successive outputs), `thresh` and `stride`. The quality is
 max(0, 2f - 1) for the fraction f of the compared bits that are right, so a
-random output scores about zero. `environment-adder-ladder.cfg` orders eight
+random output scores about zero. `environment-adder-ladder.yaml` orders eight
 reactions as rungs ending in a 2-bit adder; its threshold was raised from
 0.25 to 0.75 before any experiment, because constant and near-trivial outputs
 cleared 0.25 (measured chance levels in `ARCHITECTURE.md`). The hand-written
@@ -372,7 +421,8 @@ population. `PrintReuseData` and its file format are unchanged.
 
 ## Extension beyond the C++: dropping extinct genotypes (opt-in, 2026-11-15)
 
-`DROP_EXTINCT_GENOTYPES 1` (port-only setting, default 0) removes a genotype
+`DROP_EXTINCT_GENOTYPES 1` (port-only setting, default 0; in the experiment
+file `genealogy.drop_extinct_genotypes`) removes a genotype
 when its last organism dies. The default keeps the C++ behaviour: a genotype
 without organisms stays as a historic genotype while another genotype names
 it as a parent. With two-parent reproduction lineages never coalesce, so

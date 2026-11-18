@@ -6,9 +6,9 @@ Avida measures time in *updates*. This page explains what happens in one update 
 
 The unit of computation is the *time slice*: one organism gets to run for a slice (in the default exact mode, one instruction). An *update* is a fixed number of time slices:
 
-> update size = `AVE_TIME_SLICE` x the number of organisms alive at the start of the update
+> update size = `time.ave_time_slice` x the number of organisms alive at the start of the update
 
-With the stock `AVE_TIME_SLICE 30`, one update gives each organism 30 time slices on average. You can see this in `count.dat` (column 2, "number of insts executed this update"): in a population of 3,598 organisms the value is 107,910, which is 30 per organism.
+With the stock `time.ave_time_slice: 30`, one update gives each organism 30 time slices on average. You can see this in `count.dat` (column 2, "number of insts executed this update"): in a population of 3,598 organisms the value is 107,910, which is 30 per organism.
 
 Because the update size follows the population, an update means "the time it takes the average organism to run about 30 instructions", whatever the population size. An ancestor needs about 389 cycles for one gestation, so about 13 updates pass per generation of the first organism. Later, as organisms evolve to copy faster, generations take fewer updates.
 
@@ -29,9 +29,9 @@ flowchart TD
 
 The diagram in words: an update begins by running the events that are due, then advances the update counter and finishes the statistics of the update that just ended. It then works out its size and hands out that many time slices, one at a time, each to an organism the scheduler chooses. When the slices are used up, the next update starts. During a slice an organism may divide, which places an offspring in a cell, possibly replacing a living organism; a data-printing event writes a line for the moment it fires.
 
-Events are the way to schedule anything: see the [events file](../reference/events-file.md). The trigger letters are `u` (update), `g` (generation), `i` (immediate), `b` (births) and `o` (organism id), the last two being less common.
+Events are the way to schedule anything: see the [events](../reference/events-file.md). The triggers are `update`, `generation`, `immediate`, `births` and `org_id`, the last two being less common.
 
-## Who gets the time: `SLICING_METHOD`
+## Who gets the time: `time.slicing_method`
 
 | Value | Name | Behaviour |
 |---|---|---|
@@ -51,11 +51,11 @@ Merit is what turns task rewards into evolutionary advantage: an organism with t
 
 ## Speculative execution
 
-`SPECULATIVE 1` (the default) lets the program run ahead several instructions of an organism's slice when those instructions cannot affect any other organism, which makes runs faster. It is meant not to change what is computed, so leave it at its default unless you have a reason. The two execution modes are described on [execution modes](../execution/index.md).
+`general.speculative: 1` (the default) lets the program run ahead several instructions of an organism's slice when those instructions cannot affect any other organism, which makes runs faster. It is meant not to change what is computed, so leave it at its default unless you have a reason. The two execution modes are described on [execution modes](../execution/index.md).
 
 ## Threads inside an organism
 
-An organism can have several CPU *threads* on hardware that supports them. `MAX_CPU_THREADS` bounds the number, and `THREAD_SLICING_METHOD` chooses whether one thread (0) or all (1) execute per time slice. Parasites are threads; see [parasites](parasites.md).
+An organism can have several CPU *threads* on hardware that supports them. `time.max_cpu_threads` bounds the number, and `time.thread_slicing_method` chooses whether one thread (0) or all (1) execute per time slice. Parasites are threads; see [parasites](parasites.md).
 
 ## Next
 

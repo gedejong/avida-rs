@@ -81,7 +81,13 @@ pub fn exact_double(x: f64) -> String {
 // ---------------------------------------------------------------------------
 
 /// Keys of `environment`.
-pub const ENVIRONMENT_KEYS: &[&str] = &["resources", "grids", "reactions", "set_active"];
+pub const ENVIRONMENT_KEYS: &[&str] = &[
+    "input_and_mask",
+    "resources",
+    "grids",
+    "reactions",
+    "set_active",
+];
 /// Kinds of resource (`kind:`); a plain resource has none.
 pub const RESOURCE_KINDS: &[&str] = &["cell", "gradient"];
 /// Keys of a plain resource (`RESOURCE`).
@@ -392,6 +398,27 @@ struct Ctx<'a> {
 impl Ctx<'_> {
     fn at(&self, line: usize, msg: impl std::fmt::Display) -> String {
         format!("{}:{}: {}", self.file, line, msg)
+    }
+}
+
+/// The environment of the experiment file at `path`, as environment-file
+/// lines (`REACTION NOT not process:...`), for a reader that looks only at
+/// the environment. `Err` carries what loading the file reported.
+pub fn environment_of(path: &std::path::Path) -> Result<Vec<String>, String> {
+    let dir = path
+        .parent()
+        .filter(|d| !d.as_os_str().is_empty())
+        .unwrap_or(std::path::Path::new("."));
+    let name = path
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let mut cfg = Config::new();
+    let mut feedback = Feedback::new();
+    if cfg.load_experiment(&name, &dir.to_string_lossy(), &mut feedback) {
+        Ok(cfg.experiment.environment)
+    } else {
+        Err(feedback.render())
     }
 }
 
@@ -882,8 +909,8 @@ fn field<'n>(map: &'n [(yaml::Key, Node)], key: &str) -> Option<&'n Node> {
 }
 
 /// Renders an `environment` section into environment-file lines: the
-/// resources (plain, cell and gradient in their order), the state grids,
-/// the reactions, then `set_active`.
+/// input mask (`INPUT_AND_MASK`), the resources (plain, cell and gradient
+/// in their order), the state grids, the reactions, then `set_active`.
 pub fn render_environment_node(
     node: &Node,
     file: &str,
@@ -907,6 +934,17 @@ fn render_environment(ctx: &Ctx<'_>, node: &Node) -> Result<Vec<String>, Vec<Str
         }
     }
     let mut lines = Vec::new();
+    // The mask is passed on as written (hex with 0x, or decimal); the
+    // environment reads it.
+    if let Some(v) = field(map, "input_and_mask") {
+        match word(ctx, v, "the input mask of the environment") {
+            Ok(w) if w.contains(char::is_whitespace) => {
+                errors.push(ctx.at(v.line, "the input mask of the environment is one number"))
+            }
+            Ok(w) => lines.push(format!("INPUT_AND_MASK {w}")),
+            Err(e) => errors.push(e),
+        }
+    }
     let mut each = |key: &str, f: &dyn Fn(&Node) -> Result<String, String>| {
         if let Some(list) = field(map, key) {
             match seq_of(ctx, list, &format!("'{key}'")) {
@@ -1374,6 +1412,29 @@ mod tests {
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         d
+    }
+
+    #[test]
+    fn the_input_mask_and_task_arguments_pass_through() {
+        // Unknown field_arith arguments (`width`) and the mask reach the
+        // environment as written; the environment checks them.
+        let d = scratch("mask");
+        let node = yaml::parse(
+            "input_and_mask: 0xFF6DB6DB\nreactions:\n  - {name: A, task: field_arith, args: fn=carry:width=8:bits=2}\n  - {name: B, task: field_arith, args: {fn: partial, width: 16}}\n",
+        )
+        .unwrap()
+        .unwrap();
+        let lines = render_environment_node(&node, "e.yaml", d.to_str().unwrap()).unwrap();
+        assert_eq!(
+            lines,
+            [
+                "INPUT_AND_MASK 0xFF6DB6DB",
+                "REACTION A field_arith:fn=carry:width=8:bits=2",
+                "REACTION B field_arith:fn=partial,width=16",
+            ]
+        );
+        let node = yaml::parse("input_and_mask: [1, 2]\n").unwrap().unwrap();
+        assert!(render_environment_node(&node, "e.yaml", ".").is_err());
     }
 
     fn load(text: &str) -> (Config, Feedback, bool) {

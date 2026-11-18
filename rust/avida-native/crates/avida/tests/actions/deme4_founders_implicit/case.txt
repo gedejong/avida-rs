@@ -1,2 +1,2 @@
 base demes_germline
-args -s 100 -set WORLD_Y 20 -set NUM_DEMES 10 -set DEMES_USE_GERMLINE 0 -set DEMES_SEED_METHOD 1 -set DEMES_REPLICATE_ORGS 12 -set DEMES_REPLICATE_SIZE 2 -set SPECULATIVE 0
+args -s 100 -set world.y 20 -set demes.count 10 -set demes.use_germline 0 -set demes.seed_method 1 -set demes.replicate_orgs 12 -set demes.replicate_size 2 -set general.speculative 0

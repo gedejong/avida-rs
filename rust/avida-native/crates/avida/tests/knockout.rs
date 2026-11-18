@@ -29,7 +29,7 @@ fn config(name: &str, events: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
     copy_dir(&src, &dir);
-    fs::write(dir.join("events.cfg"), events).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     dir
 }
 
@@ -37,15 +37,15 @@ fn build(dir: &Path, modular: bool, sets: &[(&str, &str)]) -> World {
     let cwd = dir.to_string_lossy().into_owned();
     let mut args: Vec<String> = vec!["avida".into()];
     if modular {
-        args.extend(["-def", "INST_SET", "instset-heads-modular.cfg"].map(String::from));
+        args.extend(["-set", "instruction_sets", "heads_modular"].map(String::from));
     }
     for (n, v) in [
-        ("WORLD_X", "10"),
-        ("WORLD_Y", "10"),
-        ("RANDOM_SEED", "42"),
-        ("COPY_MUT_PROB", "0"),
-        ("DIVIDE_INS_PROB", "0"),
-        ("DIVIDE_DEL_PROB", "0"),
+        ("world.x", "10"),
+        ("world.y", "10"),
+        ("general.random_seed", "42"),
+        ("mutation.copy_prob", "0"),
+        ("mutation.divide_ins_prob", "0"),
+        ("mutation.divide_del_prob", "0"),
     ]
     .iter()
     .chain(sets)
@@ -54,9 +54,7 @@ fn build(dir: &Path, modular: bool, sets: &[(&str, &str)]) -> World {
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs)
-        .expect("World::new")
-        .0
+    World::new(cmd.config, &cwd).expect("World::new").0
 }
 
 /// Run `updates` updates.
@@ -304,12 +302,16 @@ const KNOCKOUT_LINES: &str =
 
 /// Mutations on (the stock rates): the run draws from its random stream
 /// constantly and the dominant genotype changes.
-const SETS: &[(&str, &str)] = &[("WORLD_X", "20"), ("WORLD_Y", "20"), ("RANDOM_SEED", "7")];
+const SETS: &[(&str, &str)] = &[
+    ("world.x", "20"),
+    ("world.y", "20"),
+    ("general.random_seed", "7"),
+];
 
 fn run_events(name: &str, events: &str, sets: &[(&str, &str)]) -> (PathBuf, String) {
     let dir = config(name, events);
     let cwd = dir.to_string_lossy().into_owned();
-    let mut args: Vec<String> = ["avida", "-def", "INST_SET", "instset-heads-modular.cfg"]
+    let mut args: Vec<String> = ["avida", "-set", "instruction_sets", "heads_modular"]
         .map(String::from)
         .to_vec();
     for (n, v) in SETS.iter().chain(sets) {
@@ -317,7 +319,7 @@ fn run_events(name: &str, events: &str, sets: &[(&str, &str)]) -> (PathBuf, Stri
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    let (mut w, _): (World, _) = World::new(cmd.config, &cwd, &cmd.defs).expect("World::new");
+    let (mut w, _): (World, _) = World::new(cmd.config, &cwd).expect("World::new");
     let mut out = Vec::new();
     w.run(&mut out).unwrap();
     w.out.flush_all();
@@ -415,11 +417,11 @@ fn observation_only_in_the_exact_mode_and_the_files_are_right() {
 fn observation_only_in_the_parallel_mode_and_thread_count_does_not_matter() {
     let one = check_observer(
         "par1",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "1")],
+        &[("execution.mode", "1"), ("execution.threads", "1")],
     );
     let four = check_observer(
         "par4",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "4")],
+        &[("execution.mode", "1"), ("execution.threads", "4")],
     );
     for f in ["knockout_map.dat", "reuse.dat", "second.dat"] {
         assert!(
@@ -434,9 +436,7 @@ fn bad_arguments_stop_the_run_at_start_up() {
     let dir = config("badargs", "u 0:1:end PrintKnockoutMap a.dat b.dat\n");
     let cwd = dir.to_string_lossy().into_owned();
     let cmd = process_cmdline(&["avida".to_string()], &cwd);
-    let e = World::new(cmd.config, &cwd, &cmd.defs)
-        .err()
-        .expect("must fail");
+    let e = World::new(cmd.config, &cwd).err().expect("must fail");
     assert!(e.contains("PrintKnockoutMap"), "{e}");
 }
 
@@ -548,11 +548,11 @@ fn the_survey_writes_a_row_of_minus_ones_when_nothing_qualifies() {
         "u begin Inject default-heads-modular.org\nu 0 PrintReuseSurvey\nu 1 Exit\n",
     );
     let cwd = dir.to_string_lossy().into_owned();
-    let args: Vec<String> = ["avida", "-def", "INST_SET", "instset-heads-modular.cfg"]
+    let args: Vec<String> = ["avida", "-set", "instruction_sets", "heads_modular"]
         .map(String::from)
         .to_vec();
     let cmd = process_cmdline(&args, &cwd);
-    let (mut w, _): (World, _) = World::new(cmd.config, &cwd, &cmd.defs).unwrap();
+    let (mut w, _): (World, _) = World::new(cmd.config, &cwd).unwrap();
     w.run(&mut Vec::new()).unwrap();
     w.out.flush_all();
     let rows = survey_rows(&dir);
@@ -578,10 +578,6 @@ fn survey_arguments() {
         let dir = config("survey_args", &format!("u 0 PrintReuseSurvey {args}\n"));
         let cwd = dir.to_string_lossy().into_owned();
         let cmd = process_cmdline(&["avida".to_string()], &cwd);
-        assert_eq!(
-            World::new(cmd.config, &cwd, &cmd.defs).is_ok(),
-            ok,
-            "{args:?}"
-        );
+        assert_eq!(World::new(cmd.config, &cwd).is_ok(), ok, "{args:?}");
     }
 }

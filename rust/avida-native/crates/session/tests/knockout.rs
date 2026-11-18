@@ -18,20 +18,20 @@ use common::{copy_dir, files_under, normalized, Harness};
 const ARGS: [&str; 11] = [
     "-s",
     "7",
-    "-def",
-    "INST_SET",
-    "instset-heads-modular.cfg",
     "-set",
-    "WORLD_X",
+    "instruction_sets",
+    "heads_modular",
+    "-set",
+    "world.x",
     "5",
     "-set",
-    "WORLD_Y",
+    "world.y",
     "5",
 ];
 
 fn args() -> Vec<&'static str> {
     let mut a = ARGS.to_vec();
-    a.extend(["-set", "COPY_MUT_PROB", "0.01"]);
+    a.extend(["-set", "mutation.copy_prob", "0.01"]);
     a
 }
 
@@ -44,8 +44,10 @@ fn modular_config(name: &str) -> PathBuf {
         &Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config"),
         &dir,
     );
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject modular-subroutine.org 12\n\
          u 0:5:end PrintAverageData\n\
          u 0:5:end PrintCountData\n\

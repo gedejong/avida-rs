@@ -1,5 +1,6 @@
-//! Loads every real `avida*.cfg` in the repository (avida-core/tests/*/config
-//! and avida-core/support/config) and spot-checks values.
+//! Loads every experiment file of the repository (avida-core/tests/*/config
+//! and avida-core/support/config, with the section files there) and
+//! spot-checks values.
 
 use avida_config::cmdline::process_cmdline;
 use avida_config::config::Config;
@@ -12,7 +13,10 @@ fn repo_root() -> PathBuf {
 
 fn config_dirs() -> Vec<PathBuf> {
     let core = repo_root().join("avida-core");
-    let mut dirs = vec![core.join("support/config")];
+    let mut dirs = vec![
+        core.join("support/config"),
+        core.join("support/config/misc/Parasites"),
+    ];
     let mut tests: Vec<PathBuf> = std::fs::read_dir(core.join("tests"))
         .unwrap()
         .filter_map(|e| e.ok())
@@ -24,133 +28,104 @@ fn config_dirs() -> Vec<PathBuf> {
     dirs
 }
 
-fn cfg_files(dir: &Path) -> Vec<String> {
-    let mut v: Vec<String> = std::fs::read_dir(dir)
-        .unwrap()
-        .filter_map(|e| e.ok())
-        .map(|e| e.file_name().to_string_lossy().into_owned())
-        .filter(|n| n.starts_with("avida") && n.ends_with(".cfg"))
-        .collect();
-    v.sort();
-    v
-}
-
 fn load(dir: &Path, name: &str) -> (Config, Feedback, bool) {
     let mut c = Config::new();
     let mut fb = Feedback::new();
-    let ok = c.load(name, dir.to_str().unwrap(), Some(&mut fb), None, false);
+    let ok = c.load_experiment(name, dir.to_str().unwrap(), &mut fb);
     (c, fb, ok)
 }
 
 #[test]
-fn every_repo_config_loads() {
+fn every_repo_experiment_file_loads() {
     let mut n = 0;
     for d in config_dirs() {
-        for f in cfg_files(&d) {
-            let (_, fb, ok) = load(&d, &f);
-            assert!(ok, "{}/{}: {}", d.display(), f, fb.render());
-            assert_eq!(fb.num_errors(), 0, "{}/{}: {}", d.display(), f, fb.render());
-            n += 1;
+        if !d.join("avida.yaml").exists() {
+            continue;
         }
+        let (_, fb, ok) = load(&d, "avida.yaml");
+        assert!(ok, "{}: {}", d.display(), fb.render());
+        assert_eq!(fb.num_errors(), 0, "{}: {}", d.display(), fb.render());
+        n += 1;
     }
-    assert!(n >= 90, "only {} configs found", n);
+    assert!(n >= 90, "only {} experiment files found", n);
 }
 
 #[test]
-fn every_repo_config_loads_through_cmdline() {
+fn every_repo_experiment_file_loads_through_cmdline() {
     for d in config_dirs() {
-        if !d.join("avida.cfg").exists() {
+        if !d.join("avida.yaml").exists() {
             continue;
         }
         let o = process_cmdline(&["avida".to_string()], d.to_str().unwrap());
-        // Every unknown line in these files would be listed as a warning; the
-        // run must not stop.
         assert!(o.exit.is_none(), "{}: {}", d.display(), o.stderr);
     }
 }
 
 #[test]
-fn support_config_instset_via_include() {
+fn every_section_file_loads() {
+    // The stock instruction sets and environments, and the examples in misc/.
+    let mut n = 0;
+    for dir in [
+        repo_root().join("avida-core/support/config"),
+        repo_root().join("avida-core/support/config/misc"),
+    ] {
+        let mut names: Vec<String> = std::fs::read_dir(&dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .filter(|n| n.ends_with(".yaml") && n != "avida.yaml")
+            .collect();
+        names.sort();
+        for name in names {
+            let section = if name.starts_with("instset-") {
+                "instruction_sets"
+            } else {
+                "environment"
+            };
+            let mut c = Config::new();
+            c.set_path(section, &name, dir.to_str().unwrap())
+                .unwrap_or_else(|e| panic!("{name}: {e}"));
+            n += 1;
+        }
+    }
+    assert!(n >= 20, "only {n} section files found");
+}
+
+#[test]
+fn support_config_values_and_stock_set() {
     let d = repo_root().join("avida-core/support/config");
-    let (c, fb, ok) = load(&d, "avida.cfg");
+    let (c, fb, ok) = load(&d, "avida.yaml");
     assert!(ok, "{}", fb.render());
-    // `#include INST_SET=instset-heads.cfg` pulls in the INSTSET block.
-    let inc = std::fs::read_to_string(d.join("instset-heads.cfg")).unwrap();
-    let n_inst = inc
-        .lines()
-        .filter(|l| l.trim_start().starts_with("INST "))
-        .count();
+    // `instruction_sets: [heads_default]` names the stock set.
     let lines = c.instsets();
-    assert!(!lines.is_empty());
-    assert!(lines[0].starts_with("INSTSET "), "{:?}", lines[0]);
-    assert_eq!(
-        lines.iter().filter(|l| l.starts_with("INST ")).count(),
-        n_inst
-    );
+    assert_eq!(lines[0], "INSTSET heads_default:hw_type=0");
+    assert_eq!(lines.iter().filter(|l| l.starts_with("INST ")).count(), 26);
     assert!(lines.iter().any(|l| l == "INST nop-A"));
     assert!(lines.iter().any(|l| l == "INST h-copy"));
     // other spot values from the support file
     assert_eq!(c.world_x, 60);
     assert_eq!(c.copy_mut_prob, 0.0075);
     assert_eq!(c.data_dir, "data");
-    assert_eq!(c.inst_set, "-");
     assert_eq!(c.birth_method, 0);
+    assert_eq!(c.experiment.environment.len(), 9);
+    assert_eq!(c.experiment.events.len(), 9);
 }
 
 #[test]
 fn test_configs_spot_values() {
     let core = repo_root().join("avida-core");
     // The consistency tests set their own topology and seed.
-    for name in ["sex", "large_pop", "heads_default_100u"] {
+    for (name, x, seed) in [
+        ("sex", 60, 7),
+        ("large_pop", 200, 101),
+        ("heads_default_100u", 60, 101),
+    ] {
         let d = core.join("tests").join(name).join("config");
-        let (c, fb, ok) = load(&d, "avida.cfg");
+        let (c, fb, ok) = load(&d, "avida.yaml");
         assert!(ok, "{}: {}", name, fb.render());
-        assert!(c.world_x > 0 && c.world_y > 0);
-        let text = std::fs::read_to_string(d.join("avida.cfg")).unwrap();
-        for l in text.lines() {
-            let l = l.split('#').next().unwrap().trim();
-            if let Some(v) = l.strip_prefix("WORLD_X ") {
-                assert_eq!(c.world_x, v.trim().parse::<i32>().unwrap());
-            }
-            if let Some(v) = l.strip_prefix("RANDOM_SEED ") {
-                assert_eq!(c.random_seed, v.trim().parse::<i32>().unwrap());
-            }
-            if let Some(v) = l.strip_prefix("COPY_MUT_PROB ") {
-                assert_eq!(c.copy_mut_prob, v.trim().parse::<f64>().unwrap());
-            }
-        }
+        assert_eq!(c.world_x, x, "{name}");
+        assert_eq!(c.random_seed, seed, "{name}");
     }
-}
-
-#[test]
-fn instset_blocks_captured_in_tests() {
-    // Any test config with INSTSET lines must have them captured verbatim.
-    let mut seen = 0;
-    for d in config_dirs() {
-        for f in cfg_files(&d) {
-            let text = std::fs::read_to_string(d.join(&f)).unwrap();
-            let expect = text
-                .lines()
-                .map(|l| {
-                    l.split('#')
-                        .next()
-                        .unwrap()
-                        .split_whitespace()
-                        .collect::<Vec<_>>()
-                        .join(" ")
-                })
-                .filter(|l| l.starts_with("INSTSET ") || l.starts_with("INST "))
-                .count();
-            if expect == 0 {
-                continue;
-            }
-            let (c, _, ok) = load(&d, &f);
-            assert!(ok);
-            assert!(c.instsets().len() >= expect, "{}/{}", d.display(), f);
-            seen += 1;
-        }
-    }
-    assert!(seen >= 1);
 }
 
 #[test]
@@ -161,10 +136,10 @@ fn set_and_seed_handling_on_real_file() {
         "-s",
         "123",
         "-set",
-        "WORLD_X",
+        "world.x",
         "17",
         "-set",
-        "COPY_MUT_PROB",
+        "mutation.copy_prob",
         "0.1",
         "-v0",
     ]

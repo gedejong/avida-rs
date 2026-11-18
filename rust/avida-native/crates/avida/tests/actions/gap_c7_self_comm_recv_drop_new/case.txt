@@ -1,2 +1,2 @@
 base avatars
-args -s 3 -set NEURAL_NETWORKING 1 -set NET_LOG_MESSAGES 1 -set NET_LOG_RETMESSAGES 1 -set DIVIDE_MUT_PROB 0 -set DIVIDE_INS_PROB 0 -set DIVIDE_DEL_PROB 0 -set SELF_COMMUNICATION 1 -set MESSAGE_RECV_BUFFER_SIZE 1 -set MESSAGE_RECV_BUFFER_BEHAVIOR 1
+args -s 3 -set messaging.neural_networking 1 -set network.log_messages 1 -set network.log_retmessages 1 -set mutation.divide_prob 0 -set mutation.divide_ins_prob 0 -set mutation.divide_del_prob 0 -set messaging.self_communication 1 -set messaging.recv_buffer_size 1 -set messaging.recv_buffer_behavior 1

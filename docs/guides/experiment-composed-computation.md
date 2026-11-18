@@ -8,7 +8,7 @@ Everything on this page is an extension of the Rust port. The C++ Avida has none
 
 ### An instruction set with subroutines
 
-`instset-heads-modular.cfg` is the stock heads set plus three more registers (DX, EX, FX, addressed with `nop-D`, `nop-E`, `nop-F`) and the instructions `call` and `return`. Select it with `-def INST_SET instset-heads-modular.cfg`.
+The stock set `heads_modular` (written out in `instset-heads-modular.yaml`) is the stock heads set plus three more registers (DX, EX, FX, addressed with `nop-D`, `nop-E`, `nop-F`) and the instructions `call` and `return`. Select it with `-set instruction_sets heads_modular`. (The runs of stages 3 to 7 used the old file `instset-heads-modular.cfg`, which held the same set.)
 
 Two properties shape organisms written for it. With six nops the complement of a label rotates every nop by one, so `call` followed by `nop-C nop-C` reaches the label `nop-D nop-D`. And `call` searches forward only, so a subroutine lies after its callers.
 
@@ -30,7 +30,7 @@ The quality is max(0, 2f - 1), where f is the fraction of the compared bits that
 
 ### The ladder
 
-`environment-adder-ladder.cfg` has eight reactions, each on its own resource that runs short when many organisms use it, each paid once per organism.
+`environment-adder-ladder.yaml` (named with `-set environment environment-adder-ladder.yaml`; the runs used the old `environment-adder-ladder.cfg`) has eight reactions, each on its own resource that runs short when many organisms use it, each paid once per organism.
 
 | Rung | Task | Value |
 |---|---|---|
@@ -63,7 +63,7 @@ Two limits of the knockout measure matter when reading results. A site early in 
 | Seeds | 10 per arm, seeds 1 to 10 |
 | Length | 100,000 updates |
 | World | 60 x 60, exact execution mode |
-| Mutations | stock rates, plus `DIVIDE_SLIP_PROB 0.05` in both arms |
+| Mutations | stock rates, plus `mutation.divide_slip_prob: 0.05` in both arms |
 | Threshold | 0.75 on the four `field_arith` rungs |
 | Fields | ten 3-bit fields for the 2-bit adder |
 | Primary outcome | number of seeds per arm that ever held each rung; highest rung held at the end |
@@ -143,15 +143,15 @@ Design, fixed on 2026-11-15 before any stage 4 run. One factor is changed at a t
 
 | Arm | Change against the base |
 |---|---|
-| `sex` | `divide-sex` in place of `h-divide`: offspring recombine with another offspring; run with `DROP_EXTINCT_GENOTYPES 1` (see below) |
+| `sex` | `divide-sex` in place of `h-divide`: offspring recombine with another offspring; run with `genealogy.drop_extinct_genotypes: 1` (see below) |
 | `pop-30` | a 30 x 30 world, resource inflow scaled to the area |
 | `pop-120` | a 120 x 120 world, resource inflow scaled to the area |
 | `seasons` | NOT, NAND, XOR and AND pay nothing in every other period of 2,000 updates |
-| `min-genome` | `MIN_GENOME_SIZE 50`: a divide that would leave fewer than 50 instructions fails |
+| `min-genome` | `divide.min_genome_size: 50`: a divide that would leave fewer than 50 instructions fails |
 
 The first four are the factors planned from the start. The fifth was added after stage 3, because of the genome shrinking seen there; the value 50 is half the ancestor's length and was chosen without a trial run. Seeds 1 to 10, 100,000 updates, exact mode, and the outcomes and tests of stage 3. Each arm is compared with the base only, so five comparisons are made per measure; p values are reported uncorrected and with a Holm correction over the five.
 
-One change was made to the `sex` arm after the batch had started and before any `sex` run finished. With two parents every ancestor stays in memory as a historic genotype, and the first six `sex` runs grew to more than 4 GB each and were stopped at about 65,000 updates; their output is not used. The arm now runs with the new setting `DROP_EXTINCT_GENOTYPES 1`, which drops a genotype when its last organism dies and changes nothing that organisms compute (the data files of a run are byte-identical with and without it). The measures that need ancestry, MODES complexity and the phylogeny measures, are therefore not available for the `sex` arm. Its primary outcome, the genome length, the tasks performed and the reuse measures are reported as for the other arms.
+One change was made to the `sex` arm after the batch had started and before any `sex` run finished. With two parents every ancestor stays in memory as a historic genotype, and the first six `sex` runs grew to more than 4 GB each and were stopped at about 65,000 updates; their output is not used. The arm now runs with the new setting `genealogy.drop_extinct_genotypes: 1`, which drops a genotype when its last organism dies and changes nothing that organisms compute (the data files of a run are byte-identical with and without it). The measures that need ancestry, MODES complexity and the phylogeny measures, are therefore not available for the `sex` arm. Its primary outcome, the genome length, the tasks performed and the reuse measures are reported as for the other arms.
 
 #### Results
 
@@ -235,11 +235,11 @@ Design, fixed on 2026-11-16 before any stage 5 run. The correction above moves t
 |---|---|
 | `exact` | against `min-genome` of stage 4: the four field rungs pay only at full quality (`thresh=1`), so NAND then AND no longer clears HALFADD_PLANES |
 | `exact+steps` | the four stock logic functions between NAND and XOR are paid: ORN 2, OR 3, ANDN 3, NOR 4, each on its own resource, once per organism |
-| `exact+steps+islands` | ten demes of 60 x 6 cells (`NUM_DEMES 10`); an offspring is born in another deme, at a random cell, with probability 0.001 (`DEMES_MIGRATION_RATE`) |
+| `exact+steps+islands` | ten demes of 60 x 6 cells (`demes.count: 10`); an offspring is born in another deme, at a random cell, with probability 0.001 (`demes.migration_rate`) |
 
 The four steps are those of the stock logic environment, with its values. In the classic experiment on this question (Lenski and others, 2003) populations reached the hardest logic function only when the simpler ones in between were paid. Every arm lists the same twelve reactions in the same order (NOT, NAND, AND, ORN, OR, ANDN, NOR, XOR and the four field rungs), so that the output files agree; in `exact` the four steps are worth nothing, and an organism that performs one is counted without being paid. The migration rate was chosen without a trial run: with 360 organisms in a deme it is about one migrant per deme in three generations.
 
-Seeds 1 to 10, 100,000 updates, exact mode, modular set, a 60 x 60 world, `MIN_GENOME_SIZE 50`, the other settings of stage 4. Primary outcome: the number of seeds that hold XOR at the last sample. Secondary: the same for HALFADD_PLANES, which at full quality is a real half adder; the highest rung held; the first update at which XOR is held; and the measures of stage 4. Tests: Fisher's exact test, two-sided, for `exact+steps` against `exact` and for `exact+steps+islands` against `exact+steps`, reported uncorrected and with a Holm correction over the two. For each arm the most abundant genotypes of the runs that hold XOR or more are run in the test CPU and their outputs compared with the functions paid, which is the check that was missing in stages 3 and 4.
+Seeds 1 to 10, 100,000 updates, exact mode, modular set, a 60 x 60 world, `divide.min_genome_size: 50`, the other settings of stage 4. Primary outcome: the number of seeds that hold XOR at the last sample. Secondary: the same for HALFADD_PLANES, which at full quality is a real half adder; the highest rung held; the first update at which XOR is held; and the measures of stage 4. Tests: Fisher's exact test, two-sided, for `exact+steps` against `exact` and for `exact+steps+islands` against `exact+steps`, reported uncorrected and with a Holm correction over the two. For each arm the most abundant genotypes of the runs that hold XOR or more are run in the test CPU and their outputs compared with the functions paid, which is the check that was missing in stages 3 and 4.
 
 Before the runs: a 3,000-update trial of each arm wrote every file, and the islands arm run without migration filled one deme only (358 organisms at update 2,000).
 
@@ -339,8 +339,8 @@ Three settings of `exact+steps`, each at its present value and at one other, in 
 | Setting | Now | Other | Why |
 |---|---|---|---|
 | Pay of XOR | 2 | 8 | pay then doubles from NOR (4) to XOR, as per level in the classic experiment; turning a step into XOR pays |
-| `MIN_GENOME_SIZE` | 50 | 100 | the ancestor's length; genomes cannot shrink below the room they started with |
-| `COPY_MUT_PROB` | 0.0075 | 0.0025 | the classic rate; at 0.0075 a genome of 110 instructions takes about 0.8 mutations per copy |
+| `divide.min_genome_size` | 50 | 100 | the ancestor's length; genomes cannot shrink below the room they started with |
+| `mutation.copy_prob` | 0.0075 | 0.0025 | the classic rate; at 0.0075 a genome of 110 instructions takes about 0.8 mutations per copy |
 
 Seeds 31 to 38 in each of the eight arms (64 runs, none of the seeds used before), 100,000 updates, no stopping rule, every other setting of stage 5; the population is saved every 10,000 updates and the resource maps are not written. The runs are dealt over rented servers so that each server has every arm in proportion to its cores.
 
@@ -348,7 +348,7 @@ Seeds 31 to 38 in each of the eight arms (64 runs, none of the seeds used before
 
 **Secondary, without tests.** The count in each of the eight arms, which shows whether two settings need each other; the time to XOR; whether XOR is still held at 100,000; the highest rung held; the genome length over time in each arm, in particular whether populations with the floor of 100 sit at the floor. The most abundant genotypes of populations that hold XOR are run in the test CPU as before.
 
-The floor of 100 stops genomes from shrinking further and leaves the pressure to shrink in place. If the floor matters, where that pressure comes from is the next question, since the merit setting in use (`BASE_MERIT_METHOD 4`) is meant to make length neutral.
+The floor of 100 stops genomes from shrinking further and leaves the pressure to shrink in place. If the floor matters, where that pressure comes from is the next question, since the merit setting in use (`time.base_merit_method: 4`) is meant to make length neutral.
 
 Lab folder `18-xor-factorial`. Before the runs: a 1,500-update trial of four arms wrote every file, and the baseline arm differs from `exact+steps` of stage 5 in its outputs only.
 
@@ -361,8 +361,8 @@ All 64 runs ran to 100,000 updates, on six rented servers of two cheap types, ea
 | Setting | Other value | Present value | Fisher p | after Holm |
 |---|---|---|---|---|
 | Pay of XOR, 8 against 2 | 32 of 32 | 9 of 32 | 4 x 10^-10 | 1 x 10^-9 |
-| `COPY_MUT_PROB`, 0.0025 against 0.0075 | 24 of 32 | 17 of 32 | 0.12 | 0.23 |
-| `MIN_GENOME_SIZE`, 100 against 50 | 18 of 32 | 23 of 32 | 0.30 | 0.30 |
+| `mutation.copy_prob`, 0.0025 against 0.0075 | 24 of 32 | 17 of 32 | 0.12 | 0.23 |
+| `divide.min_genome_size`, 100 against 50 | 18 of 32 | 23 of 32 | 0.30 | 0.30 |
 
 Per arm (x: pay of XOR; f: floor; m: copy mutation rate in units of 0.0001):
 

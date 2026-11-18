@@ -6,7 +6,6 @@
 mod common;
 
 use std::cell::RefCell;
-use std::fs;
 use std::path::PathBuf;
 use std::rc::Rc;
 
@@ -16,25 +15,25 @@ use common::*;
 const ARGS: &[&str] = &[
     "-s",
     "7",
-    "-def",
-    "INST_SET",
-    "instset-heads-modular.cfg",
     "-set",
-    "WORLD_X",
+    "instruction_sets",
+    "heads_modular",
+    "-set",
+    "world.x",
     "5",
     "-set",
-    "WORLD_Y",
+    "world.y",
     "5",
     "-set",
-    "COPY_MUT_PROB",
+    "mutation.copy_prob",
     "0",
     // One cycle per update and organism, so the organism has only just
     // started when it is first watched.
     "-set",
-    "SLICING_METHOD",
+    "time.slicing_method",
     "0",
     "-set",
-    "AVE_TIME_SLICE",
+    "time.ave_time_slice",
     "1",
 ];
 
@@ -42,8 +41,10 @@ const ARGS: &[&str] = &[
 /// organism alone in the centre cell of a 5 x 5 world.
 fn modular_config(name: &str) -> PathBuf {
     let dir = fresh_support_config(name);
-    fs::write(
-        dir.join("events.cfg"),
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
         "u begin Inject modular-subroutine.org 12\nu 100000 Exit\n",
     )
     .unwrap();

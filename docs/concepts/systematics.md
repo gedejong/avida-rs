@@ -10,7 +10,7 @@ The program also gives each genotype a name made of its length and a short lette
 
 Counting genotypes:
 
-- `count.dat` column 4 is the number of different genotypes alive, and column 5 the number of *threshold* genotypes: those with at least `THRESHOLD` organisms (stock 3). A genotype that stays below the threshold is not yet established in the population.
+- `count.dat` column 4 is the number of different genotypes alive, and column 5 the number of *threshold* genotypes: those with at least `genealogy.threshold` organisms (stock 3). A genotype that stays below the threshold is not yet established in the population.
 - In the first stock run at update 1000, about 2,870 genotypes were alive in a population of 3,598 organisms, of which about 400 were above the threshold.
 
 ## The tree of life
@@ -27,12 +27,12 @@ Because every genotype records its parent, the genotypes form a tree. Three tool
 
 ## Coalescence clades
 
-With `TRACK_CCLADES 1`, the program tracks coalescence clades and `PrintCCladeCounts` and its relatives report them. The ids go to the file named by `TRACK_CCLADES_IDS` (stock `coalescence.ids`).
+With `second_pass.track_cclades: 1`, the program tracks coalescence clades and `PrintCCladeCounts` and its relatives report them. The ids go to the file named by `second_pass.track_cclades_ids` (stock `coalescence.ids`).
 
 ## Turning it off
 
-`DISABLE_GENOTYPE_CLASSIFICATION` turns off the tracking of historical genotypes to save memory. Many data files and the snapshot depend on the tracking, so leave it off unless you know you do not need them.
+`mating.disable_genotype_classification` turns off the tracking of historical genotypes to save memory. Many data files and the snapshot depend on the tracking, so leave it off unless you know you do not need them.
 
 ## Next
 
-The other half of the documentation is the [reference](../reference/index.md), starting with the [settings](../reference/settings.md).
+The other half of the documentation is the [reference](../reference/index.md), starting with the [settings](../reference/config-yaml.md#settings-by-group).

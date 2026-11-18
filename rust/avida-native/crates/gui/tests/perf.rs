@@ -56,10 +56,12 @@ fn report(what: &str, (median, p95): (f64, f64)) {
 #[ignore = "a measurement; run it explicitly in a release build"]
 fn frame_costs_on_a_300_by_300_world() {
     let dir = fresh_config("perf");
-    let events = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        events
+    let events = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &events
             .replace(
                 "u begin Inject default-classic.org",
                 "u begin InjectAll filename=default-classic.org",
@@ -70,7 +72,7 @@ fn frame_costs_on_a_300_by_300_world() {
     let mut h = harness(
         StartupArgs {
             dir: Some(dir),
-            avida_args: ["-set", "WORLD_X", "300", "-set", "WORLD_Y", "300"]
+            avida_args: ["-set", "world.x", "300", "-set", "world.y", "300"]
                 .map(String::from)
                 .to_vec(),
             ..Default::default()
@@ -216,10 +218,12 @@ fn filtering_costs_on_a_160_by_160_world() {
     use avida_viewmodel::{subset_row, Condition, Prop};
 
     let dir = fresh_config("perf-filter");
-    let events = std::fs::read_to_string(dir.join("events.cfg")).unwrap();
-    std::fs::write(
-        dir.join("events.cfg"),
-        events
+    let events = avida_config::convert::section_lines(&dir, "avida.yaml", "events").unwrap();
+    avida_config::convert::replace_section(
+        &dir,
+        "avida.yaml",
+        "events",
+        &events
             .replace(
                 "u begin Inject default-classic.org",
                 "u begin InjectAll filename=default-classic.org",
@@ -232,16 +236,16 @@ fn filtering_costs_on_a_160_by_160_world() {
             dir: Some(dir),
             avida_args: [
                 "-set",
-                "WORLD_X",
+                "world.x",
                 "160",
                 "-set",
-                "WORLD_Y",
+                "world.y",
                 "160",
                 "-set",
-                "DIVIDE_INS_PROB",
+                "mutation.divide_ins_prob",
                 "0.08",
                 "-set",
-                "DIVIDE_DEL_PROB",
+                "mutation.divide_del_prob",
                 "0.08",
             ]
             .map(String::from)

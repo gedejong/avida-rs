@@ -49,7 +49,7 @@ fn run(name: &str, sets: &[(&str, &str)], events: &str) -> (PathBuf, Vec<u8>) {
     let src = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../../../avida-core/tests/heads_default_100u/config");
     copy_dir(&src, &dir);
-    fs::write(dir.join("events.cfg"), events).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     let cwd = dir.to_string_lossy().into_owned();
     let mut args = vec!["avida".to_string()];
     for (n, v) in sets {
@@ -57,7 +57,7 @@ fn run(name: &str, sets: &[(&str, &str)], events: &str) -> (PathBuf, Vec<u8>) {
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    let (mut w, _) = World::new(cmd.config, &cwd, &cmd.defs).unwrap();
+    let (mut w, _) = World::new(cmd.config, &cwd).unwrap();
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();
     while stepper.begin_update(&mut w, &mut out).unwrap() {
@@ -203,11 +203,11 @@ fn exact_mode_is_unperturbed_and_deterministic() {
 fn parallel_mode_is_unperturbed_and_independent_of_the_thread_count() {
     let one = assert_unperturbed(
         "par1",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "1")],
+        &[("execution.mode", "1"), ("execution.threads", "1")],
     );
     let four = assert_unperturbed(
         "par4",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "4")],
+        &[("execution.mode", "1"), ("execution.threads", "4")],
     );
     for f in OURS {
         assert_eq!(

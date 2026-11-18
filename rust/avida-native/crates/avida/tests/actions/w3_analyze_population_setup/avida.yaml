@@ -1,0 +1,62 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 100
+analyze:
+  file: analyze-print-withargs.cfg
+
+instruction_sets:
+  - heads_default
+
+environment:
+  resources:
+    - {name: resA, initial: 100, inflow: 1, outflow: .01}
+    - name: resD
+      deme: true
+      initial: 100
+      inflow: 1
+      outflow: .01
+      geometry: grid
+      inflowx1: 1
+      inflowx2: 3
+      inflowy1: 1
+      inflowy2: 2
+    - {name: resB, initial: 50, geometry: torus, inflow: 2, outflow: .1, xdiffuse: 0.5}
+    - name: food0
+      kind: gradient
+      height: 5
+      spread: 12
+      plateau: 1
+      decay: 5
+      move_a_scaler: 1
+      updatestep: 200
+      halo: 1
+      halo_inner_radius: 2
+      halo_anchor_x: 5
+      halo_anchor_y: 5
+      halo_width: 12
+    - name: food1
+      kind: gradient
+      height: 3
+      spread: 10
+      plateau: 1
+      decay: 1
+      move_a_scaler: 3.8
+      max_x: 10
+      min_x: 2
+      max_y: 9
+      min_y: 1
+      plateau_inflow: 0.01
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events: []

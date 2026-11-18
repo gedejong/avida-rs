@@ -10,10 +10,10 @@
 
 mod common;
 
-use std::fs;
 use std::path::Path;
 
 use avida_config::cmdline::process_cmdline;
+use avida_config::convert::{replace_section, section_lines};
 use avida_viewmodel::{capture, Subscription};
 use avida_world::run::Stepper;
 use avida_world::world::World;
@@ -25,7 +25,7 @@ fn world_with(dir: &Path, args: &[&str]) -> World {
     argv.extend(args.iter().map(|a| a.to_string()));
     let cmd = process_cmdline(&argv, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs)
+    World::new(cmd.config, &cwd)
         .unwrap_or_else(|e| panic!("World::new: {e}"))
         .0
 }
@@ -35,12 +35,10 @@ fn transsmt_threads_show_their_registers_and_labels() {
     // Parasites infect hosts at update 30 (600 in the test), so hosts run
     // a second thread.
     let dir = fresh_config("parasites_limited_resources", "threads_transsmt");
-    let events = fs::read_to_string(dir.join("events.cfg")).unwrap();
-    fs::write(
-        dir.join("events.cfg"),
-        events.replace("u 600 InjectParasite", "u 30 InjectParasite"),
-    )
-    .unwrap();
+    let events = section_lines(&dir, "avida.yaml", "events").unwrap();
+    assert!(events.contains("u 600 InjectParasite"));
+    let events = events.replace("u 600 InjectParasite", "u 30 InjectParasite");
+    replace_section(&dir, "avida.yaml", "events", &events).unwrap();
     let mut w = world_with(&dir, &["-s", "1"]);
     let mut stepper = Stepper::new(&w);
     let mut out = Vec::new();

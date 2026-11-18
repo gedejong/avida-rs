@@ -924,10 +924,10 @@ mod tests {
         }
         let wd = dir.to_string_lossy().into_owned();
         let mut cfg = Config::default();
-        assert!(cfg.load("avida.cfg", &wd, None, None, false));
+        assert!(cfg.load_experiment("avida.yaml", &wd, &mut avida_config::Feedback::new()));
         cfg.world_y = 20;
         cfg.num_demes = 10;
-        let mut w = World::new(cfg, &wd, &[]).unwrap().0;
+        let mut w = World::new(cfg, &wd).unwrap().0;
         w.stats.set_current_update(0);
         let is = w.hw.registry().shared_inst_set(0).unwrap();
         let g = Genome::with_inst_set(

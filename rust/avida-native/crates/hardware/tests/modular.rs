@@ -1,4 +1,4 @@
-//! The opt-in `heads_modular` instruction set (`instset-heads-modular.cfg`):
+//! The opt-in `heads_modular` instruction set (`instset-heads-modular.yaml`):
 //! six registers (nop-D to nop-F), label complements through six nops, and
 //! the hand-written subroutine organism (`modular-subroutine.org`).
 
@@ -13,13 +13,10 @@ fn config_dir() -> PathBuf {
     avida_core().join("support/config")
 }
 
-/// The `INSTSET`/`INST` lines of an instruction set file in the stock config.
+/// The `INSTSET`/`INST` lines of an instruction-set file in the stock config.
 fn instset_lines(file: &str) -> Vec<String> {
-    let text = std::fs::read_to_string(config_dir().join(file)).unwrap();
-    text.lines()
-        .map(|l| l.split('#').next().unwrap().trim().to_string())
-        .filter(|l| !l.is_empty())
-        .collect()
+    let text = avida_config::convert::section_lines(&config_dir(), file, "instruction_sets");
+    text.unwrap().lines().map(str::to_string).collect()
 }
 
 fn fixture(file: &str) -> Fixture {
@@ -79,7 +76,7 @@ fn stack_top(trace: &str, n: usize) -> u32 {
 
 #[test]
 fn six_registers_wrap_through_fx_to_ax() {
-    let mut fx = fixture("instset-heads-modular.cfg");
+    let mut fx = fixture("instset-heads-modular.yaml");
     // FX = 2, then `swap ?FX?` exchanges FX with the next register, AX.
     let g = genome(
         &fx,
@@ -96,7 +93,7 @@ fn six_registers_wrap_through_fx_to_ax() {
 
 #[test]
 fn three_registers_wrap_through_cx_to_ax_on_the_stock_set() {
-    let mut fx = fixture("instset-heads.cfg");
+    let mut fx = fixture("instset-heads.yaml");
     let g = genome(
         &fx,
         &[
@@ -113,7 +110,7 @@ fn three_registers_wrap_through_cx_to_ax_on_the_stock_set() {
 
 #[test]
 fn six_registers_print_in_the_same_style() {
-    let mut fx = fixture("instset-heads-modular.cfg");
+    let mut fx = fixture("instset-heads-modular.yaml");
     let g = genome(&fx, &["inc", "nop-F"]);
     let (t, _) = traced(&mut fx, &g);
     let line = t.lines().find(|l| l.starts_with("AX:")).unwrap();
@@ -125,7 +122,7 @@ fn six_registers_print_in_the_same_style() {
 
 #[test]
 fn labels_complement_through_six_nops() {
-    let mut fx = fixture("instset-heads-modular.cfg");
+    let mut fx = fixture("instset-heads-modular.yaml");
     // call C C jumps past the label D D (the complement with six nops); the
     // stock complement A A is absent. The return address 2 is on the stack
     // while the subroutine runs and gone after `return`.
@@ -156,7 +153,7 @@ const TASKS: [&str; 9] = [
 
 #[test]
 fn hand_written_organism_replicates_true_and_does_three_tasks() {
-    let mut fx = fixture("instset-heads-modular.cfg");
+    let mut fx = fixture("instset-heads-modular.yaml");
     // The organism file names its set; load it from the config directory.
     let g = fx.load_org("modular-subroutine.org");
     assert_eq!(g.representation().size(), 57);
@@ -185,7 +182,7 @@ fn hand_written_organism_replicates_true_and_does_three_tasks() {
 #[test]
 fn the_new_instructions_run_in_the_parallel_bursts() {
     use avida_hardware::parallel::cpu_parallel_ok;
-    let fx = fixture("instset-heads-modular.cfg");
+    let fx = fixture("instset-heads-modular.yaml");
     let is = fx.hwm.registry().default_inst_set().unwrap();
     assert_eq!((is.size(), is.num_nops()), (31, 6));
     for name in ["nop-D", "nop-E", "nop-F", "call", "return", "push", "pop"] {

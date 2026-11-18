@@ -42,9 +42,10 @@ Avida.app.
 III. RUNNING
 --------------------------------------------------------------------------------
 
-Avida reads avida.cfg, the environment, the events and the instruction set from
-the current directory. A complete default configuration is in
-avida-core/support/config:
+Avida reads one experiment file, avida.yaml, from the current directory. It
+holds the settings in groups, the instruction sets, the environment and the
+events; organisms (.org) and analyze scripts (analyze.cfg) stay files of their
+own. A complete default experiment is in avida-core/support/config:
 
   $ cp -r avida-core/support/config my-run
   $ cd my-run
@@ -53,7 +54,10 @@ avida-core/support/config:
   $ ../rust/avida-native/target/release/avida-tui .     # watch it in a terminal
 
 Results are written to the data directory inside it. `avida -h` lists the
-command-line options.
+command-line options; `-set mutation.copy_prob 0.0025` changes one setting.
+docs/reference/config-yaml.md describes the file. A folder of the old
+configuration files (avida.cfg, environment.cfg, events.cfg) is converted
+once with `avida convert DIR`.
 
 
 IV. TESTS
@@ -83,4 +87,4 @@ worked tutorials.
                                       kept until docs/ has taken over all of it;
                                       docs/migration/wiki-map.md says what moved where
 
-Revised 2026-11-13
+Revised 2026-11-18

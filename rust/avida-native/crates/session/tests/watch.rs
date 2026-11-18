@@ -191,7 +191,7 @@ fn a_command_interrupts_run_until_and_a_finished_run_ends_it() {
 
 /// A 4 x 4 world fills within a few dozen updates; from then on every
 /// birth replaces an organism.
-const CROWDED: [&str; 6] = ["-set", "WORLD_X", "4", "-set", "WORLD_Y", "4"];
+const CROWDED: [&str; 6] = ["-set", "world.x", "4", "-set", "world.y", "4"];
 
 #[test]
 fn a_replaced_organism_ends_the_watch_and_offspring_can_be_followed() {

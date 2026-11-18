@@ -1,6 +1,6 @@
 # The command-line program: `avida`
 
-`avida` reads the configuration files in the current directory, runs the experiment that the events file describes, and writes data files. It prints one progress line per update on standard output unless you silence it.
+`avida` reads the experiment file (`avida.yaml`) in the current directory, runs the experiment that its events describe, and writes data files. It prints one progress line per update on standard output unless you silence it.
 
 ## Usage
 
@@ -8,24 +8,26 @@
 avida [options]
 ```
 
-Run it inside an experiment folder (one that contains `avida.cfg` and the files it names). The options, as the program's own help lists them:
+Run it inside an experiment folder (one that contains `avida.yaml` and the files it names). The options, as the program's own help lists them:
 
 | Option | Meaning |
 |---|---|
 | `-a`, `-analyze` | Process `analyze.cfg` instead of doing a normal run. See [analyze mode](../reference/analyze-mode.md). |
-| `-c FILE`, `-config FILE` | Use `FILE` as the configuration file instead of `avida.cfg`. |
-| `-def NAME VALUE` | Define a variable for the configuration file's `#include` lines. Used to pick an instruction set, for example `-def INST_SET instset-heads-sex.cfg`. |
+| `-c FILE`, `-config FILE` | Use `FILE` as the experiment file instead of `avida.yaml`. |
 | `-e`, `-actions` | Print the list of all known actions with their arguments, and exit. See the [actions reference](../reference/actions.md). |
 | `-h`, `-help` | Print the option list. |
 | `-i`, `-interactive` | Run analyze mode interactively, reading commands from standard input. |
 | `-l FILE`, `-load FILE` | Load a clone file. |
 | `-r`, `-review` | Review the settings: print those that differ from their defaults, then exit. |
 | `-s VALUE`, `-seed VALUE` | Set the random seed. The same seed on the same configuration and build gives the same run in the exact [execution mode](../execution/index.md). |
-| `-set NAME VALUE` | Override a setting of `avida.cfg`. May be repeated. |
+| `-set PATH VALUE` | Override a setting of the experiment file, named by its group and key (`-set world.x 30`), or replace a section: `-set events FILE`, `-set environment FILE`, `-set instruction_sets FILE` or a stock set's name. May be repeated. |
 | `-v`, `-version` | Print the version number. |
 | `-v0` to `-v4` | Set the output verbosity from 0 (least) to 4 (most). `-v0` drops the per-update progress lines. |
-| `-w`, `-warn` | Warn whenever a default setting is used because the configuration file does not give it. |
-| `--generate-config` | Write a default `avida.cfg` into the current directory. |
+| `-w`, `-warn` | Warn whenever a default setting is used because the experiment file does not give it. |
+| `--generate-config` | Write the default experiment file, `avida.yaml`, into the current directory. |
+| `convert [DIR]` | Convert a folder of the old configuration files into `avida.yaml` (`avida convert -h`; see [converting an old folder](../reference/config-yaml.md#converting-an-old-folder)). |
+
+The option `-def` of the C++ program is gone: the experiment file has no `#include` lines. An instruction set is chosen with `-set instruction_sets`.
 
 The version line the program prints reads `Avida 2.14.0`, the same as the C++ program whose output the port reproduces.
 
@@ -34,16 +36,16 @@ The version line the program prints reads `Avida 2.14.0`, the same as the C++ pr
 A run with seed 7 on a smaller world, writing into `run-7`:
 
 ```sh
-avida -s 7 -set WORLD_X 30 -set WORLD_Y 30 -set DATA_DIR run-7
+avida -s 7 -set world.x 30 -set world.y 30 -set general.data_dir run-7
 ```
 
 Check which settings an invocation changes:
 
 ```sh
-avida -r -set WORLD_X 20
+avida -r -set world.x 20
 ```
 
-You should see a banner and then `Non-Default Settings:` followed by ` WORLD_X 20 (default=60)`.
+You should see a banner and then `Non-Default Settings:` followed by ` world.x 20 (default=60)`.
 
 List the available actions:
 
@@ -53,24 +55,24 @@ avida -e | less
 
 You should see a line for each of the 423 actions, with its arguments.
 
-Run a different event file and instruction set without editing any file:
+Run other events and another instruction set without editing any file (`events-sex.yaml` is a file whose only key is `events`):
 
 ```sh
-avida -s 1 -set EVENT_FILE events-sex.cfg -def INST_SET instset-heads-sex.cfg
+avida -s 1 -set events events-sex.yaml -set instruction_sets heads_sex
 ```
 
 ## Settings that matter on the command line
 
-- `EVENT_FILE` and `ENVIRONMENT_FILE` choose the events and environment files, so one folder can hold several variants of an experiment. The [tutorials](../guides/index.md) use this to run "arms" of an experiment from one folder.
-- `DATA_DIR` sets where output goes.
-- `RANDOM_SEED` in `avida.cfg` is overridden by `-s`.
-- `EXECUTION_MODE 1` switches on the [parallel mode](../execution/index.md).
+- `events` and `environment` replace the events and the environment with those of a file, so one folder can hold several variants of an experiment. The [tutorials](../guides/index.md) use this to run "arms" of an experiment from one folder.
+- `general.data_dir` sets where output goes.
+- `general.random_seed` in `avida.yaml` is overridden by `-s`.
+- `execution.mode 1` switches on the [parallel mode](../execution/index.md).
 
 ## Output
 
-On standard output, `avida` prints the banner, the line `Random Seed: N`, and (at the default verbosity) one `UD:` line per update. Errors go to standard error. A missing configuration file reads `error: configuration file 'avida.cfg' not found`.
+On standard output, `avida` prints the banner, the line `Random Seed: N`, and (at the default verbosity) one `UD:` line per update. Errors go to standard error. A missing experiment file reads `error: configuration file 'avida.yaml' not found`; a folder with an old `avida.cfg` instead names `avida convert`.
 
-Data files go to `DATA_DIR`. See [output files](../getting-started/output-files.md).
+Data files go to `general.data_dir` (`data` unless the file says otherwise). See [output files](../getting-started/output-files.md).
 
 ## Environment variables
 
@@ -85,7 +87,7 @@ Data files go to `DATA_DIR`. See [output files](../getting-started/output-files.
 ```sh
 for s in 1 2 3 4 5 6 7 8; do
   echo "$s"
-done | xargs -P 4 -I{} sh -c 'avida -s {} -set DATA_DIR run-{} > run-{}.log'
+done | xargs -P 4 -I{} sh -c 'avida -s {} -set general.data_dir run-{} > run-{}.log'
 ```
 
 The [tutorials](../guides/index.md) use a small helper script of this kind. [How to run replicate seeds](../guides/how-to-replicates.md) explains it.

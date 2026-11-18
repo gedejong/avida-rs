@@ -42,8 +42,8 @@ fn fresh_dir(name: &str, events: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&dir);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../avida-core/support/config");
     copy_dir(&src, &dir);
-    fs::write(dir.join("environment.cfg"), ENVIRONMENT).unwrap();
-    fs::write(dir.join("events.cfg"), events).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "environment", ENVIRONMENT).unwrap();
+    avida_config::convert::replace_section(&dir, "avida.yaml", "events", events).unwrap();
     dir
 }
 
@@ -55,12 +55,16 @@ fn build_world(dir: &Path, sets: &[(&str, &str)]) -> World {
     }
     let cmd = process_cmdline(&args, &cwd);
     assert!(cmd.exit.is_none(), "command line: {}", cmd.stderr);
-    World::new(cmd.config, &cwd, &cmd.defs)
+    World::new(cmd.config, &cwd)
         .unwrap_or_else(|e| panic!("World::new: {e}"))
         .0
 }
 
-const SMALL: &[(&str, &str)] = &[("WORLD_X", "20"), ("WORLD_Y", "20"), ("RANDOM_SEED", "7")];
+const SMALL: &[(&str, &str)] = &[
+    ("world.x", "20"),
+    ("world.y", "20"),
+    ("general.random_seed", "7"),
+];
 
 /// The instructions of an `.org` file of the stock configuration as a genome
 /// of `w`'s default instruction set, with the symbols `insert` (an
@@ -326,11 +330,11 @@ fn observation_only_and_deterministic_in_the_exact_mode() {
 fn observation_only_in_the_parallel_mode_on_one_and_four_threads() {
     let one = check_mode(
         "par1",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "1")],
+        &[("execution.mode", "1"), ("execution.threads", "1")],
     );
     let four = check_mode(
         "par4",
-        &[("EXECUTION_MODE", "1"), ("EXECUTION_THREADS", "4")],
+        &[("execution.mode", "1"), ("execution.threads", "4")],
     );
     for f in ["modes.dat", "modes_any.dat"] {
         assert!(!rows(&one.join("data").join(f)).is_empty(), "{f}");
@@ -350,9 +354,7 @@ fn bad_arguments_stop_the_run_at_start_up() {
         let dir = fresh_dir("badargs", bad);
         let cwd = dir.to_string_lossy().into_owned();
         let cmd = process_cmdline(&["avida".to_string()], &cwd);
-        let e = World::new(cmd.config, &cwd, &cmd.defs)
-            .err()
-            .expect("must fail");
+        let e = World::new(cmd.config, &cwd).err().expect("must fail");
         assert!(e.contains("PrintMODESData"), "{e}");
     }
 }

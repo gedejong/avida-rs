@@ -1,0 +1,73 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 72
+world:
+  x: 12
+  y: 1
+hoarding:
+  use_resource_bins: 1
+movement:
+  collisions_lethal: 1
+  collisions_selection_type: 1
+
+instruction_sets:
+  - name: heads_self
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - move
+      - rotate-r
+      - collect-specific
+
+environment:
+  resources:
+    - {name: food, initial: 1000, inflow: 10, outflow: 0.01}
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: Inject, args: a0.org 0}
+  - {at: begin, action: Inject, args: a1.org 4}
+  - {at: begin, action: Inject, args: a2.org 8}
+  - {at: 0, every: 5, until: end, action: PrintCountData}
+  - {at: 0, every: 5, until: end, action: PrintAverageData}
+  - {at: 0, every: 5, until: end, action: PrintTasksData}
+  - {at: 0, every: 5, until: end, action: PrintInstructionData}
+  - {at: 0, every: 5, until: end, action: PrintDonationStats}
+  - {at: 0, every: 5, until: end, action: PrintResourceData}
+  - {at: 15, action: Exit}

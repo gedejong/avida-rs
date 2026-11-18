@@ -99,7 +99,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         .iter()
         .map(|&i| {
             let s = &setup.settings[i];
-            let ov = app.config.override_of(s.name);
+            let ov = app.config.override_of(&s.name);
             let value = match ov {
                 Some(v) => format!("{} > {v}", trunc(&s.value, value_w / 2 - 2)),
                 None => s.value.clone(),
@@ -114,12 +114,12 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
                 Style::new()
             };
             let mut cells = vec![
-                Cell::from(s.name),
+                Cell::from(s.name.as_str()),
                 Cell::from(trunc(&value, value_w)),
                 Cell::from(trunc(&s.default, 12)),
             ];
             if wide {
-                cells.push(Cell::from(s.group.trim_end_matches("_GROUP")));
+                cells.push(Cell::from(s.group_desc));
             }
             Row::new(cells).style(style)
         })
@@ -164,7 +164,7 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
     // Detail or the edit prompt.
     let mut lines: Vec<Line> = Vec::new();
     if let Some(e) = &app.config.edit {
-        let kind = setup.setting(e.name).map_or("", |s| s.kind);
+        let kind = setup.setting(&e.name).map_or("", |s| s.kind);
         lines.push(Line::from(vec![
             Span::styled(format!("{} ({kind}) = ", e.name), BOLD),
             Span::styled(
@@ -184,8 +184,11 @@ pub fn draw(f: &mut Frame, app: &mut App, area: Rect) {
         }
     } else if let Some(s) = vis.get(app.config.sel).map(|&i| &setup.settings[i]) {
         lines.push(Line::from(vec![
-            Span::styled(s.name, BOLD),
-            Span::styled(format!("  {} in {}", s.kind, s.group), DIM),
+            Span::styled(s.name.as_str(), BOLD),
+            Span::styled(
+                format!("  {} in {}, formerly {}", s.kind, s.group_desc, s.old_name),
+                DIM,
+            ),
             if s.from_command_line {
                 Span::styled("  set on the command line", Style::new().fg(hue(Hue::Cyan)))
             } else {

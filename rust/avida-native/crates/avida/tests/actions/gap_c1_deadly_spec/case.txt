@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 7 -set WORLD_X 16 -set WORLD_Y 16
+args -s 7 -set world.x 16 -set world.y 16

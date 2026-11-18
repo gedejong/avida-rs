@@ -49,9 +49,9 @@ fn transsmt_ancestor_traces_match_reference() {
 fn transsmt_evolved_not_divides_like_reference() {
     let dir = avida_core().join("tests/set_random_seed/config");
     let sets = [
-        ("MIN_COPIED_LINES", "0.0"),
-        ("MIN_EXE_LINES", "0.0"),
-        ("REQUIRE_SINGLE_REACTION", "0"),
+        ("divide.min_copied_lines", "0.0"),
+        ("divide.min_exe_lines", "0.0"),
+        ("divide.require_single_reaction", "0"),
     ];
     let mut fx = Fixture::load(&dir, &sets).expect("config loads");
     let mut cpu = TestCpu::new(&mut fx.world()).unwrap();
@@ -94,8 +94,14 @@ fn transsmt_random_genome_traces_match_reference() {
                 sets: sets
                     .iter()
                     .map(|kv| {
+                        // The reference runs name the settings of avida.cfg.
                         let (k, v) = kv.split_once('=').expect("KEY=VALUE");
-                        (k.to_string(), v.to_string())
+                        if k == "ENVIRONMENT_FILE" {
+                            let file = v.strip_suffix(".cfg").expect(".cfg file");
+                            return ("environment".to_string(), format!("{file}.yaml"));
+                        }
+                        let path = avida_config::naming::new_name_of(k).expect("a setting");
+                        (path, v.to_string())
                     })
                     .collect(),
                 seqs: Vec::new(),

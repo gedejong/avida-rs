@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 9 -set IMPLICIT_REPRO_END 1 -set COPY_MUT_PROB 0.02
+args -s 9 -set divide.implicit_repro_end 1 -set mutation.copy_prob 0.02

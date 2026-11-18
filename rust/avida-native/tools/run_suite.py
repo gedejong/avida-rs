@@ -7,6 +7,10 @@ usage: run_suite.py [name-substring ...]
 Environment:
   SUITE_REF   the reference binary (default <repo>/cbuild/work/avida; the C++
               was retired from the tree, build it from the git tag cpp-final)
+  SUITE_REF_TESTS  avida-core/tests in the old input format, for the reference
+              binary (which cannot read avida.yaml): for example the tests
+              of a cpp-final worktree. Needed only for tests whose reference
+              output is not cached.
   SUITE_BIN   the Rust binary (default target/release/avida of this workspace)
   SUITE_WORK  where runs and cached reference output go (default target/suite)
   SUITE_OUT   name of the output directory of this run inside SUITE_WORK
@@ -28,20 +32,21 @@ if not os.path.exists(RS): sys.exit('missing binary: ' + RS)
 # cached yet; a snapshot unpacked into SUITE_WORK/ref (tools/suite_ref.py)
 # makes the suite run without it.
 STAMP = re.compile(rb'^# [A-Z][a-z][a-z] [A-Z][a-z][a-z] .*\n', re.M)
-def args_of(t):
-    for line in open(os.path.join(TESTS, t, 'test_list'), errors='replace'):
+REF_TESTS = os.environ.get('SUITE_REF_TESTS')
+def args_of(t, tests=TESTS):
+    for line in open(os.path.join(tests, t, 'test_list'), errors='replace'):
         m = re.match(r'\s*args\s*=(.*)', line)
         if m:
             a = m.group(1).split(';')[0].strip()
             return a.replace('%(default_app)s', '').replace('%(cpus)s', '1').split()
     return []
-def run(binary, t, root, timeout):
+def run(binary, t, root, timeout, tests=TESTS):
     d = os.path.join(root, t)
     shutil.rmtree(d, ignore_errors=True)
-    shutil.copytree(os.path.join(TESTS, t, 'config'), d)
+    shutil.copytree(os.path.join(tests, t, 'config'), d)
     before = set(files(d))
     try:
-        p = subprocess.run([binary] + args_of(t), cwd=d, capture_output=True, timeout=timeout)
+        p = subprocess.run([binary] + args_of(t, tests), cwd=d, capture_output=True, timeout=timeout)
         rc, out, err = p.returncode, p.stdout, p.stderr
     except subprocess.TimeoutExpired as e:
         rc, out, err = 'timeout', e.stdout or b'', e.stderr or b''
@@ -84,7 +89,9 @@ def one(t):
     refd = os.path.join(S, 'ref', t)
     if not os.path.exists(os.path.join(refd, '.rc')):
         if not os.path.exists(REF): return t, 'NO-REF', 'no cached reference output and no reference binary ' + REF
-        run(REF, t, os.path.join(S, 'ref'), 900)
+        if not REF_TESTS or not os.path.exists(os.path.join(REF_TESTS, t, 'config')):
+            return t, 'NO-REF', 'no cached reference output and no old-format copy of the test (SUITE_REF_TESTS)'
+        run(REF, t, os.path.join(S, 'ref'), 900, REF_TESTS)
     run(RS, t, os.path.join(S, RSROOT), 900)
     rsd = os.path.join(S, RSROOT, t)
     rrc = open(os.path.join(refd, '.rc')).read(); src = open(os.path.join(rsd, '.rc')).read()

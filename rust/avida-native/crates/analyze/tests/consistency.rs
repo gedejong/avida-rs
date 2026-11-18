@@ -252,7 +252,8 @@ fn task_sort_analyze() {
     consistent("task_sort_analyze");
 }
 
-/// Disabled upstream (leading `_`): its `avida.cfg` sets `INST_SET -` and
+/// Disabled upstream (leading `_`): its configuration (`INST_SET -` in the
+/// old `avida.cfg`, `instruction_sets: []` in the converted `avida.yaml`)
 /// defines no instruction set, so the reference binary stops in
 /// `cWorld::setup` with "error: no instruction sets defined" and exits 255
 /// before analyze mode; this port does the same.

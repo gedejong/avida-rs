@@ -1,0 +1,83 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  resources:
+    - {name: rA, inflow: 4, outflow: .01}
+    - {name: rB, inflow: 4, outflow: .01}
+    - {name: rX, inflow: 4, outflow: .01}
+    - {name: rC, inflow: 4, outflow: .01}
+    - {name: rD, inflow: 4, outflow: .01}
+    - {name: rE, inflow: 4, outflow: .01}
+    - {name: rF, inflow: 4, outflow: .01}
+  reactions:
+    - name: A
+      task: optimize
+      args: {function: 1, thresh: 0.0, threshMax: 0.5}
+      process: {resource: rA, value: 1.0, frac: .0625, max: 25, min: .025}
+      requisite: {max_count: 1}
+    - name: B
+      task: optimize
+      args: {function: 1, thresh: 0.5, threshMax: 1.0}
+      process: {resource: rB, value: 1.5, frac: .0625, max: 3, min: .025}
+      requisite: {max_count: 1}
+    - name: C
+      task: optimize
+      args: {function: 1, thresh: 0.3}
+      process: {resource: rC, value: 2.0, frac: .05, max: 4, min: .025}
+      requisite: {max_count: 1}
+    - name: D
+      task: optimize
+      args: {function: 4, thresh: 0.0, threshMax: 0.4, maxFx: 2.0, minFx: 0.5}
+      process: {resource: rD, value: 1.0, frac: .0625, max: 25, min: .025}
+      requisite: {max_count: 1}
+    - name: E
+      task: optimize
+      args: {function: 4, thresh: 0.4, threshMax: 1.0}
+      process: {resource: rE, value: 1.0, frac: .0625, max: 25, min: .6}
+      requisite: {max_count: 1}
+    - name: F
+      task: optimize
+      args: {function: 4, thresh: 0.6}
+      process: {resource: rF, value: 1.0, frac: .1, max: 25, min: .025}
+      requisite: {max_count: 1}
+    - name: G
+      task: optimize
+      args: {function: 4, thresh: 0.2}
+      process: {resource: rF, value: 1.0, frac: .1, max: 25, min: .025}
+      requisite: {max_count: 1}
+
+events:
+  - {at: begin, action: Exit}

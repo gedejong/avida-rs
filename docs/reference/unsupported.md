@@ -14,23 +14,23 @@ The maintainer's ruling is that where the original C++ behaviour is *undefined o
 
 | Feature | What happens | Why |
 |---|---|---|
-| `SLICING_METHOD` 3 and 4 (and any value without a scheduler) | Stops at start-up. | The C++ program crashes on them. |
-| `WORLD_GEOMETRY 6` (3-D lattice) | Stops. | The C++ builds the lattice by reading out of bounds. |
-| `NUM_DEMES` that does not divide `WORLD_Y` (analyze mode) | Stops. | The C++ crashes. |
+| `time.slicing_method` 3 and 4 (and any value without a scheduler) | Stops at start-up. | The C++ program crashes on them. |
+| `world.geometry: 6` (3-D lattice) | Stops. | The C++ builds the lattice by reading out of bounds. |
+| `demes.count` that does not divide `world.y` (analyze mode) | Stops. | The C++ crashes. |
 | `PrintDemeEnergySharingStats` | Stops. | The C++ reads uninitialised phenotype counters. |
 | Deme network (`cDemeNetwork`) | Prints the `cDemeNetwork requires Boost` error and exits with code 50. | The reference binary was built without Boost; the port matches it. |
 | Two uninitialised members of `cDemeCellEvent` | Stops when read. | Uninitialised in the C++. |
-| `LOG_SLEEP_TIMES` with an organism outside cell 0 dying or sleeping | Stops. | The C++ indexes past a single-element array. |
+| `energy.log_sleep_times` with an organism outside cell 0 dying or sleeping | Stops. | The C++ indexes past a single-element array. |
 | Deme resources of grid, torus or partial geometry in some paths | Stops. | Deme grids are not sized in those paths. |
-| `ResetDemes` and the in-place `CompeteDemes` with `USE_AVATARS` | Stops. | The reference binary crashes there. |
-| `HGT_FRAGMENT_SELECTION` 0 and 1 (match and trimmed placement) | Stops when reached. | `cGenomeUtil::FindSubstringMatch` returns a value read from freed memory. |
+| `ResetDemes` and the in-place `CompeteDemes` with `movement.use_avatars` | Stops. | The reference binary crashes there. |
+| `hgt.fragment_selection` 0 and 1 (match and trimmed placement) | Stops when reached. | `cGenomeUtil::FindSubstringMatch` returns a value read from freed memory. |
 | A gradient habitat kill under HGT with competence | Stops. | The C++ crashes when the kill re-enters the resource update. |
 | Path and den resources next to a habitat | Stops. | The C++ recurses until the stack overflows. |
 | A navigation trace with an empty trace array, or an environment without reactions that prints one | Stops with an error. | The C++ reads before an empty array or recurses until the stack overflows. |
 | `optimize` task arguments on which the reference crashes or hangs (`function=20`, too few or negative `numvars`, some negative `varlength`) | The environment fails to load with `unsupported: optimize ...`. | The reference binary crashes, aborts or does not finish. |
-| `PROMOTER_EXE_LENGTH` values, `UOPS_PER_CYCLE` above 255, an odd number of `NON_1_RESOURCE_RATIOS` tokens, `TWO_FOLD_COST_SEX` with some energy settings, and similar narrow settings | Stop. | Each guards undefined C++ behaviour; the message names it. |
+| `promoters.exe_length` values, `UOPS_PER_CYCLE` above 255, an odd number of `hoarding.non_1_resource_ratios` tokens, `recombination.two_fold_cost_sex` with some energy settings, and similar narrow settings | Stop. | Each guards undefined C++ behaviour; the message names it. |
 | Phenotypic plasticity with an organism that has no genotype, and several producers in a public-good plasticity test | Stops. | The C++ dereferences a null pointer, or orders a set by heap address. |
-| A `MAX_PREY_BT` kill from a plasticity test or from a test CPU run by an event; a second kill in one test; a kill that draws random numbers | Stops. | See the note on queued kills in `PORTING.md`. |
+| A `groups.max_prey_bt` kill from a plasticity test or from a test CPU run by an event; a second kill in one test; a kill that draws random numbers | Stops. | See the note on queued kills in `PORTING.md`. |
 | The ASL scripting language's `Config`, `World` and `Driver` objects | Fail when called. | They are signature-only stubs; the language itself is parsed and checked. |
 | Hardware type 1 (the old SMT CPU) | Reported as an unsupported hardware type. | Not ported. |
 

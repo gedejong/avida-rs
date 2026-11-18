@@ -15,7 +15,7 @@ Parity is checked against a reference binary built from the git tag `cpp-final` 
 
 ## Choosing a mode
 
-| | Exact mode (`EXECUTION_MODE 0`) | Parallel mode (`EXECUTION_MODE 1`) |
+| | Exact mode (`execution.mode: 0`) | Parallel mode (`execution.mode: 1`) |
 |---|---|---|
 | Default | Yes | No, opt-in |
 | Output equals the C++ program's | Yes, byte for byte | No, by design |
@@ -24,13 +24,13 @@ Parity is checked against a reference binary built from the git tag `cpp-final` 
 | Hardware types that gain | All run | The heads CPU only |
 | Use for | Reproducing published results, checking a change, anything you will compare with C++ output | Long exploratory runs on a large world with the heads CPU |
 
-Turn the parallel mode on in `avida.cfg` or on the command line:
+Turn the parallel mode on in `avida.yaml` or on the command line:
 
 ```sh
-avida -s 7 -set EXECUTION_MODE 1 -set EXECUTION_THREADS 4
+avida -s 7 -set execution.mode 1 -set execution.threads 4
 ```
 
-`EXECUTION_THREADS` is the number of worker threads; 0 (the default) or less means every core the machine reports. Any value of `EXECUTION_MODE` other than 0 and 1 stops at start-up.
+`execution.threads` is the number of worker threads; 0 (the default) or less means every core the machine reports. Any value of `execution.mode` other than 0 and 1 stops at start-up.
 
 ## How an update differs in the parallel mode
 
@@ -48,7 +48,7 @@ flowchart TD
 
 The diagram in words: the update's instructions are divided among organisms by priority (merit). In the parallel phase each organism runs, on a worker thread, as many instructions as it can that affect only itself (no-operations, conditionals, flow control, stacks, registers, arithmetic, head movement, copying, allocation, search). It stops at its first instruction that touches anything else, such as `IO` or `h-divide`. In the sequential phase the stopped organisms run that one instruction through the same code path as the exact mode, in a random order. Budgets are then adjusted (an organism whose merit changed, a newborn getting a share) and the cycle repeats until the budget is used up. A small difference between planned and executed instructions carries over to the next update, so the run executes the same total as the exact mode.
 
-Under the lottery slicing methods (`SLICING_METHOD` 1, the default, and 5), each organism's budget is a Poisson draw whose mean is its share, because that is what a lottery over the update's time slices would give it. Exact shares under a lottery method made empty cells stay empty longer.
+Under the lottery slicing methods (`time.slicing_method` 1, the default, and 5), each organism's budget is a Poisson draw whose mean is its share, because that is what a lottery over the update's time slices would give it. Exact shares under a lottery method made empty cells stay empty longer.
 
 ## What the parallel mode guarantees
 
@@ -62,14 +62,14 @@ Under the lottery slicing methods (`SLICING_METHOD` 1, the default, and 5), each
 - **No byte parity** with the C++ program or with the exact mode, for any seed. The runs diverge from the first mutation, because random numbers are drawn in a different order.
 - **The interleaving within an update.** Organisms do not take turns of one instruction.
 - **Per-update instruction counts** (`count.dat`, column 2) vary by the carry-over, a few percent of an update. The run total does not.
-- **Demes**: a deme whose bursts cross a replication threshold replicates at the end of that round, and a deme generation takes about one update longer than in the exact mode (1.5% to 3% longer under three of the four triggers measured; with `DEMES_REPLICATE_TIME`, about 7% fewer births).
-- **Speculative statistics** of the status line read zero and `SPECULATIVE` is ignored. The front ends' debugger steps whole updates.
+- **Demes**: a deme whose bursts cross a replication threshold replicates at the end of that round, and a deme generation takes about one update longer than in the exact mode (1.5% to 3% longer under three of the four triggers measured; with `demes.replicate_time`, about 7% fewer births).
+- **Speculative statistics** of the status line read zero and `general.speculative` is ignored. The front ends' debugger steps whole updates.
 - **`SetConfig EXECUTION_MODE`** during a run has no effect; the mode is read when the run starts.
 - A small difference in births per update from a common start (173.4 against 176.3) remains.
 
 ## Where it gains nothing
 
-These run every instruction through the sequential phase, so they are not faster: hardware types other than the heads CPU (TransSMT and its parasites, experimental, GP8, BCR), organisms with a tracer or a mini, micro, navigation or reproduction trace, `THREAD_SLICING_METHOD 1`, promoters, constitutive regulation, implicit reproduction, instructions with resource costs, runs at `VERBOSITY` 3 or more, and runs with `TASK_SWITCH_PENALTY`. Nothing is rejected at start-up; the run just does not speed up.
+These run every instruction through the sequential phase, so they are not faster: hardware types other than the heads CPU (TransSMT and its parasites, experimental, GP8, BCR), organisms with a tracer or a mini, micro, navigation or reproduction trace, `time.thread_slicing_method: 1`, promoters, constitutive regulation, implicit reproduction, instructions with resource costs, runs at `general.verbosity` 3 or more, and runs with `division_of_labor.task_switch_penalty`. Nothing is rejected at start-up; the run just does not speed up.
 
 ## Speed
 
@@ -85,7 +85,7 @@ One measurement from the maintainers, on an Apple M1 Pro (8 performance and 2 ef
 
 The four parallel runs wrote identical files. Later work (2026-11-13) moved output tests and divides into the parallel phase for environments without resources or with only per-cell (spatial) resources, which brought the four-thread run to 13–15 s; eight threads gain only about 10% more, because placing offspring and gathering statistics remain sequential. A shared machine is much slower: with other processes on every core, an 8-thread run took 91 s in one test.
 
-**Running many replicate seeds at once.** When the cores are busy with other runs anyway, use `EXECUTION_THREADS 1`: it keeps the single-thread gain (1.65 times in the table) without the contention between pools. The program's own statistics tool runs the parallel mode that way.
+**Running many replicate seeds at once.** When the cores are busy with other runs anyway, use `execution.threads: 1`: it keeps the single-thread gain (1.65 times in the table) without the contention between pools. The program's own statistics tool runs the parallel mode that way.
 
 ## Diagnostics
 

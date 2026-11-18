@@ -1,0 +1,92 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+
+instruction_sets:
+  - name: instset.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - rotate-left-one
+      - rotate-right-one
+      - set-opinion
+      - get-opinion
+      - send-msg
+      - retrieve-msg
+      - bcast1
+      - collect-cell-data
+      - get-cell-xy
+      - nop-X
+      - move
+      - drop-pheromone
+      - phero-on
+      - sense-pheromone
+
+environment:
+  resources:
+    - {name: other, geometry: global, initial: 50, inflow: 1, outflow: 0.1, deme: true}
+    - {name: dres2, geometry: global, initial: 7, inflow: 0.5, outflow: 0.2, deme: true}
+    - {name: gres, geometry: global, initial: 20, inflow: 2, outflow: 0.05}
+  reactions:
+    - {name: NOT}
+    - {name: NAND}
+    - {name: AND}
+    - {name: ORN}
+    - {name: OR}
+    - name: NOT
+      task: not
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NAND, AND, ORN, OR], max_count: 1}
+    - name: NAND
+      task: nand
+      process: {value: 2.0, type: mult}
+      requisite: {noreaction: [NOT, AND, ORN, OR], max_count: 1}
+    - name: AND
+      task: and
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, ORN, OR], max_count: 1}
+    - name: ORN
+      task: orn
+      process: {value: 3.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, OR], max_count: 1}
+    - name: OR
+      task: or
+      process: {value: 4.0, type: mult}
+      requisite: {noreaction: [NOT, NAND, AND, ORN], max_count: 1}
+
+events:
+  - {at: begin, action: InjectDemes, args: organisms/pher.org}
+  - {at: 0, every: 10, until: 60, action: PrintDemeResourceStats}
+  - {at: 0, every: 10, until: 60, action: PrintDemeGlobalResources}
+  - {at: 0, every: 10, until: 60, action: PrintResourceData}
+  - {at: 0, every: 20, until: 60, action: PrintCountData}
+  - {at: 20, action: ChangeEnvironment, args: REACTION AND and process:value=3.0:type=pow}
+  - {at: 40, action: ChangeEnvironment, args: RESOURCE other:geometry=global:initial=11:inflow=3:outflow=0.3:deme=true}
+  - {at: 60, action: Exit}

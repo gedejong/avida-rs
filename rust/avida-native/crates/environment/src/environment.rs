@@ -24,7 +24,6 @@ use crate::task::{TaskEnvHooks, TaskRegistry};
 use avida_apto::AvidaRng;
 use avida_config::config::Config;
 use avida_config::feedback::{Feedback, FeedbackKind};
-use avida_config::init_file::InitFile;
 use avida_config::string_util::{
     as_double, as_int, is_number, is_numeric, is_substring, pop, pop_word, return_array, substring,
     trim,
@@ -606,41 +605,10 @@ impl<T: TaskRegistry> Environment<T> {
 
     // -- Loading -----------------------------------------------------------
 
-    /// `Load(filename, working_dir, feedback, defs)`: read an environment
-    /// file (through `cInitFile`, with `defs` as `$NAME` mappings) and load
-    /// every line. On failure the error is also returned. Messages go to
-    /// `feedback` exactly as the C++ logs them.
-    pub fn load(
-        &mut self,
-        filename: &str,
-        working_dir: &str,
-        feedback: &mut Feedback,
-        defs: Option<&[(String, String)]>,
-        config: &Config,
-    ) -> Result<(), String> {
-        let infile = InitFile::new(filename, working_dir, None, defs);
-        if !infile.was_opened() {
-            for (kind, msg) in infile.feedback().messages() {
-                match kind {
-                    FeedbackKind::Error => feedback.error(msg.clone()),
-                    FeedbackKind::Warning => feedback.warning(msg.clone()),
-                    FeedbackKind::Notification => feedback.notify(msg.clone()),
-                }
-            }
-            feedback.error(format!("failed to load environment '{}'", filename));
-            return Err(last_error(feedback));
-        }
-
-        let lines: Vec<String> = (0..infile.num_lines())
-            .map(|line_id| infile.get_line(line_id as i32))
-            .collect();
-        self.load_lines(&lines, feedback, config)
-    }
-
     /// The environment of an experiment file: every line of the C++
     /// environment-file format in `lines` (as the experiment loader renders
-    /// them), then the check that every pre-declared reaction was defined.
-    /// What `load` does once the file is read.
+    /// them), then the check that every pre-declared reaction was defined
+    /// (what `cEnvironment::Load` does once the file is read).
     pub fn load_lines(
         &mut self,
         lines: &[String],

@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 4 -set DIVIDE_POISSON_LGT_MEAN 0.3 -set LGT_SOURCE_REGION 1
+args -s 4 -set mutation.divide_poisson_lgt_mean 0.3 -set mutation.lgt_source_region 1

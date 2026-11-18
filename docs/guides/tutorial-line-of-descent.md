@@ -21,7 +21,7 @@ This is analyze mode on a finished run. It needs a saved population, so first fi
 2. Run analyze mode:
 
    ```sh
-   avida -a -set ANALYZE_FILE lineage.cfg -set DATA_DIR out
+   avida -a -set analyze.file lineage.cfg -set general.data_dir out
    ```
 
    You should see `Loading: ...`, `Performing lineage scan...`, `Running through test CPUs...`, `Precalculating landscape...` and `Detailing...`. The landscape step tests every one-point mutation of every genotype on the line (about 2,600 of them for a genome of 100 instructions), spread over all cores. It took about a third of a second for 23 genotypes in the example below.

@@ -4,7 +4,7 @@ How long must a program be to compute a logic function with the stock instructio
 
 None of these programs can copy itself. Each one reads its inputs with `IO`, computes, and outputs the answer with `IO`. Nobody has proved that they are the shortest possible, and the old wiki said so too.
 
-All nine were run in this port's analyze mode with the stock instruction set (`instset-heads.cfg`) and the stock environment (`environment.cfg`). Each of them, executed from the start, was credited with exactly its own task on the first pass through the program. The recipe is at the end of the page.
+All nine were run in this port's analyze mode with the stock instruction set (`heads_default`) and the stock environment (the `environment` section of the stock `avida.yaml`). Each of them, executed from the start, was credited with exactly its own task on the first pass through the program. The recipe is at the end of the page.
 
 ## The programs
 
@@ -191,7 +191,7 @@ Counting every line, the programs have 2 (echo), 5 (NAND), 6 (NOT and ORN), 9 (A
    TRACE
    ```
 
-4. Run `avida -a -set ANALYZE_FILE trace.cfg`. The program writes `data/archive/not.org.trace`, one block of registers, stacks and counters for each step.
+4. Run `avida -a -set analyze.file trace.cfg`. The program writes `data/archive/not.org.trace`, one block of registers, stacks and counters for each step.
 5. List the distinct task counts that appear, in order:
 
    ```sh

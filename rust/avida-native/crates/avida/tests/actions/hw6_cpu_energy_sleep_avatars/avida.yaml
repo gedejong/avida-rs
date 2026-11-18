@@ -1,0 +1,105 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 7
+world:
+  x: 8
+  y: 8
+mutation:
+  copy_prob: 0.005
+time:
+  slicing_method: 0
+altruism:
+  max_donates: 1000
+energy:
+  enabled: 1
+  given_on_inject: 1000.0
+  frac_energy_decay_at_org_birth: 0.05
+  num_cycles_exc_before_0_energy: 1000
+  apply_method: 2
+movement:
+  use_avatars: 1
+
+instruction_sets:
+  - name: heads_av
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - move
+      - rotate-l
+      - rotate-r
+      - rotate-left-one
+      - rotate-right-one
+      - tumble
+      - sense
+      - sensef
+      - collect
+      - donate-rnd
+      - donate-facing
+      - donate-kin
+      - send-msg
+      - retrieve-msg
+      - rotate-to-unoccupied-cell
+      - rotate-to-occupied-cell
+      - get-cell-xy
+      - sleep
+
+environment:
+  resources:
+    - {name: food, initial: 1000, inflow: 10, outflow: 0.01}
+    - name: sp
+      initial: 50
+      inflow: 1
+      outflow: 0.01
+      geometry: torus
+      xdiffuse: 0.1
+      ydiffuse: 0.1
+      inflowx1: 0
+      inflowx2: 7
+      inflowy1: 0
+      inflowy2: 7
+      outflowx1: 0
+      outflowx2: 7
+      outflowy1: 0
+      outflowy2: 7
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ECHO, task: echo, process: {value: 600.0, type: energy}, requisite: {max_count: 3}}
+    - {name: NOT2, task: not, process: {value: 500.0, type: energy}, requisite: {max_count: 4}}
+
+events:
+  - {at: begin, action: Inject, args: a.org 0}
+  - {at: begin, action: Inject, args: a.org 27}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 75, until: end, action: SavePopulation}
+  - {at: 150, action: Exit}

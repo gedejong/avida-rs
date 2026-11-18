@@ -1,12 +1,14 @@
 # Task reference
 
-A *task* is a test that an environment applies to an organism's output (see [environment, tasks and resources](../concepts/environment-and-tasks.md)). You attach a task to a reward with a `REACTION` line in the [environment file](environment-file.md):
+A *task* is a test that an environment applies to an organism's output (see [environment, tasks and resources](../concepts/environment-and-tasks.md)). You attach a task to a reward with a reaction in the [environment](environment-file.md):
 
-```text
-REACTION  NAME  task_name[:argument=value,argument=value]  process:...  requisite:...
+```yaml
+environment:
+  reactions:
+    - {name: NAME, task: TASK_NAME, args: {ARGUMENT: VALUE}, process: {...}, requisite: {...}}
 ```
 
-The task names below are the ones the port registers. They come from `crates/tasks/src/registry_table.rs` (the fixed names) and `crates/tasks/src/task_lib.rs` (the tasks with arguments). Task names are written in lower case in the file.
+The task names below are the ones the port registers. They come from `crates/tasks/src/registry_table.rs` (the fixed names) and `crates/tasks/src/task_lib.rs` (the tasks with arguments). Task names are written in lower case.
 
 ## The nine classic logic tasks
 
@@ -43,7 +45,7 @@ These do not exist in the C++ program. They change nothing for an environment th
 
 ## Tasks with arguments
 
-Arguments are `name=value` pairs separated by commas after the task name and a colon, for example `mult:threshold=100,halflife=50`.
+Arguments go in the reaction's `args`, as a mapping, for example `args: {threshold: 100, halflife: 50}` for `mult`, or as the text the C++ line had after the task's colon (`args: threshold=100,halflife=50`). They are passed to the task as written, and the task checks them.
 
 | Task | Arguments (default) | What it tests |
 |---|---|---|
@@ -54,7 +56,7 @@ Arguments are `name=value` pairs separated by commas after the task name and a c
 | `fibonacci_seq` | `target` (required), `penalty` (0.0) | The output continues a Fibonacci sequence. |
 | `mult`, `div`, `log`, `log2`, `log10`, `sqrt`, `sine`, `cosine` | `threshold` (-1), `halflife` (required) | The output equals the function of the inputs, to within a threshold, with a half-life scale for the quality. |
 | `optimize` | many; see the ARCHITECTURE notes | Optimisation of a test function. Arguments on which the reference binary crashes or hangs stop the environment at load with `unsupported: optimize ...`. |
-| `sg_path_traversal` | | Registered; relates to state grids (the `GRID` directive). |
+| `sg_path_traversal` | | Registered; relates to state grids (the environment's `grids`). |
 | `form-group`, `form-group-id`, `live-on-patch-id` | | Registered; group-related tasks. |
 | `collect-odd-cell`, `eat-target`, `eat-target-echo`, `eat-target-nand`, `eat-target-and`, `eat-target-orn`, `eat-target-or`, `eat-target-andn`, `eat-target-nor`, `eat-target-xor`, `eat-target-equ`, `move-ft` | | Registered; target-eating and foraging tasks. |
 | `all-ones`, `royal-road`, `royal-road-wd` | | Registered; bit-pattern tasks. |

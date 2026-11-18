@@ -947,7 +947,9 @@ fn ladder_points(
     Ok((titles.into_iter().map(|(_, t)| t).collect(), points))
 }
 
-/// `REACTION` names, in order, of an environment file.
+/// `REACTION` names, in order, of environment-file lines (the environment
+/// of an experiment file as [`avida_config::experiment::environment_of`]
+/// gives it, or an environment file of the old format).
 pub fn reaction_names(text: &str) -> Vec<String> {
     text.lines()
         .filter_map(|l| {
@@ -965,23 +967,38 @@ fn rung_names(
     n: usize,
 ) -> (Vec<String>, RungNames, Vec<String>) {
     let mut notes = Vec::new();
-    let mut candidates: Vec<PathBuf> = vec![batch.join("environment.cfg")];
+    let mut dirs: Vec<PathBuf> = vec![batch.to_path_buf()];
     for (name, path, seeds) in arms {
-        candidates.push(path.join("environment.cfg"));
+        dirs.push(path.clone());
         for (_, s) in seeds {
-            candidates.push(s.join("environment.cfg"));
+            dirs.push(s.clone());
         }
         if let Some(parent) = batch.parent() {
-            candidates.push(
-                parent
-                    .join(format!("config-{name}"))
-                    .join("environment.cfg"),
-            );
+            dirs.push(parent.join(format!("config-{name}")));
         }
     }
+    // The experiment file of a folder, or the environment file of a batch
+    // run before the experiment file replaced it (its names are only read).
+    let candidates = dirs.iter().flat_map(|d| {
+        [
+            d.join(avida_config::experiment::DEFAULT_FILE),
+            d.join("environment.cfg"),
+        ]
+    });
     for path in candidates {
-        let Some(Ok(text)) = read_text(&path) else {
-            continue;
+        let text = if path.extension().is_some_and(|e| e == "yaml") {
+            if !path.is_file() {
+                continue;
+            }
+            match avida_config::experiment::environment_of(&path) {
+                Ok(lines) => lines.join("\n"),
+                Err(_) => continue,
+            }
+        } else {
+            let Some(Ok(text)) = read_text(&path) else {
+                continue;
+            };
+            text
         };
         let names = reaction_names(&text);
         if names.len() == n {

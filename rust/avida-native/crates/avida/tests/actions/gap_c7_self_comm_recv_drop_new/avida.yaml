@@ -1,0 +1,343 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 10
+world:
+  geometry: 1
+mutation:
+  copy_prob: 0.0
+  divide_prob: 0.25
+reproduction:
+  birth_method: 4
+  allow_parent: 0
+  death_method: 1
+  age_limit: 18000
+  reset_inputs_on_divide: 1
+divide:
+  required_bonus: 2.0
+time:
+  base_merit_method: 0
+hoarding:
+  absorb_resource_fraction: 1.0
+  multi_absorb_type: 1
+  return_stored_on_death: 0
+  split_on_divide: 0
+movement:
+  use_avatars: 2
+  avatar_birth: 2
+sensing:
+  look_dist: 50
+groups:
+  pred_prey_switch: 0
+
+instruction_sets:
+  - name: instset
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - if-n-equ
+      - if-less
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - search-seq-comp-s
+      - search-seq-direct-s
+      - label
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - pop-all
+      - push-all
+      - add
+      - sub
+      - nand
+      - fork-thread
+      - exit-thread
+      - id-thread
+      - IO
+      - {name: repro, cost: 30}
+      - wait-cond-equ
+      - wait-cond-less
+      - wait-cond-gtr
+      - if-not-0
+      - if-equ-0
+      - if-gtr-0
+      - if-less-0
+      - if-gtr-x
+      - if-equ-x
+      - {name: move, post_cost: 30}
+      - get-north-offset
+      - rotate-x
+      - rotate-org-id
+      - rotate-away-org-id
+      - set-ft-once
+      - get-forage-target
+      - look-around
+      - attack-ft-prey
+      - attack-pred
+      - teach-offspring
+      - learn-parent
+      - nop-X
+      - scramble-registers
+      - zero
+      - send-msg
+      - retrieve-msg
+      - bcast1
+      - move-neuron-AV
+      - rotate-neuron-AV-left-one
+      - rotate-neuron-AV-right-one
+      - if-neuron-input-has-output-AV
+
+environment:
+  resources:
+    - name: food1
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food2
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food3
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food4
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food5
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food6
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food7
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food8
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: food9
+      kind: gradient
+      height: 21
+      spread: 20
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 10000
+      peakx: 30
+      peaky: 30
+      min_x: 0
+      max_x: 60
+      min_y: 0
+      max_y: 60
+      plateau_inflow: 0.002
+      initial: 1
+    - name: left
+      kind: gradient
+      habitat: 2
+      plateau: 1.1
+      updatestep: 10000000
+      count: 1
+      max_size: 60
+      min_size: 60
+      config: 3
+      peakx: 0
+      peaky: 0
+    - name: right
+      kind: gradient
+      habitat: 2
+      plateau: 1.1
+      updatestep: 10000000
+      count: 1
+      max_size: 60
+      min_size: 60
+      config: 3
+      peakx: 59
+      peaky: 0
+    - name: top
+      kind: gradient
+      habitat: 2
+      plateau: 1.1
+      updatestep: 10000000
+      count: 1
+      max_size: 60
+      min_size: 60
+      config: 4
+      peakx: 0
+      peaky: 0
+    - name: bottom
+      kind: gradient
+      habitat: 2
+      plateau: 1.1
+      updatestep: 10000000
+      count: 1
+      max_size: 60
+      min_size: 60
+      config: 4
+      peakx: 0
+      peaky: 59
+  reactions:
+    - name: food1
+      task: eat-target
+      args: {target_id: 1}
+      process: {resource: food1, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food2
+      task: eat-target
+      args: {target_id: 2}
+      process: {resource: food2, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food3
+      task: eat-target
+      args: {target_id: 3}
+      process: {resource: food3, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food4
+      task: eat-target
+      args: {target_id: 4}
+      process: {resource: food4, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food5
+      task: eat-target
+      args: {target_id: 5}
+      process: {resource: food5, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food6
+      task: eat-target
+      args: {target_id: 6}
+      process: {resource: food6, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food7
+      task: eat-target
+      args: {target_id: 7}
+      process: {resource: food7, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food8
+      task: eat-target
+      args: {target_id: 8}
+      process: {resource: food8, value: 1, type: add, min: 1, max: 1, depletable: 1}
+    - name: food9
+      task: eat-target
+      args: {target_id: 9}
+      process: {resource: food9, value: 1, type: add, min: 1, max: 1, depletable: 1}
+
+events:
+  - {trigger: immediate, action: Inject, args: nn.org 1830}
+  - {trigger: immediate, action: Inject, args: nn.org 1831}
+  - {trigger: immediate, action: Inject, args: nn.org 1890}
+  - {trigger: immediate, action: Inject, args: nn.org 1891}
+  - {trigger: immediate, action: Inject, args: nn.org 1770}
+  - {at: 0, every: 2, until: end, action: PrintMessageData}
+  - {at: 0, every: 2, until: end, action: PrintMessageLog}
+  - {at: 0, every: 2, until: end, action: PrintRetMessageLog}
+  - {at: 0, every: 3, until: end, action: PrintCountData}
+  - {at: 6, action: Exit}

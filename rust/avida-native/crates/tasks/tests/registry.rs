@@ -1,5 +1,5 @@
 //! Registration tests: every name the C++ accepts resolves, descriptions, ids,
-//! dedup, env requirements, and the real `environment.cfg` task strings.
+//! dedup, env requirements, and the task strings of the real environments.
 
 use avida_tasks::{EnvReqs, Feedback, TaskKind, TaskLib};
 use std::collections::BTreeSet;
@@ -250,7 +250,7 @@ fn env_reqs_set_by_loaders() {
     assert_eq!((er.get_min_inputs(), er.get_min_outputs()), (10, 20));
     assert!(er.get_true_rand_inputs());
 
-    // binary optimize: varlength * numvars (from the repo's environment.cfg)
+    // binary optimize: varlength * numvars (from an environment of the repository)
     let mut er = EnvReqs::new();
     lib.add_task(
         "optimize",
@@ -354,7 +354,28 @@ fn logic3_targets_match_cpp() {
     assert_eq!(checked, 68);
 }
 
-/// Every task named in a real environment file registers, with its real
+/// The environment lines (`REACTION ...`) of an experiment file or of an
+/// environment section file, as the experiment loader renders them.
+fn environment_lines(file: &Path) -> String {
+    let dir = file.parent().unwrap().to_string_lossy().to_string();
+    let name = file.file_name().unwrap().to_string_lossy().to_string();
+    let mut cfg = avida_config::Config::new();
+    if name == "avida.yaml" {
+        let mut fb = avida_config::feedback::Feedback::new();
+        assert!(
+            cfg.load_experiment(&name, &dir, &mut fb),
+            "{}: {}",
+            file.display(),
+            fb.render()
+        );
+    } else {
+        cfg.set_path("environment", &name, &dir)
+            .unwrap_or_else(|e| panic!("{}: {e}", file.display()));
+    }
+    cfg.experiment.environment.join("\n")
+}
+
+/// Every task named in a real environment registers, with its real
 /// argument string (`REACTION <name> <task>[:args] ...`).
 #[test]
 fn real_environment_files_register() {
@@ -367,7 +388,7 @@ fn real_environment_files_register() {
     let mut lib = TaskLib::new();
     let mut seen = BTreeSet::new();
     for f in &files {
-        let text = fs::read_to_string(f).unwrap_or_default();
+        let text = environment_lines(f);
         for line in text.lines() {
             let line = line.split('#').next().unwrap_or("");
             let mut words = line.split_whitespace();
@@ -419,7 +440,8 @@ fn collect_env_files(dir: &Path, out: &mut Vec<PathBuf>) {
         if p.is_dir() {
             collect_env_files(&p, out);
         } else if let Some(n) = p.file_name().and_then(|n| n.to_str()) {
-            if n.contains("env") && !n.ends_with(".dat") {
+            // The experiment files and the environment section files.
+            if n == "avida.yaml" || (n.starts_with("environment") && n.ends_with(".yaml")) {
                 out.push(p);
             }
         }

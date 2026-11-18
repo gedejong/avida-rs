@@ -1,0 +1,53 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment-9demeglobal.cfg, events-merge-deme-resources.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 20
+  y: 40
+  geometry: 1
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+reproduction:
+  birth_method: 6
+parasites:
+  infection_mechanism: 0
+demes:
+  count: 2
+
+instruction_sets:
+  - heads_default
+
+environment:
+  resources:
+    - {name: resNOT, initial: 0.0}
+    - {name: resNAND, initial: 0.0}
+    - {name: resAND, initial: 0.0}
+    - {name: resORN, initial: 0.0}
+    - {name: resOR, initial: 0.0}
+    - {name: resANDN, initial: 0.0}
+    - {name: resNOR, initial: 0.0}
+    - {name: resXOR, initial: 0.0}
+    - {name: resEQU, initial: 0.0}
+    - {name: dResNOT, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResNAND, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResAND, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResORN, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResOR, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResANDN, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResNOR, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResXOR, inflow: 10, outflow: 0.1, deme: true}
+    - {name: dResEQU, inflow: 10, outflow: 0.1, deme: true}
+
+events:
+  - {at: begin, action: InjectAll, args: filename=default-heads.org}
+  - {at: 0, every: 20, until: 60, action: PrintDemeResourceStats}
+  - {at: 10, action: SetDemeResource, args: dResNOT 50}
+  - {at: 20, action: SetDemeResourceInflow, args: 0 dResAND 5}
+  - {at: 30, action: SetDemeResourceOutflow, args: 1 dResAND 0.5}
+  - {at: 10, action: SetFracDemeTreatable, args: 0.5}
+  - {at: 0, every: 20, until: 60, action: PrintDemeTreatableCount}
+  - {at: 61, action: Exit}

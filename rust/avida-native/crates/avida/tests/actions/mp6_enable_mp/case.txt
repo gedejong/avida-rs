@@ -1,2 +1,2 @@
 base heads_default_100u
-args -s 9 -set WORLD_X 12 -set WORLD_Y 12 -set ENABLE_MP 1
+args -s 9 -set world.x 12 -set world.y 12 -set mp.enabled 1

@@ -1,2 +1,2 @@
 base analyze_print_withargs
-args -a -set WORLD_GEOMETRY 8 -set WORLD_X 12 -set WORLD_Y 10 -set NUM_DEMES 2 -v2
+args -a -set world.geometry 8 -set world.x 12 -set world.y 10 -set demes.count 2 -v2

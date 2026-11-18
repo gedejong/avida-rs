@@ -1,0 +1,95 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-TEST.cfg, environment-5tasks.cfg, events-ConstResource.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 7
+world:
+  x: 10
+  y: 20
+reproduction:
+  death_method: 0
+demes:
+  count: 2
+  organism_facing: 1
+energy:
+  enabled: 1
+  given_on_inject: 100000.0
+  frac_energy_decay_at_org_birth: 0.05
+  frac_energy_decay_at_deme_birth: 1.0
+  num_cycles_exc_before_0_energy: 1000000
+
+instruction_sets:
+  - name: instset-TEST.cfg
+    hardware_type: 0
+    instructions:
+      - {name: nop-A, cost: 1, energy_cost: 100}
+      - {name: nop-B, cost: 1, energy_cost: 100}
+      - {name: nop-C, cost: 1, energy_cost: 100}
+      - {name: if-n-equ, cost: 1, energy_cost: 100}
+      - {name: if-less, cost: 1, energy_cost: 100}
+      - {name: pop, cost: 1, energy_cost: 100}
+      - {name: push, cost: 1, energy_cost: 100}
+      - {name: swap-stk, cost: 1, energy_cost: 100}
+      - {name: swap, cost: 1, energy_cost: 100}
+      - {name: shift-r, cost: 1, energy_cost: 100}
+      - {name: shift-l, cost: 1, energy_cost: 100}
+      - {name: inc, cost: 1, energy_cost: 100}
+      - {name: dec, cost: 1, energy_cost: 100}
+      - {name: add, cost: 1, energy_cost: 100}
+      - {name: sub, cost: 1, energy_cost: 100}
+      - {name: nand, cost: 1, energy_cost: 100}
+      - {name: IO, cost: 1, energy_cost: 100}
+      - {name: h-alloc, cost: 1, energy_cost: 100}
+      - {name: h-divide, cost: 1, energy_cost: 100}
+      - {name: h-copy, cost: 1, energy_cost: 100}
+      - {name: h-search, cost: 1, energy_cost: 100}
+      - {name: mov-head, cost: 1, energy_cost: 100}
+      - {name: jmp-head, cost: 1, energy_cost: 100}
+      - {name: get-head, cost: 1, energy_cost: 100}
+      - {name: if-label, cost: 1, energy_cost: 100}
+      - {name: set-flow, cost: 1, energy_cost: 100}
+      - {name: sense-m100, cost: 1, energy_cost: 100}
+      - {name: if-equ-0, cost: 1, energy_cost: 100}
+      - {name: time, cost: 1, energy_cost: 100}
+      - {name: sleep1, cost: 10, energy_cost: 1}
+      - {name: sleep2, cost: 20, energy_cost: 1}
+      - {name: sleep3, cost: 40, energy_cost: 1}
+      - {name: sleep4, cost: 80, energy_cost: 1}
+
+environment:
+  resources:
+    - {name: global, initial: 1.0, deme: false}
+    - {name: deme_ResA, initial: 1.0, deme: true}
+    - name: deme_ResB
+      geometry: grid
+      initial: 1000
+      inflow: 1000
+      outflow: 0.1
+      deme: true
+      inflowx1: 0
+      inflowx2: 9
+      inflowy1: 1
+      inflowy2: 1
+      outflowx1: 0
+      outflowx2: 9
+      outflowy1: 5
+      outflowy2: 5
+      xdiffuse: 0
+      ydiffuse: 0
+      xgravity: 0
+      ygravity: 0
+  reactions:
+    - name: ECHO
+      task: echo
+      process: {resource: global, value: 1000.0, type: energy, frac: 1.0, product: global, conversion: 2.0}
+      requisite: {max_count: 10}
+    - name: NAND
+      task: nand
+      process: {resource: deme_ResA, value: 1500.0, type: energy, frac: 1.0, product: deme_ResA, conversion: 1.5}
+      requisite: {max_count: 10}
+
+events:
+  - {at: begin, action: Inject, args: echo40.org}
+  - {at: 0, every: 1, until: end, action: PrintCountData}
+  - {at: 4, action: DemeResourceThresholdPredicate, args: deme_ResB == 0.5}
+  - {at: 50, action: Exit}
