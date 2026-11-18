@@ -4,7 +4,7 @@
 general:
   verbosity: 3
 world:
-  geometry: 7
+  geometry: random_connected
 
 instruction_sets:
   - name: instset-heads.cfg

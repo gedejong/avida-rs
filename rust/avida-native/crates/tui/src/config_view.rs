@@ -97,6 +97,15 @@ pub fn validate(kind: &str, text: &str) -> Result<String, String> {
             "0" | "false" | "no" | "off" => Ok("false".to_string()),
             _ => Err(format!("\"{t}\" is not true or false.")),
         },
+        // A name or the number of an option; the experiment loader names the
+        // valid ones when it refuses the value.
+        "choice" => {
+            if t.is_empty() {
+                Err("Name one of the options.".to_string())
+            } else {
+                Ok(t.to_string())
+            }
+        }
         _ => {
             if t.is_empty() {
                 Err("A text setting cannot be empty here.".to_string())

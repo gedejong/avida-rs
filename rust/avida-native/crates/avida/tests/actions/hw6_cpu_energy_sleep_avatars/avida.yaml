@@ -9,7 +9,7 @@ world:
 mutation:
   copy_prob: 0.005
 time:
-  slicing_method: 0
+  slicing_method: constant
 altruism:
   max_donates: 1000
 energy:
@@ -17,9 +17,9 @@ energy:
   given_on_inject: 1000.0
   frac_energy_decay_at_org_birth: 0.05
   num_cycles_exc_before_0_energy: 1000
-  apply_method: 2
+  apply_method: on_sleep
 movement:
-  use_avatars: 1
+  use_avatars: on
 
 instruction_sets:
   - name: heads_av

@@ -13,13 +13,13 @@ mutation:
   divide_ins_prob: 0.0
   divide_del_prob: 0.0
 reproduction:
-  birth_method: 6
+  birth_method: deme_random
   prefer_empty: false
   age_limit: 30
 demes:
   count: 2
-  use_germline: 1
-  reset_resources: 2
+  use_germline: traditional
+  reset_resources: none
   log_replicate: true
   max_births: 0
   germline_copy_mut: 0.0

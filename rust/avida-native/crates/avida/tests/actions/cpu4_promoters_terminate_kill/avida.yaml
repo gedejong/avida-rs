@@ -6,15 +6,15 @@ general:
 mutation:
   copy_prob: 0.03
 reproduction:
-  death_method: 0
+  death_method: never
 promoters:
   enabled: true
   inst_max: 2000
   processivity: 0.998
   to_register: true
   termination_resets: true
-  no_active_promoter_effect: 1
-  inst_code_default_type: 1
+  no_active_promoter_effect: kill
+  inst_code_default_type: instruction_number
 
 instruction_sets:
   - name: heads_default

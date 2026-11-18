@@ -31,7 +31,7 @@ This tutorial uses TransSMT hardware. Its files are already in the repository, i
 
 ## What the configuration does
 
-The settings that matter, all in `avida.yaml`: `reproduction.birth_method: 4` (well-mixed), `time.max_cpu_threads: 2` (a host carries at most one parasite), `parasites.inject_method: 1`, `parasites.infection_mechanism` at its default 1 (the parasite must match a task of the host), `parasites.virulence: 0.85` and `divide.require_single_reaction: 1`. The environment gives every task the same limited resource `resECHO` and forbids earning more than one task, so each host performs exactly one. See [parasites](../concepts/parasites.md).
+The settings that matter, all in `avida.yaml`: `reproduction.birth_method: population_random` (well-mixed), `time.max_cpu_threads: 2` (a host carries at most one parasite), `parasites.inject_method: reset_thread`, `parasites.infection_mechanism` at its default 1 (the parasite must match a task of the host), `parasites.virulence: 0.85` and `divide.require_single_reaction: 1`. The environment gives every task the same limited resource `resECHO` and forbids earning more than one task, so each host performs exactly one. See [parasites](../concepts/parasites.md).
 
 ## What to expect
 

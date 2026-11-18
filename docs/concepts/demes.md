@@ -32,7 +32,7 @@ A deme can *replicate*: its organisms seed another deme, which they replace. Whe
 
 - By event: `ReplicateDemes` takes a trigger (the default is `full_deme`: replicate when the deme is full). `ReplicateDemesHighestBirthCount` and `ReplicateDemesHighestFecundity` replicate the demes with the highest births or fecundity.
 - By setting (implicit replication): `demes.replicate_cpu_cycles`, `demes.replicate_time`, `demes.replicate_births` and `demes.replicate_orgs` trigger a deme's replication when it has used that many CPU cycles per organism, that much normalised time, that many births, or that many organisms. A value of 0 switches a trigger off.
-- By competition: `CompeteDemes` chooses which demes replicate by fitness proportional (`demes.competition_style: 0`) or tournament selection (`1`, with `demes.tournament_size`). The fitness of a deme is computed from its organisms' behaviour (variants: `CompeteDemesByTaskCount`, `CompeteDemesByEnergyDistribution`, `CompeteDemesByNetwork`, `CompeteDemes_AttackKillAndEnergyConserve`).
+- By competition: `CompeteDemes` chooses which demes replicate by fitness proportional (`demes.competition_style: proportional`) or tournament selection (`1`, with `demes.tournament_size`). The fitness of a deme is computed from its organisms' behaviour (variants: `CompeteDemesByTaskCount`, `CompeteDemesByEnergyDistribution`, `CompeteDemesByNetwork`, `CompeteDemes_AttackKillAndEnergyConserve`).
 
 `ResetDemes` resets all demes to their founders.
 

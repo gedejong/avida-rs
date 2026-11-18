@@ -7,7 +7,7 @@ This page describes the settings and files involved. The program contains worked
 ## What you need
 
 - An instruction set of hardware type 3, such as the stock set `experimental`, and an experimental ancestor (`experimental.org` is in the stock folder).
-- *Avatars*: `movement.use_avatars: 1` lets organisms move and navigate in worlds where each organism's avatar occupies a cell; `movement.use_avatars: 2` also lets organisms interact with one another. Predator and prey tests use `movement.use_avatars: 2`.
+- *Avatars*: `movement.use_avatars: on` lets organisms move and navigate in worlds where each organism's avatar occupies a cell; `movement.use_avatars: interacting` also lets organisms interact with one another. Predator and prey tests use `movement.use_avatars: interacting`.
 - `groups.pred_prey_switch`, which switches predators on and chooses whether organisms may change role:
 
 | Value | Meaning |

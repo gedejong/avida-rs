@@ -6,11 +6,11 @@ general:
 world:
   x: 10
   y: 1000
-  geometry: 1
+  geometry: bounded_grid
 demes:
   count: 100
-  organism_placement: 1
-  organism_facing: 1
+  organism_placement: deme_center
+  organism_facing: northwest
   max_age: 40
 
 instruction_sets:

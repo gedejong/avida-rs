@@ -6,11 +6,11 @@ general:
 world:
   x: 12
   y: 10
-  geometry: 7
+  geometry: random_connected
 demes:
   migration_file: migration.mat
   count: 5
-  migration_method: 4
+  migration_method: matrix
 hgt:
   enabled: true
 

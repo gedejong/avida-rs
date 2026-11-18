@@ -4,9 +4,9 @@
 general:
   random_seed: 101
 hoarding:
-  multi_absorb_type: 2
+  multi_absorb_type: last
 movement:
-  use_avatars: 2
+  use_avatars: interacting
 
 instruction_sets: []
 

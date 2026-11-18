@@ -6,7 +6,7 @@ general:
 genealogy:
   test_cpu_time_mod: 1
 hoarding:
-  multi_absorb_type: 1
+  multi_absorb_type: first
 
 instruction_sets:
   - name: diff

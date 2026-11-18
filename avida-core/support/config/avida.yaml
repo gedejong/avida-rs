@@ -30,15 +30,15 @@ world:
   x: 60
   # Height of the Avida world
   y: 60
-  # 1 = Bounded Grid (WOLRD_X x WORLD_Y)
-  # 2 = Toroidal Grid (WOLRD_X x WORLD_Y; wraps at edges
-  # 3 = Clique (all population cells are connected)
-  # 4 = Hexagonal grid
-  # 5 = Partial
-  # 6 = 3D Lattice (under development)
-  # 7 = Random connected
-  # 8 = Scale-free (detailed below)
-  geometry: 2
+  # bounded_grid: Bounded Grid (world.x by world.y)
+  # torus: Toroidal Grid (world.x by world.y; wraps at edges)
+  # clique: Clique (all population cells are connected)
+  # hex: Hexagonal grid
+  # partial: Partial
+  # lattice_3d: 3D Lattice (under development)
+  # random_connected: Random connected
+  # scale_free: Scale-free (detailed below)
+  geometry: torus
   # Number of connections per cell in a scale-free geometry
   scale_free_m: 3
   # Attachment power (1=linear)
@@ -122,28 +122,28 @@ mutation:
   # Deletion rate (per site, applied on inject)
   inject_del_prob: 0.0
   # Fill insertions from slip mutations with:
-  # 0 = Duplication
-  # 1 = nop-X
-  # 2 = Random
-  # 3 = Scrambled
-  # 4 = nop-C
-  slip_fill_mode: 0
+  # duplication: Duplication
+  # nop_x: nop-X
+  # random: Random
+  # scrambled: Scrambled
+  # nop_c: nop-C
+  slip_fill_mode: duplication
   # How to handle 'on-copy' slip mutations:
-  # 0 = actual read head slip
-  # 1 = instant large mutation (obeys slip mode)
-  slip_copy_mode: 0
+  # read_head_slip: actual read head slip
+  # large_mutation: instant large mutation (obeys slip mode)
+  slip_copy_mode: read_head_slip
   # Fill insertions from translocation mutations with:
-  # 0 = Duplication
-  # 1 = Scrambled
-  trans_fill_mode: 0
+  # duplication: Duplication
+  # scrambled: Scrambled
+  trans_fill_mode: duplication
   # Fill insertions from lateral gene transfer mutations with:
-  # 0 = Duplication
-  # 1 = scrambled
-  lgt_fill_mode: 0
+  # duplication: Duplication
+  # scrambled: scrambled
+  lgt_fill_mode: duplication
   # Extract gene for lateral transfer from:
-  # 0 = Local Neighborhood
-  # 1 = Entire Population
-  lgt_source_region: 0
+  # neighborhood: Local Neighborhood
+  # population: Entire Population
+  lgt_source_region: neighborhood
   # Parent substitution rate (per-site, applied on divide)
   parent_prob: 0.0
   # Parent insertion rate (per-site, applied on divide)
@@ -156,30 +156,30 @@ mutation:
   meta_copy_prob: 0.0
   # Standard deviation of meta mutation size.
   meta_std_dev: 0.0
-  # 1 = Mutation rates determined by environment.
-  # 2 = Mutation rates inherited from parent.
-  rate_source: 1
+  # environment: Mutation rates determined by environment.
+  # parent: Mutation rates inherited from parent.
+  rate_source: environment
 
 # Birth and death
 reproduction:
   # When Divide fails, organisms are interally reset
   divide_failure_resets: false
   # Which organism should be replaced when a birth occurs?
-  # 0 = Random organism in neighborhood
-  # 1 = Oldest in neighborhood
-  # 2 = Largest Age/Merit in neighborhood
-  # 3 = None (use only empty cells in neighborhood)
-  # 4 = Random from population (Mass Action)
-  # 5 = Oldest in entire population
-  # 6 = Random within deme
-  # 7 = Organism faced by parent
-  # 8 = Next grid cell (id+1)
-  # 9 = Largest energy used in entire population
-  # 10 = Largest energy used in neighborhood
-  # 11 = Local neighborhood dispersal
-  # 12 = Kill offpsring after recording birth stats (for behavioral trials)
-  # 13 = Kill parent and offpsring (for behavioral trials)
-  birth_method: 0
+  # neighborhood_random: Random organism in neighborhood
+  # neighborhood_oldest: Oldest in neighborhood
+  # neighborhood_merit: Largest Age/Merit in neighborhood
+  # neighborhood_empty: None (use only empty cells in neighborhood)
+  # population_random: Random from population (Mass Action)
+  # population_oldest: Oldest in entire population
+  # deme_random: Random within deme
+  # parent_facing: Organism faced by parent
+  # next_cell: Next grid cell (id+1)
+  # population_energy: Largest energy used in entire population
+  # neighborhood_energy: Largest energy used in neighborhood
+  # dispersal: Local neighborhood dispersal
+  # kill_offspring: Kill offpsring after recording birth stats (for behavioral trials)
+  # kill_both: Kill parent and offpsring (for behavioral trials)
+  birth_method: neighborhood_random
   # Overide BIRTH_METHOD to preferentially choose empty cells for offsping?
   prefer_empty: true
   # Should parents be considered when deciding where to place offspring?
@@ -192,10 +192,10 @@ reproduction:
   # Probability of death when dividing. (@MAM: proper DEATH_PROB impl)
   death_prob_parent: 0.0
   # When should death by old age occur?
-  # 0 = Never
-  # 1 = When executed AGE_LIMIT (+deviation) total instructions
-  # 2 = When executed genome_length * AGE_LIMIT (+dev) instructions
-  death_method: 2
+  # never: Never
+  # age_limit: When executed AGE_LIMIT (+deviation) total instructions
+  # age_limit_per_site: When executed genome_length * AGE_LIMIT (+dev) instructions
+  death_method: age_limit_per_site
   # See DEATH_METHOD
   age_limit: 20
   # Creates a normal distribution around AGE_LIMIT for time of death
@@ -203,14 +203,14 @@ reproduction:
   # Number of CPU cycles before newborn orgs can execute various instructions / behaviors
   juvenile_period: 0
   # When allocating blank tape, how should it be initialized?
-  # 0 = Allocated space is set to default instruction.
-  # 1 = Set to section of dead genome (creates potential for recombination)
-  # 2 = Allocated space is set to random instruction.
-  alloc_method: 0
-  # 0 = Divide leaves state of mother untouched.
-  # 1 = Divide resets state of mother(effectively creating 2 offspring)
-  # 2 = Divide resets state of current thread only (use with parasites)
-  divide_method: 1
+  # default_instruction: Allocated space is set to default instruction.
+  # dead_genome: Set to section of dead genome (creates potential for recombination)
+  # random_instruction: Allocated space is set to random instruction.
+  alloc_method: default_instruction
+  # offspring: Divide leaves state of mother untouched.
+  # split: Divide resets state of mother (effectively creating 2 offspring)
+  # birth: Divide resets state of current thread only (use with parasites)
+  divide_method: split
   # Inheritance of state information other than genome
   # 0 = none
   # 1 = offspring inherits registers and stacks of first thread
@@ -218,10 +218,9 @@ reproduction:
   #
   # 1 = offspring and parent keep state information
   epigenetic_method: 0
-  # 0 = Only increase generation of offspring on divide.
-  # 1 = Increase generation of both parent and offspring
-  #    (suggested with DIVIDE_METHOD 1).
-  generation_inc_method: 1
+  # offspring: Only increase generation of offspring on divide.
+  # both: Increase generation of both parent and offspring (suggested with divide_method split).
+  generation_inc_method: both
   # Reset environment inputs of parent upon successful divide.
   reset_inputs_on_divide: 0
   # Should merit be inhereted from mother parent? (in asexual)
@@ -338,9 +337,9 @@ parasites:
   # Log parasite replications?
   log_injections: false
   # What should happen to a parasite when it gives birth?
-  # 0 = Leave the parasite thread state untouched.
-  # 1 = Resets the state of the calling thread (for SMT parasites, this must be 1)
-  inject_method: 0
+  # keep_thread: Leave the parasite thread state untouched.
+  # reset_thread: Resets the state of the calling thread (for SMT parasites, this must be reset_thread)
+  inject_method: keep_thread
   # 0: Infection always succeeds.
   # 1: Infection succeeds if parasite matches at least one host task.
   # 2: Infection succeeds if parasite does NOT match at least one task.
@@ -360,8 +359,11 @@ parasites:
   inject_default_success: 0.0
   # The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment. Note that this should be set to a default even if virulence is evolving.
   virulence: -1.0
-  # Virulence is set by config (0) or inhereted from parent (1) or host-controlled, i.e. donation (2)
-  virulence_source: 0
+  # Where does the virulence come from?
+  # config: Virulence is set by config
+  # parent: inhereted from parent
+  # host: host-controlled, i.e. donation
+  virulence_source: config
   # The probability that virulence will mutate if it is inhereted from the parent or host-controlled (VIRULENCE_SOURCE = 1 & 2)
   virulence_mut_rate: 0.1
   # New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation
@@ -390,9 +392,9 @@ mp:
   # true = enabled.
   enabled: false
   # Style of scheduling:
-  # 0=non-MP aware (default)
-  # 1=MP aware, integrated across worlds.
-  scheduling_style: 0
+  # single_world: non-MP aware (default)
+  # integrated: MP aware, integrated across worlds.
+  scheduling_style: single_world
 
 # Demes and germlines
 demes:
@@ -401,25 +403,28 @@ demes:
   # Number of independent groups in the population
   count: 1
   # How should demes compete?
-  # 0=Fitness proportional selection
-  # 1=Tournament selection
-  competition_style: 0
+  # proportional: Fitness proportional selection
+  # tournament: Tournament selection
+  competition_style: proportional
   # Number of demes that participate in a tournament
   tournament_size: 0
   # Should the calculated fitness be overridden?
   # false = no, use it (default)
   # true = yes (all fitnesses=1)
   override_fitness: false
-  # Should demes use a distinct germline? 0: No, 1: Traditional germ lines, 2: Genotype tracking, 3: Organism flagging germline
-  use_germline: 0
+  # Should demes use a distinct germline?
+  # none: No
+  # traditional: Traditional germ lines
+  # genotype_tracking: Genotype tracking
+  # organism_flag: Organism flagging germline
+  use_germline: none
   # Prevent sterile demes from replicating?
   prevent_sterile: false
   # Reset resources in demes on replication?
-  # 0 = reset both demes
-  # 1 = reset target deme
-  # 2 = deme resources remain unchanged
-  #
-  reset_resources: 0
+  # both: reset both demes
+  # target: reset target deme
+  # none: deme resources remain unchanged
+  reset_resources: both
   # Number of identical organisms to create or copy from the
   # source deme to the target deme
   replicate_size: 1
@@ -439,16 +444,16 @@ demes:
   # 8=one of the organisms flagged as part of the germline
   organism_selection: 0
   # How should organisms be placed during deme replication.
-  # 0 = cell-array middle
-  # 1 = deme center
-  # 2 = random placement
-  # 3 = sequential
-  organism_placement: 0
+  # array_middle: cell-array middle
+  # deme_center: deme center
+  # random: random placement
+  # sequential: sequential
+  organism_placement: array_middle
   # Which direction should organisms face after deme replication.
-  # 0 = unchanged
-  # 1 = northwest.
-  # 2 = random.
-  organism_facing: 0
+  # unchanged: unchanged
+  # northwest: northwest.
+  # random: random.
+  organism_facing: unchanged
   # The maximum age of a deme (in updates) to be
   # used for age-based replication
   max_age: 500
@@ -476,25 +481,25 @@ demes:
   # Number of organisms in a deme to trigger its replication (0 = OFF).
   replicate_orgs: 0
   # Kin selection mode.  On replication:
-  # 0 = Nothing extra
-  # 1 = reset deme resources
-  # 2 = reset resources and re-inject organisms
-  replication_only_resets: 0
+  # nothing: Nothing extra
+  # reset_resources: reset deme resources
+  # reset_and_reinject: reset resources and re-inject organisms
+  replication_only_resets: nothing
   # Probability of an offspring being born in a different deme.
   migration_rate: 0.0
   # Probability of a parasite migrating to a different deme. Note: only works with DEMES_MIGRATION_METHOD 4.
   parasite_migration_rate: 0.0
   # Which demes can an offspring land in when it migrates?
-  # 0 = Any other deme
-  # 1 = Eight neighboring demes
-  # 2 = Two adjacent demes in list
-  # 3 = Proportional based on the number of points
-  # 4 = Use the weight matrix specified in MIGRATION_FILE
-  migration_method: 0
+  # any: Any other deme
+  # eight_neighbors: Eight neighboring demes
+  # adjacent: Two adjacent demes in list
+  # points: Proportional based on the number of points
+  # matrix: Use the weight matrix specified in demes.migration_file
+  migration_method: any
   # How should a target cell be chosen in the migrated-to deme?
-  # 0 = Select a cell randomly, if it is not occupied infection fails
-  # 1 = Select an occupied cell randomly
-  parasite_migration_target_selection_method: 0
+  # random_cell: Select a cell randomly, if it is not occupied infection fails
+  # random_occupied: Select an occupied cell randomly
+  parasite_migration_target_selection_method: random_cell
   # Above what parasite memory score should hosts be protected from incoming parasite migration?
   parasite_migration_memory_score_protective_threshold: 1.0
   # Simulated number of demes in X dimension. Used only for migration.
@@ -502,9 +507,9 @@ demes:
   # Restrict deme replication to within partitions of DEMES_PARTITION_INTERVAL consecutive deme ids. No restriction if 0. Partition size cannot be smaller than two. Does not affect migration.
   partition_interval: 0
   # Deme seeding method.
-  # 0 = Maintain old consistency
-  # 1 = New method using genotypes
-  seed_method: 0
+  # legacy: Maintain old consistency
+  # genotypes: New method using genotypes
+  seed_method: legacy
   # Deme divide method. Only works with DEMES_SEED_METHOD 1
   # 0 = Replace source and target demes
   # 1 = Replace target deme, reset source deme to founders
@@ -567,21 +572,23 @@ reversion:
 time:
   # Average number of CPU-cycles per org per update
   ave_time_slice: 30
-  # 0 = CONSTANT: all organisms receive equal number of CPU cycles
-  # 1 = PROBABILISTIC: CPU cycles distributed randomly, proportional to merit.
-  # 2 = INTEGRATED: CPU cycles given out deterministicly, proportional to merit
-  # 3 = DEME_PROBABALISTIC: Demes receive fixed number of CPU cycles, awarded probabalistically to members
-  # 4 = CROSS_DEME_PROBABALISTIC: Demes receive CPU cycles proportional to living population size, awarded probabalistically to members
-  slicing_method: 1
+  # constant: CONSTANT: all organisms receive equal number of CPU cycles
+  # probabilistic: PROBABILISTIC: CPU cycles distributed randomly, proportional to merit.
+  # integrated: INTEGRATED: CPU cycles given out deterministicly, proportional to merit
+  # deme_probabilistic: DEME_PROBABALISTIC: Demes receive fixed number of CPU cycles, awarded probabalistically to members
+  # cross_deme_probabilistic: CROSS_DEME_PROBABALISTIC: Demes receive CPU cycles proportional to living population size, awarded probabalistically to members
+  # probabilistic_integrated: PROB_INTEGRATED_MERIT: probabilistic and integrated (defined in the scheduler)
+  slicing_method: probabilistic
   # How should merit be initialized?
-  # 0 = Constant (merit independent of size)
-  # 1 = Merit proportional to copied size
-  # 2 = Merit prop. to executed size
-  # 3 = Merit prop. to full size
-  # 4 = Merit prop. to min of executed or copied size
-  # 5 = Merit prop. to sqrt of the minimum size
-  # 6 = Merit prop. to num times MERIT_BONUS_INST is in genome.
-  base_merit_method: 4
+  # constant: Constant (merit independent of size)
+  # copied_size: Merit proportional to copied size
+  # executed_size: Merit prop. to executed size
+  # full_size: Merit prop. to full size
+  # least_size: Merit prop. to min of executed or copied size
+  # sqrt_least_size: Merit prop. to sqrt of the minimum size
+  # bonus_instructions: Merit prop. to num times time.merit_bonus_inst is in genome.
+  # gestation_time: Merit prop. to the CPU cycles used
+  base_merit_method: least_size
   # Base merit value for BASE_MERIT_METHOD 0
   base_const_merit: 100
   # Instruction ID to count for BASE_MERIT_METHOD 6
@@ -608,8 +615,10 @@ time:
   merit_inc_apply_immediate: false
   # Number of updates after taske until regain full value
   task_refractory_period: 0.0
-  # 0 = default, 1 = sigmoidal,
-  fitness_method: 0
+  # default: merit times bonus over gestation time
+  # sigmoidal: sigmoidal in the bonus
+  # exponential_gestation: net bonus, discounted by the gestation time (uses fitness_coeff_1)
+  fitness_method: default
   # 1st FITNESS_METHOD parameter
   fitness_coeff_1: 1.0
   # 2nd FITNESS_METHOD parameter
@@ -712,8 +721,10 @@ messaging:
   send_buffer_size: 1
   # Size of message receive buffer (stores messages that are received); -1=inf, default=8.
   recv_buffer_size: 8
-  # Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming
-  recv_buffer_behavior: 0
+  # Behavior of message receive buffer;
+  # drop_oldest: drop oldest (default)
+  # drop_incoming: drop incoming
+  recv_buffer_behavior: drop_oldest
   # Enable active messages.
   # 0 = off
   # 2 = message creates parallel thread
@@ -739,11 +750,11 @@ hoarding:
   # Fraction of available environmental resource an organism absorbs.
   absorb_resource_fraction: 0.0025
   # What to do if a collect instruction is called on a range of resources.
-  #  0 = absorb a random resource in the range
-  #  1 = absorb the first resource in the range
-  #  2 = absorb the last resource in the range
-  #  3 = absorb ABSORB_RESOURCE_FRACTION / (# of resources in range) of each resource in the range
-  multi_absorb_type: 0
+  # random: absorb a random resource in the range
+  # first: absorb the first resource in the range
+  # last: absorb the last resource in the range
+  # fraction: absorb absorb_resource_fraction / (# of resources in range) of each resource in the range
+  multi_absorb_type: random
   # Maximum total amount of all resources an organism can store.
   #  <0 = no maximum
   max_total_stored: -1.0
@@ -780,11 +791,11 @@ analyze:
   option_1: ''
   # String variable accessible from analysis scripts
   option_2: ''
-  # 0 = Disabled
-  # 1 = Enabled
-  # 2 = Interactive
   # DEPRECATED: use command line options -a[nalyze] or -i[nteractive])
-  mode: 0
+  # disabled: Disabled
+  # analyze: Enabled
+  # interactive: Interactive
+  mode: disabled
 
 # Energy model
 energy:
@@ -807,10 +818,10 @@ energy:
   # Maximum amount of energy that can be stored in an organism.  -1 = no max
   cap: -1.0
   # When should rewarded energy be applied to current energy?
-  # 0 = on divide
-  # 1 = on completion of task
-  # 2 = on sleep
-  apply_method: 0
+  # on_divide: on divide
+  # on_task: on completion of task
+  # on_sleep: on sleep
+  apply_method: on_divide
   # Fix organism metobolic rate to value.  This value is static.  Feature disabled by default (value == -1)
   fix_metabolic_rate: -1.0
   # Fraction of replaced organism's energy take by new resident
@@ -821,9 +832,9 @@ energy:
   # Fraction of organisms energy to relinquish
   frac_energy_relinquish: 1.0
   # Who get energy passed from a parent deme
-  # 0 = Energy divided among organisms injected to offspring deme
-  # 1 = Energy divided among cells in offspring deme
-  passed_on_deme_replication_method: 0
+  # organisms: Energy divided among organisms injected to offspring deme
+  # cells: Energy divided among cells in offspring deme
+  passed_on_deme_replication_method: organisms
   # Inherit energy rate from parent? false = no, true = yes
   inherit_exe_rate: false
   # Percent of cell's energy decayed by attack
@@ -839,8 +850,10 @@ energy:
 
 # Energy sharing
 energy_sharing:
-  # Method for sharing energy.  0=receiver must actively receive/request, 1=energy pushed on receiver
-  method: 0
+  # Method for sharing energy.
+  # request: receiver must actively receive/request
+  # push: energy pushed on receiver
+  method: request
   # Percent of energy to share
   pct: 0.0
   # Amount to change percent energy shared
@@ -888,10 +901,10 @@ promoters:
   # Does termination reset the thread's state?
   termination_resets: false
   # What happens when there are no active promoters?
-  # 0 = Start execution at the beginning of the genome.
-  # 1 = Kill the organism.
-  # 2 = Stop the organism from executing any further instructions.
-  no_active_promoter_effect: 0
+  # start_of_genome: Start execution at the beginning of the genome.
+  # kill: Kill the organism.
+  # stop: Stop the organism from executing any further instructions.
+  no_active_promoter_effect: start_of_genome
   # Size of a promoter code in bits. (Maximum value is 32)
   code_size: 24
   # Length of promoter windows used to determine execution.
@@ -901,9 +914,9 @@ promoters:
   # Instruction binary code length (number of bits)
   inst_code_length: 3
   # Default value of instruction binary code value.
-  # 0 = All zeros
-  # 1 = Based off the instruction number
-  inst_code_default_type: 0
+  # zeros: All zeros
+  # instruction_number: Based off the instruction number
+  inst_code_default_type: zeros
   # Sense a new regulation value before each CPU cycle?
   constitutive_regulation: false
 
@@ -932,11 +945,14 @@ colors:
 
 # Movement and avatars
 movement:
-  # Are collisions during movement lethal (not applied to avatars)? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)
-  collisions_lethal: 0
-  # 0 = 50% chance
-  # 1 = binned vitality based
-  collisions_selection_type: 0
+  # Are collisions during movement lethal (not applied to avatars)?
+  # swap: no, use swap
+  # lethal: yes, use collision selection type
+  # fail: no, but movement fails
+  collisions_lethal: swap
+  # coin_flip: 50% chance
+  # vitality: binned vitality based
+  collisions_selection_type: coin_flip
   # vitality multiplier for extremes (> 1 stddev from the mean population age)
   vitality_bin_extremes: 1.0
   # vitality multiplier for center bin (with 1 stddev of the mean population age)
@@ -945,17 +961,21 @@ movement:
   deadly_boundaries: false
   # % chance a step is not counted as part of easterly/northerly travel.
   step_counting_error: 0
-  # Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).
-  use_avatars: 0
-  # 0 = Same as parent
-  # 1 = Random
-  # 2 = Cell faced by parent avatar
-  # 3 = next grid cell
-  # 4 = Center of the world
-  avatar_birth: 0
-  # 0 North
-  #  1 Random
-  avatar_birth_facing: 0
+  # Set orgs to move & navigate in solo avatar worlds.
+  # off: no avatars
+  # on: yes
+  # interacting: yes, with org interactions
+  use_avatars: off
+  # Where does an offspring's avatar start?
+  # parent: Same as parent
+  # random: Random
+  # faced: Cell faced by parent avatar
+  # next_cell: next grid cell
+  # center: Center of the world
+  avatar_birth: parent
+  # north: North
+  # random: Random
+  avatar_birth_facing: north
   # Log and print locations for all births place.
   track_birth_locs: false
 
@@ -978,15 +998,15 @@ sensing:
   #  11: output id seen
   #  12: output org forage target seen
   look_disable: 0
-  # 0: predators
-  #  1: prey
-  #  2: both predators and prey
-  look_disable_type: 0
-  # # 0: none
-  #  # 1: return 'not found' for any food resource query
-  #  # 2: return 'not found' for any looking-for-predator query
-  #  # 3: return 'not found' for any looking-for-prey query
-  look_disable_combo: 0
+  # predators: predators
+  # prey: prey
+  # both: both predators and prey
+  look_disable_type: predators
+  # none: none
+  # no_food: return 'not found' for any food resource query
+  # no_predator: return 'not found' for any looking-for-predator query
+  # no_prey: return 'not found' for any looking-for-prey query
+  look_disable_combo: none
   # # If 1, pred will get random data returned to registers when seen prey with odds of 0.1 * n, where n = # neighbors that that prey has.
   #  # If 2, pred will get random data returned to registers with odds of n/8, where n = # facings among neighbors that that prey has.
   #  # If 3, will be number of opinions seen / number of opinions in restricted list.
@@ -1012,10 +1032,10 @@ pheromone:
   # Amount of pheromone to add per drop
   amount: 1.0
   # Where to drop pheromone
-  # 0 = Half amount at src, half at dest
-  # 1 = All at source
-  # 2 = All at dest
-  drop_mode: 0
+  # split: Half amount at src, half at dest
+  # source: All at source
+  # destination: All at dest
+  drop_mode: split
   # Probability of random exploration
   # instead of pheromone trail following
   exploit_explore_prob: 0.0
@@ -1048,13 +1068,13 @@ reputation:
   # Number of raw materials an organism starts with
   raw_material_amount: 100
   # Is an organism's reputation automatically computed based on its donations
-  # 0=no
-  # 1=increment for each donation + standing
-  # 2=+1 for donations given -1 for donations received
-  # 3=1 for donors -1 for recivers who have not donated
-  # 4=+1 for donors
-  # 5=+1 for donors during task check
-  auto: 0
+  # off: no
+  # donations_and_standing: increment for each donation + standing
+  # given_minus_received: +1 for donations given -1 for donations received
+  # donors_and_non_donors: 1 for donors -1 for recivers who have not donated
+  # donors: +1 for donors
+  # donors_at_task: +1 for donors during task check
+  auto: off
   # Number multiplied by the number of raw materials received from another organism to compute reward
   alt_benefit: 1
   # Number multiplied by the number of your raw materials
@@ -1067,10 +1087,10 @@ reputation:
   donation_failure_percent: 0
   # Should all the organisms receive the same amount (false = same amount, true = randomized)?
   randomize_raw_material_amount: false
-  # 0=none
-  # 1=inter-species only
-  # 2=different tag only
-  donation_restrictions: 0
+  # none: none
+  # inter_species: inter-species only
+  # different_tag: different tag only
+  donation_restrictions: none
   # 0=reputations are not inherited
   # 1=reputations are inherited
   # 2=tags are inherited
@@ -1087,10 +1107,11 @@ reputation:
 
 # Group formation and predator-prey
 groups:
-  # Enable organisms to form groups. 0=off,
-  #  1=on no restrict,
-  #  2=on restrict to defined
-  use_form_groups: 0
+  # Enable organisms to form groups.
+  # off: off
+  # unrestricted: on, no restrict
+  # defined_only: on, restrict to defined
+  use_form_groups: off
   # Default group to assign to organisms not asserting a group membership (-1 indicates disabled)
   default_group: -1
   # Should offspring inherit the parent's opinion? false: No... reset on divide, etc. true: Yes
@@ -1104,18 +1125,18 @@ groups:
   tolerance_window: 0
   # Maximum tolerance level
   max_tolerance: 1
-  # 0=all tolerance active,
-  # 1=only immigration tolerance active,
-  # 2=immigrants + sex
-  tolerance_variations: 0
+  # all: all tolerance active
+  # immigration: only immigration tolerance active
+  # immigration_and_sex: immigrants + sex
+  tolerance_variations: all
   # Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)
   track_tolerance: false
-  #  -2: no predators, but track prey stats
-  #  -1: no predators in experiment
-  #  0: don't allow a predator to switch to being a prey (prey to pred always allowed)
-  #  1: allow predators to switch to being prey
-  #  2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )
-  pred_prey_switch: -1
+  # track_prey: no predators, but track prey stats
+  # no_predators: no predators in experiment
+  # pred_to_prey_denied: don't allow a predator to switch to being a prey (prey to pred always allowed)
+  # pred_to_prey_allowed: allow predators to switch to being prey
+  # no_switch: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed)
+  pred_prey_switch: no_predators
   # Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value
   #  and add to current predator values (for bonus, merit, and bin consumption instructions).
   pred_efficiency: 1.0
@@ -1136,9 +1157,10 @@ groups:
   # Population cap on number of prey (random prey will be removed when cap is exceeded) based on FT.
   max_prey_bt: 0
   # Track details around execution of EVERY group attack instructions for every update.
-  #   1 = as string in one file.
-  #   2 = as bits in new file for every update that this is on!
-  track_group_attack_details: 0
+  # off: no tracking
+  # string: as string in one file.
+  # bits: as bits in new file for every update that this is on!
+  track_group_attack_details: off
   #  Number of updates markings in cells will remain effective on territory move.
   marking_expire_date: -1
   # Turn off prey mutations in the exp hardware repro inst.
@@ -1165,13 +1187,15 @@ hgt:
   # Whether HGT is enabled; false (default),
   # true.
   enabled: false
-  # Source of HGT fragments; 0=dead organisms (default),
-  # 1=parent.
-  source: 0
-  # Method used to select fragments for HGT mutation; 0=random (default),
-  # 1=trimmed selection
-  # 2=random placement.
-  fragment_selection: 0
+  # Source of HGT fragments;
+  # dead_organisms: dead organisms (default)
+  # parent: parent.
+  source: dead_organisms
+  # Method used to select fragments for HGT mutation;
+  # random: random (default)
+  # trimmed: trimmed selection
+  # random_placement: random placement.
+  fragment_selection: random
   # Mean size of fragments (default=10).
   fragment_size_mean: 10.0
   # Variance of fragments (default=2).
@@ -1190,10 +1214,11 @@ hgt:
   conjugation_method: 0
   # Probability that an HGT conjugation mutation will occur on divide (default=0.0).
   conjugation_p: 0.0
-  # Transformation to apply to each fragment prior to incorporation into offspring's genome; 0=none (default),
-  # 1=random shuffle,
-  # 2=replace with random instructions.
-  fragment_xform: 0
+  # Transformation to apply to each fragment prior to incorporation into offspring's genome;
+  # none: none (default),
+  # shuffle: random shuffle,
+  # random_instructions: replace with random instructions.
+  fragment_xform: none
 
 # Resource-dependent instructions
 inst_resources:
@@ -1221,8 +1246,12 @@ division_of_labor:
   reaction_thresh: 0
   # Cost of task switching in cycles
   task_switch_penalty: 0
-  # Type of task switch cost: (0) none (1) learning, (2) retooling or context, (3) centrifuge
-  task_switch_penalty_type: 0
+  # Type of task switch cost:
+  # none: none
+  # learning: learning
+  # retooling: retooling or context
+  # centrifuge: centrifuge
+  task_switch_penalty_type: none
   # The amount of resources that must be consumed prior to automatic deme replication
   res_for_deme_rep: 0
   # The number of times a task must be performed to avoid efficiency penalties

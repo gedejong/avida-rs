@@ -4,9 +4,9 @@
 general:
   random_seed: 101
 hoarding:
-  multi_absorb_type: 2
+  multi_absorb_type: last
 groups:
-  pred_prey_switch: 1
+  pred_prey_switch: pred_to_prey_allowed
 
 instruction_sets: []
 

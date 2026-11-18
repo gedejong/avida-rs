@@ -696,7 +696,8 @@ fn unknown_top_level_message(key: &str) -> String {
 
 /// The text loaded into a setting: `true` and `false` stand for 1 and 0
 /// where the setting is an integer, and a flag takes `true`, `false`, `1`
-/// and `0` and nothing else; a number setting must start the way a number
+/// and `0` and nothing else, a choice takes the name of one of its options
+/// (or the option's number); a number setting must start the way a number
 /// does (the C++ parser read a word as 0).
 pub fn setting_value(info: &SettingInfo, text: &str) -> Result<String, String> {
     let kind = info.kind();
@@ -707,6 +708,16 @@ pub fn setting_value(info: &SettingInfo, text: &str) -> Result<String, String> {
             _ => Err(format!(
                 "setting '{}' takes true or false, not '{text}'",
                 info.path()
+            )),
+        };
+    }
+    if let Some(c) = info.choice() {
+        return match c.resolve(text) {
+            Some(n) => Ok(n.to_string()),
+            None => Err(format!(
+                "setting '{}' takes one of {} (or the option's number), not '{text}'",
+                info.path(),
+                c.names()
             )),
         };
     }

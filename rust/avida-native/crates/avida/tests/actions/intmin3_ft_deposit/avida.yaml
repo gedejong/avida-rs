@@ -8,9 +8,9 @@ mutation:
   divide_ins_prob: 0.0
   divide_del_prob: 0.0
 hoarding:
-  multi_absorb_type: 2
+  multi_absorb_type: last
 groups:
-  pred_prey_switch: 1
+  pred_prey_switch: pred_to_prey_allowed
 
 instruction_sets:
   - name: diff

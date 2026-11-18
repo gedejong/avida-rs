@@ -4,13 +4,13 @@
 general:
   random_seed: 0
 world:
-  geometry: 3
+  geometry: clique
 reproduction:
-  divide_method: 2
+  divide_method: birth
 divide:
   min_genome_size: 30
 parasites:
-  inject_method: 1
+  inject_method: reset_thread
 time:
   merit_inc_apply_immediate: true
   max_cpu_threads: 2
@@ -18,7 +18,7 @@ energy:
   given_on_inject: 100.0
   given_at_birth: 10.0
   num_cycles_exc_before_0_energy: 1000
-  apply_method: 1
+  apply_method: on_task
 
 instruction_sets:
   - name: instset-smt.cfg

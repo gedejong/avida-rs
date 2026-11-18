@@ -8,7 +8,7 @@ world:
   y: 1000
 demes:
   count: 100
-  organism_facing: 1
+  organism_facing: northwest
   max_age: 40
 
 instruction_sets:

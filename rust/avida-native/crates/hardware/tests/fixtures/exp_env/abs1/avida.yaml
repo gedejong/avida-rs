@@ -4,7 +4,7 @@
 general:
   random_seed: 101
 hoarding:
-  multi_absorb_type: 1
+  multi_absorb_type: first
 
 instruction_sets: []
 

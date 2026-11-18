@@ -99,7 +99,7 @@ environment:
     - {name: NAME, kind: gradient, OPTION: VALUE, ...}
 ```
 
-A gradient resource is a spatial resource laid out as a cone, a halo, hills, walls or nests. Cones and halos can move over time (moving resources need a bounded grid, `world.geometry: 1`). The parser accepts these options; the description comes from the program's old documentation, which has more detail:
+A gradient resource is a spatial resource laid out as a cone, a halo, hills, walls or nests. Cones and halos can move over time (moving resources need a bounded grid, `world.geometry: bounded_grid`). The parser accepts these options; the description comes from the program's old documentation, which has more detail:
 
 | Option | Meaning |
 |---|---|

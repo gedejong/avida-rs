@@ -39,7 +39,7 @@ If the conditions fail, the divide fails and the organism carries on (or, with `
 | 12 | Nobody: the offspring is killed after its birth statistics are recorded (behavioural trials) |
 | 13 | Both parent and offspring are killed (behavioural trials) |
 
-`reproduction.prefer_empty` (stock true) overrides the choice so that an empty cell in the neighbourhood is used if one exists. The *neighbourhood* is the cell's connections, which `world.geometry` defines: a bounded grid, a torus (the stock choice, a grid that wraps at the edges), a clique where every cell neighbours every other, a hexagonal grid, a partial grid, a random connected graph or a scale-free graph. The 3-D lattice (`world.geometry: 6`) is listed in the setting but stops with an `unsupported:` message because the C++ program reads out of bounds.
+`reproduction.prefer_empty` (stock true) overrides the choice so that an empty cell in the neighbourhood is used if one exists. The *neighbourhood* is the cell's connections, which `world.geometry` defines: a bounded grid, a torus (the stock choice, a grid that wraps at the edges), a clique where every cell neighbours every other, a hexagonal grid, a partial grid, a random connected graph or a scale-free graph. The 3-D lattice (`world.geometry: lattice_3d`) is listed in the setting but stops with an `unsupported:` message because the C++ program reads out of bounds.
 
 A world with local birth (method 0) and one with global birth (method 4) behave very differently: local birth makes lineages spread slowly and lets many lineages explore in parallel. [Population structure](../guides/tutorial-population-structure.md) compares them.
 

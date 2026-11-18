@@ -4,32 +4,32 @@
 general:
   random_seed: 10
 world:
-  geometry: 1
+  geometry: bounded_grid
 mutation:
   copy_prob: 0.0
   divide_prob: 0.25
 reproduction:
-  birth_method: 4
+  birth_method: population_random
   allow_parent: false
-  death_method: 1
+  death_method: age_limit
   age_limit: 18000
   reset_inputs_on_divide: 1
 divide:
   required_bonus: 2.0
 time:
-  base_merit_method: 0
+  base_merit_method: constant
 hoarding:
   absorb_resource_fraction: 1.0
-  multi_absorb_type: 1
+  multi_absorb_type: first
   return_stored_on_death: false
   split_on_divide: false
 movement:
-  use_avatars: 2
-  avatar_birth: 2
+  use_avatars: interacting
+  avatar_birth: faced
 sensing:
   look_dist: 50
 groups:
-  pred_prey_switch: 0
+  pred_prey_switch: pred_to_prey_denied
 
 instruction_sets:
   - name: instset

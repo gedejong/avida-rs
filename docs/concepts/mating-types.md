@@ -58,7 +58,7 @@ A divide with `div-sex-mating-type` does not place an offspring at once. The off
 4. An entry is dropped when it has waited longer than `recombination.max_birth_wait_time` updates. The stock value, -1, means it waits for ever, so set something like 3 updates (the value the old wiki found to work and the test uses).
 5. The chamber is limited to `mating.max_global_birth_chamber_size` entries (3600 by default). When it is full, the oldest entry is overwritten.
 
-The chamber has no spatial structure: any female can meet any male, wherever they are. Where the recombined offspring *lands* is still decided by `reproduction.birth_method`. If you want the whole population to be well mixed, use `reproduction.birth_method: 4`, as the test does.
+The chamber has no spatial structure: any female can meet any male, wherever they are. Where the recombined offspring *lands* is still decided by `reproduction.birth_method`. If you want the whole population to be well mixed, use `reproduction.birth_method: population_random`, as the test does.
 
 Two exceptions. If `demes.count` is above 1, `mating.types` is ignored and every deme runs its own chamber of the ordinary kind, so mating types do not work with demes. And with `mating.in_groups: true`, mates must belong to the same group (the organism's opinion).
 

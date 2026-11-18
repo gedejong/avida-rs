@@ -6,9 +6,9 @@ general:
 reproduction:
   juvenile_period: 3
 hoarding:
-  multi_absorb_type: 1
+  multi_absorb_type: first
 groups:
-  pred_prey_switch: -2
+  pred_prey_switch: track_prey
 
 instruction_sets: []
 

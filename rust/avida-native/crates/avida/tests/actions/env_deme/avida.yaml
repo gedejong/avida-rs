@@ -6,13 +6,13 @@ general:
 world:
   x: 20
   y: 40
-  geometry: 1
+  geometry: bounded_grid
 mutation:
   copy_prob: 0.0
   divide_ins_prob: 0.0
   divide_del_prob: 0.0
 reproduction:
-  birth_method: 6
+  birth_method: deme_random
 parasites:
   infection_mechanism: 0
 demes:

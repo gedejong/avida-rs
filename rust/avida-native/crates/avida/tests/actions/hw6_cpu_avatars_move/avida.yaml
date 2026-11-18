@@ -9,11 +9,11 @@ world:
 mutation:
   copy_prob: 0.005
 time:
-  slicing_method: 0
+  slicing_method: constant
 altruism:
   max_donates: 1000
 movement:
-  use_avatars: 1
+  use_avatars: on
 
 instruction_sets:
   - name: heads_av

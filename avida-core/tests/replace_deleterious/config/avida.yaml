@@ -15,7 +15,7 @@ reversion:
   revert_detrimental: 1.0
   sterilize_unstable: 1
 time:
-  slicing_method: 2
+  slicing_method: integrated
 
 instruction_sets:
   - name: inst_set.defaultRS

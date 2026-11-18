@@ -390,6 +390,16 @@ fn settings_yaml(cfg: &Config, full: bool) -> Result<String, String> {
                     s.path()
                 ));
             }
+            if let Some(c) = s.choice() {
+                if v == raw {
+                    return Err(format!(
+                        "{} {raw} in the old files: '{}' takes one of {}",
+                        s.old,
+                        s.path(),
+                        c.names()
+                    ));
+                }
+            }
             if full {
                 comment(&mut body, 2, s.desc());
             }

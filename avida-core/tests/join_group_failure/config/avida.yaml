@@ -7,7 +7,7 @@ world:
   x: 20
   y: 20
 groups:
-  use_form_groups: 2
+  use_form_groups: defined_only
   default_group: 0
   join_group_failure: 50
 

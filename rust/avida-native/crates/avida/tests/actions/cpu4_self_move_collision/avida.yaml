@@ -7,7 +7,7 @@ world:
   x: 1
   y: 12
 movement:
-  collisions_lethal: 1
+  collisions_lethal: lethal
 
 instruction_sets:
   - name: heads_self

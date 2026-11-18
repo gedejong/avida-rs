@@ -10,7 +10,7 @@ promoters:
   inst_max: 2000
   processivity: 0.998
   to_register: true
-  inst_code_default_type: 1
+  inst_code_default_type: instruction_number
 
 instruction_sets:
   - name: heads_default

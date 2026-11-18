@@ -4,7 +4,7 @@
 general:
   verbosity: 3
 world:
-  geometry: 8
+  geometry: scale_free
 
 instruction_sets:
   - name: instset-heads.cfg

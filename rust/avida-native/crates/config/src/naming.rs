@@ -14,6 +14,7 @@
 //! `INST_SET_LOAD_LEGACY` only told the C++ how to read a legacy
 //! instruction-set file, which the converter now does once.
 
+use crate::choices::ChoiceDef;
 use crate::config::{all_entries, EntryDef, EntryType};
 use crate::port_settings::{PortEntryDef, PORT_ENTRIES};
 
@@ -180,6 +181,9 @@ pub enum ValueKind {
     /// `true` or `false` (the simulation holds 1 or 0; `1` and `0` are
     /// read as well).
     Flag,
+    /// One of several named options (`geometry: torus`); the simulation
+    /// holds the option's number.
+    Choice,
     /// Text.
     Text,
 }
@@ -192,6 +196,7 @@ impl ValueKind {
             ValueKind::Int => "int",
             ValueKind::Double => "double",
             ValueKind::Flag => "flag",
+            ValueKind::Choice => "choice",
             ValueKind::Text => "cString",
         }
     }
@@ -202,6 +207,7 @@ impl ValueKind {
             ValueKind::Int => "integer",
             ValueKind::Double => "number",
             ValueKind::Flag => "flag",
+            ValueKind::Choice => "choice",
             ValueKind::Text => "text",
         }
     }
@@ -240,6 +246,9 @@ impl SettingInfo {
         if let Some((_, text)) = FLAG_DESCRIPTIONS.iter().find(|(old, _)| *old == self.old) {
             return text;
         }
+        if let Some(text) = crate::choices::description_of(self.old) {
+            return text;
+        }
         match self.def {
             SettingDef::Cpp(e) => e.desc,
             SettingDef::Port(p) => p.desc,
@@ -251,6 +260,9 @@ impl SettingInfo {
         if self.is_flag() {
             return ValueKind::Flag;
         }
+        if self.choice().is_some() {
+            return ValueKind::Choice;
+        }
         match self.def {
             SettingDef::Cpp(e) => match e.ty {
                 EntryType::Int => ValueKind::Int,
@@ -260,6 +272,11 @@ impl SettingInfo {
             },
             SettingDef::Port(_) => ValueKind::Int,
         }
+    }
+
+    /// The named options of a choice setting.
+    pub fn choice(&self) -> Option<&'static ChoiceDef> {
+        crate::choices::choice_of(self.old)
     }
 
     /// Whether the setting is a flag: a C++ `bool`, or an integer that
@@ -275,10 +292,17 @@ impl SettingInfo {
     }
 
     /// `raw`, the value as the simulation holds it (`1`, `0`), as the file
-    /// writes it: `true` and `false` for a flag, `raw` itself for the other
-    /// kinds (and for a flag holding something else than 0 and 1, which only
-    /// an old file can give it).
+    /// writes it: `true` and `false` for a flag, the option's name for a
+    /// choice, `raw` itself for the other kinds (and for a flag or choice
+    /// holding a number that has no name, which only an old file can give
+    /// it).
     pub fn display(&self, raw: &str) -> String {
+        if let Some(c) = self.choice() {
+            if let Some(name) = raw.trim().parse::<i32>().ok().and_then(|n| c.name_of(n)) {
+                return name.to_string();
+            }
+            return raw.to_string();
+        }
         if self.is_flag() {
             match raw {
                 "1" => return "true".into(),

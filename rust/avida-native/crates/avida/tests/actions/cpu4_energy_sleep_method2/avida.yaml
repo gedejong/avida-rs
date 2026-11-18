@@ -4,8 +4,8 @@
 general:
   random_seed: 7
 reproduction:
-  birth_method: 4
-  death_method: 0
+  birth_method: population_random
+  death_method: never
 time:
   ave_time_slice: 1
 energy:

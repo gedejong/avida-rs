@@ -6,10 +6,10 @@ general:
 world:
   x: 10
   y: 1000
-  geometry: 1
+  geometry: bounded_grid
 demes:
   count: 100
-  use_germline: 1
+  use_germline: traditional
   max_age: 40
   germline_ins_mut: 0.0
   germline_del_mut: 0.0

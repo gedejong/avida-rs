@@ -6,7 +6,7 @@ general:
 world:
   x: 20
   y: 20
-  geometry: 1
+  geometry: bounded_grid
 reproduction:
   reset_inputs_on_divide: 1
 

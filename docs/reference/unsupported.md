@@ -15,7 +15,7 @@ The maintainer's ruling is that where the original C++ behaviour is *undefined o
 | Feature | What happens | Why |
 |---|---|---|
 | `time.slicing_method` 3 and 4 (and any value without a scheduler) | Stops at start-up. | The C++ program crashes on them. |
-| `world.geometry: 6` (3-D lattice) | Stops. | The C++ builds the lattice by reading out of bounds. |
+| `world.geometry: lattice_3d` (3-D lattice) | Stops. | The C++ builds the lattice by reading out of bounds. |
 | `demes.count` that does not divide `world.y` (analyze mode) | Stops. | The C++ crashes. |
 | `PrintDemeEnergySharingStats` | Stops. | The C++ reads uninitialised phenotype counters. |
 | Deme network (`cDemeNetwork`) | Prints the `cDemeNetwork requires Boost` error and exits with code 50. | The reference binary was built without Boost; the port matches it. |

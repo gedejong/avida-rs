@@ -12,14 +12,14 @@ mutation:
   divide_del_prob: 0.0
 reproduction:
   allow_parent: false
-  death_method: 0
+  death_method: never
   age_limit: 0
   juvenile_period: 10
   reset_inputs_on_divide: 1
 time:
   ave_time_slice: 10
-  slicing_method: 0
-  base_merit_method: 0
+  slicing_method: constant
+  base_merit_method: constant
   merit_inc_apply_immediate: true
 altruism:
   max_donates: 1000
@@ -33,14 +33,14 @@ movement:
 sensing:
   look_dist: 50
 groups:
-  use_form_groups: 1
-  pred_prey_switch: 1
+  use_form_groups: unrestricted
+  pred_prey_switch: pred_to_prey_allowed
   pred_efficiency: 0.37
   pred_efficiency_poison: 0.21
   pred_odds: 0.6
   pred_injury: 0.13
   max_prey_bt: 6
-  track_group_attack_details: 1
+  track_group_attack_details: string
 
 instruction_sets:
   - name: instset

@@ -119,7 +119,7 @@ All settings are in the [group `sensing` of the experiment file reference](confi
 
 The predator of `lookAhead_v1` (`pred-rotate-org0.org`) sets the habitat register to -2 (organisms), the distance to 25 and the search type to -1 (closest prey), and then executes `look-ahead` with the nops `nop-B nop-C nop-D`, so the habitat sits in BX, the distance in CX and the search type in DX. No nop names the id register, so it is the next one in order, EX, which the organism set to -1 (any). After the look the organism tests the count register with `if-not-0` and chooses between rotating and moving; read the full program in the test folder. The prey organisms of the same test look for food (habitat 0) and for dens (habitat 4) in the same way.
 
-Predator and prey experiments need `movement.use_avatars: 2` and the experimental hardware, as the [predator and prey page](../concepts/predator-prey.md) explains.
+Predator and prey experiments need `movement.use_avatars: interacting` and the experimental hardware, as the [predator and prey page](../concepts/predator-prey.md) explains.
 
 ## Not supported
 

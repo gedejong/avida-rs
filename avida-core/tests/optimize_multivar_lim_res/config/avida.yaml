@@ -13,8 +13,8 @@ mutation:
 divide:
   offspring_size_range: 1.0
 time:
-  slicing_method: 2
-  base_merit_method: 0
+  slicing_method: integrated
+  base_merit_method: constant
 
 instruction_sets:
   - name: instset-heads.cfg

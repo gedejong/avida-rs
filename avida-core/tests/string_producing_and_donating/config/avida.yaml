@@ -5,7 +5,7 @@ general:
   random_seed: 1
 reputation:
   raw_material_amount: 0
-  auto: 3
+  auto: donors_and_non_donors
   alt_benefit: 2
   specialists: true
   string_amount_cap: 10

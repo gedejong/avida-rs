@@ -7,10 +7,10 @@ world:
   x: 10
   y: 20
 reproduction:
-  death_method: 0
+  death_method: never
 demes:
   count: 2
-  organism_facing: 1
+  organism_facing: northwest
 energy:
   enabled: true
   given_on_inject: 100000.0

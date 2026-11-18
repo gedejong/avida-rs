@@ -14,27 +14,27 @@ mutation:
   divide_del_prob: 0.0
   inject_prob: 0.005625
 reproduction:
-  birth_method: 6
+  birth_method: deme_random
   prefer_empty: false
   age_limit: 30
 divide:
   min_genome_size: 80
   require_single_reaction: 1
 parasites:
-  inject_method: 1
+  inject_method: reset_thread
   virulence: 0.85
 demes:
   migration_file: migration.mat
   count: 40
-  use_germline: 1
-  reset_resources: 2
+  use_germline: traditional
+  reset_resources: none
   log_replicate: true
   max_births: 0
   germline_ins_mut: 0.0
   germline_del_mut: 0.0
   replicate_orgs: 625
   parasite_migration_rate: 0.002
-  migration_method: 4
+  migration_method: matrix
   partition_interval: 10
   prefer_empty: true
 reversion:

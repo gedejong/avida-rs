@@ -13,7 +13,7 @@ mutation:
 divide:
   offspring_size_range: 1.0
 time:
-  slicing_method: 2
+  slicing_method: integrated
   precalc_phenotype: 4
 altruism:
   merit_given: 5.0

@@ -14,7 +14,7 @@ divide:
   min_copied_lines: 0.1
   min_exe_lines: 0.1
 hoarding:
-  multi_absorb_type: 1
+  multi_absorb_type: first
 
 instruction_sets: []
 

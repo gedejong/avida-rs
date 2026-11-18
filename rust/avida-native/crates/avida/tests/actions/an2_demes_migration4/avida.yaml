@@ -6,7 +6,7 @@ general:
 demes:
   migration_file: migration.mat
   count: 4
-  migration_method: 4
+  migration_method: matrix
 
 instruction_sets:
   - name: instset-heads.cfg

@@ -71,7 +71,10 @@ An old setting name gets its new place in the answer.
 Every value is read by the parser the C++ program used for it, so a number
 means what it meant in `avida.cfg`. A flag is an on/off switch: it takes
 `true` or `false`, and `1` or `0`, and refuses anything else (`avida convert`
-writes `true` and `false`). A setting whose type is an integer also takes
+writes `true` and `false`). A choice is one of several named options
+(`geometry: torus`); it takes the option's name, and also its number (`2`, as in
+`-set world.geometry 2`), and refuses any other value with the list of names;
+`avida convert` writes the names. A setting whose type is an integer also takes
 `true` and `false` (1 and 0). A number setting refuses a value that does not
 start like a number (the C++ program read such a value as 0). YAML does not interpret anything here: `1.0`, `0x10` and `yes` reach the
 parser as the text written.
@@ -277,7 +280,11 @@ pub fn reference_page() -> String {
                 old,
                 s.kind().name(),
                 cell(&s.default_display()),
-                cell(s.desc())
+                if s.choice().is_some() {
+                    cell(&s.desc().replace('\n', "; "))
+                } else {
+                    cell(s.desc())
+                }
             ));
         }
     }

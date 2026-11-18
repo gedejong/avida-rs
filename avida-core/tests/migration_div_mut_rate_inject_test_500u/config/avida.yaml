@@ -10,13 +10,13 @@ mutation:
   copy_prob: 0.0
   divide_ins_prob: 0.0
   divide_del_prob: 0.0
-  rate_source: 2
+  rate_source: parent
 demes:
   count: 5
 reversion:
   sterilize_unstable: 2
 time:
-  slicing_method: 4
+  slicing_method: cross_deme_probabilistic
 
 instruction_sets:
   - name: instset-heads.cfg

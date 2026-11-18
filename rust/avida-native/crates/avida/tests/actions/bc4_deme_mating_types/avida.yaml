@@ -4,7 +4,7 @@
 general:
   random_seed: 0
 reproduction:
-  birth_method: 4
+  birth_method: population_random
 recombination:
   max_birth_wait_time: 3
 mating:

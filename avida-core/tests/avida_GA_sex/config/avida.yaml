@@ -17,8 +17,8 @@ recombination:
   two_fold_cost_sex: true
 time:
   ave_time_slice: 10
-  slicing_method: 2
-  base_merit_method: 0
+  slicing_method: integrated
+  base_merit_method: constant
 
 instruction_sets:
   - name: instset-heads.cfg

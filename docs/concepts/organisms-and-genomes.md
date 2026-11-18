@@ -31,8 +31,8 @@ stateDiagram-v2
 
 In words: an organism is born into a cell and starts receiving CPU time. At each time slice it executes one instruction of its genome. When its genome has copied itself and executes the divide instruction, a copy of the genome (the offspring) is cut off and placed in a cell chosen by the birth rules, and the parent restarts its cycle. An organism dies when it grows too old, when another organism's offspring replaces it, or when an event kills it.
 
-- Age limit: with the stock setting `reproduction.death_method: 2`, an organism dies after it has executed `reproduction.age_limit` (20) times its own genome length in instructions. This removes organisms that never divide.
-- `reproduction.divide_method: 1` (the default) resets the parent at division, so that both parent and offspring begin a new cycle. See [reproduction](reproduction.md).
+- Age limit: with the stock setting `reproduction.death_method: age_limit_per_site`, an organism dies after it has executed `reproduction.age_limit` (20) times its own genome length in instructions. This removes organisms that never divide.
+- `reproduction.divide_method: split` (the default) resets the parent at division, so that both parent and offspring begin a new cycle. See [reproduction](reproduction.md).
 
 ## Phenotype: what the organism has achieved
 

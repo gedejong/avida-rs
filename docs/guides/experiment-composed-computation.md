@@ -348,7 +348,7 @@ Seeds 31 to 38 in each of the eight arms (64 runs, none of the seeds used before
 
 **Secondary, without tests.** The count in each of the eight arms, which shows whether two settings need each other; the time to XOR; whether XOR is still held at 100,000; the highest rung held; the genome length over time in each arm, in particular whether populations with the floor of 100 sit at the floor. The most abundant genotypes of populations that hold XOR are run in the test CPU as before.
 
-The floor of 100 stops genomes from shrinking further and leaves the pressure to shrink in place. If the floor matters, where that pressure comes from is the next question, since the merit setting in use (`time.base_merit_method: 4`) is meant to make length neutral.
+The floor of 100 stops genomes from shrinking further and leaves the pressure to shrink in place. If the floor matters, where that pressure comes from is the next question, since the merit setting in use (`time.base_merit_method: least_size`) is meant to make length neutral.
 
 Lab folder `18-xor-factorial`. Before the runs: a 1,500-update trial of four arms wrote every file, and the baseline arm differs from `exact+steps` of stage 5 in its outputs only.
 

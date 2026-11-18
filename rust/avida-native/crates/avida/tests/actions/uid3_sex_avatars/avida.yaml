@@ -6,10 +6,10 @@ general:
 world:
   x: 20
   y: 20
-  geometry: 1
+  geometry: bounded_grid
 movement:
-  use_avatars: 2
-  avatar_birth: 1
+  use_avatars: interacting
+  avatar_birth: random
 
 instruction_sets:
   - name: experimental

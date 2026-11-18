@@ -10,9 +10,9 @@ promoters:
   inst_max: 2000
   processivity: 0.999
   to_register: true
-  no_active_promoter_effect: 1
+  no_active_promoter_effect: kill
   exe_threshold: 1
-  inst_code_default_type: 1
+  inst_code_default_type: instruction_number
   constitutive_regulation: true
 
 instruction_sets:

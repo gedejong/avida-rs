@@ -4,7 +4,7 @@
 general:
   random_seed: 0
 analyze:
-  mode: 1
+  mode: analyze
 
 instruction_sets: []
 

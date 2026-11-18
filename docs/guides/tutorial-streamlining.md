@@ -2,14 +2,14 @@
 
 **Question.** Can selection drive a genome toward the shortest program that still does the rewarded logic?
 
-Normally Avida makes merit proportional to genome length, which cancels the advantage a short genome has in copying time. With `time.base_merit_method: 0` the base merit is a constant (`time.base_const_merit`, stock 100): every instruction that is not needed costs time, while the task rewards still multiply merit.
+Normally Avida makes merit proportional to genome length, which cancels the advantage a short genome has in copying time. With `time.base_merit_method: constant` the base merit is a constant (`time.base_const_merit`, stock 100): every instruction that is not needed costs time, while the task rewards still multiply merit.
 
 **Arms.**
 
 | Arm | Setting |
 |---|---|
 | `size-neutral` | Stock: merit proportional to length (the control). |
-| `streamlined` | `time.base_merit_method: 0` from the first update. |
+| `streamlined` | `time.base_merit_method: constant` from the first update. |
 | `evolve-then-streamline` | Stock until update 30,000, then constant merit. |
 
 ## Steps

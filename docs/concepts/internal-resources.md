@@ -106,7 +106,7 @@ The runs show that `in_tasks.dat` fills only when bins are on, and that forcing 
 |---|---|---|
 | `hoarding.resource_given_on_inject` | 0.0 | Units of the `hoarding.collect_specific_resource` resource that an injected organism starts with. |
 | `hoarding.resource_given_at_birth` | 0.0 | Units of the same resource that a newborn receives, on top of what it inherits. |
-| `hoarding.split_on_divide` | true | The mother's bins are halved at divide and each daughter takes half. With false the bins of the mother are emptied and the daughters start empty (after the `hoarding.resource_given_at_birth` gift). The old wiki warned that this was only tested with `reproduction.divide_method: 1`. |
+| `hoarding.split_on_divide` | true | The mother's bins are halved at divide and each daughter takes half. With false the bins of the mother are emptied and the daughters start empty (after the `hoarding.resource_given_at_birth` gift). The old wiki warned that this was only tested with `reproduction.divide_method: split`. |
 | `hoarding.return_stored_on_death` | true | The bins of a dying organism go back into the world's resources. With false they are lost. The old wiki warned that this was only tested for death by old age and by replacement. |
 | `hoarding.multi_absorb_type` | 0 | Used by `collect-edible` on the experimental hardware only. The heads CPU `collect` ignores it. |
 

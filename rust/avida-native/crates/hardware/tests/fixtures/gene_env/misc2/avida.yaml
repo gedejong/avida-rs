@@ -8,16 +8,16 @@ mutation:
   copy_ins_prob: 0.02
   copy_del_prob: 0.02
 reproduction:
-  divide_method: 2
+  divide_method: birth
 time:
   max_cpu_threads: 3
 hoarding:
-  multi_absorb_type: 2
+  multi_absorb_type: last
 sensing:
   look_disable: 5
-  look_disable_type: 1
+  look_disable_type: prey
 groups:
-  pred_prey_switch: 1
+  pred_prey_switch: pred_to_prey_allowed
 
 instruction_sets: []
 

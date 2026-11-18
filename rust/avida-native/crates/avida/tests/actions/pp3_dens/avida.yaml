@@ -6,18 +6,18 @@ general:
 world:
   x: 50
   y: 100
-  geometry: 1
+  geometry: bounded_grid
 reproduction:
-  death_method: 0
+  death_method: never
 time:
   ave_time_slice: 20
-  base_merit_method: 0
+  base_merit_method: constant
 movement:
-  use_avatars: 2
+  use_avatars: interacting
 sensing:
   look_dist: 100
 groups:
-  pred_prey_switch: 0
+  pred_prey_switch: pred_to_prey_denied
 
 instruction_sets:
   - name: instset

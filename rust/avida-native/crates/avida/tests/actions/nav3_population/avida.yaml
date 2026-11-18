@@ -6,7 +6,7 @@ general:
 world:
   x: 20
   y: 20
-  geometry: 1
+  geometry: bounded_grid
 
 instruction_sets:
   - name: experimental

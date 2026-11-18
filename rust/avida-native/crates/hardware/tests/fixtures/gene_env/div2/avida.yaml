@@ -5,7 +5,7 @@ general:
   random_seed: 101
 reproduction:
   divide_failure_resets: true
-  divide_method: 2
+  divide_method: birth
 divide:
   offspring_size_range: 3.0
   min_copied_lines: 0.1
@@ -15,7 +15,7 @@ time:
   merit_inc_apply_immediate: true
   max_label_exe_size: 2
 hoarding:
-  multi_absorb_type: 1
+  multi_absorb_type: first
 sensing:
   use_display: 1
 

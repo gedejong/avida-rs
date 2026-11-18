@@ -4,7 +4,7 @@
 general:
   verbosity: 3
 world:
-  geometry: 1
+  geometry: bounded_grid
 
 instruction_sets:
   - name: instset-heads.cfg

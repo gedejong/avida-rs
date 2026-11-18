@@ -8,7 +8,7 @@ The experiments and tests of the program use the TransSMT hardware (hardware typ
 
 1. A host and a parasite are both genomes on TransSMT hardware. Each has *memory spaces*: regions for the genome, for the offspring being built, and for threads.
 2. An event injects parasites into hosts with `InjectParasite`: a parasite file, the memory-space label, and a range of cells.
-3. A parasite copies itself instruction by instruction like a host. Instead of dividing an offspring into the world, it tries to *infect* another organism in its host's neighbourhood. With `reproduction.birth_method: 4` or `world.geometry: 7`, any organism in the population is a target.
+3. A parasite copies itself instruction by instruction like a host. Instead of dividing an offspring into the world, it tries to *infect* another organism in its host's neighbourhood. With `reproduction.birth_method: population_random` or `world.geometry: random_connected`, any organism in the population is a target.
 4. Infection succeeds only if the target host can accept a new thread: the host must have fewer threads than `time.max_cpu_threads` (set it to 2 so each host carries at most one parasite) and must not have used the memory space the parasite wants.
 5. Further conditions can depend on what the host and parasite do. `parasites.infection_mechanism` (`INJECT_IS_TASK_SPECIFIC` or `INFECTION_MECHANISM` in the old `avida.cfg`) chooses the rule:
 
@@ -52,7 +52,7 @@ The old `HARDWARE_TYPE 2` line has no place in the file: the hardware type is th
 
 ## Parasites and demes
 
-With demes, parasites can migrate between demes (`demes.parasite_migration_rate`, which works with `demes.migration_method: 4`), and hosts can be protected from migrants by a parasite *memory score* (`demes.parasite_migration_memory_score_protective_threshold`).
+With demes, parasites can migrate between demes (`demes.parasite_migration_rate`, which works with `demes.migration_method: matrix`), and hosts can be protected from migrants by a parasite *memory score* (`demes.parasite_migration_memory_score_protective_threshold`).
 
 ## Next
 

@@ -14,7 +14,7 @@ hoarding:
   use_stored_fraction: 0.0
 analyze:
   file: analyze-spec.cfg
-  mode: 1
+  mode: analyze
 
 instruction_sets:
   - name: instset-destroy.cfg

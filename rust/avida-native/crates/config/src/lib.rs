@@ -1,6 +1,7 @@
 //! avida-config
 // Transliterated C++ loops index several arrays by one counter.
 #![allow(clippy::needless_range_loop, clippy::collapsible_if)]
+pub mod choices;
 pub mod cmdline;
 pub mod config;
 mod config_table;

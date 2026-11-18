@@ -20,7 +20,7 @@ mutation:
   meta_copy_prob: 0.2
   meta_std_dev: 0.1
 reproduction:
-  birth_method: 4
+  birth_method: population_random
   prefer_empty: false
   age_limit: 30
   inherit_merit: false
@@ -28,7 +28,7 @@ divide:
   require_single_reaction: 1
 parasites:
   log_injections: true
-  inject_method: 1
+  inject_method: reset_thread
   virulence: 0.85
   no_copy_mut: true
 time:

@@ -5,9 +5,9 @@ general:
   random_seed: 101
 mutation:
   divide_slip_prob: 0.3
-  slip_copy_mode: 1
+  slip_copy_mode: large_mutation
 reproduction:
-  divide_method: 0
+  divide_method: offspring
 divide:
   min_copied_lines: 0.1
   min_exe_lines: 0.1
@@ -15,12 +15,12 @@ time:
   merit_inc_apply_immediate: true
 hoarding:
   use_resource_bins: true
-  multi_absorb_type: 1
+  multi_absorb_type: first
   max_total_stored: 3.0
   collect_specific_resource: 1
 sensing:
   look_disable: 7
-  look_disable_type: 2
+  look_disable_type: both
 
 instruction_sets: []
 
