@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 100 -set WORLD_X 20 -set WORLD_Y 40 -set WORLD_GEOMETRY 1 -set EVENT_FILE events-merge-deme-resources.cfg -set ENVIRONMENT_FILE environment-9demeglobal.cfg -set COPY_MUT_PROB 0.0 -set DIVIDE_INS_PROB 0.0 -set DIVIDE_DEL_PROB 0.0 -set NUM_DEMES 2 -set BIRTH_METHOD 6               
+args = -s 100 -set world.x 20 -set world.y 40 -set world.geometry 1 -set mutation.copy_prob 0.0 -set mutation.divide_ins_prob 0.0 -set mutation.divide_del_prob 0.0 -set demes.count 2 -set reproduction.birth_method 6
 
 app = %(default_app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

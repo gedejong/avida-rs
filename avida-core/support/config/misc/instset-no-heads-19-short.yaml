@@ -1,0 +1,26 @@
+# Converted with 'avida convert' from instset-no-heads-19-short.cfg. Name it in an experiment
+# file as "instruction_sets: <this file>".
+
+instruction_sets:
+  - name: instset-no-heads-19-short.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-less
+      - jump-slf
+      - shift-r
+      - shift-l
+      - push
+      - pop
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - copy
+      - allocate
+      - divide
+      - get
+      - put

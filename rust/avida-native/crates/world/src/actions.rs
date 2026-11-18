@@ -11,7 +11,6 @@
 //! time ("unsupported action"), never a silent no-op.
 
 use avida_config::feedback::Feedback;
-use avida_config::init_file::InitFile;
 use avida_config::string_util::{as_double, as_int, pop_word, trim};
 use avida_genome::{ArgContainer, ArgSchema, ArgType};
 
@@ -448,26 +447,20 @@ pub fn is_cpp_action(name: &str) -> bool {
     crate::action_library::is_registered(name)
 }
 
-/// What the C++ prints when `cEventList::LoadEventFile` fails on
-/// `event_file`: the `cerr` text of the failing line and the feedback the
+/// What the C++ prints when `cEventList::LoadEventFile` fails on the
+/// events (`event_lines`, the event-file lines of the experiment file): the
+/// `cerr` text of the failing line and the feedback the
 /// action constructors before it produced. `None` when the C++ would load
 /// the file. A run whose event file the C++ cannot load ends at set-up, so
 /// that failure is the reference behaviour even when this port also lacks
 /// a setting or instruction the run would have needed.
 pub fn cpp_event_file_failure(
-    event_file: &str,
-    defs: &[(String, String)],
-    working_dir: &str,
+    event_lines: &[String],
     ctx: &ParseContext<'_>,
 ) -> Option<(String, String)> {
-    let file = InitFile::with_mappings(event_file, defs, working_dir);
-    if !file.was_opened() {
-        return Some((String::new(), String::new()));
-    }
     let mut feedback = Feedback::new();
-    for line_id in 0..file.num_lines() {
-        let line = file.get_line(line_id as i32);
-        let spec = match parse_event_line(&line) {
+    for line in event_lines {
+        let spec = match parse_event_line(line) {
             Ok(spec) => spec,
             Err(msg) => return Some((format!("{msg}\n"), feedback.render())),
         };
@@ -490,14 +483,12 @@ pub fn cpp_event_file_failure(
 /// C++ prints, with `feedback` the set-up feedback accumulated so far.
 pub fn prefer_event_file_failure(
     unsupported: String,
-    event_file: &str,
-    defs: &[(String, String)],
-    working_dir: &str,
+    event_lines: &[String],
     default_inst_set: &str,
     feedback: &str,
 ) -> String {
     let ctx = ParseContext { default_inst_set };
-    match cpp_event_file_failure(event_file, defs, working_dir, &ctx) {
+    match cpp_event_file_failure(event_lines, &ctx) {
         Some((cerr, _)) if cerr.starts_with(CERR_EXIT_MARK) => cerr,
         Some((cerr, action_feedback)) => {
             format!("{cerr}{feedback}{action_feedback}error: unable to load event file\n")

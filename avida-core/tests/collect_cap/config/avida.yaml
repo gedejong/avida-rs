@@ -1,0 +1,63 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads-probcollect.cfg, environment-9resource-static.cfg, events-fullcollect.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+parasites:
+  infection_mechanism: 0
+hoarding:
+  use_resource_bins: 1
+  max_total_stored: 1.0
+movement:
+  vitality_bin_center: 5.0
+
+instruction_sets:
+  - name: heads-probcollect
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - collect-unit-prob
+
+environment:
+  resources:
+    - {name: resNOT, initial: 7200}
+    - {name: resNAND, initial: 7200}
+    - {name: resAND, initial: 7200}
+    - {name: resORN, initial: 7200}
+    - {name: resOR, initial: 7200}
+    - {name: resANDN, initial: 7200}
+    - {name: resNOR, initial: 7200}
+    - {name: resXOR, initial: 7200}
+    - {name: resEQU, initial: 7200}
+
+events:
+  - {at: begin, action: InjectAll, args: filename=default-heads-probcollect.org}
+  - {at: 0, every: 1, until: end, action: PrintResourceData}
+  - {at: 0, every: 1, until: end, action: PrintInstructionData}
+  - {at: 10, every: 10, action: SavePopulation}
+  - {at: 10, action: Exit}

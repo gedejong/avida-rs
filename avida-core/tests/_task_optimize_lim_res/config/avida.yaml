@@ -1,0 +1,45 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 15
+  y: 15
+demes:
+  count: 0
+
+instruction_sets: []
+
+environment:
+  resources:
+    - {name: resOPT1, inflow: 4, outflow: .01}
+    - {name: resOPT4, inflow: 4, outflow: .01}
+  reactions:
+    - name: OPT1
+      task: optimize
+      args: {function: 1}
+      process: {resource: resOPT1, type: pow, value: 1.0, frac: .0625, max: 25, min: .025}
+      requisite: {max_count: 1}
+    - name: OPT4
+      task: optimize
+      args: {function: 4}
+      process: {resource: resOPT4, type: pow, value: 1.0, frac: .0625, max: 25, min: .025}
+      requisite: {max_count: 1}
+
+events:
+  - {at: 0, action: InjectAll, args: START_CREATURE}
+  - {at: 80, action: ZeroMuts}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintStatsData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintDominantGenotype}
+  - {at: 0, every: 10, until: end, action: PrintTasksExeData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 100, every: 100, action: SavePopulation}
+  - {at: 100, every: 100, action: SaveHistoricPopulation}
+  - {at: 100, action: exit}

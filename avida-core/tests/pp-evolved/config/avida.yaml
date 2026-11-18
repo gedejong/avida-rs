@@ -1,0 +1,205 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 51
+world:
+  x: 251
+  y: 251
+  geometry: 1
+mutation:
+  copy_prob: 0.0
+  divide_prob: 0.25
+reproduction:
+  birth_method: 4
+  allow_parent: 0
+  death_method: 1
+  age_limit: 15000
+  reset_inputs_on_divide: 1
+  inherit_merit: 0
+  inherit_multithread: 1
+divide:
+  min_cycles: 3000
+  require_single_reaction: 1
+  required_bonus: 11.0
+mating:
+  disable_genotype_classification: 1
+parasites:
+  infection_mechanism: 0
+time:
+  base_merit_method: 0
+  max_cpu_threads: 4
+  thread_slicing_method: 1
+hoarding:
+  absorb_resource_fraction: 1.0
+  multi_absorb_type: 1
+  return_stored_on_death: 0
+  split_on_divide: 0
+movement:
+  collisions_lethal: 2
+  use_avatars: 2
+  avatar_birth: 2
+sensing:
+  look_dist: 10
+groups:
+  pred_prey_switch: 2
+  pred_efficiency: 0.1
+  pred_injury: 0.1
+  min_prey: 700
+
+instruction_sets:
+  - name: pred-instset
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - if-n-equ
+      - if-less
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - search-seq-comp-s
+      - search-seq-direct-s
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - pop-all
+      - push-all
+      - add
+      - sub
+      - nand
+      - fork-thread
+      - exit-thread
+      - id-thread
+      - IO
+      - {name: repro, cost: 30}
+      - wait-cond-equ
+      - wait-cond-less
+      - wait-cond-gtr
+      - if-not-0
+      - if-equ-0
+      - if-gtr-0
+      - if-less-0
+      - if-gtr-x
+      - if-equ-x
+      - {name: move, post_cost: 30}
+      - get-north-offset
+      - rotate-x
+      - rotate-org-id
+      - rotate-away-org-id
+      - set-forage-target
+      - get-forage-target
+      - look-ahead-intercept
+      - {name: attack-prey, post_cost: 10}
+      - {name: attack-pred, post_cost: 10, redundancy: 0}
+      - teach-offspring
+      - learn-parent
+      - nop-X
+      - scramble-registers
+      - zero
+      - one
+      - rand
+
+environment:
+  resources:
+    - name: food0
+      kind: gradient
+      height: 181
+      spread: 180
+      plateau: 1
+      decay: 1
+      move_a_scaler: 1
+      updatestep: 1000000
+      peakx: 125
+      peaky: 125
+      min_x: 0
+      max_x: 250
+      min_y: 0
+      max_y: 250
+      plateau_inflow: 0.01
+      threshold: 1
+      initial: 1
+    - name: left
+      kind: gradient
+      habitat: 2
+      plateau: 8
+      updatestep: 10000000
+      count: 1
+      max_size: 251
+      min_size: 251
+      config: 3
+      peakx: 0
+      peaky: 0
+    - name: right
+      kind: gradient
+      habitat: 2
+      plateau: 8
+      updatestep: 10000000
+      count: 1
+      max_size: 251
+      min_size: 251
+      config: 3
+      peakx: 250
+      peaky: 0
+    - name: top
+      kind: gradient
+      habitat: 2
+      plateau: 8
+      updatestep: 10000000
+      count: 1
+      max_size: 251
+      min_size: 251
+      config: 4
+      peakx: 0
+      peaky: 0
+    - name: bottom
+      kind: gradient
+      habitat: 2
+      plateau: 8
+      updatestep: 10000000
+      count: 1
+      max_size: 251
+      min_size: 251
+      config: 4
+      peakx: 0
+      peaky: 250
+  reactions:
+    - name: grfood0
+      task: eat-target
+      args: {target_id: 0}
+      process: {resource: food0, value: 1, type: add, min: 1, max: 1, depletable: 1, inst: one}
+
+events:
+  - {trigger: immediate, action: LoadPopulation, args: detail-2m.spop -1 0 0 0 0 0 1}
+  - {at: 0, every: 50, until: end, action: PrintPreyAverageData}
+  - {at: 0, every: 50, until: end, action: PrintPreyErrorData}
+  - {at: 0, every: 50, until: end, action: PrintPreyVarianceData}
+  - {at: 0, every: 50, until: end, action: PrintPredatorAverageData}
+  - {at: 0, every: 50, until: end, action: PrintPredatorErrorData}
+  - {at: 0, every: 50, until: end, action: PrintPredatorVarianceData}
+  - {at: 0, every: 50, until: end, action: PrintTargets}
+  - {at: 0, every: 50, until: end, action: PrintThreadsData}
+  - {at: 0, every: 50, until: end, action: PrintData, args: 'data.dat update,ave_fitness,ave_gest,ave_merit,ave_age,generation,ave_length,entropy,num_cpus'}
+  - {at: 0, every: 50, until: end, action: PrintPreyInstructionData}
+  - {at: 0, every: 50, until: end, action: PrintPredatorInstructionData}
+  - {at: 0, every: 50, until: end, action: PrintPreyFromSensorInstructionData}
+  - {at: 0, every: 50, until: end, action: PrintPredatorFromSensorInstructionData}
+  - {at: 0, every: 50, until: end, action: PrintDominantForagerGenotypes}
+  - {at: 1, action: PrintMicroTraces, args: next_prey=1:next_pred=1:print_genomes=1}
+  - {at: 0, every: 50, until: end, action: PrintMiniTraces, args: save_dominants=1:save_foragers=1:print_genomes=1:orgs_per=1}
+  - {at: 0, every: 50, until: end, action: DumpMaxResGrid}
+  - {at: 0, every: 50, until: end, action: PrintOrgLocData}
+  - {at: 100, action: SavePopulation, args: save_rebirth=1:save_historic=0}
+  - {at: 100, action: exit}

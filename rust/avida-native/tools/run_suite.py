@@ -57,6 +57,29 @@ def files(d):
     return r
 def norm(path):
     return re.sub(rb'Data Directory: [^\n]*', b'Data Directory: D', re.sub(rb'Random Seed: -1 -> \d+', b'Random Seed: -1 -> T', STAMP.sub(b'', open(path, 'rb').read())))
+# The reference output was made from the old input files (avida.cfg,
+# environment.cfg, events.cfg and instruction-set files); the tests now give
+# the same settings in one experiment file, avida.yaml. What the reference
+# binary printed about the old files alone is taken out of its output before
+# the comparison: the version-number and unknown-line warnings of avida.cfg,
+# the note of a legacy instruction-set file, the name of a missing avida.cfg
+# and the old names in the echo of -set (docs/reference/config-yaml.md, "Old
+# names"; the file-selecting settings are folded into avida.yaml).
+OLD_NAMES = {}
+for line in open(os.path.join(REPO, 'docs', 'reference', 'config-yaml.md')):
+    m = re.match(r'\| `([A-Z0-9_]+)` \| `([a-z0-9_]+\.[a-z0-9_]+)`', line)
+    if m: OLD_NAMES[m.group(1).encode()] = m.group(2).encode()
+FOLDED = (b'EVENT_FILE', b'ENVIRONMENT_FILE', b'INST_SET')
+def old_format(data):
+    data = re.sub(rb"(?m)^warning: config file version number mismatch -- [^\n]*\n", b'', data)
+    data = re.sub(rb"(?m)^warning: unknown lines in input file '[^'\n]*'\.\n(  \S+:\d+: [^\n]*\n)*", b'', data)
+    data = re.sub(rb"(?m)^using default instruction set: [^\n]*\n", b'', data)
+    data = data.replace(b"error: unable to open file 'avida.cfg'.", b"error: unable to open file 'avida.yaml'.")
+    data = data.replace(b"error: configuration file 'avida.cfg' not found", b"error: configuration file 'avida.yaml' not found")
+    def cmdline_set(m):
+        if m.group(1) in FOLDED: return b''
+        return b'CmdLine Set: ' + OLD_NAMES.get(m.group(1), m.group(1)) + b' ' + m.group(2) + b'\n'
+    return re.sub(rb'(?m)^CmdLine Set: (\S+) ([^\n]*)\n', cmdline_set, data)
 def one(t):
     refd = os.path.join(S, 'ref', t)
     if not os.path.exists(os.path.join(refd, '.rc')):
@@ -71,14 +94,19 @@ def one(t):
     if rrc == 'timeout': return t, 'REF-TIMEOUT', ''
     diffs = []
     if rrc != src: diffs.append(f'rc {rrc}!={src}')
-    names = sorted((set(files(refd)) | set(files(rsd))) - {'.rc', '.before', '.stderr'})
+    rf, sf = set(files(refd)), set(files(rsd))
+    # An input file of one side only (an old configuration file of the
+    # reference run, avida.yaml of this one) is not output.
+    before = lambda d: set(open(os.path.join(d, '.before')).read().split('\n'))
+    inputs = (before(refd) - sf) | (before(rsd) - rf)
+    names = sorted((rf | sf) - {'.rc', '.before', '.stderr'} - inputs)
     argv0 = lambda b: b.replace(REF.encode(), b'AVIDA').replace(RS.encode(), b'AVIDA')
     for f in names:
         a, b = os.path.join(refd, f), os.path.join(rsd, f)
         if not os.path.exists(b): diffs.append('missing ' + f)
         elif not os.path.exists(a): diffs.append('extra ' + f)
-        elif norm(a) != norm(b): diffs.append(f)
-    if argv0(norm(os.path.join(refd, '.stderr'))) != argv0(norm(os.path.join(rsd, '.stderr'))): diffs.append('.stderr')
+        elif (old_format(norm(a)) if f == '.stdout' else norm(a)) != norm(b): diffs.append(f)
+    if old_format(argv0(norm(os.path.join(refd, '.stderr')))) != argv0(norm(os.path.join(rsd, '.stderr'))): diffs.append('.stderr')
     if not diffs and rrc != '0' and not t.startswith('analyze_resize'): return t, 'trivial', 'reference exits ' + rrc
     if diffs: return t, 'DIFF', ', '.join(diffs)[:300] + ((' | ' + err.strip().splitlines()[-1][:150]) if err.strip() and src != '0' else '')
     return t, 'same', ''

@@ -396,32 +396,25 @@ impl Config {
 
     /// The text `cAvidaConfig::PrintReview` prints to stdout: every setting
     /// that differs from its default.
+    ///
+    /// The settings are named by their place in the experiment file
+    /// (`group.key`) and listed in its order.
     pub fn print_review(&self) -> String {
         let mut o = String::from("\nNon-Default Settings: \n\n");
-        for g in GROUPS {
-            for e in g.entries {
-                if !self.equals_string_by_id(e.id, e.default) {
-                    o.push_str(&format!(" {} ", e.names[0]));
-                    let s = self.as_string_by_id(e.id);
-                    match e.ty {
-                        EntryType::Double => {
-                            o.push_str(&format_ostream_double(as_double(&s)));
-                            o.push(' ');
-                        }
-                        EntryType::Int => {
-                            o.push_str(&as_int(&s).to_string());
-                            o.push(' ');
-                        }
-                        _ => {
-                            o.push_str(&s);
-                            o.push(' ');
-                        }
-                    }
-                    o.push_str(&format!("(default={})\n", e.default));
-                }
+        let defaults = Config::new();
+        for info in crate::naming::settings() {
+            if self.setting_text(&info) == defaults.setting_text(&info) {
+                continue;
             }
+            o.push_str(&format!(" {} ", info.path()));
+            let s = self.setting_text(&info);
+            match info.ty() {
+                EntryType::Double => o.push_str(&format_ostream_double(as_double(&s))),
+                EntryType::Int => o.push_str(&as_int(&s).to_string()),
+                _ => o.push_str(&s),
+            }
+            o.push_str(&format!(" (default={})\n", info.default()));
         }
-        o.push_str(&self.port.review_lines());
         o.push('\n');
         o
     }
@@ -599,9 +592,9 @@ mod tests {
         c.set("WORLD_X", "20");
         c.set("DATA_DIR", "out");
         let r = c.print_review();
-        assert!(r.contains(" WORLD_X 20 (default=60)\n"));
-        assert!(r.contains(" COPY_MUT_PROB 0.02 (default=0.0075)\n"));
-        assert!(r.contains(" DATA_DIR out (default=data)\n"));
+        assert!(r.contains(" world.x 20 (default=60)\n"));
+        assert!(r.contains(" mutation.copy_prob 0.02 (default=0.0075)\n"));
+        assert!(r.contains(" general.data_dir out (default=data)\n"));
     }
 
     #[test]
@@ -625,7 +618,7 @@ mod tests {
         assert!(!names.iter().any(|n| n.starts_with("EXECUTION_")));
         assert!(c
             .print_review()
-            .ends_with(" EXECUTION_MODE 1 (default=0)\n EXECUTION_THREADS 3 (default=0)\n\n"));
+            .ends_with(" execution.mode 1 (default=0)\n execution.threads 3 (default=0)\n\n"));
         // From a config file, without a warning when absent.
         let mut dir = std::env::temp_dir();
         dir.push(format!("avida_config_port_{}", std::process::id()));

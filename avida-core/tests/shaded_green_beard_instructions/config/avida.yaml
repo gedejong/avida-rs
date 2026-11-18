@@ -1,0 +1,83 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, inst_set.SexDonateGbshadedEdtKinRndNopx, envZeroResources.cfg, eventsFullPopTest.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 1
+world:
+  x: 10
+  y: 10
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+divide:
+  offspring_size_range: 1.0
+time:
+  slicing_method: 2
+  precalc_phenotype: 4
+altruism:
+  merit_given: 5.0
+  merit_received: 50.0
+  max_donate_kin_dist: 1
+  max_donate_edit_dist: 15
+  min_gb_donate_threshold: 80
+  max_donates: 100
+
+instruction_sets:
+  - name: inst_set.SexDonateGbshadedEdtKinRndNopx
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - divide-sex
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - donate-threshgb
+      - donate-shadedgb
+      - donate-edt
+      - donate-kin
+      - donate-rnd
+      - nop-X
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 0.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: InjectAll, args: filename=organism.sexDefault}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintResourceData}
+  - {at: 100, every: 100, until: end, action: PrintInstructionData}
+  - {at: 100, every: 100, until: end, action: PrintDonationStats}
+  - {at: 100, every: 100, until: end, action: PrintShadedAltruists}
+  - {at: 100, action: exit}

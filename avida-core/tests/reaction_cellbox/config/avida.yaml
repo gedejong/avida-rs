@@ -1,0 +1,27 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 24
+world:
+  x: 50
+  y: 70
+
+instruction_sets:
+  - heads_default
+
+environment:
+  reactions:
+    - name: NOT
+      task: not
+      process: {value: 1.0, type: pow}
+      requisite: {max_count: 1, cellbox: '10,05,30,20'}
+    - name: NAND
+      task: nand
+      process: {value: 1.0, type: pow}
+      requisite: {max_count: 1, cellbox: '30,20,10,30'}
+
+events:
+  - {at: begin, action: Inject, args: default-heads.org}
+  - {at: 0, every: 1, until: end, action: PrintCurrReactionCountGrid}
+  - {at: 3500, action: exit}

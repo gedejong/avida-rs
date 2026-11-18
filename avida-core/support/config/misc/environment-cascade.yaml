@@ -1,0 +1,32 @@
+# This is the setup file for the task/resource system.  From here, you can
+# setup the available resources (including their inflow and outflow rates) as
+# well as the reactions that the organisms can trigger by performing tasks.
+#
+# This environmental setup as an inflow of the resources for not and nand.
+# After that, all other resources are a cascade of products from the first,
+# requiring more and more complex tasks to make use of them.
+#
+# For information on how to use this file, see:  doc/environment.html
+# For other sample environments, see:  source/support/config/
+
+environment:
+  resources:
+    - {name: resNOT, inflow: 100, outflow: 0.01}
+    - {name: resNAND, inflow: 100, outflow: 0.01}
+    - {name: resAND, outflow: 0.01}
+    - {name: resORN, outflow: 0.01}
+    - {name: resOR, outflow: 0.01}
+    - {name: resANDN, outflow: 0.01}
+    - {name: resNOR, outflow: 0.01}
+    - {name: resXOR, outflow: 0.01}
+    - {name: resEQU, outflow: 0.01}
+  reactions:
+    - {name: NOT, task: not, process: {resource: resNOT, frac: 0.0025, max: 25, product: resAND}}
+    - {name: NAND, task: nand, process: {resource: resNAND, frac: 0.0025, max: 25, product: resORN}}
+    - {name: AND, task: and, process: {resource: resAND, frac: 0.0025, max: 25, product: resOR}}
+    - {name: ORN, task: orn, process: {resource: resORN, frac: 0.0025, max: 25, product: resANDN}}
+    - {name: OR, task: or, process: {resource: resOR, frac: 0.0025, max: 25, product: resNOR}}
+    - {name: ANDN, task: andn, process: {resource: resANDN, frac: 0.0025, max: 25, product: resXOR}}
+    - {name: NOR, task: nor, process: {resource: resNOR, frac: 0.0025, max: 25, product: resEQU}}
+    - {name: XOR, task: xor, process: {resource: resXOR, frac: 0.0025, max: 25, product: resEQU}}
+    - {name: EQU, task: equ, process: {resource: resEQU, frac: 0.0025, max: 25}}

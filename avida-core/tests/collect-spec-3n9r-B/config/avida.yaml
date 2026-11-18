@@ -1,0 +1,61 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads-collect.cfg, environment-9resource-noinflow.cfg, events-full-collect-B.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+parasites:
+  infection_mechanism: 0
+hoarding:
+  use_resource_bins: 1
+movement:
+  vitality_bin_center: 5.0
+
+instruction_sets:
+  - name: heads-collect
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - collect
+
+environment:
+  resources:
+    - {name: resNOT, initial: 10000}
+    - {name: resNAND, initial: 10000}
+    - {name: resAND, initial: 10000}
+    - {name: resORN, initial: 10000}
+    - {name: resOR, initial: 10000}
+    - {name: resANDN, initial: 10000}
+    - {name: resNOR, initial: 10000}
+    - {name: resXOR, initial: 10000}
+    - {name: resEQU, initial: 10000}
+
+events:
+  - {at: begin, action: InjectAll, args: filename=default-heads-collect-B.org}
+  - {at: 0, every: 1, until: end, action: PrintResourceData}
+  - {at: 2, every: 2, action: SavePopulation}
+  - {at: 2, action: Exit}

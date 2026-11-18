@@ -1,0 +1,128 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 9
+  population_cap_eldest: 100
+world:
+  x: 120
+  y: 120
+  geometry: 1
+mutation:
+  copy_prob: 0.0
+  divide_prob: 0.25
+reproduction:
+  birth_method: 7
+  allow_parent: 0
+  death_method: 1
+  age_limit: 20000
+  divide_method: 0
+  generation_inc_method: 0
+divide:
+  required_reaction: 0
+parasites:
+  infection_mechanism: 0
+time:
+  base_merit_method: 0
+hoarding:
+  absorb_resource_fraction: 1.0
+  multi_absorb_type: 1
+  return_stored_on_death: 0
+  split_on_divide: 0
+  collect_specific_resource: -1
+movement:
+  collisions_lethal: 2
+  deadly_boundaries: 1
+groups:
+  use_form_groups: 2
+  default_group: 0
+  opinion_buffer_size: -1
+
+instruction_sets:
+  - name: instset
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - IO
+      - h-search
+      - repro
+      - join-group
+      - nop-X
+      - sense-opinion-resource-quantity
+      - rotate-uphill
+      - rotate-home
+      - rotate-left-one
+      - rotate-right-one
+      - move
+      - rotate-to-unoccupied-cell
+      - get-northerly
+      - get-easterly
+      - zero-northerly
+      - zero-easterly
+      - get-north-offset
+      - if->=-0
+      - if-<=-0
+      - if-not-0
+      - if-les-0
+      - if-grt-0
+      - zero
+      - get-faced-org-id
+      - attack-faced-org
+
+environment:
+  resources:
+    - name: food0
+      kind: gradient
+      height: 20
+      spread: 120
+      plateau: 1
+      decay: 1
+      move_a_scaler: 3.8
+      max_x: 80
+      min_x: 40
+      max_y: 80
+      min_y: 40
+      plateau_inflow: 0.01
+  reactions:
+    - name: grfood0
+      task: live-on-patch-id
+      args: {patch_id: 0}
+      process: {resource: food0, value: 1.0, type: mult, max: 1, min: 1, depletable: 1}
+      requisite: {reaction_max_count: 1}
+
+events:
+  - {trigger: immediate, action: Inject, args: blank_repro.org 7138}
+  - {trigger: immediate, action: Inject, args: blank_repro.org 7139}
+  - {trigger: immediate, action: Inject, args: blank_repro.org 7140}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintDominantGenotype}
+  - {at: 0, every: 10, until: end, action: PrintTasksExeData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 0, every: 10, until: end, action: DumpMaxResGrid}
+  - {at: 30, action: exit}

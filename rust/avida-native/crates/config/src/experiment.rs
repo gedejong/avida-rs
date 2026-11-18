@@ -32,6 +32,13 @@ pub const DEFAULT_FILE: &str = "avida.yaml";
 /// The page that describes the file.
 pub const REFERENCE_PAGE: &str = "docs/reference/config-yaml.md";
 
+/// The stock experiment file (`avida-core/support/config/avida.yaml`),
+/// which `--generate-config` writes.
+pub const DEFAULT_EXPERIMENT: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../../../avida-core/support/config/avida.yaml"
+));
+
 /// What the experiment file holds besides the settings, in the line format
 /// of the C++ files. (The instruction sets go to the `INSTSETS` list of the
 /// configuration, where `avida.cfg` put them too.)
@@ -49,6 +56,8 @@ pub struct Experiment {
     pub events: Vec<String>,
     /// The file the events came from.
     pub events_file: String,
+    /// The settings the file gave (`group.key`), in file order.
+    pub given: Vec<String>,
 }
 
 impl Experiment {
@@ -546,7 +555,10 @@ impl Config {
                 }
             };
             match setting_value(&info, &text) {
-                Ok(v) => self.apply_setting(&info, &v),
+                Ok(v) => {
+                    self.apply_setting(&info, &v);
+                    self.experiment.given.push(path);
+                }
                 Err(e) => errors.push(ctx.at(value.line, e)),
             }
         }

@@ -1,0 +1,212 @@
+# The adder ladder (port-only extension, opt-in; PORTING.md, "Tasks the C++
+# does not have"; ARCHITECTURE.md, "field_arith"). Eight reactions in rung
+# order, the first two on the lowest rung, each on its own depletable
+# resource and each worth merit once per organism (requisite:max_count=1):
+#
+#   rung 0  NOT, NAND    stock tasks
+#   rung 1  XOR          stock task
+#   rung 2  AND          stock task
+#   rung 3  HALFADD_PLANES  sixteen 1-bit half adders; the result as two
+#                        outputs, sums first and carries second, read at
+#                        bit 0 of every 2-bit field
+#   rung 4  HALFADD      the same, both result bits of every field in the
+#                        newest output
+#   rung 5  ADD2_PLANES  ten 2-bit adders in 3-bit fields; the result as
+#                        three outputs, the least significant bit first
+#   rung 6  ADD2         the same, all three result bits of every field in
+#                        the newest output
+#
+# The field rungs (field_arith, a task of the port) pay graded credit:
+# quality q = max(0, 2f - 1) for the fraction f of the compared result bits
+# that are right, and nothing below thresh=0.75. A process multiplies what it
+# consumes by q: consumed = q * min(frac * resource in the cell, max), and the
+# merit changes by 2^(value * consumed) (type=pow). The *_PLANES rungs make
+# the organism's output buffer hold two (three) outputs; the packed rungs and
+# the stock tasks need the default size of one.
+#
+# Resources: one grid resource per reaction over the whole 60 x 60 world, as
+# in the lab's 10-continents environment, scaled to the stock world: 180 units
+# per update spread over 3600 cells is 0.05 a cell, and each cell loses 0.05 of
+# what it holds, so an unused cell settles at 1 unit and a task takes half of
+# it. For another world size change the coordinates and set inflow to 0.05
+# times the number of cells.
+#
+# Use with an instruction set without add and sub to make the arithmetic
+# rungs a composition of nand, shifts and increments (hand-written solutions:
+# ladder-*.org).
+
+environment:
+  resources:
+    - name: resNOT
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resNAND
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resXOR
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resAND
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resHALFADD_PLANES
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resHALFADD
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resADD2_PLANES
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+    - name: resADD2
+      geometry: grid
+      initial: 0
+      inflow: 180
+      outflow: 0.05
+      inflowx1: 0
+      inflowx2: 59
+      inflowy1: 0
+      inflowy2: 59
+      outflowx1: 0
+      outflowx2: 59
+      outflowy1: 0
+      outflowy2: 59
+      xdiffuse: 0.2
+      ydiffuse: 0.2
+      xgravity: 0
+      ygravity: 0
+  reactions:
+    - name: NOT
+      task: not
+      process: {resource: resNOT, value: 1.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: NAND
+      task: nand
+      process: {resource: resNAND, value: 1.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: XOR
+      task: xor
+      process: {resource: resXOR, value: 2.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: AND
+      task: and
+      process: {resource: resAND, value: 3.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: HALFADD_PLANES
+      task: field_arith
+      args: fn=halfadd:bits=1:mode=planes:thresh=0.75
+      process: {resource: resHALFADD_PLANES, value: 4.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: HALFADD
+      task: field_arith
+      args: fn=halfadd:bits=1:mode=packed:thresh=0.75
+      process: {resource: resHALFADD, value: 5.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: ADD2_PLANES
+      task: field_arith
+      args: fn=add:bits=2:mode=planes:thresh=0.75
+      process: {resource: resADD2_PLANES, value: 6.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}
+    - name: ADD2
+      task: field_arith
+      args: fn=add:bits=2:mode=packed:thresh=0.75
+      process: {resource: resADD2, value: 7.0, type: pow, frac: 0.5, max: 1.0}
+      requisite: {max_count: 1}

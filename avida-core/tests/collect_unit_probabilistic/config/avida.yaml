@@ -1,0 +1,76 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida-probcollect-test.cfg, instset-heads-probcollect.cfg, environment-9resource-noinflow.cfg, events-probcollect.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 100
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+divide:
+  required_resource: 8
+  required_resource_level: 1.0
+parasites:
+  infection_mechanism: 0
+hoarding:
+  use_resource_bins: 1
+  return_stored_on_death: 0
+  collect_prob_divisor: 100
+movement:
+  vitality_bin_center: 5.0
+
+instruction_sets:
+  - name: heads-probcollect
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - if-label
+      - mov-head
+      - jmp-head
+      - get-head
+      - set-flow
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - push
+      - pop
+      - swap-stk
+      - swap
+      - add
+      - sub
+      - nand
+      - h-copy
+      - h-alloc
+      - h-divide
+      - IO
+      - h-search
+      - collect-unit-prob
+
+environment:
+  resources:
+    - {name: resNOT, initial: 100}
+    - {name: resNAND, initial: 100}
+    - {name: resAND, initial: 100}
+    - {name: resORN, initial: 100}
+    - {name: resOR, initial: 100}
+    - {name: resANDN, initial: 100}
+    - {name: resNOR, initial: 100}
+    - {name: resXOR, initial: 100}
+    - {name: resEQU, initial: 100}
+
+events:
+  - {at: begin, action: Inject, args: default-heads-probcollect.org}
+  - {at: 0, every: 100, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintTimeData}
+  - {at: 0, every: 1, until: end, action: PrintResourceData}
+  - {at: 0, every: 5, until: end, action: PrintInstructionData}
+  - {at: 50000, every: 50000, action: SavePopulation}
+  - {at: 100000, action: Exit}

@@ -1,0 +1,75 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 100
+world:
+  x: 15
+  y: 15
+mutation:
+  copy_prob: 0.0025
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+divide:
+  offspring_size_range: 1.0
+time:
+  base_merit_method: 0
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - IObuf-add0
+      - IObuf-add1
+      - {name: repro, redundancy: 0}
+
+environment:
+  resources:
+    - {name: resOPT1, inflow: 1000, outflow: .01}
+    - {name: resOPT2, inflow: 1000, outflow: .01}
+  reactions:
+    - name: OPT1
+      task: optimize
+      args: {function: 7, binary: 1, varlength: 20, basepow: 1.3, maxFx: 3, minFx: 0}
+      process: {resource: resOPT1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2
+      task: optimize
+      args: {function: 8, binary: 1, varlength: 20, basepow: 1.3, maxFx: 3, minFx: 0}
+      process: {resource: resOPT2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT3
+      task: optimize
+      args: {function: 6, binary: 1, varlength: 20, basepow: 1.3, maxFx: 5, minFx: 0}
+      process: {resource: resOPT1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT4
+      task: optimize
+      args: {function: 5, binary: 1, varlength: 20, basepow: 1.3, maxFx: 5, minFx: 0}
+      process: {resource: resOPT2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT5
+      task: optimize
+      args: {function: 4, binary: 1, varlength: 20, basepow: 1.3, maxFx: 2, minFx: -.67}
+      process: {resource: resOPT1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT6
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 20, basepow: 1.3, maxFx: 1, minFx: 0}
+      process: {resource: resOPT2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+
+events:
+  - {trigger: immediate, action: Inject, args: default-classic.org}
+  - {trigger: immediate, action: InjectAllRandomRepro, args: 40}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintDominantGenotype}
+  - {at: 0, every: 10, until: end, action: PrintTasksExeData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 100, every: 100, action: SavePopulation}
+  - {at: 100, action: Exit}

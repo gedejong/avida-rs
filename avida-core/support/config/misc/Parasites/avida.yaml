@@ -1,0 +1,87 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-smt.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  geometry: 3
+reproduction:
+  divide_method: 2
+divide:
+  min_genome_size: 30
+parasites:
+  inject_method: 1
+time:
+  merit_inc_apply_immediate: 1
+  max_cpu_threads: 2
+energy:
+  given_on_inject: 100.0
+  given_at_birth: 10.0
+  num_cycles_exc_before_0_energy: 1000
+  apply_method: 1
+
+instruction_sets:
+  - name: instset-smt.cfg
+    hardware_type: 2
+    instructions:
+      - Nop-A
+      - Nop-B
+      - Nop-C
+      - Nop-D
+      - Val-Shift-R
+      - Val-Shift-L
+      - Val-Nand
+      - Val-Add
+      - Val-Sub
+      - Val-Mult
+      - Val-Div
+      - Val-Mod
+      - Val-Inc
+      - Val-Dec
+      - SetMemory
+      - Divide
+      - Inst-Read
+      - Inst-Write
+      - If-Equal
+      - If-Not-Equal
+      - If-Less
+      - If-Greater
+      - Head-Push
+      - Head-Pop
+      - Head-Move
+      - Search
+      - Push-Next
+      - Push-Prev
+      - Push-Comp
+      - Val-Delete
+      - Val-Copy
+      - IO
+      - {name: Nop-X, redundancy: 0}
+      - {name: Inject, redundancy: 0}
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 0.15, type: pow}, requisite: {max_count: 10}}
+
+events:
+  - {at: 700, action: InjectParasite, args: parasite-smt.org ADC 0 400}
+  - {at: 0, every: 100, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 0, every: 100, until: end, action: PrintStatsData}
+  - {at: 0, every: 100, until: end, action: PrintParasiteData, args: ParasiteData.dat}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintTimeData}
+  - {at: 0, every: 100, until: end, action: PrintResourceData}
+  - {at: 2000, action: ChangeEnvironment, args: '"REACTION NOT not process:value=0.08:type=pow requisite:max_count=10"'}
+  - {at: 4000, action: ChangeEnvironment, args: '"REACTION NOT not process:value=0.15:type=pow requisite:max_count=10"'}
+  - {at: 6000, action: ChangeEnvironment, args: '"REACTION NOT not process:value=0.08:type=pow requisite:max_count=10"'}
+  - {at: 5000, every: 5000, action: SavePopulation}
+  - {at: 5000, every: 5000, action: SaveHistoricPopulation}
+  - {at: 5000, every: 5000, action: SaveParasitePopulation}
+  - {at: 5000, action: PrintParasiteData}
+  - {at: 5000, action: PrintDominantGenotype, args: dominant-genotype.50k.dat}
+  - {at: 5000, action: PrintDominantParasiteGenotype, args: dominant-parasite.50k.dat}
+  - {at: 10000, action: PrintDominantGenotype, args: dominant-genotype.dat}
+  - {at: 10000, action: PrintDominantParasiteGenotype, args: dominant-parasite.dat}
+  - {at: 100000, action: exit}

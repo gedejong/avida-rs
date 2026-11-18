@@ -1,0 +1,90 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-transsmt.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  verbosity: 3
+  random_seed: 1
+world:
+  x: 10
+  y: 20
+mutation:
+  copy_prob: 0.0
+  div_prob: 0.001
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+reproduction:
+  birth_method: 6
+  prefer_empty: 0
+  age_limit: 30
+demes:
+  count: 2
+  use_germline: 1
+  reset_resources: 2
+  log_replicate: 1
+  max_births: 0
+  germline_copy_mut: 0.0
+  germline_ins_mut: 0.0
+  germline_del_mut: 0.0
+  replicate_orgs: 100
+  prefer_empty: 1
+reversion:
+  sterilize_unstable: 1
+pheromone:
+  log_inject: 1
+
+instruction_sets:
+  - name: transsmt
+    hardware_type: 2
+    instructions:
+      - Nop-A
+      - Nop-B
+      - Nop-C
+      - Nop-D
+      - Val-Shift-R
+      - Val-Shift-L
+      - Val-Nand
+      - Val-Add
+      - Val-Sub
+      - Val-Mult
+      - Val-Div
+      - Val-Mod
+      - Val-Inc
+      - Val-Dec
+      - SetMemory
+      - Inst-Read
+      - Inst-Write
+      - If-Equal
+      - If-Not-Equal
+      - If-Less
+      - If-Greater
+      - Head-Push
+      - Head-Pop
+      - Head-Move
+      - Search
+      - Push-Next
+      - Push-Prev
+      - Push-Comp
+      - Val-Delete
+      - Val-Copy
+      - IO
+      - Inject
+      - Divide-Erase
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {trigger: immediate, action: InjectSequence, args: ycdBCiEdimFjfCDaknmsAjemEEcgccgssmhEEcsdseDcAcBcggclEEcDEgcvrsAmlzessjhcdcggkhamtmciEEvjDdhjidzoAyndvmEdbgznjDmcjohohooayaxdyalbcekzebjcogEtjgjacblDvubADnslyyocgsAcjCbobffhmvnnAdbDfkmxcagBFfndytqhutjdzfdjsnflfoqCwcvhsjcvbmlsqcjrgyiDivvnFhrArcsmifbClvluDqmCBbtiDhiEfACcarpEczijdljujACbfzuDEFyaqqekizDosbbzjgmpczypqvcrGxab 0}
+  - {at: 0, action: SavePopulation}
+  - {at: 0, action: SaveGermlines}
+  - {at: 500, action: SaveGermlines}
+  - {at: 500, action: Exit}

@@ -1,0 +1,145 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment-all-logic.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+world:
+  x: 20
+  y: 50
+mutation:
+  copy_prob: 0.0
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+  rate_source: 2
+demes:
+  count: 5
+reversion:
+  sterilize_unstable: 2
+time:
+  slicing_method: 4
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 0.2, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 0.2, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 0.4, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 0.4, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 0.6, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 0.6, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 0.8, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 0.8, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AA, task: logic_3AA, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AB, task: logic_3AB, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AC, task: logic_3AC, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AD, task: logic_3AD, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AE, task: logic_3AE, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AF, task: logic_3AF, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AG, task: logic_3AG, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AH, task: logic_3AH, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AI, task: logic_3AI, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AJ, task: logic_3AJ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AK, task: logic_3AK, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AL, task: logic_3AL, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AM, task: logic_3AM, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AN, task: logic_3AN, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AO, task: logic_3AO, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AP, task: logic_3AP, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AQ, task: logic_3AQ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AR, task: logic_3AR, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AS, task: logic_3AS, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AT, task: logic_3AT, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AU, task: logic_3AU, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AV, task: logic_3AV, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AW, task: logic_3AW, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AX, task: logic_3AX, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AY, task: logic_3AY, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3AZ, task: logic_3AZ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BA, task: logic_3BA, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BB, task: logic_3BB, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BC, task: logic_3BC, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BD, task: logic_3BD, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BE, task: logic_3BE, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BF, task: logic_3BF, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BG, task: logic_3BG, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BH, task: logic_3BH, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BI, task: logic_3BI, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BJ, task: logic_3BJ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BK, task: logic_3BK, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BL, task: logic_3BL, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BM, task: logic_3BM, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BN, task: logic_3BN, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BO, task: logic_3BO, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BP, task: logic_3BP, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BQ, task: logic_3BQ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BR, task: logic_3BR, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BS, task: logic_3BS, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BT, task: logic_3BT, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BU, task: logic_3BU, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BV, task: logic_3BV, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BW, task: logic_3BW, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BX, task: logic_3BX, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BY, task: logic_3BY, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3BZ, task: logic_3BZ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CA, task: logic_3CA, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CB, task: logic_3CB, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CC, task: logic_3CC, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CD, task: logic_3CD, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CE, task: logic_3CE, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CF, task: logic_3CF, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CG, task: logic_3CG, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CH, task: logic_3CH, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CI, task: logic_3CI, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CJ, task: logic_3CJ, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CK, task: logic_3CK, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CL, task: logic_3CL, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CM, task: logic_3CM, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CN, task: logic_3CN, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CO, task: logic_3CO, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: LOG3CP, task: logic_3CP, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: 0, action: InjectSequenceWDivMutRate, args: rwzavcsoxhmbotiascsbynzczsdaujsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctychyahycasvab 0 200 0.01 100}
+  - {at: 0, action: InjectSequenceWDivMutRate, args: rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapiyauqcgtpieueoypcgneuffbpqboyerfhnlqebifppypgpctqpgqbptycasvab 800 1000 0.04 100}
+  - {at: 0, every: 100, until: end, action: PrintAverageData}
+  - {at: 0, every: 100, until: end, action: PrintDominantData}
+  - {at: 0, every: 100, until: end, action: PrintStatsData}
+  - {at: 0, every: 100, until: end, action: PrintCountData}
+  - {at: 0, every: 100, until: end, action: PrintTasksData}
+  - {at: 0, every: 100, until: end, action: PrintTimeData}
+  - {at: 0, every: 100, until: end, action: PrintResourceData}
+  - {at: 100, action: SetMigrationRate, args: 0.01}
+  - {at: 250, action: SetMigrationRate, args: 0.0}
+  - {at: 500, action: SavePopulation}
+  - {at: 500, action: Exit}

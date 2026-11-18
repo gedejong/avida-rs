@@ -1,0 +1,135 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-transsmt.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  verbosity: 3
+  random_seed: 1
+world:
+  x: 10
+  y: 30
+mutation:
+  copy_prob: 0.0
+  div_prob: 0.000703
+  div_ins_prob: 3.906e-5
+  div_del_prob: 3.906e-5
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+  inject_prob: 0.0075
+  inject_ins_prob: 0.000825
+  inject_del_prob: 0.000825
+  meta_copy_prob: 0.2
+  meta_std_dev: 0.1
+reproduction:
+  birth_method: 4
+  prefer_empty: 0
+  age_limit: 30
+  inherit_merit: 0
+divide:
+  require_single_reaction: 1
+parasites:
+  inject_method: 1
+  virulence: 0.85
+  no_copy_mut: 1
+demes:
+  count: 3
+  parasite_migration_rate: 0.5
+  parasite_migration_target_selection_method: 1
+time:
+  merit_inc_apply_immediate: 1
+  max_cpu_threads: 2
+movement:
+  vitality_bin_center: 5.0
+
+instruction_sets:
+  - name: transsmt
+    hardware_type: 2
+    instructions:
+      - Nop-A
+      - Nop-B
+      - Nop-C
+      - Nop-D
+      - Val-Shift-R
+      - Val-Shift-L
+      - Val-Nand
+      - Val-Add
+      - Val-Sub
+      - Val-Mult
+      - Val-Div
+      - Val-Mod
+      - Val-Inc
+      - Val-Dec
+      - SetMemory
+      - Inst-Read
+      - Inst-Write
+      - If-Equal
+      - If-Not-Equal
+      - If-Less
+      - If-Greater
+      - Head-Push
+      - Head-Pop
+      - Head-Move
+      - Search
+      - Push-Next
+      - Push-Prev
+      - Push-Comp
+      - Val-Delete
+      - Val-Copy
+      - IO
+      - Inject
+      - Divide-Erase
+  - name: transsmt
+    hardware_type: 2
+    instructions:
+      - Nop-A
+      - Nop-B
+      - Nop-C
+      - Nop-D
+      - Val-Shift-R
+      - Val-Shift-L
+      - Val-Nand
+      - Val-Add
+      - Val-Sub
+      - Val-Mult
+      - Val-Div
+      - Val-Mod
+      - Val-Inc
+      - Val-Dec
+      - SetMemory
+      - Inst-Read
+      - Inst-Write
+      - If-Equal
+      - If-Not-Equal
+      - If-Less
+      - If-Greater
+      - Head-Push
+      - Head-Pop
+      - Head-Move
+      - Search
+      - Push-Next
+      - Push-Prev
+      - Push-Comp
+      - Val-Delete
+      - Val-Copy
+      - IO
+      - Inject
+      - Divide-Erase
+
+environment:
+  reactions:
+    - {name: NOT, task: not, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NAND, task: nand, process: {value: 1.0, type: pow}, requisite: {max_count: 1}}
+    - {name: AND, task: and, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ORN, task: orn, process: {value: 2.0, type: pow}, requisite: {max_count: 1}}
+    - {name: OR, task: or, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: ANDN, task: andn, process: {value: 3.0, type: pow}, requisite: {max_count: 1}}
+    - {name: NOR, task: nor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: XOR, task: xor, process: {value: 4.0, type: pow}, requisite: {max_count: 1}}
+    - {name: EQU, task: equ, process: {value: 5.0, type: pow}, requisite: {max_count: 1}}
+
+events:
+  - {at: begin, action: InjectAll, args: filename=evolved-not.org}
+  - {at: begin, action: InjectParasite, args: parasite-smt.org ABB 0 3}
+  - {at: begin, action: InjectParasite, args: parasite-smt.org ABB 17}
+  - {at: begin, action: SavePopulation}
+  - {at: 500, action: SavePopulation}
+  - {at: 500, action: Exit}

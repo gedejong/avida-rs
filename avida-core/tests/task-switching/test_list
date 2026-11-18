@@ -1,6 +1,6 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
-args = -s 1 -c avida.cfg -set WORLD_X 5 -set WORLD_Y 10 -set WORLD_GEOMETRY 2 -set SPECULATIVE 0 -set INST_SET kitchensink-instset-self.cfg  -set ENVIRONMENT_FILE environment-out.cfg -set NUM_DEMES 2 -set DEMES_USE_GERMLINE 1 -set DEMES_REPLICATE_SIZE 1 -set DEMES_ORGANISM_SELECTION 0 -set DEMES_ORGANISM_PLACEMENT 1 -set DEMES_ORGANISM_FACING 1 -set SLICING_METHOD 1  -set EVENT_FILE events-long.cfg  -set COPY_MUT_PROB 0 -set DIVIDE_INS_PROB 0 -set DIVIDE_DEL_PROB 0 -set DEMES_PREVENT_STERILE 1 -set TASK_SWITCH_PENALTY 25 -set TASK_SWITCH_PENALTY_TYPE 2 -set RES_FOR_DEME_REP 500  -set DEMES_TRACK_SHANNON_INFO 1 -set INST_SET_LOAD_LEGACY 1 
+args = -s 1 -set world.x 5 -set world.y 10 -set world.geometry 2 -set general.speculative 0 -set demes.count 2 -set demes.use_germline 1 -set demes.replicate_size 1 -set demes.organism_selection 0 -set demes.organism_placement 1 -set demes.organism_facing 1 -set time.slicing_method 1 -set mutation.copy_prob 0 -set mutation.divide_ins_prob 0 -set mutation.divide_del_prob 0 -set demes.prevent_sterile 1 -set division_of_labor.task_switch_penalty 25 -set division_of_labor.task_switch_penalty_type 2 -set division_of_labor.res_for_deme_rep 500 -set demes.track_shannon_info 1
 app = %(app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures

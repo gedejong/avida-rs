@@ -1,0 +1,1915 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 2
+world:
+  x: 10
+  y: 10
+mutation:
+  copy_prob: 0.001
+  divide_ins_prob: 0.0
+  divide_del_prob: 0.0
+divide:
+  offspring_size_range: 1.0
+time:
+  slicing_method: 2
+  base_merit_method: 0
+
+instruction_sets:
+  - name: instset-heads.cfg
+    hardware_type: 0
+    instructions:
+      - IObuf-add0
+      - IObuf-add1
+      - {name: repro, redundancy: 0}
+
+environment:
+  resources:
+    - {name: resOPT1, inflow: 1000, outflow: .01}
+    - {name: resOPT2, inflow: 1000, outflow: .01}
+    - {name: resOPT1THRESH0, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH1, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH2, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH3, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH4, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH5, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH6, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH7, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH8, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH9, inflow: 100, outflow: 0.01}
+    - {name: resOPT1THRESH10, inflow: 100, outflow: 0.01}
+    - {name: resOPT1RANGE0, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE1, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE2, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE3, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE4, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE5, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE6, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE7, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE8, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE9, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE10, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE11, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE12, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE13, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE14, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE15, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE16, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE17, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE18, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE19, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE20, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE21, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE22, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE23, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE24, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE25, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE26, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE27, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE28, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE29, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE30, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE31, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE32, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE33, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE34, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE35, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE36, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE37, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE38, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE39, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE40, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE41, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE42, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE43, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE44, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE45, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE46, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE47, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE48, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE49, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE50, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE51, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE52, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE53, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE54, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE55, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE56, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE57, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE58, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE59, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE60, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE61, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE62, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE63, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE64, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE65, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE66, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE67, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE68, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE69, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE70, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE71, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE72, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE73, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE74, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE75, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE76, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE77, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE78, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE79, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE80, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE81, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE82, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE83, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE84, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE85, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE86, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE87, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE88, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE89, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE90, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE91, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE92, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE93, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE94, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE95, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE96, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE97, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE98, inflow: 50, outflow: 0.01}
+    - {name: resOPT1RANGE99, inflow: 50, outflow: 0.01}
+    - {name: resOPT2THRESH0, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH1, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH2, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH3, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH4, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH5, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH6, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH7, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH8, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH9, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH10, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH11, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH12, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH13, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH14, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH15, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH16, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH17, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH18, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH19, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH20, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH21, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH22, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH23, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH24, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH25, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH26, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH27, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH28, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH29, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH30, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH31, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH32, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH33, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH34, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH35, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH36, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH37, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH38, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH39, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH40, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH41, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH42, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH43, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH44, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH45, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH46, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH47, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH48, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH49, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH50, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH51, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH52, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH53, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH54, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH55, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH56, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH57, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH58, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH59, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH60, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH61, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH62, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH63, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH64, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH65, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH66, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH67, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH68, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH69, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH70, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH71, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH72, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH73, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH74, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH75, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH76, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH77, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH78, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH79, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH80, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH81, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH82, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH83, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH84, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH85, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH86, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH87, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH88, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH89, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH90, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH91, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH92, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH93, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH94, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH95, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH96, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH97, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH98, inflow: 100, outflow: 0.01}
+    - {name: resOPT2THRESH99, inflow: 100, outflow: 0.01}
+    - {name: resOPT2RANGE0, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE1, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE2, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE3, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE4, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE5, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE6, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE7, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE8, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE9, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE10, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE11, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE12, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE13, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE14, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE15, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE16, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE17, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE18, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE19, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE20, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE21, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE22, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE23, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE24, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE25, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE26, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE27, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE28, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE29, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE30, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE31, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE32, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE33, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE34, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE35, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE36, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE37, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE38, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE39, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE40, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE41, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE42, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE43, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE44, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE45, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE46, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE47, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE48, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE49, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE50, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE51, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE52, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE53, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE54, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE55, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE56, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE57, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE58, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE59, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE60, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE61, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE62, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE63, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE64, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE65, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE66, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE67, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE68, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE69, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE70, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE71, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE72, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE73, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE74, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE75, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE76, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE77, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE78, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE79, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE80, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE81, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE82, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE83, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE84, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE85, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE86, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE87, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE88, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE89, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE90, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE91, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE92, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE93, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE94, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE95, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE96, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE97, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE98, inflow: 50, outflow: 0.01}
+    - {name: resOPT2RANGE99, inflow: 50, outflow: 0.01}
+  reactions:
+    - name: OPT1
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1.0, minFx: 0.0}
+      process: {resource: resOPT1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10.0, minFx: 0.0}
+      process: {resource: resOPT2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH0
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0}
+      process: {resource: resOPT1THRESH0, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH1
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.1}
+      process: {resource: resOPT1THRESH1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH2
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.2}
+      process: {resource: resOPT1THRESH2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH3
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.3}
+      process: {resource: resOPT1THRESH3, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH4
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.4}
+      process: {resource: resOPT1THRESH4, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH5
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.5}
+      process: {resource: resOPT1THRESH5, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH6
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.6}
+      process: {resource: resOPT1THRESH6, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH7
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.7}
+      process: {resource: resOPT1THRESH7, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH8
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.8}
+      process: {resource: resOPT1THRESH8, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1THRESH9
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.9}
+      process: {resource: resOPT1THRESH9, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH0
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0}
+      process: {resource: resOPT2THRESH0, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH1
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.01}
+      process: {resource: resOPT2THRESH1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH2
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.02}
+      process: {resource: resOPT2THRESH2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH3
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.03}
+      process: {resource: resOPT2THRESH3, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH4
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.04}
+      process: {resource: resOPT2THRESH4, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH5
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.05}
+      process: {resource: resOPT2THRESH5, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH6
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.06}
+      process: {resource: resOPT2THRESH6, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH7
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.07}
+      process: {resource: resOPT2THRESH7, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH8
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.08}
+      process: {resource: resOPT2THRESH8, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH9
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.09}
+      process: {resource: resOPT2THRESH9, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH10
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.1}
+      process: {resource: resOPT2THRESH10, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH11
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.11}
+      process: {resource: resOPT2THRESH11, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH12
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.12}
+      process: {resource: resOPT2THRESH12, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH13
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.13}
+      process: {resource: resOPT2THRESH13, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH14
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.14}
+      process: {resource: resOPT2THRESH14, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH15
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.15}
+      process: {resource: resOPT2THRESH15, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH16
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.16}
+      process: {resource: resOPT2THRESH16, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH17
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.17}
+      process: {resource: resOPT2THRESH17, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH18
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.18}
+      process: {resource: resOPT2THRESH18, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH19
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.19}
+      process: {resource: resOPT2THRESH19, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH20
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.2}
+      process: {resource: resOPT2THRESH20, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH21
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.21}
+      process: {resource: resOPT2THRESH21, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH22
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.22}
+      process: {resource: resOPT2THRESH22, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH23
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.23}
+      process: {resource: resOPT2THRESH23, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH24
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.24}
+      process: {resource: resOPT2THRESH24, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH25
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.25}
+      process: {resource: resOPT2THRESH25, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH26
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.26}
+      process: {resource: resOPT2THRESH26, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH27
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.27}
+      process: {resource: resOPT2THRESH27, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH28
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.28}
+      process: {resource: resOPT2THRESH28, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH29
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.29}
+      process: {resource: resOPT2THRESH29, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH30
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.3}
+      process: {resource: resOPT2THRESH30, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH31
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.31}
+      process: {resource: resOPT2THRESH31, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH32
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.32}
+      process: {resource: resOPT2THRESH32, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH33
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.33}
+      process: {resource: resOPT2THRESH33, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH34
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.34}
+      process: {resource: resOPT2THRESH34, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH35
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.35}
+      process: {resource: resOPT2THRESH35, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH36
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.36}
+      process: {resource: resOPT2THRESH36, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH37
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.37}
+      process: {resource: resOPT2THRESH37, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH38
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.38}
+      process: {resource: resOPT2THRESH38, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH39
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.39}
+      process: {resource: resOPT2THRESH39, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH40
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.4}
+      process: {resource: resOPT2THRESH40, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH41
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.41}
+      process: {resource: resOPT2THRESH41, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH42
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.42}
+      process: {resource: resOPT2THRESH42, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH43
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.43}
+      process: {resource: resOPT2THRESH43, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH44
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.44}
+      process: {resource: resOPT2THRESH44, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH45
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.45}
+      process: {resource: resOPT2THRESH45, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH46
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.46}
+      process: {resource: resOPT2THRESH46, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH47
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.47}
+      process: {resource: resOPT2THRESH47, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH48
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.48}
+      process: {resource: resOPT2THRESH48, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH49
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.49}
+      process: {resource: resOPT2THRESH49, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH50
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.5}
+      process: {resource: resOPT2THRESH50, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH51
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.51}
+      process: {resource: resOPT2THRESH51, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH52
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.52}
+      process: {resource: resOPT2THRESH52, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH53
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.53}
+      process: {resource: resOPT2THRESH53, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH54
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.54}
+      process: {resource: resOPT2THRESH54, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH55
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.55}
+      process: {resource: resOPT2THRESH55, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH56
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.56}
+      process: {resource: resOPT2THRESH56, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH57
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.57}
+      process: {resource: resOPT2THRESH57, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH58
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.58}
+      process: {resource: resOPT2THRESH58, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH59
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.59}
+      process: {resource: resOPT2THRESH59, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH60
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.6}
+      process: {resource: resOPT2THRESH60, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH61
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.61}
+      process: {resource: resOPT2THRESH61, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH62
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.62}
+      process: {resource: resOPT2THRESH62, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH63
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.63}
+      process: {resource: resOPT2THRESH63, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH64
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.64}
+      process: {resource: resOPT2THRESH64, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH65
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.65}
+      process: {resource: resOPT2THRESH65, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH66
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.66}
+      process: {resource: resOPT2THRESH66, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH67
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.67}
+      process: {resource: resOPT2THRESH67, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH68
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.68}
+      process: {resource: resOPT2THRESH68, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH69
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.69}
+      process: {resource: resOPT2THRESH69, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH70
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.7}
+      process: {resource: resOPT2THRESH70, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH71
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.71}
+      process: {resource: resOPT2THRESH71, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH72
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.72}
+      process: {resource: resOPT2THRESH72, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH73
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.73}
+      process: {resource: resOPT2THRESH73, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH74
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.74}
+      process: {resource: resOPT2THRESH74, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH75
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.75}
+      process: {resource: resOPT2THRESH75, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH76
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.76}
+      process: {resource: resOPT2THRESH76, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH77
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.77}
+      process: {resource: resOPT2THRESH77, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH78
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.78}
+      process: {resource: resOPT2THRESH78, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH79
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.79}
+      process: {resource: resOPT2THRESH79, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH80
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.8}
+      process: {resource: resOPT2THRESH80, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH81
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.81}
+      process: {resource: resOPT2THRESH81, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH82
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.82}
+      process: {resource: resOPT2THRESH82, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH83
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.83}
+      process: {resource: resOPT2THRESH83, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH84
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.84}
+      process: {resource: resOPT2THRESH84, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH85
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.85}
+      process: {resource: resOPT2THRESH85, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH86
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.86}
+      process: {resource: resOPT2THRESH86, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH87
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.87}
+      process: {resource: resOPT2THRESH87, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH88
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.88}
+      process: {resource: resOPT2THRESH88, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH89
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.89}
+      process: {resource: resOPT2THRESH89, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH90
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.9}
+      process: {resource: resOPT2THRESH90, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH91
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.91}
+      process: {resource: resOPT2THRESH91, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH92
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.92}
+      process: {resource: resOPT2THRESH92, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH93
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.93}
+      process: {resource: resOPT2THRESH93, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH94
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.94}
+      process: {resource: resOPT2THRESH94, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH95
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.95}
+      process: {resource: resOPT2THRESH95, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH96
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.96}
+      process: {resource: resOPT2THRESH96, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH97
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.97}
+      process: {resource: resOPT2THRESH97, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH98
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.98}
+      process: {resource: resOPT2THRESH98, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2THRESH99
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.99}
+      process: {resource: resOPT2THRESH99, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE0
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0, threshMax: 0.01}
+      process: {resource: resOPT1RANGE0, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE1
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.01, threshMax: 0.02}
+      process: {resource: resOPT1RANGE1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE2
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.02, threshMax: 0.03}
+      process: {resource: resOPT1RANGE2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE3
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.03, threshMax: 0.04}
+      process: {resource: resOPT1RANGE3, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE4
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.04, threshMax: 0.05}
+      process: {resource: resOPT1RANGE4, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE5
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.05, threshMax: 0.06}
+      process: {resource: resOPT1RANGE5, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE6
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.06, threshMax: 0.07}
+      process: {resource: resOPT1RANGE6, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE7
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.07, threshMax: 0.08}
+      process: {resource: resOPT1RANGE7, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE8
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.08, threshMax: 0.09}
+      process: {resource: resOPT1RANGE8, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE9
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.09, threshMax: 0.1}
+      process: {resource: resOPT1RANGE9, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE10
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.1, threshMax: 0.11}
+      process: {resource: resOPT1RANGE10, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE11
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.11, threshMax: 0.12}
+      process: {resource: resOPT1RANGE11, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE12
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.12, threshMax: 0.13}
+      process: {resource: resOPT1RANGE12, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE13
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.13, threshMax: 0.14}
+      process: {resource: resOPT1RANGE13, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE14
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.14, threshMax: 0.15}
+      process: {resource: resOPT1RANGE14, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE15
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.15, threshMax: 0.16}
+      process: {resource: resOPT1RANGE15, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE16
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.16, threshMax: 0.17}
+      process: {resource: resOPT1RANGE16, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE17
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.17, threshMax: 0.18}
+      process: {resource: resOPT1RANGE17, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE18
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.18, threshMax: 0.19}
+      process: {resource: resOPT1RANGE18, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE19
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.19, threshMax: 0.2}
+      process: {resource: resOPT1RANGE19, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE20
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.2, threshMax: 0.21}
+      process: {resource: resOPT1RANGE20, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE21
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.21, threshMax: 0.22}
+      process: {resource: resOPT1RANGE21, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE22
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.22, threshMax: 0.23}
+      process: {resource: resOPT1RANGE22, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE23
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.23, threshMax: 0.24}
+      process: {resource: resOPT1RANGE23, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE24
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.24, threshMax: 0.25}
+      process: {resource: resOPT1RANGE24, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE25
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.25, threshMax: 0.26}
+      process: {resource: resOPT1RANGE25, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE26
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.26, threshMax: 0.27}
+      process: {resource: resOPT1RANGE26, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE27
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.27, threshMax: 0.28}
+      process: {resource: resOPT1RANGE27, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE28
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.28, threshMax: 0.29}
+      process: {resource: resOPT1RANGE28, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE29
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.29, threshMax: 0.3}
+      process: {resource: resOPT1RANGE29, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE30
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.3, threshMax: 0.31}
+      process: {resource: resOPT1RANGE30, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE31
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.31, threshMax: 0.32}
+      process: {resource: resOPT1RANGE31, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE32
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.32, threshMax: 0.33}
+      process: {resource: resOPT1RANGE32, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE33
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.33, threshMax: 0.34}
+      process: {resource: resOPT1RANGE33, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE34
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.34, threshMax: 0.35}
+      process: {resource: resOPT1RANGE34, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE35
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.35, threshMax: 0.36}
+      process: {resource: resOPT1RANGE35, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE36
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.36, threshMax: 0.37}
+      process: {resource: resOPT1RANGE36, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE37
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.37, threshMax: 0.38}
+      process: {resource: resOPT1RANGE37, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE38
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.38, threshMax: 0.39}
+      process: {resource: resOPT1RANGE38, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE39
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.39, threshMax: 0.4}
+      process: {resource: resOPT1RANGE39, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE40
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.4, threshMax: 0.41}
+      process: {resource: resOPT1RANGE40, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE41
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.41, threshMax: 0.42}
+      process: {resource: resOPT1RANGE41, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE42
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.42, threshMax: 0.43}
+      process: {resource: resOPT1RANGE42, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE43
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.43, threshMax: 0.44}
+      process: {resource: resOPT1RANGE43, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE44
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.44, threshMax: 0.45}
+      process: {resource: resOPT1RANGE44, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE45
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.45, threshMax: 0.46}
+      process: {resource: resOPT1RANGE45, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE46
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.46, threshMax: 0.47}
+      process: {resource: resOPT1RANGE46, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE47
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.47, threshMax: 0.48}
+      process: {resource: resOPT1RANGE47, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE48
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.48, threshMax: 0.49}
+      process: {resource: resOPT1RANGE48, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE49
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.49, threshMax: 0.5}
+      process: {resource: resOPT1RANGE49, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE50
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.5, threshMax: 0.51}
+      process: {resource: resOPT1RANGE50, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE51
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.51, threshMax: 0.52}
+      process: {resource: resOPT1RANGE51, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE52
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.52, threshMax: 0.53}
+      process: {resource: resOPT1RANGE52, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE53
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.53, threshMax: 0.54}
+      process: {resource: resOPT1RANGE53, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE54
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.54, threshMax: 0.55}
+      process: {resource: resOPT1RANGE54, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE55
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.55, threshMax: 0.56}
+      process: {resource: resOPT1RANGE55, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE56
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.56, threshMax: 0.57}
+      process: {resource: resOPT1RANGE56, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE57
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.57, threshMax: 0.58}
+      process: {resource: resOPT1RANGE57, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE58
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.58, threshMax: 0.59}
+      process: {resource: resOPT1RANGE58, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE59
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.59, threshMax: 0.6}
+      process: {resource: resOPT1RANGE59, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE60
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.6, threshMax: 0.61}
+      process: {resource: resOPT1RANGE60, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE61
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.61, threshMax: 0.62}
+      process: {resource: resOPT1RANGE61, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE62
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.62, threshMax: 0.63}
+      process: {resource: resOPT1RANGE62, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE63
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.63, threshMax: 0.64}
+      process: {resource: resOPT1RANGE63, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE64
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.64, threshMax: 0.65}
+      process: {resource: resOPT1RANGE64, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE65
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.65, threshMax: 0.66}
+      process: {resource: resOPT1RANGE65, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE66
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.66, threshMax: 0.67}
+      process: {resource: resOPT1RANGE66, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE67
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.67, threshMax: 0.68}
+      process: {resource: resOPT1RANGE67, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE68
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.68, threshMax: 0.69}
+      process: {resource: resOPT1RANGE68, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE69
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.69, threshMax: 0.7}
+      process: {resource: resOPT1RANGE69, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE70
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.7, threshMax: 0.71}
+      process: {resource: resOPT1RANGE70, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE71
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.71, threshMax: 0.72}
+      process: {resource: resOPT1RANGE71, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE72
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.72, threshMax: 0.73}
+      process: {resource: resOPT1RANGE72, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE73
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.73, threshMax: 0.74}
+      process: {resource: resOPT1RANGE73, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE74
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.74, threshMax: 0.75}
+      process: {resource: resOPT1RANGE74, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE75
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.75, threshMax: 0.76}
+      process: {resource: resOPT1RANGE75, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE76
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.76, threshMax: 0.77}
+      process: {resource: resOPT1RANGE76, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE77
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.77, threshMax: 0.78}
+      process: {resource: resOPT1RANGE77, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE78
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.78, threshMax: 0.79}
+      process: {resource: resOPT1RANGE78, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE79
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.79, threshMax: 0.8}
+      process: {resource: resOPT1RANGE79, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE80
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.8, threshMax: 0.81}
+      process: {resource: resOPT1RANGE80, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE81
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.81, threshMax: 0.82}
+      process: {resource: resOPT1RANGE81, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE82
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.82, threshMax: 0.83}
+      process: {resource: resOPT1RANGE82, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE83
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.83, threshMax: 0.84}
+      process: {resource: resOPT1RANGE83, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE84
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.84, threshMax: 0.85}
+      process: {resource: resOPT1RANGE84, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE85
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.85, threshMax: 0.86}
+      process: {resource: resOPT1RANGE85, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE86
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.86, threshMax: 0.87}
+      process: {resource: resOPT1RANGE86, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE87
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.87, threshMax: 0.88}
+      process: {resource: resOPT1RANGE87, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE88
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.88, threshMax: 0.89}
+      process: {resource: resOPT1RANGE88, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE89
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.89, threshMax: 0.9}
+      process: {resource: resOPT1RANGE89, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE90
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.9, threshMax: 0.91}
+      process: {resource: resOPT1RANGE90, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE91
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.91, threshMax: 0.92}
+      process: {resource: resOPT1RANGE91, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE92
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.92, threshMax: 0.93}
+      process: {resource: resOPT1RANGE92, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE93
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.93, threshMax: 0.94}
+      process: {resource: resOPT1RANGE93, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE94
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.94, threshMax: 0.95}
+      process: {resource: resOPT1RANGE94, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE95
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.95, threshMax: 0.96}
+      process: {resource: resOPT1RANGE95, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE96
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.96, threshMax: 0.97}
+      process: {resource: resOPT1RANGE96, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE97
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.97, threshMax: 0.98}
+      process: {resource: resOPT1RANGE97, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE98
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.98, threshMax: 0.99}
+      process: {resource: resOPT1RANGE98, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT1RANGE99
+      task: optimize
+      args: {function: 1, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 1, minFx: 0, thresh: 0.99, threshMax: 1}
+      process: {resource: resOPT1RANGE99, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE0
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0, threshMax: 0.01}
+      process: {resource: resOPT2RANGE0, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE1
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.01, threshMax: 0.02}
+      process: {resource: resOPT2RANGE1, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE2
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.02, threshMax: 0.03}
+      process: {resource: resOPT2RANGE2, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE3
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.03, threshMax: 0.04}
+      process: {resource: resOPT2RANGE3, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE4
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.04, threshMax: 0.05}
+      process: {resource: resOPT2RANGE4, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE5
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.05, threshMax: 0.06}
+      process: {resource: resOPT2RANGE5, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE6
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.06, threshMax: 0.07}
+      process: {resource: resOPT2RANGE6, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE7
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.07, threshMax: 0.08}
+      process: {resource: resOPT2RANGE7, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE8
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.08, threshMax: 0.09}
+      process: {resource: resOPT2RANGE8, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE9
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.09, threshMax: 0.1}
+      process: {resource: resOPT2RANGE9, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE10
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.1, threshMax: 0.11}
+      process: {resource: resOPT2RANGE10, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE11
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.11, threshMax: 0.12}
+      process: {resource: resOPT2RANGE11, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE12
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.12, threshMax: 0.13}
+      process: {resource: resOPT2RANGE12, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE13
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.13, threshMax: 0.14}
+      process: {resource: resOPT2RANGE13, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE14
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.14, threshMax: 0.15}
+      process: {resource: resOPT2RANGE14, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE15
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.15, threshMax: 0.16}
+      process: {resource: resOPT2RANGE15, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE16
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.16, threshMax: 0.17}
+      process: {resource: resOPT2RANGE16, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE17
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.17, threshMax: 0.18}
+      process: {resource: resOPT2RANGE17, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE18
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.18, threshMax: 0.19}
+      process: {resource: resOPT2RANGE18, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE19
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.19, threshMax: 0.2}
+      process: {resource: resOPT2RANGE19, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE20
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.2, threshMax: 0.21}
+      process: {resource: resOPT2RANGE20, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE21
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.21, threshMax: 0.22}
+      process: {resource: resOPT2RANGE21, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE22
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.22, threshMax: 0.23}
+      process: {resource: resOPT2RANGE22, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE23
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.23, threshMax: 0.24}
+      process: {resource: resOPT2RANGE23, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE24
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.24, threshMax: 0.25}
+      process: {resource: resOPT2RANGE24, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE25
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.25, threshMax: 0.26}
+      process: {resource: resOPT2RANGE25, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE26
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.26, threshMax: 0.27}
+      process: {resource: resOPT2RANGE26, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE27
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.27, threshMax: 0.28}
+      process: {resource: resOPT2RANGE27, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE28
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.28, threshMax: 0.29}
+      process: {resource: resOPT2RANGE28, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE29
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.29, threshMax: 0.3}
+      process: {resource: resOPT2RANGE29, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE30
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.3, threshMax: 0.31}
+      process: {resource: resOPT2RANGE30, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE31
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.31, threshMax: 0.32}
+      process: {resource: resOPT2RANGE31, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE32
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.32, threshMax: 0.33}
+      process: {resource: resOPT2RANGE32, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE33
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.33, threshMax: 0.34}
+      process: {resource: resOPT2RANGE33, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE34
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.34, threshMax: 0.35}
+      process: {resource: resOPT2RANGE34, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE35
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.35, threshMax: 0.36}
+      process: {resource: resOPT2RANGE35, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE36
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.36, threshMax: 0.37}
+      process: {resource: resOPT2RANGE36, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE37
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.37, threshMax: 0.38}
+      process: {resource: resOPT2RANGE37, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE38
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.38, threshMax: 0.39}
+      process: {resource: resOPT2RANGE38, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE39
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.39, threshMax: 0.4}
+      process: {resource: resOPT2RANGE39, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE40
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.4, threshMax: 0.41}
+      process: {resource: resOPT2RANGE40, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE41
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.41, threshMax: 0.42}
+      process: {resource: resOPT2RANGE41, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE42
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.42, threshMax: 0.43}
+      process: {resource: resOPT2RANGE42, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE43
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.43, threshMax: 0.44}
+      process: {resource: resOPT2RANGE43, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE44
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.44, threshMax: 0.45}
+      process: {resource: resOPT2RANGE44, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE45
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.45, threshMax: 0.46}
+      process: {resource: resOPT2RANGE45, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE46
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.46, threshMax: 0.47}
+      process: {resource: resOPT2RANGE46, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE47
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.47, threshMax: 0.48}
+      process: {resource: resOPT2RANGE47, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE48
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.48, threshMax: 0.49}
+      process: {resource: resOPT2RANGE48, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE49
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.49, threshMax: 0.5}
+      process: {resource: resOPT2RANGE49, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE50
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.5, threshMax: 0.51}
+      process: {resource: resOPT2RANGE50, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE51
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.51, threshMax: 0.52}
+      process: {resource: resOPT2RANGE51, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE52
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.52, threshMax: 0.53}
+      process: {resource: resOPT2RANGE52, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE53
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.53, threshMax: 0.54}
+      process: {resource: resOPT2RANGE53, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE54
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.54, threshMax: 0.55}
+      process: {resource: resOPT2RANGE54, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE55
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.55, threshMax: 0.56}
+      process: {resource: resOPT2RANGE55, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE56
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.56, threshMax: 0.57}
+      process: {resource: resOPT2RANGE56, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE57
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.57, threshMax: 0.58}
+      process: {resource: resOPT2RANGE57, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE58
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.58, threshMax: 0.59}
+      process: {resource: resOPT2RANGE58, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE59
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.59, threshMax: 0.6}
+      process: {resource: resOPT2RANGE59, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE60
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.6, threshMax: 0.61}
+      process: {resource: resOPT2RANGE60, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE61
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.61, threshMax: 0.62}
+      process: {resource: resOPT2RANGE61, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE62
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.62, threshMax: 0.63}
+      process: {resource: resOPT2RANGE62, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE63
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.63, threshMax: 0.64}
+      process: {resource: resOPT2RANGE63, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE64
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.64, threshMax: 0.65}
+      process: {resource: resOPT2RANGE64, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE65
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.65, threshMax: 0.66}
+      process: {resource: resOPT2RANGE65, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE66
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.66, threshMax: 0.67}
+      process: {resource: resOPT2RANGE66, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE67
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.67, threshMax: 0.68}
+      process: {resource: resOPT2RANGE67, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE68
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.68, threshMax: 0.69}
+      process: {resource: resOPT2RANGE68, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE69
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.69, threshMax: 0.7}
+      process: {resource: resOPT2RANGE69, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE70
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.7, threshMax: 0.71}
+      process: {resource: resOPT2RANGE70, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE71
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.71, threshMax: 0.72}
+      process: {resource: resOPT2RANGE71, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE72
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.72, threshMax: 0.73}
+      process: {resource: resOPT2RANGE72, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE73
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.73, threshMax: 0.74}
+      process: {resource: resOPT2RANGE73, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE74
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.74, threshMax: 0.75}
+      process: {resource: resOPT2RANGE74, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE75
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.75, threshMax: 0.76}
+      process: {resource: resOPT2RANGE75, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE76
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.76, threshMax: 0.77}
+      process: {resource: resOPT2RANGE76, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE77
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.77, threshMax: 0.78}
+      process: {resource: resOPT2RANGE77, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE78
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.78, threshMax: 0.79}
+      process: {resource: resOPT2RANGE78, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE79
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.79, threshMax: 0.8}
+      process: {resource: resOPT2RANGE79, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE80
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.8, threshMax: 0.81}
+      process: {resource: resOPT2RANGE80, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE81
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.81, threshMax: 0.82}
+      process: {resource: resOPT2RANGE81, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE82
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.82, threshMax: 0.83}
+      process: {resource: resOPT2RANGE82, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE83
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.83, threshMax: 0.84}
+      process: {resource: resOPT2RANGE83, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE84
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.84, threshMax: 0.85}
+      process: {resource: resOPT2RANGE84, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE85
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.85, threshMax: 0.86}
+      process: {resource: resOPT2RANGE85, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE86
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.86, threshMax: 0.87}
+      process: {resource: resOPT2RANGE86, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE87
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.87, threshMax: 0.88}
+      process: {resource: resOPT2RANGE87, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE88
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.88, threshMax: 0.89}
+      process: {resource: resOPT2RANGE88, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE89
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.89, threshMax: 0.9}
+      process: {resource: resOPT2RANGE89, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE90
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.9, threshMax: 0.91}
+      process: {resource: resOPT2RANGE90, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE91
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.91, threshMax: 0.92}
+      process: {resource: resOPT2RANGE91, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE92
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.92, threshMax: 0.93}
+      process: {resource: resOPT2RANGE92, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE93
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.93, threshMax: 0.94}
+      process: {resource: resOPT2RANGE93, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE94
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.94, threshMax: 0.95}
+      process: {resource: resOPT2RANGE94, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE95
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.95, threshMax: 0.96}
+      process: {resource: resOPT2RANGE95, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE96
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.96, threshMax: 0.97}
+      process: {resource: resOPT2RANGE96, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE97
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.97, threshMax: 0.98}
+      process: {resource: resOPT2RANGE97, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE98
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.98, threshMax: 0.99}
+      process: {resource: resOPT2RANGE98, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+    - name: OPT2RANGE99
+      task: optimize
+      args: {function: 9, binary: 1, varlength: 3, numvars: 31, basepow: 1.3, maxFx: 10, minFx: 0, thresh: 0.99, threshMax: 1}
+      process: {resource: resOPT2RANGE99, type: pow, value: 3.0, frac: .0005, max: 5, min: .025}
+      requisite: {divide_only: 1}
+
+events:
+  - {trigger: immediate, action: InjectAllRandomRepro, args: 93}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, action: PrintDominantGenotype}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 20, action: SavePopulation}
+  - {at: 20, action: Exit}

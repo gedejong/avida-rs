@@ -1,0 +1,77 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-collect2x.cfg, environment.9resource, events-collect.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 0
+demes:
+  count: 0
+hoarding:
+  use_resource_bins: 1
+
+instruction_sets:
+  - name: instset-collect2x.cfg
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - if-n-equ
+      - if-less
+      - pop
+      - push
+      - swap-stk
+      - swap
+      - shift-r
+      - shift-l
+      - inc
+      - dec
+      - add
+      - sub
+      - nand
+      - IO
+      - h-alloc
+      - h-divide
+      - h-copy
+      - h-search
+      - mov-head
+      - jmp-head
+      - get-head
+      - if-label
+      - set-flow
+      - {name: collect, cost: 2}
+
+environment:
+  resources:
+    - {name: resNOT, inflow: 100, outflow: 0.01}
+    - {name: resNAND, inflow: 100, outflow: 0.01}
+    - {name: resAND, inflow: 100, outflow: 0.01}
+    - {name: resORN, inflow: 100, outflow: 0.01}
+    - {name: resOR, inflow: 100, outflow: 0.01}
+    - {name: resANDN, inflow: 100, outflow: 0.01}
+    - {name: resNOR, inflow: 100, outflow: 0.01}
+    - {name: resXOR, inflow: 100, outflow: 0.01}
+    - {name: resEQU, inflow: 100, outflow: 0.01}
+  reactions:
+    - {name: NOT, task: not, process: {resource: resNOT, value: 1.0, frac: 0.0025, max: 25}}
+    - {name: NAND, task: nand, process: {resource: resNAND, value: 1.0, frac: 0.0025, max: 25}}
+    - {name: AND, task: and, process: {resource: resAND, value: 2.0, frac: 0.0025, max: 25}}
+    - {name: ORN, task: orn, process: {resource: resORN, value: 2.0, frac: 0.0025, max: 25}}
+    - {name: OR, task: or, process: {resource: resOR, value: 4.0, frac: 0.0025, max: 25}}
+    - {name: ANDN, task: andn, process: {resource: resANDN, value: 4.0, frac: 0.0025, max: 25}}
+    - {name: NOR, task: nor, process: {resource: resNOR, value: 8.0, frac: 0.0025, max: 25}}
+    - {name: XOR, task: xor, process: {resource: resXOR, value: 8.0, frac: 0.0025, max: 25}}
+    - {name: EQU, task: equ, process: {resource: resEQU, value: 16.0, frac: 0.0025, max: 25}}
+
+events:
+  - {trigger: immediate, action: LoadPopulation, args: data/detail-100000.pop}
+  - {at: 0, every: 10, until: end, action: PrintAverageData}
+  - {at: 0, every: 10, until: end, action: PrintDominantData}
+  - {at: 0, every: 10, until: end, action: PrintStatsData}
+  - {at: 0, every: 10, until: end, action: PrintCountData}
+  - {at: 0, every: 10, until: end, action: PrintTasksData}
+  - {at: 0, every: 10, until: end, action: PrintTimeData}
+  - {at: 0, every: 10, until: end, action: PrintResourceData}
+  - {at: 0, every: 10, until: end, action: PrintTasksQualData}
+  - {at: 0, every: 10, until: end, action: PrintInternalTasksData}
+  - {at: 0, every: 10, until: end, action: PrintInternalTasksQualData}
+  - {at: 300, action: Exit}

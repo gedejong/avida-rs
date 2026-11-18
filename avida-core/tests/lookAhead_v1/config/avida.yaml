@@ -1,0 +1,83 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 51
+world:
+  x: 100
+  y: 100
+  geometry: 1
+reproduction:
+  death_method: 0
+time:
+  ave_time_slice: 20
+  base_merit_method: 0
+movement:
+  collisions_lethal: 2
+sensing:
+  look_dist: 100
+groups:
+  pred_prey_switch: 0
+
+instruction_sets:
+  - name: instset
+    hardware_type: 3
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - nop-D
+      - nop-E
+      - nop-F
+      - nop-G
+      - nop-H
+      - inc
+      - dec
+      - IO
+      - if-not-0
+      - if-equ-0
+      - move
+      - rotate-x
+      - rotate-org-id
+      - look-ahead
+      - zero
+      - set-forage-target
+
+environment:
+  resources:
+    - name: food1
+      kind: gradient
+      height: 2
+      spread: 1
+      plateau: 1
+      decay: 1
+      min_x: 0
+      max_x: 100
+      min_y: 0
+      max_y: 24
+      move_a_scaler: 3.8
+      updatestep: 100
+      habitat: 0
+    - name: nest1
+      kind: gradient
+      height: 2
+      spread: 1
+      plateau: 1
+      decay: 1
+      min_x: 0
+      max_x: 100
+      min_y: 75
+      max_y: 100
+      move_a_scaler: 3.8
+      updatestep: 100
+      habitat: 4
+
+events:
+  - {trigger: immediate, action: InjectGroup, args: prey-chase-food.org 2510 0 0}
+  - {trigger: immediate, action: InjectGroup, args: prey-chase-den.org 7575 0 3}
+  - {trigger: immediate, action: Inject, args: pred-rotate-org0.org 2710}
+  - {trigger: immediate, action: Inject, args: pred-rotate-org_id1.org 7565}
+  - {at: 0, every: 100, until: 1000, action: DumpMaxResGrid}
+  - {at: 0, every: 100, until: 1000, action: DumpTargetGrid}
+  - {at: 100, every: 100, until: end, action: PrintInstructionData}
+  - {at: 1000, action: exit}

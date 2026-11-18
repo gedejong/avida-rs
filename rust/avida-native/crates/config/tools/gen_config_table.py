@@ -367,25 +367,6 @@ def main():
     w.append("            _ => String::new(),")
     w.append("        }")
     w.append("    }")
-    w.append("")
-    w.append("    /// `cEntry_NAME::EqualsString` for the entry with table id `id`.")
-    w.append("    #[allow(clippy::float_cmp)]")
-    w.append("    pub(crate) fn equals_string_by_id(&self, id: usize, s: &str) -> bool {")
-    w.append("        match id {")
-    for i, e in enumerate(entries):
-        f = e["names"][0].lower()
-        t = e["type"]
-        if t == "int":
-            w.append("            %d => self.%s == as_int(s)," % (i, f))
-        elif t == "double":
-            w.append("            %d => self.%s == as_double(s)," % (i, f))
-        elif t == "bool":
-            w.append("            %d => self.%s == (as_int(s) != 0)," % (i, f))
-        else:
-            w.append("            %d => self.%s == s," % (i, f))
-    w.append("            _ => false,")
-    w.append("        }")
-    w.append("    }")
     for fi, (fname, fdesc, fentries) in enumerate(formats):
         w.append("")
         w.append("    /// `cAvidaConfig::%s.Get()`: %s (ordered raw lines)." % (fname, fdesc))

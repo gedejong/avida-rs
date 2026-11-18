@@ -159,16 +159,24 @@ pub fn convert_section_file(
         naming::SECTION_EVENTS => events_yaml(&parse_events(&lines)?, false),
         naming::SECTION_INSTRUCTION_SETS => {
             let mut list = Vec::new();
-            for l in &lines {
+            let keyword = |l: &String| {
                 let mut rest = l.clone();
-                let kw = pop_word(&mut rest);
-                if kw == "INSTSET" || kw == "INST" {
-                    list.push(format!("{kw} {rest}"));
-                } else {
-                    return Err(format!(
-                        "{file}: '{l}' is not an INSTSET or INST line (a legacy instruction-set file is converted with its folder)"
-                    ));
+                pop_word(&mut rest)
+            };
+            if lines.iter().any(|l| keyword(l) == "INSTSET") {
+                for l in &lines {
+                    let kw = keyword(l);
+                    if kw == "INSTSET" || kw == "INST" {
+                        list.push(l.clone());
+                    } else {
+                        return Err(format!("{file}: '{l}' is not an INSTSET or INST line"));
+                    }
                 }
+            } else {
+                // A legacy file (one instruction a line with its redundancy
+                // and costs): read as INST_SET_LOAD_LEGACY read it for the
+                // heads CPU, so the set is named after the file.
+                legacy_inst_set_lines(file, 0, dir, &mut list)?;
             }
             inst_sets_yaml(&parse_inst_sets(&list)?, false)
         }
@@ -597,18 +605,54 @@ fn flow_map(pairs: &[(String, String)]) -> String {
     format!("{{{}}}", inner.join(", "))
 }
 
-/// A list item that is a mapping: on one line when short, else one key a line.
-fn item(out: &mut String, indent: usize, pairs: &[(String, String)]) {
-    let flow = flow_map(pairs);
+/// A value of a mapping being written: a scalar (quoted as its place
+/// needs) or a flow collection already in YAML form.
+enum Val {
+    S(String),
+    Y(String),
+}
+
+impl Val {
+    fn render(&self, flow: bool) -> String {
+        match self {
+            Val::S(s) => quote(s, flow),
+            Val::Y(y) => y.clone(),
+        }
+    }
+}
+
+/// A list item that is a mapping: on one line when short, else one key a
+/// line.
+fn item_vals(out: &mut String, indent: usize, entries: &[(String, Val)]) {
+    let inner: Vec<String> = entries
+        .iter()
+        .map(|(k, v)| format!("{}: {}", quote_key(k), v.render(true)))
+        .collect();
+    let flow = format!("{{{}}}", inner.join(", "));
     if flow.len() + indent + 2 <= 100 {
         out.push_str(&format!("{}- {flow}\n", " ".repeat(indent)));
         return;
     }
-    for (i, (k, vs)) in grouped(pairs).iter().enumerate() {
+    for (i, (k, v)) in entries.iter().enumerate() {
         out.push_str(&" ".repeat(indent));
         out.push_str(if i == 0 { "- " } else { "  " });
-        out.push_str(&format!("{}: {}\n", quote_key(k), value_yaml(vs)));
+        out.push_str(&format!("{}: {}\n", quote_key(k), v.render(false)));
     }
+}
+
+fn item(out: &mut String, indent: usize, pairs: &[(String, String)]) {
+    let entries: Vec<(String, Val)> = grouped(pairs)
+        .into_iter()
+        .map(|(k, vs)| {
+            let v = if vs.len() == 1 {
+                Val::S(vs[0].clone())
+            } else {
+                Val::Y(yaml::flow_seq(&vs))
+            };
+            (k, v)
+        })
+        .collect();
+    item_vals(out, indent, &entries);
 }
 
 fn environment_yaml(items: &[EnvItem], full: bool) -> String {
@@ -660,11 +704,11 @@ fn environment_yaml(items: &[EnvItem], full: bool) -> String {
                 item(&mut grids, 4, &pairs);
             }
             EnvItem::Reaction { name, task, parts } => {
-                reactions.push_str(&format!("    - name: {}\n", quote(name, false)));
+                let mut entries = vec![("name".to_string(), Val::S(name.clone()))];
                 if let Some((task, args)) = task {
-                    reactions.push_str(&format!("      task: {}\n", quote(task, false)));
+                    entries.push(("task".into(), Val::S(task.clone())));
                     if !args.is_empty() {
-                        reactions.push_str(&format!("      args: {}\n", task_args_yaml(args)));
+                        entries.push(("args".into(), task_args_val(args)));
                     }
                 }
                 for key in ["process", "requisite", "context_requisite"] {
@@ -675,10 +719,11 @@ fn environment_yaml(items: &[EnvItem], full: bool) -> String {
                         .collect();
                     match blocks.len() {
                         0 => {}
-                        1 => reactions.push_str(&format!("      {key}: {}\n", blocks[0])),
-                        _ => reactions.push_str(&format!("      {key}: [{}]\n", blocks.join(", "))),
+                        1 => entries.push((key.into(), Val::Y(blocks[0].clone()))),
+                        _ => entries.push((key.into(), Val::Y(format!("[{}]", blocks.join(", "))))),
                     }
                 }
+                item_vals(&mut reactions, 4, &entries);
             }
             EnvItem::SetActive(t, n, a) => item(
                 &mut set_active,
@@ -700,7 +745,7 @@ fn environment_yaml(items: &[EnvItem], full: bool) -> String {
 
 /// Task arguments as a mapping when they are `k=v` pairs joined by
 /// commas, else as the text.
-fn task_args_yaml(args: &str) -> String {
+fn task_args_val(args: &str) -> Val {
     let mut pairs = Vec::new();
     for part in args.split(',') {
         match part.split_once('=') {
@@ -713,10 +758,10 @@ fn task_args_yaml(args: &str) -> String {
             {
                 pairs.push((k.to_string(), v.to_string()))
             }
-            _ => return quote(args, false),
+            _ => return Val::S(args.to_string()),
         }
     }
-    flow_map(&pairs)
+    Val::Y(flow_map(&pairs))
 }
 
 // ---------------------------------------------------------------------------
@@ -817,11 +862,15 @@ mod tests {
     #[test]
     fn task_args_become_a_mapping_when_they_are_pairs() {
         assert_eq!(
-            task_args_yaml("function=9,binary=1"),
+            task_args_val("function=9,binary=1").render(true),
             "{function: 9, binary: 1}"
         );
-        assert_eq!(task_args_yaml("op=add:width=2"), "op=add:width=2");
-        assert_eq!(task_args_yaml("a=1,a=2"), "a=1,a=2");
+        assert_eq!(
+            task_args_val("op=add:width=2").render(false),
+            "op=add:width=2"
+        );
+        assert_eq!(task_args_val("a=1,a=2").render(false), "a=1,a=2");
+        assert_eq!(task_args_val("a=1,a=2").render(true), "'a=1,a=2'");
     }
 
     #[test]

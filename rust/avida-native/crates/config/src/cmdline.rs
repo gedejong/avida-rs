@@ -8,6 +8,7 @@
 //! code it would have used (if any), and the resulting configuration.
 
 use crate::config::{Config, VERSION_STRING};
+use crate::experiment::DEFAULT_EXPERIMENT;
 use crate::feedback::{Feedback, FeedbackKind};
 use crate::string_util::{as_int, substring};
 
@@ -49,19 +50,24 @@ pub fn help_text() -> String {
     let mut s = String::new();
     s.push_str("Options:\n");
     s.push_str("  -a[nalyze]            Process analyze.cfg instead of normal run.\n");
-    s.push_str("  -c[onfig] <filename>  Set config file to be <filename>\n");
-    s.push_str("  -def <name> <value>   Define config include variables\n");
+    s.push_str(
+        "  -c[onfig] <filename>  Read the experiment file <filename> (default avida.yaml)\n",
+    );
     s.push_str("  -e; -actions          Print a list of all known actions\n");
     s.push_str("  -h[elp]               Help on options (this listing)\n");
     s.push_str("  -i[nteractive]        Run analyze mode interactively\n");
     s.push_str("  -l[oad] <filename>    Load a clone file\n");
-    s.push_str("  -r[eview]             Review avida.cfg settings.\n");
+    s.push_str("  -r[eview]             Review the settings that differ from their defaults.\n");
     s.push_str("  -s[eed] <value>       Set random seed to <value>\n");
-    s.push_str("  -set <name> <value>   Override values in avida.cfg\n");
+    s.push_str("  -set <path> <value>   Override a setting of avida.yaml (group.key), or a\n");
+    s.push_str(
+        "                        section (events, environment, instruction_sets) from a file\n",
+    );
     s.push_str("  -v[ersion]            Prints the version number\n");
     s.push_str("  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4\n");
     s.push_str("  -w[arn]               Warn when default config settings are used.\n");
-    s.push_str("  --generate-config     Generate the default configuration files\n");
+    s.push_str("  --generate-config     Write the default experiment file (avida.yaml)\n");
+    s.push_str("  convert [DIR]         Convert a folder of the old format (avida convert -h)\n");
     s.push('\n');
     s
 }
@@ -72,7 +78,9 @@ pub struct CmdLineOutcome {
     /// The configuration after loading the file and applying the flags
     /// (defaults only, if parsing ended before the load).
     pub config: Config,
-    /// `-def name value` variables (also handed to `cWorld::Initialize`).
+    /// What `cWorld::Initialize` got as `-def` variables: always empty, since
+    /// an experiment file has no `#include` or `$NAME` (kept for the callers
+    /// of `World::new`).
     pub defs: Vec<(String, String)>,
     /// `Some(code)` when the C++ would call `exit(code)` (note `exit(-1)` is
     /// process status 255); `None` when the program proceeds to run.
@@ -88,7 +96,7 @@ pub struct CmdLineOutcome {
     /// Messages produced by loading the configuration file (also already
     /// rendered into `stderr` as `error: ` / `warning: ` lines).
     pub feedback: Feedback,
-    /// Config file used (`-c`, default `avida.cfg`).
+    /// Experiment file used (`-c`, default `avida.yaml`).
     pub config_filename: String,
     /// `-a`
     pub flag_analyze: bool,
@@ -137,7 +145,7 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
         stderr: String::new(),
         list_actions: false,
         feedback: Feedback::new(),
-        config_filename: "avida.cfg".to_string(),
+        config_filename: crate::experiment::DEFAULT_FILE.to_string(),
         flag_analyze: false,
         flag_interactive: false,
         flag_review: false,
@@ -186,7 +194,15 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
             // QUIRK: any "-v..." not matched above, e.g. "-verbose", sets the
             // verbosity to AsInt of the rest (0 when not numeric).
             out.verbosity = Some(as_int(&substring(cur_arg, 2, cur_arg.len() - 2)));
-        } else if cur_arg == "-set" || cur_arg == "-def" {
+        } else if cur_arg == "-def" {
+            out.stderr.push_str(
+                "error: '-def' is gone: an experiment file has no '#include' or '$NAME'. \
+                 Name a section file with -set (-set instruction_sets NAME, -set events FILE), \
+                 or convert old files with 'avida convert DIR -def NAME VALUE'.\n",
+            );
+            out.exit = Some(1);
+            return out;
+        } else if cur_arg == "-set" {
             if arg_num + 1 == argc || arg_num + 2 == argc {
                 out.stderr.push_str(&format!(
                     "'{}' option must be followed by name and value\n",
@@ -198,11 +214,7 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
             let name = args[arg_num + 1].clone();
             let value = args[arg_num + 2].clone();
             arg_num += 2;
-            if cur_arg == "-set" {
-                map_set(&mut sets, &name, &value);
-            } else {
-                map_set(&mut out.defs, &name, &value);
-            }
+            map_set(&mut sets, &name, &value);
         } else if cur_arg == "-c" || cur_arg == "-config" {
             if arg_num + 1 == argc || args[arg_num + 1].as_bytes().first() == Some(&b'-') {
                 out.stderr
@@ -213,9 +225,9 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
             arg_num += 1;
             out.config_filename = args[arg_num].clone();
         } else if cur_arg == "--generate-config" {
-            out.stderr.push_str("Generating default avida.cfg\n");
-            // PathAppend(GetCWD(), "avida.cfg"); write errors are silent (ofstream).
-            let _ = out.config.print(&format!("{}/avida.cfg", cwd));
+            out.stderr.push_str("Generating default avida.yaml\n");
+            // Write errors are silent, as for the C++ ofstream.
+            let _ = std::fs::write(format!("{}/avida.yaml", cwd), DEFAULT_EXPERIMENT);
             out.exit = Some(0);
             return out;
         } else {
@@ -229,15 +241,24 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
         arg_num += 1;
     }
 
-    // Load the configuration file.
+    // Load the experiment file.
     let mut feedback = Feedback::new();
-    out.config.load(
-        &out.config_filename,
-        cwd,
-        Some(&mut feedback),
-        Some(&out.defs),
-        out.flag_warn_default,
-    );
+    if out
+        .config
+        .load_experiment(&out.config_filename, cwd, &mut feedback)
+        && out.flag_warn_default
+    {
+        for s in crate::naming::settings() {
+            if !out.config.experiment.given.contains(&s.path()) {
+                feedback.warning(format!(
+                    "{} not in '{}', defaulting to: {}",
+                    s.path(),
+                    out.config_filename,
+                    s.default()
+                ));
+            }
+        }
+    }
     for i in 0..feedback.num_messages() {
         let line = match feedback.message_type(i) {
             FeedbackKind::Error => format!("error: {}\n", feedback.message(i)),
@@ -267,20 +288,42 @@ pub fn process_cmdline(args: &[String], cwd: &str) -> CmdLineOutcome {
         out.config.verbosity = v;
     }
 
-    let lines = out.config.set_from_map(&mut sets);
-    for l in lines {
-        out.stdout.push_str(&l);
-        out.stdout.push('\n');
-    }
-
-    if !sets.is_empty() {
-        for (k, _) in &sets {
-            out.stderr.push_str(&format!(
-                "error: unrecognized command line configuration setting '{}'.\n",
-                k
-            ));
+    // `-set` (a repeated path keeps its last value). The settings are set
+    // and echoed in the order of the C++ table, as `cAvidaConfig::Set` went
+    // through them; a section comes after them, in the order given.
+    let order =
+        |path: &str| crate::naming::setting_by_path(path).map_or(usize::MAX, |s| s.table_order());
+    sets.sort_by_key(|(path, _)| order(path));
+    let mut failed = Vec::new();
+    for (path, value) in sets {
+        match out.config.set_path(&path, &value, cwd) {
+            Ok(()) => {
+                if out.config.verbosity > 1 {
+                    out.stdout
+                        .push_str(&format!("CmdLine Set: {path} {value}\n"));
+                }
+            }
+            Err(e) => {
+                let known = crate::naming::setting_by_path(&path).is_some()
+                    || crate::naming::SECTIONS.contains(&path.as_str());
+                if known {
+                    out.stderr.push_str(&format!("error: -set {path}: {e}\n"));
+                } else {
+                    // The C++ wording, with the likely intended path.
+                    let hint = e
+                        .strip_prefix(&format!("unknown setting '{path}'"))
+                        .unwrap_or("");
+                    let end = if hint.is_empty() { "." } else { hint };
+                    out.stderr.push_str(&format!(
+                        "error: unrecognized command line configuration setting '{path}'{end}\n"
+                    ));
+                }
+                failed.push((path, value));
+            }
         }
-        out.unused_sets = sets;
+    }
+    if !failed.is_empty() {
+        out.unused_sets = failed;
         out.exit = Some(1);
         return out;
     }
@@ -341,7 +384,7 @@ mod tests {
 
     fn cfg_dir(name: &str, body: &str) -> PathBuf {
         let d = scratch(name);
-        std::fs::write(d.join("avida.cfg"), body).unwrap();
+        std::fs::write(d.join("avida.yaml"), body).unwrap();
         d
     }
 
@@ -349,7 +392,7 @@ mod tests {
     fn plain_run_loads_file() {
         let d = cfg_dir(
             "plain",
-            "VERSION_ID 2.14.0\nWORLD_X 10\nWORLD_Y 20\nCOPY_MUT_PROB 0.01\n",
+            "world:\n  x: 10\n  y: 20\nmutation:\n  copy_prob: 0.01\n",
         );
         let o = run(&d, &[]);
         assert_eq!(o.exit, None, "{}", o.stderr);
@@ -361,10 +404,7 @@ mod tests {
 
     #[test]
     fn seed_verbosity_analyze() {
-        let d = cfg_dir(
-            "flags",
-            "VERSION_ID 2.14.0\nRANDOM_SEED 5\nANALYZE_MODE 0\n",
-        );
+        let d = cfg_dir("flags", "general:\n  random_seed: 5\nanalyze:\n  mode: 0\n");
         let o = run(&d, &["-s", "42", "-v3", "-a"]);
         assert_eq!(o.exit, None);
         assert_eq!(o.config.random_seed, 42);
@@ -384,49 +424,55 @@ mod tests {
     }
 
     #[test]
-    fn set_and_aliases() {
-        let d = cfg_dir("set", "VERSION_ID 2.14.0\nWORLD_X 10\n");
+    fn set_takes_dotted_paths() {
+        let d = cfg_dir("set", "world:\n  x: 10\n");
         let o = run(
             &d,
             &[
-                "-set", "WORLD_X", "33", "-set", "WORLD_X", "34", "-set", "WORLD_Y", "5",
+                "-set", "world.x", "33", "-set", "world.x", "34", "-set", "world.y", "5",
             ],
         );
-        assert_eq!(o.exit, None);
+        assert_eq!(o.exit, None, "{}", o.stderr);
         assert_eq!(o.config.world_x, 34);
         assert_eq!(o.config.world_y, 5);
-        let o = run(&d, &["-set", "BOGUS", "1", "-set", "WORLD_X", "1"]);
+        let o = run(&d, &["-set", "BOGUS", "1", "-set", "world.x", "1"]);
         assert_eq!(o.exit, Some(1));
         assert_eq!(
             o.stderr,
             "error: unrecognized command line configuration setting 'BOGUS'.\n"
         );
-        let o = run(&d, &["-set", "WORLD_X"]);
+        let o = run(&d, &["-set", "WORLD_X", "1"]);
+        assert_eq!(
+            o.stderr,
+            "error: unrecognized command line configuration setting 'WORLD_X'; did you mean 'world.x'?\n"
+        );
+        let o = run(&d, &["-set", "world.x", "wide"]);
+        assert_eq!(o.exit, Some(1));
+        assert_eq!(
+            o.stderr,
+            "error: -set world.x: setting 'world.x' takes a number, not 'wide'\n"
+        );
+        let o = run(&d, &["-set", "world.x"]);
         assert_eq!(o.exit, Some(0));
         assert_eq!(
             o.stderr,
             "'-set' option must be followed by name and value\n"
         );
-        let o = run(&d, &["-def", "A"]);
-        assert_eq!(
-            o.stderr,
-            "'-def' option must be followed by name and value\n"
-        );
-        let o = run(&d, &["-v2", "-set", "WORLD_X", "3"]);
-        assert_eq!(o.stdout, "CmdLine Set: WORLD_X 3\n");
+        let o = run(&d, &["-v2", "-set", "world.x", "3"]);
+        assert_eq!(o.stdout, "CmdLine Set: world.x 3\n");
     }
 
     #[test]
     fn config_file_option_and_missing() {
-        let d = cfg_dir("cfgopt", "VERSION_ID 2.14.0\nWORLD_X 10\n");
-        std::fs::write(d.join("other.cfg"), "VERSION_ID 2.14.0\nWORLD_X 77\n").unwrap();
-        let o = run(&d, &["-c", "other.cfg"]);
+        let d = cfg_dir("cfgopt", "world:\n  x: 10\n");
+        std::fs::write(d.join("other.yaml"), "world:\n  x: 77\n").unwrap();
+        let o = run(&d, &["-c", "other.yaml"]);
         assert_eq!(o.config.world_x, 77);
-        let o = run(&d, &["-config", "nothere.cfg"]);
+        let o = run(&d, &["-config", "nothere.yaml"]);
         assert_eq!(o.exit, Some(-1));
         assert_eq!(
             o.stderr,
-            "error: unable to open file 'nothere.cfg'.\nerror: configuration file 'nothere.cfg' not found\n"
+            "error: unable to open file 'nothere.yaml'.\nerror: configuration file 'nothere.yaml' not found\n"
         );
         let o = run(&d, &["-c"]);
         assert_eq!(
@@ -438,8 +484,30 @@ mod tests {
     }
 
     #[test]
+    fn an_old_folder_is_refused_with_the_converter() {
+        let d = scratch("old");
+        std::fs::write(d.join("avida.cfg"), "VERSION_ID 2.14.0\nWORLD_X 10\n").unwrap();
+        let o = run(&d, &[]);
+        assert_eq!(o.exit, Some(-1));
+        assert!(
+            o.stderr
+                .contains("configuration file 'avida.yaml' not found"),
+            "{}",
+            o.stderr
+        );
+        assert!(o.stderr.contains("avida convert DIR"), "{}", o.stderr);
+        let o = run(&d, &["-c", "avida.cfg"]);
+        assert_eq!(o.exit, Some(-1));
+        assert!(
+            o.stderr.contains("old configuration format"),
+            "{}",
+            o.stderr
+        );
+    }
+
+    #[test]
     fn version_and_help_and_unknown() {
-        let d = cfg_dir("misc", "VERSION_ID 2.14.0\n");
+        let d = cfg_dir("misc", "");
         assert_eq!(run(&d, &["-v"]).exit, Some(0));
         assert_eq!(run(&d, &["-version"]).exit, Some(0));
         let o = run(&d, &["-h"]);
@@ -457,71 +525,61 @@ mod tests {
     }
 
     #[test]
-    fn def_mapping_include() {
+    fn def_is_gone_and_sections_come_from_set() {
         let d = scratch("def");
+        std::fs::write(d.join("avida.yaml"), "instruction_sets: [heads_default]\n").unwrap();
         std::fs::write(
-            d.join("avida.cfg"),
-            "VERSION_ID 2.14.0\n#include INST_SET=instset-a.cfg\n",
+            d.join("sets.yaml"),
+            "instruction_sets:\n  - {name: B, hardware_type: 0, instructions: [nop-B]}\n",
         )
         .unwrap();
-        std::fs::write(d.join("instset-a.cfg"), "INSTSET A:hw_type=0\nINST nop-A\n").unwrap();
-        std::fs::write(d.join("instset-b.cfg"), "INSTSET B:hw_type=0\nINST nop-B\n").unwrap();
         let o = run(&d, &[]);
-        assert_eq!(
-            o.config.instsets(),
-            &["INSTSET A:hw_type=0".to_string(), "INST nop-A".to_string()]
-        );
-        let o = run(&d, &["-def", "INST_SET", "instset-b.cfg"]);
+        assert_eq!(o.config.instsets()[0], "INSTSET heads_default:hw_type=0");
+        let o = run(&d, &["-set", "instruction_sets", "sets.yaml"]);
         assert_eq!(
             o.config.instsets(),
             &["INSTSET B:hw_type=0".to_string(), "INST nop-B".to_string()]
         );
-        assert_eq!(
-            o.defs,
-            vec![("INST_SET".to_string(), "instset-b.cfg".to_string())]
-        );
+        let o = run(&d, &["-set", "instruction_sets", "heads_modular"]);
+        assert_eq!(o.config.instsets()[0], "INSTSET heads_modular:hw_type=0");
+        let o = run(&d, &["-def", "INST_SET", "instset-b.cfg"]);
+        assert_eq!(o.exit, Some(1));
+        assert!(o.stderr.contains("'-def' is gone"), "{}", o.stderr);
+        assert!(o.defs.is_empty());
     }
 
     #[test]
-    fn warn_default_and_version_mismatch() {
-        let d = cfg_dir("warn", "WORLD_X 10\n");
-        // Without -w: only the version mismatch warning
+    fn warn_default() {
+        let d = cfg_dir("warn", "world:\n  x: 10\n");
         let o = run(&d, &[]);
         assert_eq!(o.exit, None);
-        assert!(o.stderr.starts_with(
-            "warning: config file version number mismatch -- Avida: '2.14.0'  File: 'Unknown'\n"
-        ));
-        assert!(!o.stderr.contains("defaulting"));
-        // With -w: single-name settings log "error:"-kind messages, but Append
-        // does not count them, so the run proceeds.
+        assert_eq!(o.stderr, "");
         let o = run(&d, &["-w"]);
         assert_eq!(o.exit, None);
+        assert!(!o.stderr.contains("world.x not in"));
         assert!(o
             .stderr
-            .contains("error: VERSION_ID not in 'avida.cfg', defaulting to: Unknown\n"));
-        assert!(o
-            .stderr
-            .contains("warning: OFFSPRING_SIZE_RANGE not in 'avida.cfg', defaulting to: 2.0\n"));
-        assert_eq!(o.feedback.num_errors(), 0);
+            .contains("warning: world.y not in 'avida.yaml', defaulting to: 60\n"));
     }
 
     #[test]
     fn review_and_generate() {
-        let d = cfg_dir(
-            "review",
-            "VERSION_ID 2.14.0\nWORLD_X 10\nCOPY_MUT_PROB 0.02\n",
-        );
+        let d = cfg_dir("review", "world:\n  x: 10\nmutation:\n  copy_prob: 0.02\n");
         let o = run(&d, &["-r"]);
         assert_eq!(o.exit, Some(0));
         assert_eq!(
             o.stdout,
-            "\nNon-Default Settings: \n\n WORLD_X 10 (default=60)\n COPY_MUT_PROB 0.02 (default=0.0075)\n\n"
+            "\nNon-Default Settings: \n\n world.x 10 (default=60)\n mutation.copy_prob 0.02 (default=0.0075)\n\n"
         );
         let o = run(&d, &["--generate-config"]);
         assert_eq!(o.exit, Some(0));
-        assert_eq!(o.stderr, "Generating default avida.cfg\n");
-        let printed = std::fs::read_to_string(d.join("avida.cfg")).unwrap();
-        assert_eq!(printed, Config::new().print_to_string());
+        assert_eq!(o.stderr, "Generating default avida.yaml\n");
+        let printed = std::fs::read_to_string(d.join("avida.yaml")).unwrap();
+        assert_eq!(printed, DEFAULT_EXPERIMENT);
+        let o = run(&d, &[]);
+        assert_eq!(o.exit, None, "{}", o.stderr);
+        assert_eq!(o.config.instsets()[0], "INSTSET heads_default:hw_type=0");
+        assert_eq!(o.config.experiment.events.len(), 9);
     }
 
     #[test]

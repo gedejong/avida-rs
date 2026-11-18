@@ -118,6 +118,22 @@ impl SettingInfo {
             SettingDef::Port(_) => &[],
         }
     }
+
+    /// The setting's place in the C++ table (`cAvidaConfig.h` order, the
+    /// port's settings after it), the order `cAvidaConfig::Set` went
+    /// through the `-set` arguments in.
+    pub fn table_order(&self) -> usize {
+        match self.def {
+            SettingDef::Cpp(e) => e.id,
+            SettingDef::Port(p) => {
+                let i = PORT_ENTRIES
+                    .iter()
+                    .position(|q| std::ptr::eq(q, p))
+                    .unwrap_or(PORT_ENTRIES.len());
+                usize::MAX / 2 + i
+            }
+        }
+    }
 }
 
 fn def_of(old: &str) -> Option<SettingDef> {

@@ -1,0 +1,50 @@
+# Avida experiment file, converted with 'avida convert' from
+# avida.cfg, instset-heads.cfg, environment.cfg, events.cfg.
+# A setting left out keeps its default; docs/reference/config-yaml.md lists them all.
+general:
+  random_seed: 42
+world:
+  x: 20
+  y: 20
+groups:
+  use_form_groups: 2
+  default_group: 0
+  join_group_failure: 50
+
+instruction_sets:
+  - name: heads_default
+    hardware_type: 0
+    instructions:
+      - nop-A
+      - nop-B
+      - nop-C
+      - IO
+      - repro
+      - join-group
+      - zero
+      - inc
+      - dec
+      - join-next-group
+      - sense-next-res-level
+      - number-next-group
+
+environment:
+  resources:
+    - {name: food0, initial: 100}
+    - {name: food1, initial: 100}
+    - {name: food2, initial: 100}
+    - {name: food3, initial: 100}
+    - {name: food4, initial: 250}
+    - {name: food5, initial: 250}
+    - {name: food6, initial: 250}
+    - {name: food7, initial: 500}
+    - {name: food8, initial: 500}
+    - {name: food9, initial: 500}
+
+events:
+  - {trigger: immediate, action: Inject, args: next-mover.org 100}
+  - {at: 10, every: 10, until: end, action: PrintGroupsFormedData}
+  - {at: 0, every: 1, until: end, action: PrintGroupIds}
+  - {at: 0, every: 1, until: end, action: PrintInstructionData}
+  - {at: 30, every: 30, action: SavePopulation}
+  - {at: 30, action: Exit}
