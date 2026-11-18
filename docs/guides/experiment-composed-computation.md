@@ -243,4 +243,150 @@ Seeds 1 to 10, 100,000 updates, exact mode, modular set, a 60 x 60 world, `MIN_G
 
 Before the runs: a 3,000-update trial of each arm wrote every file, and the islands arm run without migration filled one deme only (358 organisms at update 2,000).
 
-Results: to be written when the runs have finished.
+#### Results (2026-11-17)
+
+All 30 runs finished. They ran on one rented Linux server (x86-64, 16 shared cores), not on the Mac that ran stages 3 and 4; a 2,000-update trial of two arms gave the same task counts on both machines, but the port's byte identity is pinned on macOS arm64 only, so the comparison with `min-genome` of stage 4 is across platforms and the three arms of this stage, which shared a machine, are compared with each other only.
+
+| Arm | Seeds holding XOR at the end | Seeds holding HALFADD_PLANES | Seeds holding all four steps | Median generations | Median genome length |
+|---|---|---|---|---|---|
+| `exact` | 0 of 10 | 0 of 10 | 0 of 10 | 30,004 | 51 |
+| `exact+steps` | 1 of 10 (seed 1) | 1 of 10 | 10 of 10 | 7,694 | 110 |
+| `exact+steps+islands` | 2 of 10 (seeds 5, 7) | 2 of 10 | 10 of 10 | 8,797 | 110 |
+
+A seed holds a function when at least a tenth of the population performs it at update 100,000; the counts are far from that line on both sides (2,592 to 3,066 organisms of about 3,600 in the three seeds that hold XOR, 19 at most in the others).
+
+**Primary outcome: no difference shown.** `exact+steps` against `exact`: 1 of 10 against 0 of 10, Fisher exact p = 1.0. `exact+steps+islands` against `exact+steps`: 2 of 10 against 1 of 10, p = 1.0. Both stay at 1.0 after the Holm correction. With ten seeds an arm the tests could have shown only a large effect; they do not show that paying the steps or spreading the search over islands changes how often XOR is reached.
+
+**What the runs do show.**
+
+- XOR was made and kept for the first time in this experiment: three populations, all in arms that pay the steps, none of the ten that do not. Pooling the two paying arms (3 of 20 against 0 of 10, Fisher exact p = 0.53) was not a planned test and shows no difference either.
+- With the field rungs paid at full quality only, the approximation of stages 3 and 4 is gone: no seed of `exact` holds HALFADD_PLANES, against 10 of 10 for `min-genome` in stage 4 under the lenient rule.
+- Each population that holds XOR also holds HALFADD_PLANES, which at full quality is a real half adder on sixteen one-bit fields. In seeds 1 and 5 the rung was held 200 and 900 updates after XOR; in seed 7 it took 46,000 updates more.
+- No population went further: HALFADD (the packed form, which needs the carry shifted and joined with the sum) was performed by 2 organisms at most at any sample, ADD2_PLANES by 3.
+- Paying the steps changes the populations themselves (`exact+steps` against `exact`, Mann-Whitney, exact p = 0.00001 each): they hold all four steps in every seed, their genomes are twice as long (median 110 against 51), and the information they hold is twice as large (median 86.5 against 41 sites). Longer genomes replicate more slowly, so in the same 100,000 updates the paying arms had a quarter of the generations of `exact` (about 7,700 against 30,000). The classic experiment ran for about 15,000 generations; the paying arms here stopped at half of that.
+- Islands against one population: no difference in any measure (p from 0.24 to 1.0).
+
+**The check of the outputs.** The five most abundant genotypes of each of the three populations that hold XOR were run in the test CPU on 30 random input triples. In each population the most abundant genotype performed XOR and HALFADD_PLANES in 30 of 30 rounds; of the fifteen genotypes nine did. XOR is judged on all 32 bits by the stock logic task, a different code path from `field_arith`, so the half adder credit rests on a real XOR.
+
+**A leak the check found.** HALFADD_PLANES compares the even bits only (sixteen fields of two bits). On those bits `a AND NOT b` equals `a XOR b` whenever `b` has no even bit set that `a` lacks. For two of the three input pairs the fixed top bytes always satisfy this, and the 24 random bits do so with probability (3/4)^12, about 3 %. An organism that outputs ANDN and then AND is therefore paid for the half adder on about one input draw in thirty, without making XOR. This is where the small counts of HALFADD_PLANES in populations without XOR come from (26 organisms at most in `exact`, 179 in `exact+steps`). The credit is not inherited and no population held the rung this way, so the counts above stand; a rung judged on more than one input draw would close the leak.
+
+Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-17.
+
+### Stage 6: more time below XOR
+
+Design, fixed on 2026-11-17 before any stage 6 run and revised the same day, still before any run, at the maintainer's request for earlier cut-offs (the revision is the stopping rule and the test). Stage 5 could not show that paying the steps matters: 1 of 10 seeds against 0 of 10. Two things kept that test weak. Ten seeds an arm show only a large effect, and the arm that pays the steps had about 7,700 generations in its 100,000 updates, half of the classic experiment's 15,000, because its genomes are twice as long. Stage 6 repeats the two one-population arms with more seeds and more time.
+
+| Arm | What it is |
+|---|---|
+| `exact-long` | `exact` of stage 5: field rungs at full quality only, the four steps listed and worth nothing |
+| `steps-long` | `exact+steps` of stage 5: the four steps paid |
+
+Seeds 11 to 26 (sixteen an arm, none of them used in stage 5), at most 300,000 updates, every setting of stage 5 that acts on a run. Two outputs differ: the population is saved every 10,000 updates, and the resource maps, which no analysis reads, are not written.
+
+**Stopping rule.** A population first holds XOR at the first sample (every 100 updates) at which at least 360 organisms, a tenth of the world, perform it. A run is stopped at the first population save 50,000 updates or more after that, so 50,000 to 60,000 updates later; a run that never holds XOR runs to 300,000. In stage 5 XOR arrived abruptly and the runs that never made it did not look different before, so there is no early sign by which to stop a run that will fail; what can be saved is the time after success. The 50,000 updates are kept to see what follows XOR.
+
+**Primary outcome.** The time to the first hold of XOR in updates, censored at 300,000, `steps-long` against `exact-long`: a log-rank test, two-sided, with the p value from 100,000 relabellings of the runs (the chi-square p is reported beside it and is rough with few events). One test. It uses when each population got there, where the count at the end of stage 5 used only whether.
+
+**Secondary, without tests unless stated.** The same log-rank test on the generation clock, since a paying population has about a quarter of the generations per update; the Kaplan-Meier share of populations holding XOR by 100,000, 200,000 and 300,000 updates, which with stage 5 says whether the rate grows with time; whether XOR, once held, is still held when the run stops; the highest rung held in the 50,000 updates after XOR, and whether any population passes HALFADD_PLANES to HALFADD. The most abundant genotypes of the populations that hold XOR are again run in the test CPU. The leak in HALFADD_PLANES found in stage 5 is left open in this stage, so that its arms stay those of stage 5; a population counts as holding that rung only if it also holds XOR.
+
+Lab folder `16-xor-time` (`run_all.sh` applies the stopping rule, `analyse.py` the tests). Before the runs: a 3,000-update trial of each arm with a stand-in trigger (NOT held by 5 organisms) stopped all four runs at the right save and wrote every file; the log-rank code reproduces the textbook value for the Freireich leukaemia data (chi-square 16.79).
+
+#### Results (2026-11-17)
+
+All 32 runs are in. Thirty ran to their end; the last two (`exact-long`, seeds 17 and 25) were stopped by hand at updates 277,100 and 277,700 at the maintainer's instruction, with no organism performing XOR, and enter the analysis as runs without XOR up to there. The runs were spread over five rented servers of two cheap types, eight runs of each arm on one and two of each arm on each of the other four, so that no arm is tied to a machine.
+
+| Arm | Populations that held XOR | First held |
+|---|---|---|
+| `exact-long` | 0 of 16 | |
+| `steps-long` | 1 of 16 (seed 13) | update 90,900, generation 7,739 |
+
+**Primary outcome: no difference shown.** Log-rank on the time to XOR, permutation p = 1.0 (chi-square p = 0.32); the same on the generation clock.
+
+**More time did not help.** Fifteen populations that are paid for the steps ran 300,000 updates without holding XOR. The share holding XOR by 100,000 updates is 0.06 here and was 3 of 20 in stage 5; nothing was added between 100,000 and 300,000. XOR does not arrive at a steady rate: the four populations that have found it in stages 5 and 6 did so before generation 7,800, in runs that went on to about 23,000.
+
+**After XOR.** Seed 13 held XOR and HALFADD_PLANES when it was stopped at 150,000, 59,100 updates after XOR, and nothing above them. Its most abundant genotype performs XOR and HALFADD_PLANES in 30 of 30 rounds in the test CPU, as do four of its five most abundant.
+
+**Why not later: genomes shrink.** Median genome length over the populations of an arm:
+
+| Update | `steps-long` | `exact-long` |
+|---|---|---|
+| 10,000 | 199 | 83 |
+| 50,000 | 176 | 51 |
+| 100,000 | 150 | 52 |
+| 200,000 | 99 | 52 |
+| 290,000 | 74 | 53 |
+
+Populations paid for nothing fall to the floor of 50 instructions within 50,000 updates; the paid ones lose length through the whole run and some reach the floor. Seed 13 found XOR at 141 instructions. This was not a planned measure.
+
+**Why not at all: XOR is found and does not pay.** In the 32 populations of stages 5 and 6 that are paid for the steps and never held XOR there are 462 episodes with ten or more organisms performing it; most last about 200 updates, the longest 9,100, the largest reaches 276 organisms. Three episodes fell on a population save, and their organisms were run in the test CPU beside the most abundant genotype of the same population:
+
+| Population | Most abundant genotype | Organisms performing XOR |
+|---|---|---|
+| seed 11 at 270,000 | all seven functions below XOR, length 50 | XOR without ANDN, length 50 |
+| seed 11 at 70,000 | all seven, length 80 | XOR without ANDN and NOT, some without NOR |
+| seed 20 at 110,000 | all seven, length 140 | XOR and all seven, length 133 |
+
+At the resource levels the runs settle at (about 0.7 units a cell for a function most organisms perform) ANDN multiplies merit by about 2.1 and NOR by 2.6, and XOR, new and rare, by 2.0. The ladder pays XOR 2 where the steps added in stage 5 pay 3 and 4, so an organism that turns its ANDN into XOR loses a little. In the classic experiment pay doubles per level. Three episodes are few; they fit the two explanations stage 7 tests, and do not prove them.
+
+Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-18.
+
+### Stage 7: what keeps populations from XOR
+
+Design, fixed on 2026-11-17 before any stage 7 run. A random search over six settings was designed for this stage first and set aside before it ran (lab folder `17-xor-search`, kept): stage 6 gave two sharp explanations, and a factorial tests those directly.
+
+Three settings of `exact+steps`, each at its present value and at one other, in all eight combinations:
+
+| Setting | Now | Other | Why |
+|---|---|---|---|
+| Pay of XOR | 2 | 8 | pay then doubles from NOR (4) to XOR, as per level in the classic experiment; turning a step into XOR pays |
+| `MIN_GENOME_SIZE` | 50 | 100 | the ancestor's length; genomes cannot shrink below the room they started with |
+| `COPY_MUT_PROB` | 0.0075 | 0.0025 | the classic rate; at 0.0075 a genome of 110 instructions takes about 0.8 mutations per copy |
+
+Seeds 31 to 38 in each of the eight arms (64 runs, none of the seeds used before), 100,000 updates, no stopping rule, every other setting of stage 5; the population is saved every 10,000 updates and the resource maps are not written. The runs are dealt over rented servers so that each server has every arm in proportion to its cores.
+
+**Primary outcome.** A population has XOR if it holds it (360 organisms at a sample) at any sample of its run. For each of the three settings: the populations with XOR at the other value against those at the present value, 32 against 32, Fisher's exact test, two-sided, reported uncorrected and with a Holm correction over the three. With about one population in nine finding XOR at the present values, a test reaches p < 0.05 from 12 of 32 against 3 or 4 of 32.
+
+**Secondary, without tests.** The count in each of the eight arms, which shows whether two settings need each other; the time to XOR; whether XOR is still held at 100,000; the highest rung held; the genome length over time in each arm, in particular whether populations with the floor of 100 sit at the floor. The most abundant genotypes of populations that hold XOR are run in the test CPU as before.
+
+The floor of 100 stops genomes from shrinking further and leaves the pressure to shrink in place. If the floor matters, where that pressure comes from is the next question, since the merit setting in use (`BASE_MERIT_METHOD 4`) is meant to make length neutral.
+
+Lab folder `18-xor-factorial`. Before the runs: a 1,500-update trial of four arms wrote every file, and the baseline arm differs from `exact+steps` of stage 5 in its outputs only.
+
+#### Results (2026-11-18)
+
+All 64 runs ran to 100,000 updates, on six rented servers of two cheap types, each carrying all eight arms in equal numbers.
+
+**Primary outcome: the pay of XOR decides it.**
+
+| Setting | Other value | Present value | Fisher p | after Holm |
+|---|---|---|---|---|
+| Pay of XOR, 8 against 2 | 32 of 32 | 9 of 32 | 4 x 10^-10 | 1 x 10^-9 |
+| `COPY_MUT_PROB`, 0.0025 against 0.0075 | 24 of 32 | 17 of 32 | 0.12 | 0.23 |
+| `MIN_GENOME_SIZE`, 100 against 50 | 18 of 32 | 23 of 32 | 0.30 | 0.30 |
+
+Per arm (x: pay of XOR; f: floor; m: copy mutation rate in units of 0.0001):
+
+| Arm | XOR ever held | HALFADD_PLANES held at the end | Median first hold of XOR | Median genome length at 100,000 | Median generations |
+|---|---|---|---|---|---|
+| `x2-f50-m75` (stage 5's arm) | 1 of 8 | 1 | 40,500 | 162 | 7,480 |
+| `x2-f100-m75` | 0 of 8 | 0 | | 132 | 7,559 |
+| `x2-f50-m25` | 6 of 8 | 3 | 30,400 | 436 | 5,282 |
+| `x2-f100-m25` | 2 of 8 | 1 | 35,000 | 418 | 3,193 |
+| `x8-f50-m75` | 8 of 8 | 5 | 10,250 | 147 | 7,417 |
+| `x8-f100-m75` | 8 of 8 | 2 | 26,200 | 101 | 7,321 |
+| `x8-f50-m25` | 8 of 8 | 6 | 8,450 | 290 | 5,288 |
+| `x8-f100-m25` | 8 of 8 | 7 | 12,050 | 605 | 2,917 |
+
+Every population that held XOR at some sample held it at the end.
+
+**The mutation rate matters where XOR is poorly paid.** The primary test of the mutation rate is blunted by the arms in which every population finds XOR. At pay 2, XOR was held by 8 of 16 populations at 0.0025 against 1 of 16 at 0.0075 (Fisher p = 0.015; a comparison chosen after seeing the table, so a lead and no more).
+
+**The mutation rate sets the genome length; the floor does not.** At 0.0025 genomes stay at 290 to 605 instructions through the run, at 0.0075 they fall towards 100 to 160. The shrinking seen in stage 6 is the population shedding code that the high rate makes costly to copy. A floor of 100 does nothing for XOR (at pay 2: 2 of 16 against 7 of 16 at floor 50, p = 0.11, the wrong way round if anything). Long genomes are slow: the low-rate arms pass 2,900 to 5,300 generations in the time the others pass 7,400.
+
+**In the test CPU.** The most abundant genotypes of six populations that hold XOR, from five arms, were run on 30 random inputs each. Every genotype that carries XOR performs it in 30 of 30 rounds, and all but one of them HALFADD_PLANES as well, also in 30 of 30. With XOR at 8 several of them have given up NOR (pay 4) or OR, the trade of stage 6 in the profitable direction.
+
+**The wall has moved up one step.** 25 of the 64 populations hold HALFADD_PLANES at the end and none holds anything above it: HALFADD was performed by at most 7 organisms at any sample, ADD2_PLANES by 5, ADD2 by 2. HALFADD_PLANES asks for XOR and AND on one pair of bits; HALFADD asks for the same in two-bit fields laid side by side.
+
+**What this says about stages 5 and 6.** Their wall below XOR was made by the pay scale: the steps added in stage 5 pay 3 and 4 and XOR was left at 2. Neither more time nor islands could help against a reward that pointed the other way.
+
+Verdict: positive for the pay of XOR, no difference shown for the other two settings; accepted by the maintainer on 2026-11-18.

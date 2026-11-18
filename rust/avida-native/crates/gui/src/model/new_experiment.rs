@@ -60,6 +60,11 @@ pub const DEFAULT_CONFIG: &[BundledFile] = bundled!(
     "ladder-halfadd-modular.org",
     "ladder-add2-planes-modular.org",
     "ladder-add2-modular.org",
+    "environment-adder-wide.cfg",
+    "ladder-add3-heads.org",
+    "ladder-add3-modular.org",
+    "ladder-add4-heads.org",
+    "ladder-add4-modular.org",
 );
 
 /// The folder name a new experiment gets inside a folder that is not
@@ -157,7 +162,7 @@ mod tests {
         assert!(dir.join("default-heads.org").is_file());
         let err = create_experiment(&dir).unwrap_err();
         assert!(
-            err.contains("already has avida.cfg and 27 other files"),
+            err.contains("already has avida.cfg and 32 other files"),
             "{err}"
         );
     }

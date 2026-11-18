@@ -1,0 +1,155 @@
+#inst_set heads_default
+#hw_type 0
+# ADD3 (field_arith:fn=add:bits=3:mode=packed, default stride 4) for the stock heads set.
+# As ladder-add2-heads.org with M = 0b0111 repeated (0x77777777; the unused top bits are also
+# set, which does no harm) and 4 rounds of the carry round (3 carries): the mask loop
+# shifts 4 places an iteration.
+# The carry round is written out 4 times: going from ADD2 to ADD3 is one more copy of it
+# (about 30 instructions) and two more instructions in the mask loop.
+# 143 instructions in the genome (97 without the no-op modifiers; no add, no sub).
+# An idle trap (get-head, set-flow, mov-head) follows the task so that it runs once; a
+# replicator would have its copy loop there.
+#
+shift-l    # C <<= 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # K <<= 1 (K in BX)
+inc        # K += 1: K = 1, 3, 7, ... 2^31-1, then -1
+if-less    # run the next while 0 < K (AX is 0)
+nop-A
+mov-head   # back to the flow head (position 0)
+swap       # AX = M, CX = 0
+nop-C
+IO         # BX = next input (outputs -1)
+push       # copy M to CX
+nop-A
+pop        # 
+nop-C
+nand       # BX = ~(in & M)
+push       # copy BX to CX
+pop        # 
+nop-C
+nand       # BX = in & M
+push       # stack: masked operand
+IO         # BX = next input (outputs the masked first operand)
+push       # copy M to CX
+nop-A
+pop        # 
+nop-C
+nand       # BX = ~(in & M)
+push       # copy BX to CX
+pop        # 
+nop-C
+nand       # BX = in & M
+push       # stack: masked operand
+pop        # CX = y
+nop-C
+pop        # BX = x
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+pop        # CX = t0
+nop-C
+push       # stack: new x
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+shift-l    # BX = carry
+push       # stack: new y
+pop        # CX = y
+nop-C
+pop        # BX = x
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+pop        # CX = t0
+nop-C
+push       # stack: new x
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+shift-l    # BX = carry
+push       # stack: new y
+pop        # CX = y
+nop-C
+pop        # BX = x
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+pop        # CX = t0
+nop-C
+push       # stack: new x
+push       # copy t0 to BX
+nop-C
+pop        # 
+nand       # BX = ~t0 = x & y
+shift-l    # BX = carry
+push       # stack: new y
+pop        # CX = y
+nop-C
+pop        # BX = x
+nand       # AX = t0 = ~(x&y)
+nop-A
+push       # save t0
+nop-A
+swap       # CX = t0, AX = y
+nop-C
+nand       # BX = q = ~(x&t0)
+push       # save q
+swap       # AX = q, BX = y
+nop-A
+nand       # BX = r = ~(y&t0)
+pop        # CX = q
+nop-C
+nand       # BX = r nand q = x ^ y
+IO         # output the sum
+get-head   # trap: CX = own position
+set-flow   # flow head = here
+mov-head   # back to get-head: idle forever
+nop-A      # explicit head IP: keeps mov-head from taking a following label as its head

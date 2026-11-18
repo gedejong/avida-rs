@@ -1,0 +1,115 @@
+#inst_set heads_modular
+#hw_type 0
+# ADD4 (field_arith:fn=add:bits=4:mode=packed, default stride 5) for the modular heads set.
+# As ladder-add3-modular.org with M = 0b01111 repeated (0xDEF7BDEF; the unused top bits are also
+# set, which does no harm) and 5 rounds of the carry round (4 carries): the mask loop
+# shifts 5 places an iteration.
+# The carry round is a subroutine called 5 times (see ladder-halfadd-modular.org):
+# going from ADD3 to ADD4 is one more call and two more instructions in the mask loop.
+# 103 instructions in the genome (59 without the no-op modifiers; no add, no sub).
+# An idle trap (get-head, set-flow, mov-head) follows the task so that it runs once; a
+# replicator would have its copy loop there.
+#
+shift-l    # C <<= 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # C <<= 1
+nop-C
+inc        # C += 1
+nop-C
+shift-l    # K <<= 1 (K in BX)
+inc        # K += 1: K = 1, 3, 7, ... 2^31-1, then -1
+if-less    # run the next while 0 < K (AX is 0)
+nop-A
+mov-head   # back to the flow head (position 0)
+swap       # DX = M, CX = 0
+nop-C
+IO         # BX = next input (outputs -1)
+push       # copy M to CX
+nop-D
+pop        # 
+nop-C
+nand       # BX = ~(in & M)
+push       # copy BX to CX
+pop        # 
+nop-C
+nand       # BX = in & M
+push       # stack: masked operand
+IO         # BX = next input (outputs the masked first operand)
+push       # copy M to CX
+nop-D
+pop        # 
+nop-C
+nand       # BX = ~(in & M)
+push       # copy BX to CX
+pop        # 
+nop-C
+nand       # BX = in & M
+push       # stack: masked operand
+pop        # CX = y
+nop-C
+pop        # BX = x
+call       # (BX, CX) = (x ^ y, (x & y) << 1)
+nop-C
+nop-C
+call       # (BX, CX) = (x ^ y, (x & y) << 1)
+nop-C
+nop-C
+call       # (BX, CX) = (x ^ y, (x & y) << 1)
+nop-C
+nop-C
+call       # (BX, CX) = (x ^ y, (x & y) << 1)
+nop-C
+nop-C
+call       # (BX, CX) = (x ^ y, (x & y) << 1)
+nop-C
+nop-C
+IO         # output the sum (BX)
+get-head   # trap: CX = own position
+set-flow   # flow head = here
+mov-head   # back to get-head: idle forever
+nop-A      # explicit head IP: keeps mov-head from taking a following label as its head
+nop-D      # subroutine label D D (complement of the call label C C)
+nop-D
+nand       # DX = t0 = ~(x&y)
+nop-D
+swap       # CX = t0, DX = y
+nop-C
+nand       # EX = q = ~(x&t0)
+nop-E
+push       # BX = y
+nop-D
+pop        # 
+nand       # FX = r = ~(y&t0)
+nop-F
+push       # BX = t0
+nop-C
+pop        # 
+nand       # DX = ~t0 = x & y
+nop-D
+shift-l    # DX = carry
+nop-D
+push       # BX = q
+nop-E
+pop        # 
+push       # CX = r
+nop-F
+pop        # 
+nop-C
+nand       # BX = q nand r = x ^ y
+push       # CX = carry
+nop-D
+pop        # 
+nop-C
+return     # 

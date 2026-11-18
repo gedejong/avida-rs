@@ -1,7 +1,8 @@
 //! The adder ladder (`environment-adder-ladder.cfg`, task `field_arith`):
 //! the hand-written organisms `ladder-*.org` for the stock heads set and the
 //! modular set earn full quality on the field rungs, with no `add` or `sub`
-//! in them.
+//! in them. The wider adders (ADD3, ADD4, `environment-adder-wide.cfg`) and
+//! the self-replicating ADD2 organisms of `data/wide-adder` are covered too.
 
 mod common;
 
@@ -15,8 +16,16 @@ fn config_dir() -> PathBuf {
     avida_core().join("support/config")
 }
 
+const LADDER: &str = "environment-adder-ladder.cfg";
+const WIDE: &str = "environment-adder-wide.cfg";
+
 /// The stock configuration with the ladder as its environment.
 fn ladder_dir(tag: &str) -> PathBuf {
+    env_dir(tag, LADDER)
+}
+
+/// The stock configuration with `env_file` as its environment.
+fn env_dir(tag: &str, env_file: &str) -> PathBuf {
     let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!("ladder_hw_{tag}"));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -29,9 +38,9 @@ fn ladder_dir(tag: &str) -> PathBuf {
     let cfg = std::fs::read_to_string(dir.join("avida.cfg")).unwrap();
     let cfg = cfg.replace(
         "ENVIRONMENT_FILE environment.cfg",
-        "ENVIRONMENT_FILE environment-adder-ladder.cfg",
+        &format!("ENVIRONMENT_FILE {env_file}"),
     );
-    assert!(cfg.contains("environment-adder-ladder.cfg"));
+    assert!(cfg.contains(env_file));
     std::fs::write(dir.join("avida.cfg"), cfg).unwrap();
     dir
 }
@@ -45,7 +54,11 @@ fn instset_lines(file: &str) -> Vec<String> {
 }
 
 fn fixture(modular: bool, tag: &str) -> Fixture {
-    let dir = ladder_dir(tag);
+    fixture_in(modular, tag, LADDER)
+}
+
+fn fixture_in(modular: bool, tag: &str, env_file: &str) -> Fixture {
+    let dir = env_dir(tag, env_file);
     if modular {
         Fixture::load_with_instset(&dir, instset_lines("instset-heads-modular.cfg")).unwrap()
     } else {
@@ -53,9 +66,13 @@ fn fixture(modular: bool, tag: &str) -> Fixture {
     }
 }
 
-/// The instruction names of an `.org` file.
+/// The instruction names of an `.org` file of the stock configuration.
 fn org_names(file: &str) -> Vec<String> {
-    let text = std::fs::read_to_string(config_dir().join(file)).unwrap();
+    names_at(&config_dir().join(file))
+}
+
+fn names_at(path: &Path) -> Vec<String> {
+    let text = std::fs::read_to_string(path).unwrap();
     text.lines()
         .map(|l| l.split('#').next().unwrap().trim().to_string())
         .filter(|l| !l.is_empty())
@@ -113,9 +130,9 @@ impl Rng {
     }
 }
 
-/// (file, modular, field_arith arguments, ladder task id, genome length,
-/// genome length without the no-op modifiers)
-const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
+/// (file, modular, field_arith arguments, task id in the environment file,
+/// genome length, genome length without the no-op modifiers, environment file)
+const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize, &str)] = &[
     (
         "ladder-halfadd-planes-heads.org",
         false,
@@ -123,6 +140,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         4,
         32,
         23,
+        LADDER,
     ),
     (
         "ladder-halfadd-heads.org",
@@ -131,6 +149,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         5,
         83,
         57,
+        LADDER,
     ),
     (
         "ladder-add2-planes-heads.org",
@@ -139,6 +158,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         6,
         90,
         66,
+        LADDER,
     ),
     (
         "ladder-add2-heads.org",
@@ -147,6 +167,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         7,
         113,
         77,
+        LADDER,
     ),
     (
         "ladder-halfadd-planes-modular.org",
@@ -155,6 +176,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         4,
         49,
         30,
+        LADDER,
     ),
     (
         "ladder-halfadd-modular.org",
@@ -163,6 +185,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         5,
         82,
         50,
+        LADDER,
     ),
     (
         "ladder-add2-planes-modular.org",
@@ -171,6 +194,7 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         6,
         78,
         49,
+        LADDER,
     ),
     (
         "ladder-add2-modular.org",
@@ -179,6 +203,62 @@ const SOLUTIONS: &[(&str, bool, &str, usize, usize, usize)] = &[
         7,
         89,
         53,
+        LADDER,
+    ),
+    // The wider adders, with the default stride (bits + 1) and no partial credit.
+    (
+        "ladder-add2-heads.org",
+        false,
+        "fn=add,bits=2,mode=packed,thresh=1",
+        0,
+        113,
+        77,
+        WIDE,
+    ),
+    (
+        "ladder-add2-modular.org",
+        true,
+        "fn=add,bits=2,mode=packed,thresh=1",
+        0,
+        89,
+        53,
+        WIDE,
+    ),
+    (
+        "ladder-add3-heads.org",
+        false,
+        "fn=add,bits=3,mode=packed,thresh=1",
+        1,
+        143,
+        97,
+        WIDE,
+    ),
+    (
+        "ladder-add3-modular.org",
+        true,
+        "fn=add,bits=3,mode=packed,thresh=1",
+        1,
+        96,
+        56,
+        WIDE,
+    ),
+    (
+        "ladder-add4-heads.org",
+        false,
+        "fn=add,bits=4,mode=packed,thresh=1",
+        2,
+        173,
+        117,
+        WIDE,
+    ),
+    (
+        "ladder-add4-modular.org",
+        true,
+        "fn=add,bits=4,mode=packed,thresh=1",
+        2,
+        103,
+        59,
+        WIDE,
     ),
 ];
 
@@ -191,8 +271,10 @@ fn spec(args: &str) -> FieldSpec {
 fn the_solutions_earn_full_quality_on_random_inputs_in_both_sets() {
     let mut stock = fixture(false, "all_stock");
     let mut modular = fixture(true, "all_modular");
+    let mut stock_wide = fixture_in(false, "all_stock_wide", WIDE);
+    let mut modular_wide = fixture_in(true, "all_modular_wide", WIDE);
     let mut rng = Rng(0x5eed_1234_abcd_0001);
-    for &(file, is_modular, args, task, len, plain) in SOLUTIONS {
+    for &(file, is_modular, args, task, len, plain, env_file) in SOLUTIONS {
         let names = org_names(file);
         assert_eq!(names.len(), len, "{file}: genome length");
         let non_nop = names.iter().filter(|n| !n.starts_with("nop-")).count();
@@ -201,7 +283,12 @@ fn the_solutions_earn_full_quality_on_random_inputs_in_both_sets() {
             !names.iter().any(|n| n == "add" || n == "sub"),
             "{file} uses add or sub"
         );
-        let fx = if is_modular { &mut modular } else { &mut stock };
+        let fx = match (is_modular, env_file == WIDE) {
+            (true, false) => &mut modular,
+            (false, false) => &mut stock,
+            (true, true) => &mut modular_wide,
+            (false, true) => &mut stock_wide,
+        };
         let g = genome(fx, &names);
         let spec = spec(args);
         let mut lowest: f64 = 1.0;
@@ -302,5 +389,136 @@ fn quality_scales_what_a_reaction_consumes_and_so_the_bonus() {
             "{kind}: bonus {bonus} for quality {q}, wanted {}",
             bonus_of(q)
         );
+    }
+}
+
+/// Packed quality of `file`'s organism against `args`, over `n` random
+/// input triples; the highest of them.
+fn best_quality(modular: bool, tag: &str, file: &str, args: &str, n: usize) -> f64 {
+    let mut fx = fixture_in(modular, tag, WIDE);
+    let g = genome(&fx, &org_names(file));
+    let spec = spec(args);
+    let mut rng = Rng(0x0bad_5eed_0000_0042);
+    let mut best: f64 = 0.0;
+    for _ in 0..n {
+        let r = run(&mut fx, &g, rng.inputs());
+        let mut input = r.input.clone();
+        input.pop();
+        best = best.max(spec.quality(&input, &r.output));
+    }
+    best
+}
+
+#[test]
+fn a_narrower_adder_does_not_earn_the_wider_rung() {
+    // The two-bit adder masks and adds in the wrong fields for three-bit
+    // operands, and the three-bit one for four-bit operands: no input gets
+    // full quality (it is below 1 on every one of them).
+    for (modular, set) in [(false, "stock"), (true, "modular")] {
+        let kind = if modular { "modular" } else { "heads" };
+        let q = best_quality(
+            modular,
+            &format!("narrow2_{set}"),
+            &format!("ladder-add2-{kind}.org"),
+            "fn=add,bits=3,mode=packed",
+            20,
+        );
+        assert!(q < 1.0, "{set}: ADD2 organism on bits=3: {q}");
+        let q = best_quality(
+            modular,
+            &format!("narrow3_{set}"),
+            &format!("ladder-add3-{kind}.org"),
+            "fn=add,bits=4,mode=packed",
+            20,
+        );
+        assert!(q < 1.0, "{set}: ADD3 organism on bits=4: {q}");
+    }
+}
+
+#[test]
+fn the_wide_environment_has_three_packed_reactions_on_their_own_resources() {
+    let fx = fixture_in(false, "wide_env", WIDE);
+    assert_eq!(fx.env.output_size(), 1, "packed tasks need one output");
+    let text = std::fs::read_to_string(config_dir().join(WIDE)).unwrap();
+    for (n, value) in [(2, 7), (3, 8), (4, 9)] {
+        let line = text
+            .lines()
+            .find(|l| l.starts_with(&format!("REACTION ADD{n} ")))
+            .unwrap();
+        assert!(line.contains(&format!(
+            "field_arith:fn=add:bits={n}:mode=packed:thresh=1 "
+        )));
+        assert!(line.contains(&format!("resource=resADD{n}:value={value}.0:type=pow")));
+        assert!(line.contains("requisite:max_count=1"));
+    }
+    assert_eq!(
+        text.lines().filter(|l| l.starts_with("RESOURCE ")).count(),
+        3
+    );
+    assert_eq!(
+        text.lines().filter(|l| l.starts_with("REACTION ")).count(),
+        3
+    );
+}
+
+/// The self-replicating ADD2 organisms in `tests/data/wide-adder`, with the
+/// instruction sets they need (no `add`, no `sub`).
+fn wide_adder_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/data/wide-adder")
+}
+
+fn wide_adder_instset(file: &str) -> Vec<String> {
+    let text = std::fs::read_to_string(wide_adder_dir().join(file)).unwrap();
+    text.lines()
+        .map(|l| l.split('#').next().unwrap().trim().to_string())
+        .filter(|l| !l.is_empty())
+        .collect()
+}
+
+#[test]
+fn the_wide_adder_replicators_replicate_and_do_add2() {
+    for (file, set_file, expected_len) in [
+        ("replicator-add2-heads.org", "instset-heads.cfg", 125usize),
+        (
+            "replicator-add2-modular.org",
+            "instset-heads-modular.cfg",
+            102,
+        ),
+    ] {
+        let lines = wide_adder_instset(set_file);
+        assert!(
+            !lines
+                .iter()
+                .any(|l| l.starts_with("INST add") || l.starts_with("INST sub")),
+            "{set_file} has add or sub"
+        );
+        let dir = env_dir(&format!("rep_{file}"), WIDE);
+        let mut fx = Fixture::load_with_instset(&dir, lines).unwrap();
+        let names = names_at(&wide_adder_dir().join(file));
+        assert_eq!(names.len(), expected_len, "{file}: genome length");
+        assert!(!names.iter().any(|n| n == "add" || n == "sub"));
+        let g = genome(&fx, &names);
+        let mut rng = Rng(0xfeed_0000_0000_0007);
+        for round in 0..5 {
+            let inputs = rng.inputs();
+            let mut info = CpuTestInfo::default();
+            info.use_manual_inputs(inputs.iter().map(|&v| v as i32).collect());
+            info.set_resource_options(0, None, -1, 0);
+            let mut world = fx.world();
+            let mut cpu = TestCpu::new(&mut world).unwrap();
+            cpu.test_genome(&mut world, &mut info, &g).unwrap();
+            assert!(info.is_viable(), "{file} round {round}: viable");
+            let org = info.test_organism(0).unwrap();
+            assert_eq!(
+                org.state.offspring_genome.representation().as_string(),
+                g.representation().as_string(),
+                "{file} round {round}: the offspring is identical"
+            );
+            let p = info.test_phenotype(0).unwrap();
+            // ADD2 (task 0 of the wide environment) is done, ADD3 and ADD4 are not.
+            assert!(p.last_task_count[0] >= 1, "{file} round {round}: ADD2");
+            assert_eq!(p.last_task_count[1], 0, "{file}: ADD3");
+            assert_eq!(p.last_task_count[2], 0, "{file}: ADD4");
+        }
     }
 }
