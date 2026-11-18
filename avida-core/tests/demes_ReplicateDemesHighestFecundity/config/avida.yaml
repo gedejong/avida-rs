@@ -21,20 +21,20 @@ mutation:
   meta_std_dev: 0.1
 reproduction:
   birth_method: 4
-  prefer_empty: 0
+  prefer_empty: false
   age_limit: 30
-  inherit_merit: 0
+  inherit_merit: false
 divide:
   require_single_reaction: 1
 parasites:
   inject_method: 1
   virulence: 0.85
-  no_copy_mut: 1
+  no_copy_mut: true
 demes:
   count: 3
   use_germline: 1
 time:
-  merit_inc_apply_immediate: 1
+  merit_inc_apply_immediate: true
   max_cpu_threads: 2
 movement:
   vitality_bin_center: 5.0

@@ -9,7 +9,7 @@ world:
 altruism:
   max_donates: 1000
 energy:
-  enabled: 1
+  enabled: true
   given_on_inject: 1000.0
   given_at_birth: 50.0
   num_cycles_exc_before_0_energy: 1000
@@ -17,7 +17,7 @@ energy:
 energy_sharing:
   increment: 0.1
   resource_sharing_loss: 0.1
-  update_metabolic: 1
+  update_metabolic: true
 
 instruction_sets:
   - name: heads_self

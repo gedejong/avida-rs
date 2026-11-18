@@ -4,9 +4,9 @@
 divide:
   required_reaction: 0
 hoarding:
-  use_resource_bins: 1
+  use_resource_bins: true
   absorb_resource_fraction: 1.0
-  return_stored_on_death: 0
+  return_stored_on_death: false
 
 instruction_sets:
   - name: instset-collect.cfg

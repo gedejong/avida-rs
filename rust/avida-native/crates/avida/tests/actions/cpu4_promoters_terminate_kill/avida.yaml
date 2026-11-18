@@ -8,11 +8,11 @@ mutation:
 reproduction:
   death_method: 0
 promoters:
-  enabled: 1
+  enabled: true
   inst_max: 2000
   processivity: 0.998
-  to_register: 1
-  termination_resets: 1
+  to_register: true
+  termination_resets: true
   no_active_promoter_effect: 1
   inst_code_default_type: 1
 

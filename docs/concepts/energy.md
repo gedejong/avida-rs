@@ -1,6 +1,6 @@
 # The energy model
 
-By default, Avida organisms are limited only by the CPU time they win. The *energy model* adds a second budget: each organism holds an amount of energy, and executing instructions uses it up. See the settings below for how it is given, spent and shared. Turn it on with `energy.enabled: 1`.
+By default, Avida organisms are limited only by the CPU time they win. The *energy model* adds a second budget: each organism holds an amount of energy, and executing instructions uses it up. See the settings below for how it is given, spent and shared. Turn it on with `energy.enabled: true`.
 
 ## How energy moves
 

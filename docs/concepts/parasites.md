@@ -23,7 +23,7 @@ The default of `parasites.infection_mechanism` is 1. With a rule of 1 or 3, a ho
 
 ## Virulence
 
-`parasites.virulence` is the probability that a CPU cycle goes to the parasite rather than the host. At 1 a parasite takes everything. `parasites.virulence_source` makes virulence come from the setting (0), be inherited from the parent parasite (1), or be controlled by the host (2), with `parasites.virulence_mut_rate` as the probability that an inherited virulence mutates. `parasites.inject_is_virulent: 1` instead makes an infection sterilise the host and take all its cycles.
+`parasites.virulence` is the probability that a CPU cycle goes to the parasite rather than the host. At 1 a parasite takes everything. `parasites.virulence_source` makes virulence come from the setting (0), be inherited from the parent parasite (1), or be controlled by the host (2), with `parasites.virulence_mut_rate` as the probability that an inherited virulence mutates. `parasites.inject_is_virulent: true` instead makes an infection sterilise the host and take all its cycles.
 
 ## Typical settings
 
@@ -40,7 +40,7 @@ parasites:
   inject_method: 1               # reset the parasite thread on birth (required for SMT parasites)
   infection_mechanism: 1         # the parasite must match one of the host's tasks (the default)
   virulence: 0.85                # share of cycles stolen
-  no_copy_mut: 1                 # parasites ignore the copy mutation rate
+  no_copy_mut: true              # parasites ignore the copy mutation rate
 instruction_sets: [transsmt]     # hardware type 2
 ```
 

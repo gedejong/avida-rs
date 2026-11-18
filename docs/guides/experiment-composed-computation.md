@@ -143,7 +143,7 @@ Design, fixed on 2026-11-15 before any stage 4 run. One factor is changed at a t
 
 | Arm | Change against the base |
 |---|---|
-| `sex` | `divide-sex` in place of `h-divide`: offspring recombine with another offspring; run with `genealogy.drop_extinct_genotypes: 1` (see below) |
+| `sex` | `divide-sex` in place of `h-divide`: offspring recombine with another offspring; run with `genealogy.drop_extinct_genotypes: true` (see below) |
 | `pop-30` | a 30 x 30 world, resource inflow scaled to the area |
 | `pop-120` | a 120 x 120 world, resource inflow scaled to the area |
 | `seasons` | NOT, NAND, XOR and AND pay nothing in every other period of 2,000 updates |
@@ -151,7 +151,7 @@ Design, fixed on 2026-11-15 before any stage 4 run. One factor is changed at a t
 
 The first four are the factors planned from the start. The fifth was added after stage 3, because of the genome shrinking seen there; the value 50 is half the ancestor's length and was chosen without a trial run. Seeds 1 to 10, 100,000 updates, exact mode, and the outcomes and tests of stage 3. Each arm is compared with the base only, so five comparisons are made per measure; p values are reported uncorrected and with a Holm correction over the five.
 
-One change was made to the `sex` arm after the batch had started and before any `sex` run finished. With two parents every ancestor stays in memory as a historic genotype, and the first six `sex` runs grew to more than 4 GB each and were stopped at about 65,000 updates; their output is not used. The arm now runs with the new setting `genealogy.drop_extinct_genotypes: 1`, which drops a genotype when its last organism dies and changes nothing that organisms compute (the data files of a run are byte-identical with and without it). The measures that need ancestry, MODES complexity and the phylogeny measures, are therefore not available for the `sex` arm. Its primary outcome, the genome length, the tasks performed and the reuse measures are reported as for the other arms.
+One change was made to the `sex` arm after the batch had started and before any `sex` run finished. With two parents every ancestor stays in memory as a historic genotype, and the first six `sex` runs grew to more than 4 GB each and were stopped at about 65,000 updates; their output is not used. The arm now runs with the new setting `genealogy.drop_extinct_genotypes: true`, which drops a genotype when its last organism dies and changes nothing that organisms compute (the data files of a run are byte-identical with and without it). The measures that need ancestry, MODES complexity and the phylogeny measures, are therefore not available for the `sex` arm. Its primary outcome, the genome length, the tasks performed and the reuse measures are reported as for the other arms.
 
 #### Results
 

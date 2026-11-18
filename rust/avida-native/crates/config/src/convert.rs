@@ -120,7 +120,7 @@ pub fn convert_folder(dir: &str, opts: &Options) -> Result<Conversion, String> {
             experiment::REFERENCE_PAGE
         ));
     }
-    out.push_str(&settings_yaml(&cfg, opts.full));
+    out.push_str(&settings_yaml(&cfg, opts.full)?);
     out.push('\n');
     out.push_str(&inst_sets_yaml(&inst_sets, opts.full));
     out.push('\n');
@@ -372,15 +372,23 @@ fn comment(out: &mut String, indent: usize, text: &str) {
     }
 }
 
-fn settings_yaml(cfg: &Config, full: bool) -> String {
+fn settings_yaml(cfg: &Config, full: bool) -> Result<String, String> {
     let defaults = Config::new();
     let mut out = String::new();
     for g in GROUPS {
         let mut body = String::new();
         for s in naming::settings_of_group(g.key) {
-            let v = cfg.setting_text(&s);
-            if !full && v == defaults.setting_text(&s) {
+            let raw = cfg.setting_text(&s);
+            if !full && raw == defaults.setting_text(&s) {
                 continue;
+            }
+            let v = s.display(&raw);
+            if s.is_flag() && v == raw {
+                return Err(format!(
+                    "{} {raw} in the old files: '{}' is a flag and takes only 0 or 1 (true or false)",
+                    s.old,
+                    s.path()
+                ));
             }
             if full {
                 comment(&mut body, 2, s.desc());
@@ -397,7 +405,7 @@ fn settings_yaml(cfg: &Config, full: bool) -> String {
         out.push_str(&format!("{}:\n", g.key));
         out.push_str(&body);
     }
-    out
+    Ok(out)
 }
 
 // ---------------------------------------------------------------------------
@@ -1055,6 +1063,50 @@ mod tests {
                 "REACTION B field_arith:fn=partial,width=16",
             ]
         );
+    }
+
+    fn convert_text(name: &str, cfg_text: &str) -> Result<String, String> {
+        let d = std::env::temp_dir().join(format!("avida-convert-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&d);
+        std::fs::create_dir_all(&d).unwrap();
+        std::fs::write(
+            d.join("avida.cfg"),
+            format!("VERSION_ID 2.14.0\n{cfg_text}"),
+        )
+        .unwrap();
+        std::fs::write(d.join("environment.cfg"), "").unwrap();
+        std::fs::write(d.join("events.cfg"), "").unwrap();
+        let r = convert_folder(d.to_str().unwrap(), &Options::default()).map(|c| c.yaml);
+        let _ = std::fs::remove_dir_all(&d);
+        r
+    }
+
+    #[test]
+    fn convert_writes_flags_as_true_and_false() {
+        let y = convert_text(
+            "flags",
+            "SPECULATIVE 0\nPREFER_EMPTY 0\nALLOW_PARENT 1\nREQUIRE_ALLOCATE 0\n",
+        )
+        .unwrap();
+        assert!(y.contains("  speculative: false\n"), "{y}");
+        assert!(y.contains("  prefer_empty: false\n"), "{y}");
+        assert!(y.contains("  require_allocate: false\n"), "{y}");
+        // The default is not written.
+        assert!(!y.contains("allow_parent"), "{y}");
+        let y = convert_text("flags-on", "ALLOW_MATE_SELECTION 1\nINHERIT_MERIT 0\n").unwrap();
+        assert!(y.contains("  allow_mate_selection: true\n"), "{y}");
+    }
+
+    #[test]
+    fn convert_refuses_a_flag_with_another_value_and_keeps_integers() {
+        let e = convert_text("flag-two", "PREFER_EMPTY 2\n").unwrap_err();
+        assert!(e.contains("reproduction.prefer_empty"), "{e}");
+        let y = convert_text(
+            "int-kept",
+            "REQUIRE_SINGLE_REACTION 2\nMIN_GENOME_SIZE 0\nBIRTH_METHOD 1\n",
+        )
+        .unwrap();
+        assert!(y.contains("  require_single_reaction: 2\n"), "{y}");
     }
 
     #[test]

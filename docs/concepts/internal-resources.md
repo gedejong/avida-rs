@@ -2,7 +2,7 @@
 
 Avida lets an organism take a resource out of the world and keep it in a private store, a set of *resource bins* with one bin for each resource of the environment. An organism can then pay for a reaction from its bins instead of from the world, hand half of its store to each offspring, and give its store back to the world when it dies. This page explains how the store fills, how it is used and where it goes.
 
-Everything here needs `hoarding.use_resource_bins: 1`. The setting is a guard: with the stock value 0 the collect instructions still run, but no bin is ever read by the reaction code and no bin is returned at death. The other settings are in the [HOARD_RESOURCE_GROUP of the settings reference](../reference/config-yaml.md#hoarding).
+Everything here needs `hoarding.use_resource_bins: true`. The setting is a guard: with the stock value false the collect instructions still run, but no bin is ever read by the reaction code and no bin is returned at death. The other settings are in the [HOARD_RESOURCE_GROUP of the settings reference](../reference/config-yaml.md#hoarding).
 
 ## The life of a bin
 
@@ -61,7 +61,7 @@ A run of the suite configuration `collect-spec-3n9r-AB` confirmed the row for `n
 
 ## Using bins to pay for reactions
 
-When an organism completes a task, the environment decides where the reward's resource comes from. With `hoarding.use_resource_bins: 1` and a reaction that consumes a resource, the organism uses its bin instead of the world's pool when both of these hold: the bin is not empty, and
+When an organism completes a task, the environment decides where the reward's resource comes from. With `hoarding.use_resource_bins: true` and a reaction that consumes a resource, the organism uses its bin instead of the world's pool when both of these hold: the bin is not empty, and
 
 ```text
 USE_STORED_FRACTION * bin  >  ENV_FRACTION_THRESHOLD * (what the world would give)
@@ -94,7 +94,7 @@ A run of the suite configuration `hoarding_collect_internal_300u` for 60 updates
 
 | Setting | Organisms credited with a task | Of which paid from a bin |
 |---|---|---|
-| `hoarding.use_resource_bins: 0` | 6,321 | 0 |
+| `hoarding.use_resource_bins: false` | 6,321 | 0 |
 | Stock bin rule (`frac` 0.0025) | 3,030 | 2,574 |
 | Bin rule forced, as above (`hoarding.env_fraction_threshold: 0.0` and `frac=0.0`) | 2,496 | 2,296 |
 
@@ -106,8 +106,8 @@ The runs show that `in_tasks.dat` fills only when bins are on, and that forcing 
 |---|---|---|
 | `hoarding.resource_given_on_inject` | 0.0 | Units of the `hoarding.collect_specific_resource` resource that an injected organism starts with. |
 | `hoarding.resource_given_at_birth` | 0.0 | Units of the same resource that a newborn receives, on top of what it inherits. |
-| `hoarding.split_on_divide` | 1 | The mother's bins are halved at divide and each daughter takes half. With 0 the bins of the mother are emptied and the daughters start empty (after the `hoarding.resource_given_at_birth` gift). The old wiki warned that this was only tested with `reproduction.divide_method: 1`. |
-| `hoarding.return_stored_on_death` | 1 | The bins of a dying organism go back into the world's resources. With 0 they are lost. The old wiki warned that this was only tested for death by old age and by replacement. |
+| `hoarding.split_on_divide` | true | The mother's bins are halved at divide and each daughter takes half. With false the bins of the mother are emptied and the daughters start empty (after the `hoarding.resource_given_at_birth` gift). The old wiki warned that this was only tested with `reproduction.divide_method: 1`. |
+| `hoarding.return_stored_on_death` | true | The bins of a dying organism go back into the world's resources. With false they are lost. The old wiki warned that this was only tested for death by old age and by replacement. |
 | `hoarding.multi_absorb_type` | 0 | Used by `collect-edible` on the experimental hardware only. The heads CPU `collect` ignores it. |
 
 ## Next

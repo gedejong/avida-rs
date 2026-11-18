@@ -51,7 +51,7 @@ Merit is what turns task rewards into evolutionary advantage: an organism with t
 
 ## Speculative execution
 
-`general.speculative: 1` (the default) lets the program run ahead several instructions of an organism's slice when those instructions cannot affect any other organism, which makes runs faster. It is meant not to change what is computed, so leave it at its default unless you have a reason. The two execution modes are described on [execution modes](../execution/index.md).
+`general.speculative: true` (the default) lets the program run ahead several instructions of an organism's slice when those instructions cannot affect any other organism, which makes runs faster. It is meant not to change what is computed, so leave it at its default unless you have a reason. The two execution modes are described on [execution modes](../execution/index.md).
 
 ## Threads inside an organism
 

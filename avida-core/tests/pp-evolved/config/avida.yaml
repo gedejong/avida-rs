@@ -12,18 +12,18 @@ mutation:
   divide_prob: 0.25
 reproduction:
   birth_method: 4
-  allow_parent: 0
+  allow_parent: false
   death_method: 1
   age_limit: 15000
   reset_inputs_on_divide: 1
-  inherit_merit: 0
-  inherit_multithread: 1
+  inherit_merit: false
+  inherit_multithread: true
 divide:
   min_cycles: 3000
   require_single_reaction: 1
   required_bonus: 11.0
 mating:
-  disable_genotype_classification: 1
+  disable_genotype_classification: true
 parasites:
   infection_mechanism: 0
 time:
@@ -33,8 +33,8 @@ time:
 hoarding:
   absorb_resource_fraction: 1.0
   multi_absorb_type: 1
-  return_stored_on_death: 0
-  split_on_divide: 0
+  return_stored_on_death: false
+  split_on_divide: false
 movement:
   collisions_lethal: 2
   use_avatars: 2

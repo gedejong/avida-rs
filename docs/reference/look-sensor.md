@@ -81,13 +81,13 @@ For resources, a number from 0 up that names one resource of the environment, co
 
 The old wiki gave -9 for the value in the "nothing seen" case. In the program it is 0, as the first row of the table shows (the run below printed `0,0,0,0,-1,0,0,0,0,-9,-9`).
 
-For resources, the group register holds the number of the first resource found and the forage target register stays -9. For an organism, the value is the *bonus* of the organism seen (rounded down), the group register is its group (its opinion) or, if it has none, its relative facing, and the forage target register is its forage target. With `sensing.use_mimics: 1`, an organism of forage target 1 may show a different forage target, with probability `sensing.mimic_odds`.
+For resources, the group register holds the number of the first resource found and the forage target register stays -9. For an organism, the value is the *bonus* of the organism seen (rounded down), the group register is its group (its opinion) or, if it has none, its relative facing, and the forage target register is its forage target. With `sensing.use_mimics: true`, an organism of forage target 1 may show a different forage target, with probability `sensing.mimic_odds`.
 
 A look can report "seen" while the count is 0: a resource is present but is not edible, or the sweep of search type 1 found only sub-threshold amounts. The distance then still tells how far the sensor looked.
 
 ### Two runs that show the search types
 
-A bounded 20 by 20 world with the resource `{name: food, geometry: grid, initial: 800}` in the environment (2.0 units in every cell, above the threshold 1.0) and one organism that sets the distance register to 5 and executes `look-ahead`, with `sensing.track_look_output: 1`:
+A bounded 20 by 20 world with the resource `{name: food, geometry: grid, initial: 800}` in the environment (2.0 units in every cell, above the threshold 1.0) and one organism that sets the distance register to 5 and executes `look-ahead`, with `sensing.track_look_output: true`:
 
 | Search type | Output (update, forage target, seen, habitat, distance, type, id, count, value, group, forage) | Reading |
 |---|---|---|
@@ -107,9 +107,9 @@ The first column of each row is the update; the other ten are the columns that `
 | `sensing.look_disable_type` | 0 | Who is impaired: 0 predators, 1 prey, 2 both. |
 | `sensing.look_disable_combo` | 0 | Experimental hardware only. Makes the sensor report "not found" for every food query (1), every look for predators (2) or every look for prey (3). |
 | `sensing.pred_confusion` | 0 | When a predator sights prey, it may receive random numbers instead of the true ones. 1: the odds depend on the number of neighbours of that prey. 2: on the number of facings among them. 3: on the number of groups. 4: a predator's look always fails. |
-| `sensing.use_display`, `sensing.use_mimics`, `sensing.mimic_odds` | 0, 0, 1.0 | Whether organisms display data that others read through the sensor, and whether some organisms mimic another forage target. |
-| `sensing.track_look_settings` | 0 | Writes `looksettings.dat`: one row for every look, with the update, the forage target of the looker, whether it saw something, and the final habitat, distance, search type and id. |
-| `sensing.track_look_output` | 0 | Writes `lookoutput.dat`: the same, plus count, value, group and forage target as the registers received them. |
+| `sensing.use_display`, `sensing.use_mimics`, `sensing.mimic_odds` | 0, false, 1.0 | Whether organisms display data that others read through the sensor, and whether some organisms mimic another forage target. |
+| `sensing.track_look_settings` | false | Writes `looksettings.dat`: one row for every look, with the update, the forage target of the looker, whether it saw something, and the final habitat, distance, search type and id. |
+| `sensing.track_look_output` | false | Writes `lookoutput.dat`: the same, plus count, value, group and forage target as the registers received them. |
 
 Both tracking files have a header, then one comma-separated row per look. Switching them on is the easiest way to learn what an organism's look instructions really do. In the 1000-update run of `lookAhead_v1` they gave, for instance, `1,-2,0,-2,-1,-1,-1,0,0,-9,-9` for a predator that looked for the closest prey and saw none, and `699,3,1,4,0,0,1,1,1,1,-9` for a prey organism that stood in a den (habitat 4, resource 1).
 

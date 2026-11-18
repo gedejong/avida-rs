@@ -15,7 +15,7 @@ mutation:
   inject_prob: 0.005625
 reproduction:
   birth_method: 6
-  prefer_empty: 0
+  prefer_empty: false
   age_limit: 30
 divide:
   min_genome_size: 80
@@ -28,7 +28,7 @@ demes:
   count: 40
   use_germline: 1
   reset_resources: 2
-  log_replicate: 1
+  log_replicate: true
   max_births: 0
   germline_ins_mut: 0.0
   germline_del_mut: 0.0
@@ -36,13 +36,13 @@ demes:
   parasite_migration_rate: 0.002
   migration_method: 4
   partition_interval: 10
-  prefer_empty: 1
+  prefer_empty: true
 reversion:
   sterilize_unstable: 1
 time:
   max_cpu_threads: 2
 pheromone:
-  log_inject: 1
+  log_inject: true
 
 instruction_sets:
   - name: transsmt

@@ -6,10 +6,10 @@ general:
 mutation:
   copy_prob: 0.01
 promoters:
-  enabled: 1
+  enabled: true
   inst_max: 2000
   processivity: 0.998
-  to_register: 1
+  to_register: true
   inst_code_default_type: 1
 
 instruction_sets:

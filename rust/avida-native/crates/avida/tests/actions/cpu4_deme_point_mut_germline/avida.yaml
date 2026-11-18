@@ -10,7 +10,7 @@ mutation:
   inst_point_prob: 0.002
 demes:
   count: 4
-  orgs_start_in_germ: 1
+  orgs_start_in_germ: true
 
 instruction_sets:
   - name: heads_default

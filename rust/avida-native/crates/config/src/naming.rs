@@ -39,6 +39,108 @@ pub struct GroupInfo {
     pub title: &'static str,
 }
 
+/// The integer settings of `cAvidaConfig.h` (and of the port) that are
+/// switches: every read of them in the program takes the value as zero or
+/// non-zero, or compares it with 0 or 1. The file writes them as `true` and
+/// `false` like the C++ `bool` settings; the simulation still holds 1 and 0.
+/// Settings in which a value above 1 or below 0 means something (a count,
+/// a threshold with 0 for off, a choice among named methods) are not here.
+pub const INT_FLAGS: &[&str] = &[
+    "POINT_MUT_REPAIR_START",
+    "DIVIDE_FAILURE_RESETS",
+    "PREFER_EMPTY",
+    "ALLOW_PARENT",
+    "INHERIT_MERIT",
+    "INHERIT_MULTITHREAD",
+    "REQUIRE_ALLOCATE",
+    "REQUIRE_EXACT_COPY",
+    "IMPLICIT_REPRO_END",
+    "CONT_REC_REGS",
+    "CORESPOND_REC_REGS",
+    "TWO_FOLD_COST_SEX",
+    "SAME_LENGTH_SEX",
+    "INJECT_STERILIZES_HOST",
+    "INJECT_IS_VIRULENT",
+    "PARASITE_SKIP_REACTIONS",
+    "INJECT_SKIP_FIRST_TASK",
+    "PARASITE_MEM_SPACES",
+    "PARASITE_NO_COPY_MUT",
+    "PARASITE_USE_GENOTYPE_FILE",
+    "HOST_USE_GENOTYPE_FILE",
+    "ENABLE_MP",
+    "DEMES_OVERRIDE_FITNESS",
+    "DEMES_PREVENT_STERILE",
+    "DEMES_PREFER_EMPTY",
+    "DEMES_MUT_ORGS_ON_REPLICATION",
+    "DEMES_ORGS_START_IN_GERM",
+    "FITNESS_VALLEY",
+    "NO_CPU_CYCLE_TIME",
+    "NET_LOG_MESSAGES",
+    "NET_LOG_RETMESSAGES",
+    "INJECT_RESETS_TASKS",
+    "INHERIT_EXE_RATE",
+    "TRACK_CCLADES",
+    "IMPLICIT_GENE_EXPRESSION",
+    "PROMOTERS_ENABLED",
+    "PROMOTER_TO_REGISTER",
+    "TERMINATION_RESETS",
+    "CONSTITUTIVE_REGULATION",
+    "DEADLY_BOUNDARIES",
+    "TRACK_BIRTH_LOCS",
+    "TRACK_LOOK_SETTINGS",
+    "TRACK_LOOK_OUTPUT",
+    "USE_MIMICS",
+    "SET_FT_AT_BIRTH",
+    "ROTATE_ON_DONATE",
+    "REPUTATION_REWARD",
+    "RANDOMIZE_RAW_MATERIAL_AMOUNT",
+    "SPECIALISTS",
+    "MATCH_ALREADY_PRODUCED",
+    "INHERIT_OPINION",
+    "TRACK_TOLERANCE",
+    "PREY_MUT_OFF",
+    "DEME_NETWORK_REQUIRES_CONNECTEDNESS",
+    "DEME_NETWORK_REMOVE_NODE_ON_DEATH",
+    "ENABLE_HGT",
+    "DROP_EXTINCT_GENOTYPES",
+];
+
+/// The descriptions of flags whose C++ text names the values 0 and 1: the
+/// same sentence in terms of `true` and `false`. The other flags keep the
+/// description of `cAvidaConfig.h`.
+pub static FLAG_DESCRIPTIONS: &[(&str, &str)] = &[
+    ("POINT_MUT_REPAIR_START", "The starting condition for repairs (true = on, false = off)"),
+    ("TWO_FOLD_COST_SEX", "false = Both offspring are born (no two-fold cost)\ntrue = only one recombined offspring is born."),
+    ("SAME_LENGTH_SEX", "false = Recombine with any genome\ntrue = Recombine only w/ same length"),
+    ("PARASITE_SKIP_REACTIONS", "Parasite tasks do not get processed in the environment (true) or they do trigger reactions (false)"),
+    ("ENABLE_MP", "Enable multi-process Avida; false = disabled (default),\ntrue = enabled."),
+    ("DEMES_OVERRIDE_FITNESS", "Should the calculated fitness be overridden?\nfalse = no, use it (default)\ntrue = yes (all fitnesses=1)"),
+    ("DEMES_MUT_ORGS_ON_REPLICATION", "Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): false = off, true = on"),
+    ("FITNESS_VALLEY", "in BASE_MERIT_METHOD 6, this creates valleys from\nFITNESS_VALLEY_START to FITNESS_VALLEY_STOP\n(false = off, true = on)"),
+    ("NET_LOG_MESSAGES", "Whether all messages are logged; false (default) or true."),
+    ("NET_LOG_RETMESSAGES", "Whether retrieved messages are logged; false (default) or true."),
+    ("INHERIT_EXE_RATE", "Inherit energy rate from parent? false = no, true = yes"),
+    ("DEADLY_BOUNDARIES", "Are bounded grid border cell deadly? If true, orgs stepping onto boundary cells will disappear into oblivion (aka die)"),
+    ("USE_MIMICS", "If true, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)"),
+    ("SET_FT_AT_BIRTH", "Should offspring set forage target at birth? false: No, true: Yes"),
+    ("ROTATE_ON_DONATE", "Rotate an organism to face its donor (false = off, true = on)"),
+    ("RANDOMIZE_RAW_MATERIAL_AMOUNT", "Should all the organisms receive the same amount (false = same amount, true = randomized)?"),
+    ("SPECIALISTS", "false = generalists allowed\ntrue = only specialists"),
+    ("MATCH_ALREADY_PRODUCED", "false = off\ntrue = on"),
+    ("INHERIT_OPINION", "Should offspring inherit the parent's opinion? false: No... reset on divide, etc. true: Yes"),
+    ("DEME_NETWORK_REMOVE_NODE_ON_DEATH", "Whether death of an organism in\nthe deme removes its links;\nfalse = no (default);\ntrue = yes."),
+    ("ENABLE_HGT", "Whether HGT is enabled; false (default),\ntrue."),
+    ("NOISY_MATE_ASSESSMENT", "Is mate assessment perfect (false) or noisy (true) (false by default)"),
+    ("CHECK_TASK_ON_SEND", "false: Don't check tasks on send, true: Check tasks on send (default)"),
+    ("ENERGY_ENABLED", "Enable Energy Model (true = on, false = off)"),
+    ("LOG_SLEEP_TIMES", "Log sleep start and end times (true = on, false = off).\nWARNING: may use lots of memory."),
+    ("ENERGY_SHARING_UPDATE_METABOLIC", "Whether to update an organism's metabolic rate on donate or reception/application of energy (true = on, false = off)"),
+    ("PHEROMONE_ENABLED", "Enable pheromone usage (true = on, false = off)"),
+    ("LOG_INJECT", "Log injection of organisms (true = on, false = off)"),
+    ("ALARM_SELF", "Does sending an alarm move sender IP to alarm label?\nfalse = no\ntrue = yes"),
+    ("DROP_EXTINCT_GENOTYPES", "false = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does)\ntrue = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop"),
+];
+
 /// Where a C++ setting went.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Target {
@@ -68,6 +170,43 @@ pub enum SettingDef {
     Port(&'static PortEntryDef),
 }
 
+/// What a setting holds in the experiment file.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValueKind {
+    /// A whole number.
+    Int,
+    /// A number with a fraction.
+    Double,
+    /// `true` or `false` (the simulation holds 1 or 0; `1` and `0` are
+    /// read as well).
+    Flag,
+    /// Text.
+    Text,
+}
+
+impl ValueKind {
+    /// The type name the session hands the front ends (the C++ type names,
+    /// `flag` for a flag).
+    pub fn type_name(self) -> &'static str {
+        match self {
+            ValueKind::Int => "int",
+            ValueKind::Double => "double",
+            ValueKind::Flag => "flag",
+            ValueKind::Text => "cString",
+        }
+    }
+
+    /// The name the reference page shows.
+    pub fn name(self) -> &'static str {
+        match self {
+            ValueKind::Int => "integer",
+            ValueKind::Double => "number",
+            ValueKind::Flag => "flag",
+            ValueKind::Text => "text",
+        }
+    }
+}
+
 /// A setting of the experiment file with its definition.
 #[derive(Debug, Clone, Copy)]
 pub struct SettingInfo {
@@ -95,20 +234,64 @@ impl SettingInfo {
         }
     }
 
-    /// The description (lines separated by `\n`).
+    /// The description (lines separated by `\n`). A flag speaks of `true`
+    /// and `false` where the C++ description spoke of 0 and 1.
     pub fn desc(&self) -> &'static str {
+        if let Some((_, text)) = FLAG_DESCRIPTIONS.iter().find(|(old, _)| *old == self.old) {
+            return text;
+        }
         match self.def {
             SettingDef::Cpp(e) => e.desc,
             SettingDef::Port(p) => p.desc,
         }
     }
 
-    /// The value type (every port setting is an `int`).
-    pub fn ty(&self) -> EntryType {
-        match self.def {
-            SettingDef::Cpp(e) => e.ty,
-            SettingDef::Port(_) => EntryType::Int,
+    /// The kind of value the setting holds in the experiment file.
+    pub fn kind(&self) -> ValueKind {
+        if self.is_flag() {
+            return ValueKind::Flag;
         }
+        match self.def {
+            SettingDef::Cpp(e) => match e.ty {
+                EntryType::Int => ValueKind::Int,
+                EntryType::Double => ValueKind::Double,
+                EntryType::Bool => ValueKind::Flag,
+                EntryType::Str => ValueKind::Text,
+            },
+            SettingDef::Port(_) => ValueKind::Int,
+        }
+    }
+
+    /// Whether the setting is a flag: a C++ `bool`, or an integer that
+    /// every read in the program takes as on or off ([`INT_FLAGS`]).
+    pub fn is_flag(&self) -> bool {
+        matches!(
+            self.def,
+            SettingDef::Cpp(EntryDef {
+                ty: EntryType::Bool,
+                ..
+            })
+        ) || INT_FLAGS.contains(&self.old)
+    }
+
+    /// `raw`, the value as the simulation holds it (`1`, `0`), as the file
+    /// writes it: `true` and `false` for a flag, `raw` itself for the other
+    /// kinds (and for a flag holding something else than 0 and 1, which only
+    /// an old file can give it).
+    pub fn display(&self, raw: &str) -> String {
+        if self.is_flag() {
+            match raw {
+                "1" => return "true".into(),
+                "0" => return "false".into(),
+                _ => {}
+            }
+        }
+        raw.to_string()
+    }
+
+    /// [`SettingInfo::default`] as the file writes it.
+    pub fn default_display(&self) -> String {
+        self.display(self.default())
     }
 
     /// The C++ aliases of the setting.

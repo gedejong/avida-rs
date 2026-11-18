@@ -21,6 +21,7 @@
 
 use crate::feedback::Feedback;
 use crate::init_file::InitFile;
+use crate::naming::ValueKind;
 use crate::port_settings::{self, PORT_ENTRIES};
 #[cfg(test)]
 use crate::string_util::split_list;
@@ -414,12 +415,12 @@ impl Config {
             }
             o.push_str(&format!(" {} ", info.path()));
             let s = self.setting_text(&info);
-            match info.ty() {
-                EntryType::Double => o.push_str(&format_ostream_double(as_double(&s))),
-                EntryType::Int => o.push_str(&as_int(&s).to_string()),
-                _ => o.push_str(&s),
+            match info.kind() {
+                ValueKind::Double => o.push_str(&format_ostream_double(as_double(&s))),
+                ValueKind::Int => o.push_str(&as_int(&s).to_string()),
+                _ => o.push_str(&info.display(&s)),
             }
-            o.push_str(&format!(" (default={})\n", info.default()));
+            o.push_str(&format!(" (default={})\n", info.default_display()));
         }
         o.push('\n');
         o

@@ -6,14 +6,14 @@ general:
 mutation:
   copy_prob: 0.01
 promoters:
-  enabled: 1
+  enabled: true
   inst_max: 2000
   processivity: 0.999
-  to_register: 1
+  to_register: true
   no_active_promoter_effect: 1
   exe_threshold: 1
   inst_code_default_type: 1
-  constitutive_regulation: 1
+  constitutive_regulation: true
 
 instruction_sets:
   - name: heads_default

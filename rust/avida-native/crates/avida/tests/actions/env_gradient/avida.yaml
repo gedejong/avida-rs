@@ -13,7 +13,7 @@ mutation:
   divide_prob: 0.25
 reproduction:
   birth_method: 7
-  allow_parent: 0
+  allow_parent: false
   death_method: 1
   age_limit: 20000
   divide_method: 0
@@ -27,12 +27,12 @@ time:
 hoarding:
   absorb_resource_fraction: 1.0
   multi_absorb_type: 1
-  return_stored_on_death: 0
-  split_on_divide: 0
+  return_stored_on_death: false
+  split_on_divide: false
   collect_specific_resource: -1
 movement:
   collisions_lethal: 2
-  deadly_boundaries: 1
+  deadly_boundaries: true
 groups:
   use_form_groups: 2
   default_group: 0

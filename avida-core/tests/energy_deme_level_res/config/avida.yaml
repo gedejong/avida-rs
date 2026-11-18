@@ -12,7 +12,7 @@ demes:
   count: 2
   organism_facing: 1
 energy:
-  enabled: 1
+  enabled: true
   given_on_inject: 100000.0
   frac_energy_decay_at_org_birth: 0.05
   frac_energy_decay_at_deme_birth: 1.0

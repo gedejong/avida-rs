@@ -28,4 +28,4 @@ Pilot (2 seeds, 15,000 updates): no clear difference in fitness with two seeds (
 ## Variations
 
 - `world.geometry` changes the neighbourhood itself: bounded grid (1), torus (2, stock), clique (3), hexagonal (4), random connected (7), scale-free (8).
-- `reproduction.prefer_empty: 0` stops newborns from preferring empty cells.
+- `reproduction.prefer_empty: false` stops newborns from preferring empty cells.

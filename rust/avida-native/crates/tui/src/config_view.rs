@@ -78,7 +78,7 @@ impl ConfigState {
     }
 }
 
-/// Checks `text` against the setting's C++ type and returns the form the
+/// Checks `text` against the setting's type and returns the form the
 /// command line takes.
 pub fn validate(kind: &str, text: &str) -> Result<String, String> {
     let t = text.trim();
@@ -92,10 +92,10 @@ pub fn validate(kind: &str, text: &str) -> Result<String, String> {
             Ok(x) if x.is_finite() => Ok(t.to_string()),
             _ => Err(format!("\"{t}\" is not a number.")),
         },
-        "bool" => match t.to_ascii_lowercase().as_str() {
-            "1" | "true" | "yes" | "on" => Ok("1".to_string()),
-            "0" | "false" | "no" | "off" => Ok("0".to_string()),
-            _ => Err(format!("\"{t}\" is not 0 or 1.")),
+        "flag" => match t.to_ascii_lowercase().as_str() {
+            "1" | "true" | "yes" | "on" => Ok("true".to_string()),
+            "0" | "false" | "no" | "off" => Ok("false".to_string()),
+            _ => Err(format!("\"{t}\" is not true or false.")),
         },
         _ => {
             if t.is_empty() {
@@ -213,8 +213,9 @@ pub(crate) mod tests {
         assert!(validate("int", "3.5").is_err());
         assert_eq!(validate("double", "0.02"), Ok("0.02".into()));
         assert!(validate("double", "nan").is_err());
-        assert_eq!(validate("bool", "true"), Ok("1".into()));
-        assert!(validate("bool", "2").is_err());
+        assert_eq!(validate("flag", "true"), Ok("true".into()));
+        assert_eq!(validate("flag", "0"), Ok("false".into()));
+        assert!(validate("flag", "2").is_err());
         assert!(validate("cString", "").is_err());
         assert_eq!(validate("cString", "x.org"), Ok("x.org".into()));
     }

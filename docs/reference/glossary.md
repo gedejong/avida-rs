@@ -60,7 +60,7 @@ Terms are listed alphabetically. A term in *italics* inside an entry has its own
 
 **Look sensor.** What the look instructions read from the grid and return in registers. See [the look sensor](look-sensor.md).
 
-**Mating type.** The sex of an organism when `mating.types: 1`: juvenile, female or male, set by instructions. See [mating types](../concepts/mating-types.md).
+**Mating type.** The sex of an organism when `mating.types: true`: juvenile, female or male, set by instructions. See [mating types](../concepts/mating-types.md).
 
 **Merit.** An organism's claim on CPU time. It starts at a base value tied to genome size and is multiplied by the rewards of tasks performed.
 

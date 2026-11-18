@@ -6,7 +6,7 @@ The worked example of the program is the consistency test `avida-core/tests/mati
 
 ## What you need
 
-1. `mating.types: 1` in `avida.yaml`.
+1. `mating.types: true` in `avida.yaml`.
 2. An instruction set that contains the mating instructions (the sexes are set by instructions, so the stock sets, which have none, are not enough).
 3. At least one organism of each sex, or organisms that can become one.
 
@@ -60,9 +60,9 @@ A divide with `div-sex-mating-type` does not place an offspring at once. The off
 
 The chamber has no spatial structure: any female can meet any male, wherever they are. Where the recombined offspring *lands* is still decided by `reproduction.birth_method`. If you want the whole population to be well mixed, use `reproduction.birth_method: 4`, as the test does.
 
-Two exceptions. If `demes.count` is above 1, `mating.types` is ignored and every deme runs its own chamber of the ordinary kind, so mating types do not work with demes. And with `mating.in_groups: 1`, mates must belong to the same group (the organism's opinion).
+Two exceptions. If `demes.count` is above 1, `mating.types` is ignored and every deme runs its own chamber of the ordinary kind, so mating types do not work with demes. And with `mating.in_groups: true`, mates must belong to the same group (the organism's opinion).
 
-`mating.lekking: 1` makes the female the chooser: the offspring of a male always goes into the chamber to wait, and the offspring of a female never waits, so a female that divides must find an existing male offspring or lose her offspring.
+`mating.lekking: true` makes the female the chooser: the offspring of a male always goes into the chamber to wait, and the offspring of a female never waits, so a female that divides must find an existing male offspring or lose her offspring.
 
 ## Mate choice
 
@@ -76,7 +76,7 @@ An organism that divides and finds several candidates of the other sex picks one
 | `set-mate-preference-highest-merit` | 3 | The highest merit. |
 | `set-mate-preference-lowest-display-a`, `-b` and `-merit` | 4, 5, 6 | The lowest of the same traits. |
 
-The old wiki listed only the first four. The rule applies to whichever sex is the one that divides when a candidate is already waiting, so with `mating.lekking: 0` a male that divides after a female has also chooses. `mating.forced_preference` (stock -1, off) overrides everything: 0 makes all organisms choose randomly, and 1, 2 and 3 make them all prefer the highest display A, display B or merit.
+The old wiki listed only the first four. The rule applies to whichever sex is the one that divides when a candidate is already waiting, so with `mating.lekking: false` a male that divides after a female has also chooses. `mating.forced_preference` (stock -1, off) overrides everything: 0 makes all organisms choose randomly, and 1, 2 and 3 make them all prefer the highest display A, display B or merit.
 
 A *display* is a number that an organism raises or sets during its life. It is 0 at birth, and it is reset to 0 again after each divide; the value at the moment of the divide is the one that potential partners see.
 
@@ -89,7 +89,7 @@ A large display therefore needs either many executions of an increment instructi
 
 ### Noisy assessment
 
-`mating.noisy_assessment: 1` makes organisms misjudge the traits of the candidates. Each assessed value gets a normally distributed error with a mean of 0 and a *variance* equal to the value times `mating.assessment_cv`. The code passes that product where a variance is expected, so the standard deviation is its square root: for a display of 100 and a coefficient of 0.1 it is about 3.2, not 10 as the name "coefficient of variation" and the old wiki suggest. The stock coefficient in the port is 0.1 (the test sets 0.25).
+`mating.noisy_assessment: true` makes organisms misjudge the traits of the candidates. Each assessed value gets a normally distributed error with a mean of 0 and a *variance* equal to the value times `mating.assessment_cv`. The code passes that product where a variance is expected, so the standard deviation is its square root: for a display of 100 and a coefficient of 0.1 it is about 3.2, not 10 as the name "coefficient of variation" and the old wiki suggest. The stock coefficient in the port is 0.1 (the test sets 0.25).
 
 ## Costs
 
@@ -118,7 +118,7 @@ In analyze mode, `DETAIL` accepts the columns `mating_type`, `mate_preference`, 
 
 ## Memory
 
-Recombination between sexes creates many new genotypes. If you do not need the genealogy, `mating.disable_genotype_classification: 1` stops the program from keeping every genotype that ever lived, and the test uses it. The price is that the program no longer records the history of genotypes, so analyses that need ancestry, such as the [line of descent](../guides/tutorial-line-of-descent.md), are not available for such a run.
+Recombination between sexes creates many new genotypes. If you do not need the genealogy, `mating.disable_genotype_classification: true` stops the program from keeping every genotype that ever lived, and the test uses it. The price is that the program no longer records the history of genotypes, so analyses that need ancestry, such as the [line of descent](../guides/tutorial-line-of-descent.md), are not available for such a run.
 
 ## See also
 

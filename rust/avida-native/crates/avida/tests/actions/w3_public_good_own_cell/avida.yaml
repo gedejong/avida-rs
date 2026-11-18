@@ -7,7 +7,7 @@ world:
   x: 2
   y: 1
 time:
-  merit_inc_apply_immediate: 1
+  merit_inc_apply_immediate: true
 kaboom:
   prob: 0.0
 

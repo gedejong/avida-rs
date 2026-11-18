@@ -11,12 +11,12 @@ The divide instruction (`h-divide` in the stock set) only succeeds if the organi
 | `divide.min_copied_lines` | 0.5 | At least this fraction of the genome must have been copied. |
 | `divide.min_exe_lines` | 0.5 | At least this fraction must have been executed. |
 | `divide.offspring_size_range` | 2.0 | The offspring may be at most this factor longer, or shorter, than the parent. |
-| `divide.require_allocate` | 1 | The organism must have allocated memory first (original CPU only). |
+| `divide.require_allocate` | true | The organism must have allocated memory first (original CPU only). |
 | `divide.require_single_reaction` | 0 | If 1 (or n), at least one (or n) reactions must have been triggered. Useful to force organisms to do a task. |
 | `divide.required_task`, `divide.required_reaction` | -1 (off) | A given task or reaction is required. |
-| `divide.require_exact_copy` | 0 | The offspring must be an exact copy (checked before divide mutations). |
+| `divide.require_exact_copy` | false | The offspring must be an exact copy (checked before divide mutations). |
 
-If the conditions fail, the divide fails and the organism carries on (or, with `reproduction.divide_failure_resets: 1`, resets itself).
+If the conditions fail, the divide fails and the organism carries on (or, with `reproduction.divide_failure_resets: true`, resets itself).
 
 ## Where the offspring goes
 
@@ -39,7 +39,7 @@ If the conditions fail, the divide fails and the organism carries on (or, with `
 | 12 | Nobody: the offspring is killed after its birth statistics are recorded (behavioural trials) |
 | 13 | Both parent and offspring are killed (behavioural trials) |
 
-`reproduction.prefer_empty` (stock 1) overrides the choice so that an empty cell in the neighbourhood is used if one exists. The *neighbourhood* is the cell's connections, which `world.geometry` defines: a bounded grid, a torus (the stock choice, a grid that wraps at the edges), a clique where every cell neighbours every other, a hexagonal grid, a partial grid, a random connected graph or a scale-free graph. The 3-D lattice (`world.geometry: 6`) is listed in the setting but stops with an `unsupported:` message because the C++ program reads out of bounds.
+`reproduction.prefer_empty` (stock true) overrides the choice so that an empty cell in the neighbourhood is used if one exists. The *neighbourhood* is the cell's connections, which `world.geometry` defines: a bounded grid, a torus (the stock choice, a grid that wraps at the edges), a clique where every cell neighbours every other, a hexagonal grid, a partial grid, a random connected graph or a scale-free graph. The 3-D lattice (`world.geometry: 6`) is listed in the setting but stops with an `unsupported:` message because the C++ program reads out of bounds.
 
 A world with local birth (method 0) and one with global birth (method 4) behave very differently: local birth makes lineages spread slowly and lets many lineages explore in parallel. [Population structure](../guides/tutorial-population-structure.md) compares them.
 
@@ -60,11 +60,11 @@ The settings that apply:
 | Setting | Stock | Meaning |
 |---|---|---|
 | `recombination.prob` | 1.0 | Probability that recombination takes place. |
-| `recombination.two_fold_cost_sex` | 0 | 0: both recombined offspring are born. 1: only one is born, which gives sex its two-fold cost. |
-| `recombination.same_length_sex` | 0 | 1: recombine only with a genome of the same length. |
-| `recombination.module_num`, `recombination.cont_rec_regs`, `recombination.correspond_rec_regs` | 0, 1, 1 | Modular recombination: number of modules, whether recombination regions are continuous, and whether they are swapped at corresponding positions. |
+| `recombination.two_fold_cost_sex` | false | false: both recombined offspring are born. true: only one is born, which gives sex its two-fold cost. |
+| `recombination.same_length_sex` | false | true: recombine only with a genome of the same length. |
+| `recombination.module_num`, `recombination.cont_rec_regs`, `recombination.correspond_rec_regs` | 0, true, true | Modular recombination: number of modules, whether recombination regions are continuous, and whether they are swapped at corresponding positions. |
 | `recombination.max_birth_wait_time` | -1 | Updates a newborn may wait for a partner (-1 is unlimited). |
-| `recombination.allow_mate_selection` | 0 | Let organisms choose mates (needs instruction-set support). |
+| `recombination.allow_mate_selection` | false | Let organisms choose mates (needs instruction-set support). |
 
 To run an experiment with sex, start from the stock folder and name the sex instruction set:
 
@@ -76,7 +76,7 @@ with `{at: begin, action: Inject, args: default-heads-sex.org}` in the events. T
 
 ### Mating types
 
-`mating.types: 1` gives organisms separate sexes (female and male), with optional mate choice (`mating.lekking`, `mating.forced_preference`, `mating.noisy_assessment` and `mating.assessment_cv`) and a *birth chamber* (limited to `mating.max_global_birth_chamber_size` waiting entries in a well-mixed world). Mating types need instruction-set support. The `mating_types` test of the consistency suite (`avida-core/tests/mating_types`) is a worked configuration. The instructions, the birth chamber rules, mate preferences, costs and output files are in [mating types and mate choice](mating-types.md). See also the [experiment file reference](../reference/config-yaml.md#mating).
+`mating.types: true` gives organisms separate sexes (female and male), with optional mate choice (`mating.lekking`, `mating.forced_preference`, `mating.noisy_assessment` and `mating.assessment_cv`) and a *birth chamber* (limited to `mating.max_global_birth_chamber_size` waiting entries in a well-mixed world). Mating types need instruction-set support. The `mating_types` test of the consistency suite (`avida-core/tests/mating_types`) is a worked configuration. The instructions, the birth chamber rules, mate preferences, costs and output files are in [mating types and mate choice](mating-types.md). See also the [experiment file reference](../reference/config-yaml.md#mating).
 
 ## Next
 

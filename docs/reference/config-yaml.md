@@ -56,10 +56,11 @@ An old setting name gets its new place in the answer.
 ### Values
 
 Every value is read by the parser the C++ program used for it, so a number
-means what it meant in `avida.cfg`. A setting whose type is an integer or a
-flag also takes `true` and `false` (1 and 0). A number setting refuses a
-value that does not start like a number (the C++ program read such a value as
-0). YAML does not interpret anything here: `1.0`, `0x10` and `yes` reach the
+means what it meant in `avida.cfg`. A flag is an on/off switch: it takes
+`true` or `false`, and `1` or `0`, and refuses anything else (`avida convert`
+writes `true` and `false`). A setting whose type is an integer also takes
+`true` and `false` (1 and 0). A number setting refuses a value that does not
+start like a number (the C++ program read such a value as 0). YAML does not interpret anything here: `1.0`, `0x10` and `yes` reach the
 parser as the text written.
 
 ### The command line
@@ -212,7 +213,7 @@ becomes, after `avida convert arm-a` and
 ## Settings by group
 
 Each group lists its settings with the C++ name, the type and the default.
-The descriptions are those of the C++ program.
+The descriptions are those of the C++ program, with `true` and `false` for the 0 and 1 of a flag.
 
 ### `general`
 
@@ -222,7 +223,7 @@ General settings.
 |---|---|---|---|---|
 | `verbosity` | `VERBOSITY` | integer | `1` | 0 = No output at all 1 = Normal output 2 = Verbose output, detailing progress 3 = High level of details, as available 4 = Print Debug Information, as applicable |
 | `random_seed` | `RANDOM_SEED` | integer | `-1` | Random number seed (<0 for based on time) |
-| `speculative` | `SPECULATIVE` | flag | `1` | Enable speculative execution (pre-execute instructions that don't affect other organisms) |
+| `speculative` | `SPECULATIVE` | flag | `true` | Enable speculative execution (pre-execute instructions that don't affect other organisms) |
 | `population_cap` | `POPULATION_CAP` | integer | `0` | Carrying capacity in number of organisms (use 0 for no cap) |
 | `population_cap_eldest` | `POP_CAP_ELDEST` | integer | `0` | Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring. |
 | `data_dir` | `DATA_DIR` | text | `data` | Directory in which config files are found |
@@ -257,7 +258,7 @@ Mutation rates.
 | `inst_point_prob` | `INST_POINT_MUT_PROB` | number | `0.0` | Mutation rate (per-location per time instruction (point-mut) is executed) |
 | `inst_point_slope` | `INST_POINT_MUT_SLOPE` | number | `0.0` | Slope for point mutation rate |
 | `inst_point_repair_cost` | `INST_POINT_REPAIR_COST` | integer | `0` | The cost, in cycles, of avoiding mutations when the point-mut instruction is executed |
-| `point_repair_start` | `POINT_MUT_REPAIR_START` | integer | `0` | The starting condition for repairs (on=1; off=0) |
+| `point_repair_start` | `POINT_MUT_REPAIR_START` | flag | `false` | The starting condition for repairs (true = on, false = off) |
 | `div_prob` | `DIV_MUT_PROB` | number | `0.0` | Substitution rate (per site, applied on divide) |
 | `div_ins_prob` | `DIV_INS_PROB` | number | `0.0` | Insertion rate (per site, applied on divide) |
 | `div_del_prob` | `DIV_DEL_PROB` | number | `0.0` | Deletion rate (per site, applied on divide) |
@@ -300,10 +301,10 @@ Birth and death.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `divide_failure_resets` | `DIVIDE_FAILURE_RESETS` | integer | `0` | When Divide fails, organisms are interally reset |
+| `divide_failure_resets` | `DIVIDE_FAILURE_RESETS` | flag | `false` | When Divide fails, organisms are interally reset |
 | `birth_method` | `BIRTH_METHOD` | integer | `0` | Which organism should be replaced when a birth occurs? 0 = Random organism in neighborhood 1 = Oldest in neighborhood 2 = Largest Age/Merit in neighborhood 3 = None (use only empty cells in neighborhood) 4 = Random from population (Mass Action) 5 = Oldest in entire population 6 = Random within deme 7 = Organism faced by parent 8 = Next grid cell (id+1) 9 = Largest energy used in entire population 10 = Largest energy used in neighborhood 11 = Local neighborhood dispersal 12 = Kill offpsring after recording birth stats (for behavioral trials) 13 = Kill parent and offpsring (for behavioral trials) |
-| `prefer_empty` | `PREFER_EMPTY` | integer | `1` | Overide BIRTH_METHOD to preferentially choose empty cells for offsping? |
-| `allow_parent` | `ALLOW_PARENT` | integer | `1` | Should parents be considered when deciding where to place offspring? |
+| `prefer_empty` | `PREFER_EMPTY` | flag | `true` | Overide BIRTH_METHOD to preferentially choose empty cells for offsping? |
+| `allow_parent` | `ALLOW_PARENT` | flag | `true` | Should parents be considered when deciding where to place offspring? |
 | `dispersal_rate` | `DISPERSAL_RATE` | number | `0.0` | Rate of dispersal under birth method 11 (poisson distributed random connection list hops) |
 | `death_prob` | `DEATH_PROB` | number | `0.0` | Probability of death when dividing. (@MAM: actually seems to be applied per-update?) |
 | `death_prob_parent` | `DEATH_PROB_PARENT` | number | `0.0` | Probability of death when dividing. (@MAM: proper DEATH_PROB impl) |
@@ -316,10 +317,10 @@ Birth and death.
 | `epigenetic_method` | `EPIGENETIC_METHOD` | integer | `0` | Inheritance of state information other than genome 0 = none 1 = offspring inherits registers and stacks of first thread 1 = parent maintains registers and stacks of first thread 1 = offspring and parent keep state information |
 | `generation_inc_method` | `GENERATION_INC_METHOD` | integer | `1` | 0 = Only increase generation of offspring on divide. 1 = Increase generation of both parent and offspring (suggested with DIVIDE_METHOD 1). |
 | `reset_inputs_on_divide` | `RESET_INPUTS_ON_DIVIDE` | integer | `0` | Reset environment inputs of parent upon successful divide. |
-| `inherit_merit` | `INHERIT_MERIT` | integer | `1` | Should merit be inhereted from mother parent? (in asexual) |
-| `inherit_multithread` | `INHERIT_MULTITHREAD`, `INHERIT_MULTI_THREAD_CLASSIFICATION` | integer | `0` | Should offspring of parents with multiple threads be marked multithreaded? |
+| `inherit_merit` | `INHERIT_MERIT` | flag | `true` | Should merit be inhereted from mother parent? (in asexual) |
+| `inherit_multithread` | `INHERIT_MULTITHREAD`, `INHERIT_MULTI_THREAD_CLASSIFICATION` | flag | `false` | Should offspring of parents with multiple threads be marked multithreaded? |
 | `repro_method` | `REPRO_METHOD` | integer | `1` | Replace existing organism: 1=yes DEPRECATED: Use BIRTH_METHOD 3 instead. |
-| `legacy_grid_local_selection` | `LEGACY_GRID_LOCAL_SELECTION` | flag | `0` | Enable legacy grid local mate selection. DEPRECATED: Birth chameber now uses population structure) |
+| `legacy_grid_local_selection` | `LEGACY_GRID_LOCAL_SELECTION` | flag | `false` | Enable legacy grid local mate selection. DEPRECATED: Birth chameber now uses population structure) |
 
 ### `divide`
 
@@ -333,7 +334,7 @@ Divide restrictions and triggers (conditions for a successful divide).
 | `min_genome_size` | `MIN_GENOME_SIZE` | integer | `0` | Minimum number of instructions allowed in a genome. 0 = OFF |
 | `max_genome_size` | `MAX_GENOME_SIZE` | integer | `0` | Maximum number of instructions allowed in a genome. 0 = OFF |
 | `min_cycles` | `MIN_CYCLES` | integer | `0` | Min number of CPU cycles (age) required before reproduction. |
-| `require_allocate` | `REQUIRE_ALLOCATE` | integer | `1` | (Original CPU Only) Require allocate before divide? |
+| `require_allocate` | `REQUIRE_ALLOCATE` | flag | `true` | (Original CPU Only) Require allocate before divide? |
 | `required_task` | `REQUIRED_TASK` | integer | `-1` | Task ID required for successful divide |
 | `immunity_task` | `IMMUNITY_TASK` | integer | `-1` | Task providing immunity from the required task |
 | `required_reaction` | `REQUIRED_REACTION` | integer | `-1` | Reaction ID required for successful divide |
@@ -341,7 +342,7 @@ Divide restrictions and triggers (conditions for a successful divide).
 | `require_single_reaction` | `REQUIRE_SINGLE_REACTION` | integer | `0` | If set to 1, at least one reaction is required for a successful divide; if set to n > 1, at least n reactions are required for a successful divide |
 | `max_unique_task_count` | `MAX_UNIQUE_TASK_COUNT` | integer | `-1` | Division will fail if organism performs more than MAX_TASK_COUNT when MAX_TASK_COUNT >= 0 |
 | `required_bonus` | `REQUIRED_BONUS` | number | `0.0` | Required bonus to divide |
-| `require_exact_copy` | `REQUIRE_EXACT_COPY` | integer | `0` | Require offspring to be an exact copy (checked before divide mutations) |
+| `require_exact_copy` | `REQUIRE_EXACT_COPY` | flag | `false` | Require offspring to be an exact copy (checked before divide mutations) |
 | `required_resource` | `REQUIRED_RESOURCE` | integer | `-1` | ID of resource required in organism's internal bins for successful divide (resource not consumed) |
 | `required_resource_level` | `REQUIRED_RESOURCE_LEVEL` | number | `0.0` | Level of resource needed for REQUIRED_RESOURCE |
 | `required_pred_habitat` | `REQUIRED_PRED_HABITAT` | integer | `-1` | Required resource habitat type in cell for predators to reproduce |
@@ -351,7 +352,7 @@ Divide restrictions and triggers (conditions for a successful divide).
 | `implicit_repro_bonus` | `IMPLICIT_REPRO_BONUS` | integer | `0` | Call Inst_Repro to divide upon achieving this bonus. 0 = OFF |
 | `implicit_repro_cpu_cycles` | `IMPLICIT_REPRO_CPU_CYCLES` | integer | `0` | Call Inst_Repro after this many cpu cycles. 0 = OFF |
 | `implicit_repro_time` | `IMPLICIT_REPRO_TIME` | integer | `0` | Call Inst_Repro after this time used. 0 = OFF |
-| `implicit_repro_end` | `IMPLICIT_REPRO_END` | integer | `0` | Call Inst_Repro after executing the last instruction in the genome. |
+| `implicit_repro_end` | `IMPLICIT_REPRO_END` | flag | `false` | Call Inst_Repro after executing the last instruction in the genome. |
 | `implicit_repro_energy` | `IMPLICIT_REPRO_ENERGY` | number | `0.0` | Call Inst_Repro if organism accumulates this amount of energy. |
 
 ### `recombination`
@@ -363,11 +364,11 @@ Sexual recombination and modularity.
 | `prob` | `RECOMBINATION_PROB` | number | `1.0` | Probability of recombination in div-sex |
 | `max_birth_wait_time` | `MAX_BIRTH_WAIT_TIME` | integer | `-1` | Updates incipiant orgs can wait for crossover (-1 = unlimited) |
 | `module_num` | `MODULE_NUM` | integer | `0` | Number of modules in the genome |
-| `cont_rec_regs` | `CONT_REC_REGS` | integer | `1` | Are (modular) recombination regions continuous? |
-| `correspond_rec_regs` | `CORESPOND_REC_REGS` | integer | `1` | Are (modular) recombination regions swapped randomly or with corresponding positions? |
-| `two_fold_cost_sex` | `TWO_FOLD_COST_SEX` | integer | `0` | 0 = Both offspring are born (no two-fold cost) 1 = only one recombined offspring is born. |
-| `same_length_sex` | `SAME_LENGTH_SEX` | integer | `0` | 0 = Recombine with any genome 1 = Recombine only w/ same length |
-| `allow_mate_selection` | `ALLOW_MATE_SELECTION` | flag | `0` | Allow organisms to select mates (requires instruction set support) |
+| `cont_rec_regs` | `CONT_REC_REGS` | flag | `true` | Are (modular) recombination regions continuous? |
+| `correspond_rec_regs` | `CORESPOND_REC_REGS` | flag | `true` | Are (modular) recombination regions swapped randomly or with corresponding positions? |
+| `two_fold_cost_sex` | `TWO_FOLD_COST_SEX` | flag | `false` | false = Both offspring are born (no two-fold cost) true = only one recombined offspring is born. |
+| `same_length_sex` | `SAME_LENGTH_SEX` | flag | `false` | false = Recombine with any genome true = Recombine only w/ same length |
+| `allow_mate_selection` | `ALLOW_MATE_SELECTION` | flag | `false` | Allow organisms to select mates (requires instruction set support) |
 
 ### `mating`
 
@@ -375,14 +376,14 @@ Mating types and mate choice.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `types` | `MATING_TYPES` | flag | `0` | Turn on separate mating types (i.e., males/females; off by default; requires instruction set support) |
-| `lekking` | `LEKKING` | flag | `0` | Offspring from males go directly into birth chamber to await female choice (off by default) |
+| `types` | `MATING_TYPES` | flag | `false` | Turn on separate mating types (i.e., males/females; off by default; requires instruction set support) |
+| `lekking` | `LEKKING` | flag | `false` | Offspring from males go directly into birth chamber to await female choice (off by default) |
 | `max_global_birth_chamber_size` | `MAX_GLOBAL_BIRTH_CHAMBER_SIZE` | integer | `3600` | Maximum number of waiting that can be stored in the birth chamber in a well-mixed population (3600 by default) |
-| `disable_genotype_classification` | `DISABLE_GENOTYPE_CLASSIFICATION` | flag | `0` | Disable tracking of historical genotypes to conserve memory (off by default) |
-| `noisy_assessment` | `NOISY_MATE_ASSESSMENT` | flag | `0` | Is mate assessment perfect (0) or noisy (1) (0 by default) |
+| `disable_genotype_classification` | `DISABLE_GENOTYPE_CLASSIFICATION` | flag | `false` | Disable tracking of historical genotypes to conserve memory (off by default) |
+| `noisy_assessment` | `NOISY_MATE_ASSESSMENT` | flag | `false` | Is mate assessment perfect (false) or noisy (true) (false by default) |
 | `assessment_cv` | `MATE_ASSESSMENT_CV` | number | `0.1` | Coefficient of variation for how noisy mate assessment is (0.1 by default) |
 | `forced_preference` | `FORCED_MATE_PREFERENCE` | integer | `-1` | Force all females to use a specific mate preference; -1 = off (mate preferences can evolve); 0 = all females mate randomly; 1 = all prefer highest display A; 2 = highest display B; 3 = highest merit |
-| `in_groups` | `MATE_IN_GROUPS` | flag | `0` | Require all mating to happen within groups |
+| `in_groups` | `MATE_IN_GROUPS` | flag | `false` | Require all mating to happen within groups |
 
 ### `parasites`
 
@@ -390,23 +391,23 @@ Parasites.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `log_injections` | `LOG_PARASITE_INJECTIONS` | flag | `0` | Log parasite replications? |
+| `log_injections` | `LOG_PARASITE_INJECTIONS` | flag | `false` | Log parasite replications? |
 | `inject_method` | `INJECT_METHOD` | integer | `0` | What should happen to a parasite when it gives birth? 0 = Leave the parasite thread state untouched. 1 = Resets the state of the calling thread (for SMT parasites, this must be 1) |
 | `infection_mechanism` | `INFECTION_MECHANISM`, `INJECT_IS_TASK_SPECIFIC` | integer | `1` | 0: Infection always succeeds. 1: Infection succeeds if parasite matches at least one host task. 2: Infection succeeds if parasite does NOT match at least one task. 3: Parasite tasks must match host tasks exactly (Matching Alleles). |
 | `inject_qma_exponent` | `INJECT_QMA_EXPONENT` | number | `0.2` | The exponent of the equation proportion_overlap^x that determines the probability of infection succeding given the amount a host and parasite phenotype match. |
-| `inject_sterilizes_host` | `INJECT_STERILIZES_HOST` | integer | `0` | Infection causes host steralization |
-| `inject_is_virulent` | `INJECT_IS_VIRULENT` | integer | `0` | Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence) |
-| `skip_reactions` | `PARASITE_SKIP_REACTIONS` | integer | `1` | Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0) |
-| `inject_skip_first_task` | `INJECT_SKIP_FIRST_TASK` | integer | `0` | They cannot match the first task the host is doing to infect |
+| `inject_sterilizes_host` | `INJECT_STERILIZES_HOST` | flag | `false` | Infection causes host steralization |
+| `inject_is_virulent` | `INJECT_IS_VIRULENT` | flag | `false` | Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence) |
+| `skip_reactions` | `PARASITE_SKIP_REACTIONS` | flag | `true` | Parasite tasks do not get processed in the environment (true) or they do trigger reactions (false) |
+| `inject_skip_first_task` | `INJECT_SKIP_FIRST_TASK` | flag | `false` | They cannot match the first task the host is doing to infect |
 | `inject_default_success` | `INJECT_DEFAULT_SUCCESS` | number | `0.0` | If injection is task specific, with what probability should non-matching parasites infect the host |
 | `virulence` | `PARASITE_VIRULENCE` | number | `-1` | The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment. Note that this should be set to a default even if virulence is evolving. |
 | `virulence_source` | `VIRULENCE_SOURCE` | integer | `0` | Virulence is set by config (0) or inhereted from parent (1) or host-controlled, i.e. donation (2) |
 | `virulence_mut_rate` | `VIRULENCE_MUT_RATE` | number | `0.1` | The probability that virulence will mutate if it is inhereted from the parent or host-controlled (VIRULENCE_SOURCE = 1 & 2) |
 | `virulence_sd` | `VIRULENCE_SD` | number | `0.1` | New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation |
-| `mem_spaces` | `PARASITE_MEM_SPACES` | integer | `1` | Parasites get their own memory spaces |
-| `no_copy_mut` | `PARASITE_NO_COPY_MUT` | integer | `0` | Parasites do not get copy mutation rates |
-| `use_genotype_file` | `PARASITE_USE_GENOTYPE_FILE` | integer | `0` | Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList |
-| `host_use_genotype_file` | `HOST_USE_GENOTYPE_FILE` | integer | `0` | Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList |
+| `mem_spaces` | `PARASITE_MEM_SPACES` | flag | `true` | Parasites get their own memory spaces |
+| `no_copy_mut` | `PARASITE_NO_COPY_MUT` | flag | `false` | Parasites do not get copy mutation rates |
+| `use_genotype_file` | `PARASITE_USE_GENOTYPE_FILE` | flag | `false` | Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList |
+| `host_use_genotype_file` | `HOST_USE_GENOTYPE_FILE` | flag | `false` | Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList |
 | `full_vertical_trans` | `FULL_VERTICAL_TRANS` | number | `0.0` | Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2. |
 
 ### `cpu`
@@ -415,7 +416,7 @@ Details on how the CPU works.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `io_expire` | `IO_EXPIRE` | flag | `1` | Is the expiration functionality of '-expire' I/O instructions enabled? |
+| `io_expire` | `IO_EXPIRE` | flag | `true` | Is the expiration functionality of '-expire' I/O instructions enabled? |
 | `poison_penalty` | `POISON_PENALTY` | number | `0.01` | Metabolic rate penalty applied when the 'poison' instruction is executed. |
 
 ### `mp`
@@ -424,7 +425,7 @@ Multiple, distributed populations.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `enabled` | `ENABLE_MP` | integer | `0` | Enable multi-process Avida; 0=disabled (default), 1=enabled. |
+| `enabled` | `ENABLE_MP` | flag | `false` | Enable multi-process Avida; false = disabled (default), true = enabled. |
 | `scheduling_style` | `MP_SCHEDULING_STYLE` | integer | `0` | Style of scheduling: 0=non-MP aware (default) 1=MP aware, integrated across worlds. |
 
 ### `demes`
@@ -437,12 +438,12 @@ Demes and germlines.
 | `count` | `NUM_DEMES` | integer | `1` | Number of independent groups in the population |
 | `competition_style` | `DEMES_COMPETITION_STYLE` | integer | `0` | How should demes compete? 0=Fitness proportional selection 1=Tournament selection |
 | `tournament_size` | `DEMES_TOURNAMENT_SIZE` | integer | `0` | Number of demes that participate in a tournament |
-| `override_fitness` | `DEMES_OVERRIDE_FITNESS` | integer | `0` | Should the calculated fitness is used? 0=yes (default) 1=no (all fitnesses=1) |
+| `override_fitness` | `DEMES_OVERRIDE_FITNESS` | flag | `false` | Should the calculated fitness be overridden? false = no, use it (default) true = yes (all fitnesses=1) |
 | `use_germline` | `DEMES_USE_GERMLINE` | integer | `0` | Should demes use a distinct germline? 0: No, 1: Traditional germ lines, 2: Genotype tracking, 3: Organism flagging germline |
-| `prevent_sterile` | `DEMES_PREVENT_STERILE` | integer | `0` | Prevent sterile demes from replicating? |
+| `prevent_sterile` | `DEMES_PREVENT_STERILE` | flag | `false` | Prevent sterile demes from replicating? |
 | `reset_resources` | `DEMES_RESET_RESOURCES` | integer | `0` | Reset resources in demes on replication? 0 = reset both demes 1 = reset target deme 2 = deme resources remain unchanged |
 | `replicate_size` | `DEMES_REPLICATE_SIZE` | integer | `1` | Number of identical organisms to create or copy from the source deme to the target deme |
-| `log_replicate` | `LOG_DEMES_REPLICATE` | flag | `0` | Log deme replications? |
+| `log_replicate` | `LOG_DEMES_REPLICATE` | flag | `false` | Log deme replications? |
 | `replicate_log_start` | `DEMES_REPLICATE_LOG_START` | integer | `0` | Update at which to start logging deme replications |
 | `prob_org_transfer` | `DEMES_PROB_ORG_TRANSFER` | number | `0.0` | Probablity of an organism being transferred from the source deme to the target deme |
 | `organism_selection` | `DEMES_ORGANISM_SELECTION` | integer | `0` | How should organisms be selected for transfer from source to target during deme replication? 0 = random with replacement 1 = sequential 2-6 = created, but not sure what they do 7 = organism(s) flagged germline 8=one of the organisms flagged as part of the germline |
@@ -471,12 +472,12 @@ Demes and germlines.
 | `divide_method` | `DEMES_DIVIDE_METHOD` | integer | `0` | Deme divide method. Only works with DEMES_SEED_METHOD 1 0 = Replace source and target demes 1 = Replace target deme, reset source deme to founders 2 = Replace target deme, leave source deme unchanged 3 = Replace the target deme, and reset the number of resources consumed by the source deme. 4 = Replace the target deme,  reset the number of resources consumed by the source deme, and kill the germ line organisms of the source deme |
 | `default_germline_propensity` | `DEMES_DEFAULT_GERMLINE_PROPENSITY` | number | `0.0` | Default germline propensity of organisms in deme. For use with DEMES_DIVIDE_METHOD 2. |
 | `founder_germline_propensity` | `DEMES_FOUNDER_GERMLINE_PROPENSITY` | number | `-1.0` | Default germline propensity of founder organisms in deme. For use with DEMES_DIVIDE_METHOD 2. <0 = OFF |
-| `prefer_empty` | `DEMES_PREFER_EMPTY` | integer | `0` | Give empty demes preference as targets of deme replication? |
+| `prefer_empty` | `DEMES_PREFER_EMPTY` | flag | `false` | Give empty demes preference as targets of deme replication? |
 | `protection_points` | `DEMES_PROTECTION_POINTS` | integer | `0` | The number of points a deme receives for each suicide. |
 | `uniform_migration_rate` | `MIGRATION_RATE` | number | `0.0` | Uniform probability of offspring migrating to a new deme. |
 | `track_shannon_info` | `DEMES_TRACK_SHANNON_INFO` | integer | `0` | Enable shannon mutual information tracking for demes. |
-| `mut_orgs_on_replication` | `DEMES_MUT_ORGS_ON_REPLICATION` | integer | `0` | Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): 0=OFF, 1=ON |
-| `orgs_start_in_germ` | `DEMES_ORGS_START_IN_GERM` | integer | `0` | Are orgs considered part of the germline at start? |
+| `mut_orgs_on_replication` | `DEMES_MUT_ORGS_ON_REPLICATION` | flag | `false` | Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): false = off, true = on |
+| `orgs_start_in_germ` | `DEMES_ORGS_START_IN_GERM` | flag | `false` | Are orgs considered part of the germline at start? |
 
 ### `reversion`
 
@@ -511,19 +512,19 @@ Time slicing and merit.
 | `base_const_merit` | `BASE_CONST_MERIT` | integer | `100` | Base merit value for BASE_MERIT_METHOD 0 |
 | `merit_bonus_inst` | `MERIT_BONUS_INST` | integer | `0` | Instruction ID to count for BASE_MERIT_METHOD 6 |
 | `merit_bonus_effect` | `MERIT_BONUS_EFFECT` | integer | `0` | Amount of merit earn per instruction for BASE_MERIT_METHOD 6 (-1 = penalty, 0 = no effect) |
-| `fitness_valley` | `FITNESS_VALLEY` | integer | `0` | in BASE_MERIT_METHOD 6, this creates valleys from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP (0 = off, 1 = on) |
+| `fitness_valley` | `FITNESS_VALLEY` | flag | `false` | in BASE_MERIT_METHOD 6, this creates valleys from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP (false = off, true = on) |
 | `fitness_valley_start` | `FITNESS_VALLEY_START` | integer | `0` | if FITNESS_VALLEY = 1, orgs with num_key_instructions from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP get fitness 1 (lowest) |
 | `fitness_valley_stop` | `FITNESS_VALLEY_STOP` | integer | `0` | if FITNESS_VALLEY = 1, orgs with num_key_instructions from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP get fitness 1 (lowest) |
 | `default_bonus` | `DEFAULT_BONUS` | number | `1.0` | Initial bonus before any tasks |
 | `merit_default_bonus` | `MERIT_DEFAULT_BONUS` | integer | `0` | Instead of inheriting bonus from parent, use this value instead (0 = off) |
-| `merit_inc_apply_immediate` | `MERIT_INC_APPLY_IMMEDIATE` | flag | `0` | Should merit increases (above current) be applied immediately, or delayed until divide? |
+| `merit_inc_apply_immediate` | `MERIT_INC_APPLY_IMMEDIATE` | flag | `false` | Should merit increases (above current) be applied immediately, or delayed until divide? |
 | `task_refractory_period` | `TASK_REFRACTORY_PERIOD` | number | `0.0` | Number of updates after taske until regain full value |
 | `fitness_method` | `FITNESS_METHOD` | integer | `0` | 0 = default, 1 = sigmoidal, |
 | `fitness_coeff_1` | `FITNESS_COEFF_1` | number | `1.0` | 1st FITNESS_METHOD parameter |
 | `fitness_coeff_2` | `FITNESS_COEFF_2` | number | `1.0` | 2nd FITNESS_METHOD parameter |
 | `max_cpu_threads` | `MAX_CPU_THREADS` | integer | `1` | Maximum number of Threads a CPU can spawn |
 | `thread_slicing_method` | `THREAD_SLICING_METHOD` | integer | `0` | Formula for allocating CPU cycles across threads in an organism (num_threads-1) * THREAD_SLICING_METHOD + 1 0 = One thread executed per time slice. 1 = All threads executed each time slice. |
-| `no_cpu_cycle_time` | `NO_CPU_CYCLE_TIME` | integer | `0` | Don't count each CPU cycle as part of gestation time |
+| `no_cpu_cycle_time` | `NO_CPU_CYCLE_TIME` | flag | `false` | Don't count each CPU cycle as part of gestation time |
 | `max_label_exe_size` | `MAX_LABEL_EXE_SIZE` | integer | `1` | Max nops marked as executed when labels are used |
 | `precalc_phenotype` | `PRECALC_PHENOTYPE` | integer | `0` | 0 = Disabled 1 = Assign precalculated merit at birth (unlimited resources only) 2 = Assign precalculated gestation time 3 = Assign precalculated merit AND gestation time. 4 = Assign last instruction counts 5 = Assign last instruction counts and merit 6 = Assign last instruction counts and gestation time 7 = Assign everything currently supported Fitness will be evaluated for organism based on these settings. |
 | `genotype_phenplast_calc` | `GENOTYPE_PHENPLAST_CALC` | integer | `100` | Number of times to test a genotype's plasticity during runtime. |
@@ -568,7 +569,7 @@ Genealogy.
 |---|---|---|---|---|
 | `threshold` | `THRESHOLD` | integer | `3` | Number of organisms in a genotype needed for it to be considered viable. |
 | `test_cpu_time_mod` | `TEST_CPU_TIME_MOD` | integer | `20` | Time allocated in test CPUs (multiple of length) |
-| `drop_extinct_genotypes` | `DROP_EXTINCT_GENOTYPES` | integer | `0` | 0 = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does) 1 = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop |
+| `drop_extinct_genotypes` | `DROP_EXTINCT_GENOTYPES` | flag | `false` | false = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does) true = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop |
 
 ### `network`
 
@@ -577,8 +578,8 @@ Organism network communication.
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
 | `drop_prob` | `NET_DROP_PROB` | number | `0.0` | Message drop rate |
-| `log_messages` | `NET_LOG_MESSAGES` | integer | `0` | Whether all messages are logged; 0=false (default), 1=true. |
-| `log_retmessages` | `NET_LOG_RETMESSAGES` | integer | `0` | Whether retrieved messages are logged; 0=false (default), 1=true. |
+| `log_messages` | `NET_LOG_MESSAGES` | flag | `false` | Whether all messages are logged; false (default) or true. |
+| `log_retmessages` | `NET_LOG_RETMESSAGES` | flag | `false` | Whether retrieved messages are logged; false (default) or true. |
 
 ### `messaging`
 
@@ -590,9 +591,9 @@ Organism message-based communication.
 | `recv_buffer_size` | `MESSAGE_RECV_BUFFER_SIZE` | integer | `8` | Size of message receive buffer (stores messages that are received); -1=inf, default=8. |
 | `recv_buffer_behavior` | `MESSAGE_RECV_BUFFER_BEHAVIOR` | integer | `0` | Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming |
 | `active_messages_enabled` | `ACTIVE_MESSAGES_ENABLED` | integer | `0` | Enable active messages. 0 = off 2 = message creates parallel thread |
-| `check_task_on_send` | `CHECK_TASK_ON_SEND` | flag | `1` | 0: Don't check tasks on send, 1: Check tasks on send (default) |
-| `neural_networking` | `NEURAL_NETWORKING` | flag | `0` | Turns neural networking system on/off. Requires USE_AVATARS be turned on. |
-| `self_communication` | `SELF_COMMUNICATION` | flag | `0` | Allows organisms to create self communication loops. An organism's input avatars can receive messages from it's own output avatars. |
+| `check_task_on_send` | `CHECK_TASK_ON_SEND` | flag | `true` | false: Don't check tasks on send, true: Check tasks on send (default) |
+| `neural_networking` | `NEURAL_NETWORKING` | flag | `false` | Turns neural networking system on/off. Requires USE_AVATARS be turned on. |
+| `self_communication` | `SELF_COMMUNICATION` | flag | `false` | Allows organisms to create self communication loops. An organism's input avatars can receive messages from it's own output avatars. |
 
 ### `buy_sell`
 
@@ -600,7 +601,7 @@ Buying and selling.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `save_received` | `SAVE_RECEIVED` | flag | `0` | Enable storage of all inputs bought from other orgs |
+| `save_received` | `SAVE_RECEIVED` | flag | `false` | Enable storage of all inputs bought from other orgs |
 
 ### `hoarding`
 
@@ -608,14 +609,14 @@ Resource hoarding.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `use_resource_bins` | `USE_RESOURCE_BINS` | flag | `0` | Enable resource bin use.  This serves as a guard on most resource hoarding code. |
+| `use_resource_bins` | `USE_RESOURCE_BINS` | flag | `false` | Enable resource bin use.  This serves as a guard on most resource hoarding code. |
 | `absorb_resource_fraction` | `ABSORB_RESOURCE_FRACTION` | number | `.0025` | Fraction of available environmental resource an organism absorbs. |
 | `multi_absorb_type` | `MULTI_ABSORB_TYPE` | integer | `0` | What to do if a collect instruction is called on a range of resources. 0 = absorb a random resource in the range 1 = absorb the first resource in the range 2 = absorb the last resource in the range 3 = absorb ABSORB_RESOURCE_FRACTION / (# of resources in range) of each resource in the range |
 | `max_total_stored` | `MAX_TOTAL_STORED` | number | `-1` | Maximum total amount of all resources an organism can store. <0 = no maximum |
 | `use_stored_fraction` | `USE_STORED_FRACTION` | number | `1.0` | The fraction of stored resource to use. |
 | `env_fraction_threshold` | `ENV_FRACTION_THRESHOLD` | number | `1.0` | The fraction of available environmental resource to compare available stored resource to when deciding whether to use stored resource. |
-| `return_stored_on_death` | `RETURN_STORED_ON_DEATH` | flag | `1` | Return an organism's stored resources to the world when it dies? |
-| `split_on_divide` | `SPLIT_ON_DIVIDE` | flag | `1` | Split mother cell's resources between two daughter cells on division? |
+| `return_stored_on_death` | `RETURN_STORED_ON_DEATH` | flag | `true` | Return an organism's stored resources to the world when it dies? |
+| `split_on_divide` | `SPLIT_ON_DIVIDE` | flag | `true` | Split mother cell's resources between two daughter cells on division? |
 | `collect_specific_resource` | `COLLECT_SPECIFIC_RESOURCE` | integer | `0` | Resource to be collected by the "collect-specific" instruction. |
 | `non_1_resource_ratios` | `NON_1_RESOURCE_RATIOS` | text | `1:1` | Resources to be collected by the "collect-specific-ratio" instruction in a non 1:1 ratio. Specify as 'resourceID1:ratio1, resouceID2:ratio2' etc |
 | `collect_amount` | `COLLECT_AMOUNT` | number | `1` | The amount to collect for collect-specific, or for a resource with a ratio of 1 in collect-specific-ratio |
@@ -631,7 +632,7 @@ Analysis mode.
 |---|---|---|---|---|
 | `file` | `ANALYZE_FILE` | text | `analyze.cfg` | File used for analysis mode |
 | `max_concurrency` | `MAX_CONCURRENCY` | integer | `-1` | Maximum number of analyze threads, -1 == use all available. |
-| `inject_resets_tasks` | `INJECT_RESETS_TASKS` | integer | `0` | Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count |
+| `inject_resets_tasks` | `INJECT_RESETS_TASKS` | flag | `false` | Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count |
 | `option_1` | `ANALYZE_OPTION_1` | text | `` | String variable accessible from analysis scripts |
 | `option_2` | `ANALYZE_OPTION_2` | text | `` | String variable accessible from analysis scripts |
 | `mode` | `ANALYZE_MODE` | integer | `0` | 0 = Disabled 1 = Enabled 2 = Interactive DEPRECATED: use command line options -a[nalyze] or -i[nteractive]) |
@@ -642,7 +643,7 @@ Energy model.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `enabled` | `ENERGY_ENABLED` | flag | `0` | Enable Energy Model. 0/1 (off/on) |
+| `enabled` | `ENERGY_ENABLED` | flag | `false` | Enable Energy Model (true = on, false = off) |
 | `given_on_inject` | `ENERGY_GIVEN_ON_INJECT` | number | `0.0` | Energy given to organism upon injection. |
 | `given_at_birth` | `ENERGY_GIVEN_AT_BIRTH` | number | `0.0` | Energy given to offspring upon birth. |
 | `frac_parent_energy_given_to_org_at_birth` | `FRAC_PARENT_ENERGY_GIVEN_TO_ORG_AT_BIRTH` | number | `0.5` | Fraction of parent's energy given to offspring organism. |
@@ -654,10 +655,10 @@ Energy model.
 | `apply_method` | `APPLY_ENERGY_METHOD` | integer | `0` | When should rewarded energy be applied to current energy? 0 = on divide 1 = on completion of task 2 = on sleep |
 | `fix_metabolic_rate` | `FIX_METABOLIC_RATE` | number | `-1.0` | Fix organism metobolic rate to value.  This value is static.  Feature disabled by default (value == -1) |
 | `frac_energy_transfer` | `FRAC_ENERGY_TRANSFER` | number | `0.0` | Fraction of replaced organism's energy take by new resident |
-| `log_sleep_times` | `LOG_SLEEP_TIMES` | flag | `0` | Log sleep start and end times. 0/1 (off/on) WARNING: may use lots of memory. |
+| `log_sleep_times` | `LOG_SLEEP_TIMES` | flag | `false` | Log sleep start and end times (true = on, false = off). WARNING: may use lots of memory. |
 | `frac_energy_relinquish` | `FRAC_ENERGY_RELINQUISH` | number | `1.0` | Fraction of organisms energy to relinquish |
 | `passed_on_deme_replication_method` | `ENERGY_PASSED_ON_DEME_REPLICATION_METHOD` | integer | `0` | Who get energy passed from a parent deme 0 = Energy divided among organisms injected to offspring deme 1 = Energy divided among cells in offspring deme |
-| `inherit_exe_rate` | `INHERIT_EXE_RATE` | integer | `0` | Inherit energy rate from parent? 0=no  1=yes |
+| `inherit_exe_rate` | `INHERIT_EXE_RATE` | flag | `false` | Inherit energy rate from parent? false = no, true = yes |
 | `attack_decay_rate` | `ATTACK_DECAY_RATE` | number | `0.0` | Percent of cell's energy decayed by attack |
 | `thresh_low` | `ENERGY_THRESH_LOW` | number | `.33` | Threshold percent below which energy level is considered low.  Requires ENERGY_CAP. |
 | `thresh_high` | `ENERGY_THRESH_HIGH` | number | `.75` | Threshold percent above which energy level is considered high.  Requires ENERGY_CAP. |
@@ -674,7 +675,7 @@ Energy sharing.
 | `pct` | `ENERGY_SHARING_PCT` | number | `0.0` | Percent of energy to share |
 | `increment` | `ENERGY_SHARING_INCREMENT` | number | `0.01` | Amount to change percent energy shared |
 | `resource_sharing_loss` | `RESOURCE_SHARING_LOSS` | number | `0.0` | Fraction of shared resource lost in transfer |
-| `update_metabolic` | `ENERGY_SHARING_UPDATE_METABOLIC` | flag | `0` | 0/1 (off/on) - Whether to update an organism's metabolic rate on donate or reception/application of energy |
+| `update_metabolic` | `ENERGY_SHARING_UPDATE_METABOLIC` | flag | `false` | Whether to update an organism's metabolic rate on donate or reception/application of energy (true = on, false = off) |
 
 ### `second_pass`
 
@@ -682,7 +683,7 @@ Tracking metrics known from an earlier run of the experiment.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `track_cclades` | `TRACK_CCLADES` | integer | `0` | Enable tracking of coalescence clades |
+| `track_cclades` | `TRACK_CCLADES` | flag | `false` | Enable tracking of coalescence clades |
 | `track_cclades_ids` | `TRACK_CCLADES_IDS` | text | `coalescence.ids` | File storing coalescence IDs |
 
 ### `gene_expression`
@@ -693,7 +694,7 @@ Gene expression CPU.
 |---|---|---|---|---|
 | `max_programids` | `MAX_PROGRAMIDS` | integer | `16` | Maximum number of programids an organism can create. |
 | `max_programid_age` | `MAX_PROGRAMID_AGE` | integer | `2000` | Max number of CPU cycles a programid executes before it is removed. |
-| `implicit_gene_expression` | `IMPLICIT_GENE_EXPRESSION` | integer | `0` | Create executable programids from the genome without explicit allocation and copying? |
+| `implicit_gene_expression` | `IMPLICIT_GENE_EXPRESSION` | flag | `false` | Create executable programids from the genome without explicit allocation and copying? |
 | `implicit_bg_promoter_rate` | `IMPLICIT_BG_PROMOTER_RATE` | number | `0.0` | Relative rate of non-promoter sites creating programids. |
 | `implicit_turnover_rate` | `IMPLICIT_TURNOVER_RATE` | number | `0.0` | Number of programids recycled per CPU cycle. 0 = OFF |
 | `implicit_max_programid_length` | `IMPLICIT_MAX_PROGRAMID_LENGTH` | integer | `0` | Creation of an executable programid terminates after this many instructions. 0 = disabled |
@@ -704,19 +705,19 @@ Promoters.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `enabled` | `PROMOTERS_ENABLED` | integer | `0` | Use the promoter/terminator execution scheme. Certain instructions must also be included. |
+| `enabled` | `PROMOTERS_ENABLED` | flag | `false` | Use the promoter/terminator execution scheme. Certain instructions must also be included. |
 | `inst_max` | `PROMOTER_INST_MAX` | integer | `0` | Maximum number of instructions to execute before terminating. 0 = off |
 | `processivity` | `PROMOTER_PROCESSIVITY` | number | `1.0` | Chance of not terminating after each cpu cycle. |
 | `processivity_inst` | `PROMOTER_PROCESSIVITY_INST` | number | `1.0` | Chance of not terminating after each instruction. |
-| `to_register` | `PROMOTER_TO_REGISTER` | integer | `0` | Place a promoter's base bit code in register BX when starting execution from it? |
-| `termination_resets` | `TERMINATION_RESETS` | integer | `0` | Does termination reset the thread's state? |
+| `to_register` | `PROMOTER_TO_REGISTER` | flag | `false` | Place a promoter's base bit code in register BX when starting execution from it? |
+| `termination_resets` | `TERMINATION_RESETS` | flag | `false` | Does termination reset the thread's state? |
 | `no_active_promoter_effect` | `NO_ACTIVE_PROMOTER_EFFECT` | integer | `0` | What happens when there are no active promoters? 0 = Start execution at the beginning of the genome. 1 = Kill the organism. 2 = Stop the organism from executing any further instructions. |
 | `code_size` | `PROMOTER_CODE_SIZE` | integer | `24` | Size of a promoter code in bits. (Maximum value is 32) |
 | `exe_length` | `PROMOTER_EXE_LENGTH` | integer | `3` | Length of promoter windows used to determine execution. |
 | `exe_threshold` | `PROMOTER_EXE_THRESHOLD` | integer | `2` | Minimum number of bits that must be set in a promoter window to allow execution. |
 | `inst_code_length` | `INST_CODE_LENGTH` | integer | `3` | Instruction binary code length (number of bits) |
 | `inst_code_default_type` | `INST_CODE_DEFAULT_TYPE` | integer | `0` | Default value of instruction binary code value. 0 = All zeros 1 = Based off the instruction number |
-| `constitutive_regulation` | `CONSTITUTIVE_REGULATION` | integer | `0` | Sense a new regulation value before each CPU cycle? |
+| `constitutive_regulation` | `CONSTITUTIVE_REGULATION` | flag | `false` | Sense a new regulation value before each CPU cycle? |
 
 ### `colors`
 
@@ -745,12 +746,12 @@ Movement and avatars.
 | `collisions_selection_type` | `MOVEMENT_COLLISIONS_SELECTION_TYPE` | integer | `0` | 0 = 50% chance 1 = binned vitality based |
 | `vitality_bin_extremes` | `VITALITY_BIN_EXTREMES` | number | `1.0` | vitality multiplier for extremes (> 1 stddev from the mean population age) |
 | `vitality_bin_center` | `VITALITY_BIN_CENTER` | number | `10.0` | vitality multiplier for center bin (with 1 stddev of the mean population age) |
-| `deadly_boundaries` | `DEADLY_BOUNDARIES` | integer | `0` | Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die) |
+| `deadly_boundaries` | `DEADLY_BOUNDARIES` | flag | `false` | Are bounded grid border cell deadly? If true, orgs stepping onto boundary cells will disappear into oblivion (aka die) |
 | `step_counting_error` | `STEP_COUNTING_ERROR` | integer | `0` | % chance a step is not counted as part of easterly/northerly travel. |
 | `use_avatars` | `USE_AVATARS` | integer | `0` | Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions). |
 | `avatar_birth` | `AVATAR_BIRTH` | integer | `0` | 0 = Same as parent 1 = Random 2 = Cell faced by parent avatar 3 = next grid cell 4 = Center of the world |
 | `avatar_birth_facing` | `AVATAR_BIRTH_FACING` | integer | `0` | 0 North 1 Random |
-| `track_birth_locs` | `TRACK_BIRTH_LOCS` | integer | `0` | Log and print locations for all births place. |
+| `track_birth_locs` | `TRACK_BIRTH_LOCS` | flag | `false` | Log and print locations for all births place. |
 
 ### `sensing`
 
@@ -763,12 +764,12 @@ Sensing.
 | `look_disable_type` | `LOOK_DISABLE_TYPE` | integer | `0` | 0: predators 1: prey 2: both predators and prey |
 | `look_disable_combo` | `LOOK_DISABLE_COMBO` | integer | `0` | # 0: none # 1: return 'not found' for any food resource query # 2: return 'not found' for any looking-for-predator query # 3: return 'not found' for any looking-for-prey query |
 | `pred_confusion` | `PRED_CONFUSION` | integer | `0` | # If 1, pred will get random data returned to registers when seen prey with odds of 0.1 * n, where n = # neighbors that that prey has. # If 2, pred will get random data returned to registers with odds of n/8, where n = # facings among neighbors that that prey has. # If 3, will be number of opinions seen / number of opinions in restricted list. # If 4, look executions fail for predators. |
-| `track_look_settings` | `TRACK_LOOK_SETTINGS` | integer | `0` | # track (final) settings for look sensor use |
-| `track_look_output` | `TRACK_LOOK_OUTPUT` | integer | `0` | # track (final) output from sensor use |
+| `track_look_settings` | `TRACK_LOOK_SETTINGS` | flag | `false` | # track (final) settings for look sensor use |
+| `track_look_output` | `TRACK_LOOK_OUTPUT` | flag | `false` | # track (final) output from sensor use |
 | `use_display` | `USE_DISPLAY` | integer | `0` | If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data. |
-| `use_mimics` | `USE_MIMICS` | integer | `0` | If 1, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor) |
+| `use_mimics` | `USE_MIMICS` | flag | `false` | If true, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor) |
 | `mimic_odds` | `MIMIC_ODDS` | number | `1.0` | Odds that a mimic will appear to other organisms as the thing it is mimicing. |
-| `set_ft_at_birth` | `SET_FT_AT_BIRTH` | integer | `0` | Should offspring set forage target at birth? 0: No 1: Yes |
+| `set_ft_at_birth` | `SET_FT_AT_BIRTH` | flag | `false` | Should offspring set forage target at birth? false: No, true: Yes |
 
 ### `pheromone`
 
@@ -776,13 +777,13 @@ Pheromones.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `enabled` | `PHEROMONE_ENABLED` | flag | `0` | Enable pheromone usage. 0/1 (off/on) |
+| `enabled` | `PHEROMONE_ENABLED` | flag | `false` | Enable pheromone usage (true = on, false = off) |
 | `amount` | `PHEROMONE_AMOUNT` | number | `1.0` | Amount of pheromone to add per drop |
 | `drop_mode` | `PHEROMONE_DROP_MODE` | integer | `0` | Where to drop pheromone 0 = Half amount at src, half at dest 1 = All at source 2 = All at dest |
 | `exploit_explore_prob` | `EXPLOIT_EXPLORE_PROB` | number | `0.00` | Probability of random exploration instead of pheromone trail following |
 | `exploit_log_start` | `EXPLOIT_LOG_START` | integer | `0` | Update at which to start logging exploit moves |
 | `explore_log_start` | `EXPLORE_LOG_START` | integer | `0` | Update at which to start logging explore moves |
-| `log_inject` | `LOG_INJECT` | flag | `0` | Log injection of organisms.  0/1 (off/on) |
+| `log_inject` | `LOG_INJECT` | flag | `false` | Log injection of organisms (true = on, false = off) |
 | `inject_log_start` | `INJECT_LOG_START` | integer | `0` | Update at which to start logging injection of organisms |
 
 ### `sync`
@@ -813,15 +814,15 @@ Reputation.
 | `auto` | `AUTO_REPUTATION` | integer | `0` | Is an organism's reputation automatically computed based on its donations 0=no 1=increment for each donation + standing 2=+1 for donations given -1 for donations received 3=1 for donors -1 for recivers who have not donated 4=+1 for donors 5=+1 for donors during task check |
 | `alt_benefit` | `ALT_BENEFIT` | integer | `1.00` | Number multiplied by the number of raw materials received from another organism to compute reward |
 | `alt_cost` | `ALT_COST` | integer | `1.00` | Number multiplied by the number of your raw materials |
-| `rotate_on_donate` | `ROTATE_ON_DONATE` | integer | `0` | Rotate an organism to face its donor 0/1 (off/on) |
-| `reward` | `REPUTATION_REWARD` | integer | `0` | Reward an organism for having a good reputation |
+| `rotate_on_donate` | `ROTATE_ON_DONATE` | flag | `false` | Rotate an organism to face its donor (false = off, true = on) |
+| `reward` | `REPUTATION_REWARD` | flag | `false` | Reward an organism for having a good reputation |
 | `donation_failure_percent` | `DONATION_FAILURE_PERCENT` | integer | `0` | Percentage of times that a donation fails |
-| `randomize_raw_material_amount` | `RANDOMIZE_RAW_MATERIAL_AMOUNT` | integer | `0` | Should all the organisms receive the same amount 0/1 (off/on) |
+| `randomize_raw_material_amount` | `RANDOMIZE_RAW_MATERIAL_AMOUNT` | flag | `false` | Should all the organisms receive the same amount (false = same amount, true = randomized)? |
 | `donation_restrictions` | `DONATION_RESTRICTIONS` | integer | `0` | 0=none 1=inter-species only 2=different tag only |
 | `inherit` | `INHERIT_REPUTATION` | integer | `0` | 0=reputations are not inherited 1=reputations are inherited 2=tags are inherited |
-| `specialists` | `SPECIALISTS` | integer | `0` | 0=generalists allowed 1=only specialists |
+| `specialists` | `SPECIALISTS` | flag | `false` | false = generalists allowed true = only specialists |
 | `string_amount_cap` | `STRING_AMOUNT_CAP` | integer | `-1` | -1=no cap on string amounts #=CAP |
-| `match_already_produced` | `MATCH_ALREADY_PRODUCED` | integer | `0` | 0=off 1=on |
+| `match_already_produced` | `MATCH_ALREADY_PRODUCED` | flag | `false` | false = off true = on |
 
 ### `groups`
 
@@ -831,13 +832,13 @@ Group formation and predator-prey.
 |---|---|---|---|---|
 | `use_form_groups` | `USE_FORM_GROUPS` | integer | `0` | Enable organisms to form groups. 0=off, 1=on no restrict, 2=on restrict to defined |
 | `default_group` | `DEFAULT_GROUP` | integer | `-1` | Default group to assign to organisms not asserting a group membership (-1 indicates disabled) |
-| `inherit_opinion` | `INHERIT_OPINION` | integer | `1` | Should offspring inherit the parent's opinion? 0: No... reset on divide, etc. 1: Yes |
+| `inherit_opinion` | `INHERIT_OPINION` | flag | `true` | Should offspring inherit the parent's opinion? false: No... reset on divide, etc. true: Yes |
 | `opinion_buffer_size` | `OPINION_BUFFER_SIZE` | integer | `1` | Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0. |
 | `join_group_failure` | `JOIN_GROUP_FAILURE` | integer | `0` | Percent chance for failing to switch groups. If negative, is % chance of death. |
 | `tolerance_window` | `TOLERANCE_WINDOW` | integer | `0` | Window of previous updates used to evaluate org's tolerance levels (0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring) |
 | `max_tolerance` | `MAX_TOLERANCE` | integer | `1` | Maximum tolerance level |
 | `tolerance_variations` | `TOLERANCE_VARIATIONS` | integer | `0` | 0=all tolerance active, 1=only immigration tolerance active, 2=immigrants + sex |
-| `track_tolerance` | `TRACK_TOLERANCE` | integer | `0` | Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow) |
+| `track_tolerance` | `TRACK_TOLERANCE` | flag | `false` | Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow) |
 | `pred_prey_switch` | `PRED_PREY_SWITCH` | integer | `-1` | -2: no predators, but track prey stats -1: no predators in experiment 0: don't allow a predator to switch to being a prey (prey to pred always allowed) 1: allow predators to switch to being prey 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) ) |
 | `pred_efficiency` | `PRED_EFFICIENCY` | number | `1.0` | Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value and add to current predator values (for bonus, merit, and bin consumption instructions). |
 | `pred_efficiency_poison` | `PRED_EFFICIENCY_POISON` | number | `1.0` | Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value and subtract from current predator values if this prey is poisonous (ft == 2). |
@@ -849,7 +850,7 @@ Group formation and predator-prey.
 | `max_prey_bt` | `MAX_PREY_BT` | integer | `0` | Population cap on number of prey (random prey will be removed when cap is exceeded) based on FT. |
 | `track_group_attack_details` | `TRACK_GROUP_ATTACK_DETAILS` | integer | `0` | Track details around execution of EVERY group attack instructions for every update. 1 = as string in one file. 2 = as bits in new file for every update that this is on! |
 | `marking_expire_date` | `MARKING_EXPIRE_DATE` | integer | `-1` | Number of updates markings in cells will remain effective on territory move. |
-| `prey_mut_off` | `PREY_MUT_OFF` | integer | `0` | Turn off prey mutations in the exp hardware repro inst. |
+| `prey_mut_off` | `PREY_MUT_OFF` | flag | `false` | Turn off prey mutations in the exp hardware repro inst. |
 
 ### `deme_network`
 
@@ -858,10 +859,10 @@ Deme networks.
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
 | `type` | `DEME_NETWORK_TYPE` | integer | `0` | 0=topology, structure of network determines fitness. |
-| `requires_connectedness` | `DEME_NETWORK_REQUIRES_CONNECTEDNESS` | integer | `1` | Whether the deme's network must be connected before an actual fitness is calculated. |
+| `requires_connectedness` | `DEME_NETWORK_REQUIRES_CONNECTEDNESS` | flag | `true` | Whether the deme's network must be connected before an actual fitness is calculated. |
 | `topology_fitness` | `DEME_NETWORK_TOPOLOGY_FITNESS` | integer | `0` | Network measure used to determine fitness; see cDemeTopologyNetwork.h. |
 | `link_decay` | `DEME_NETWORK_LINK_DECAY` | integer | `0` | Number of updates after which a link decays; 0=no decay (default). |
-| `remove_node_on_death` | `DEME_NETWORK_REMOVE_NODE_ON_DEATH` | integer | `0` | Whether death of an organism in the deme removes its links; 0=no (default); 1=yes. |
+| `remove_node_on_death` | `DEME_NETWORK_REMOVE_NODE_ON_DEATH` | flag | `false` | Whether death of an organism in the deme removes its links; false = no (default); true = yes. |
 
 ### `hgt`
 
@@ -869,7 +870,7 @@ Horizontal gene transfer.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `enabled` | `ENABLE_HGT` | integer | `0` | Whether HGT is enabled; 0=false (default), 1=true. |
+| `enabled` | `ENABLE_HGT` | flag | `false` | Whether HGT is enabled; false (default), true. |
 | `source` | `HGT_SOURCE` | integer | `0` | Source of HGT fragments; 0=dead organisms (default), 1=parent. |
 | `fragment_selection` | `HGT_FRAGMENT_SELECTION` | integer | `0` | Method used to select fragments for HGT mutation; 0=random (default), 1=trimmed selection 2=random placement. |
 | `fragment_size_mean` | `HGT_FRAGMENT_SIZE_MEAN` | number | `10` | Mean size of fragments (default=10). |
@@ -899,7 +900,7 @@ Alarms.
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
 | `bcast_hops` | `BCAST_HOPS` | integer | `1` | Number of hops to broadcast an alarm |
-| `self` | `ALARM_SELF` | flag | `0` | Does sending an alarm move sender IP to alarm label? 0=no 1=yes |
+| `self` | `ALARM_SELF` | flag | `false` | Does sending an alarm move sender IP to alarm label? false = no true = yes |
 
 ### `division_of_labor`
 
@@ -907,7 +908,7 @@ Division of labor.
 
 | Key | C++ name | Type | Default | Description |
 |---|---|---|---|---|
-| `age_poly_tracking` | `AGE_POLY_TRACKING` | flag | `0` | Print data for an age-task histogram |
+| `age_poly_tracking` | `AGE_POLY_TRACKING` | flag | `false` | Print data for an age-task histogram |
 | `reaction_thresh` | `REACTION_THRESH` | integer | `0` | The number of times the deme must perform each reaction in order to replicate |
 | `task_switch_penalty` | `TASK_SWITCH_PENALTY` | integer | `0` | Cost of task switching in cycles |
 | `task_switch_penalty_type` | `TASK_SWITCH_PENALTY_TYPE` | integer | `0` | Type of task switch cost: (0) none (1) learning, (2) retooling or context, (3) centrifuge |

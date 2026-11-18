@@ -11,7 +11,7 @@ mutation:
   divide_ins_prob: 0.0
   divide_del_prob: 0.0
 reproduction:
-  allow_parent: 0
+  allow_parent: false
   death_method: 0
   age_limit: 0
   reset_inputs_on_divide: 1
@@ -19,16 +19,16 @@ time:
   ave_time_slice: 10
   slicing_method: 0
   base_merit_method: 0
-  merit_inc_apply_immediate: 1
+  merit_inc_apply_immediate: true
 hoarding:
-  use_resource_bins: 1
+  use_resource_bins: true
   absorb_resource_fraction: 1.0
   multi_absorb_type: 1
-  return_stored_on_death: 0
-  split_on_divide: 0
+  return_stored_on_death: false
+  split_on_divide: false
 movement:
   avatar_birth: 2
-  track_birth_locs: 1
+  track_birth_locs: true
 sensing:
   look_dist: 50
 groups:

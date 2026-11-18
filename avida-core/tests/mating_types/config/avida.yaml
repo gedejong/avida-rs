@@ -8,8 +8,8 @@ reproduction:
 recombination:
   max_birth_wait_time: 3
 mating:
-  types: 1
-  disable_genotype_classification: 1
+  types: true
+  disable_genotype_classification: true
   assessment_cv: 0.25
 
 instruction_sets:

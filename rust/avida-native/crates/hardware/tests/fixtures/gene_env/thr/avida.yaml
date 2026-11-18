@@ -6,7 +6,7 @@ general:
 mutation:
   copy_prob: 0.01
 reproduction:
-  inherit_merit: 0
+  inherit_merit: false
 divide:
   required_bonus: 2.0
 time:

@@ -505,9 +505,11 @@ pub struct Setting {
     pub name: String,
     /// The C++ name (`WORLD_X`), which the old `avida.cfg` used.
     pub old_name: &'static str,
-    /// The C++ type name (`int`, `double`, `bool`, `cString`).
+    /// The type name: the C++ one (`int`, `double`, `cString`), or `flag`
+    /// for an on/off switch.
     pub kind: &'static str,
-    /// The value in force, as `cAvidaConfig` prints it.
+    /// The value in force, as the experiment file writes it (`true` and
+    /// `false` for a flag).
     pub value: String,
     /// The built-in default, printed the same way.
     pub default: String,

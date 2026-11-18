@@ -12,7 +12,7 @@ divide:
 parasites:
   inject_method: 1
 time:
-  merit_inc_apply_immediate: 1
+  merit_inc_apply_immediate: true
   max_cpu_threads: 2
 energy:
   given_on_inject: 100.0

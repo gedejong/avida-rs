@@ -16,7 +16,7 @@ general:
   random_seed: -1
   # Enable speculative execution
   # (pre-execute instructions that don't affect other organisms)
-  speculative: 1
+  speculative: true
   # Carrying capacity in number of organisms (use 0 for no cap)
   population_cap: 0
   # Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring.
@@ -71,8 +71,8 @@ mutation:
   inst_point_slope: 0.0
   # The cost, in cycles, of avoiding mutations when the point-mut instruction is executed
   inst_point_repair_cost: 0
-  # The starting condition for repairs (on=1; off=0)
-  point_repair_start: 0
+  # The starting condition for repairs (true = on, false = off)
+  point_repair_start: false
   # Substitution rate (per site, applied on divide)
   div_prob: 0.0
   # Insertion rate (per site, applied on divide)
@@ -163,7 +163,7 @@ mutation:
 # Birth and death
 reproduction:
   # When Divide fails, organisms are interally reset
-  divide_failure_resets: 0
+  divide_failure_resets: false
   # Which organism should be replaced when a birth occurs?
   # 0 = Random organism in neighborhood
   # 1 = Oldest in neighborhood
@@ -181,9 +181,9 @@ reproduction:
   # 13 = Kill parent and offpsring (for behavioral trials)
   birth_method: 0
   # Overide BIRTH_METHOD to preferentially choose empty cells for offsping?
-  prefer_empty: 1
+  prefer_empty: true
   # Should parents be considered when deciding where to place offspring?
-  allow_parent: 1
+  allow_parent: true
   # Rate of dispersal under birth method 11
   # (poisson distributed random connection list hops)
   dispersal_rate: 0.0
@@ -225,15 +225,15 @@ reproduction:
   # Reset environment inputs of parent upon successful divide.
   reset_inputs_on_divide: 0
   # Should merit be inhereted from mother parent? (in asexual)
-  inherit_merit: 1
+  inherit_merit: true
   # Should offspring of parents with multiple threads be marked multithreaded?
-  inherit_multithread: 0
+  inherit_multithread: false
   # Replace existing organism: 1=yes
   # DEPRECATED: Use BIRTH_METHOD 3 instead.
   repro_method: 1
   # Enable legacy grid local mate selection.
   # DEPRECATED: Birth chameber now uses population structure)
-  legacy_grid_local_selection: 0
+  legacy_grid_local_selection: false
 
 # Divide restrictions and triggers (conditions for a successful divide)
 divide:
@@ -251,7 +251,7 @@ divide:
   # Min number of CPU cycles (age) required before reproduction.
   min_cycles: 0
   # (Original CPU Only) Require allocate before divide?
-  require_allocate: 1
+  require_allocate: true
   # Task ID required for successful divide
   required_task: -1
   # Task providing immunity from the required task
@@ -267,7 +267,7 @@ divide:
   # Required bonus to divide
   required_bonus: 0.0
   # Require offspring to be an exact copy (checked before divide mutations)
-  require_exact_copy: 0
+  require_exact_copy: false
   # ID of resource required in organism's internal bins for successful
   #   divide (resource not consumed)
   required_resource: -1
@@ -288,7 +288,7 @@ divide:
   # Call Inst_Repro after this time used. 0 = OFF
   implicit_repro_time: 0
   # Call Inst_Repro after executing the last instruction in the genome.
-  implicit_repro_end: 0
+  implicit_repro_end: false
   # Call Inst_Repro if organism accumulates this amount of energy.
   implicit_repro_energy: 0.0
 
@@ -301,42 +301,42 @@ recombination:
   # Number of modules in the genome
   module_num: 0
   # Are (modular) recombination regions continuous?
-  cont_rec_regs: 1
+  cont_rec_regs: true
   # Are (modular) recombination regions swapped randomly
   #  or with corresponding positions?
-  correspond_rec_regs: 1
-  # 0 = Both offspring are born (no two-fold cost)
-  # 1 = only one recombined offspring is born.
-  two_fold_cost_sex: 0
-  # 0 = Recombine with any genome
-  # 1 = Recombine only w/ same length
-  same_length_sex: 0
+  correspond_rec_regs: true
+  # false = Both offspring are born (no two-fold cost)
+  # true = only one recombined offspring is born.
+  two_fold_cost_sex: false
+  # false = Recombine with any genome
+  # true = Recombine only w/ same length
+  same_length_sex: false
   # Allow organisms to select mates (requires instruction set support)
-  allow_mate_selection: 0
+  allow_mate_selection: false
 
 # Mating types and mate choice
 mating:
   # Turn on separate mating types (i.e., males/females; off by default; requires instruction set support)
-  types: 0
+  types: false
   # Offspring from males go directly into birth chamber to await female choice (off by default)
-  lekking: 0
+  lekking: false
   # Maximum number of waiting that can be stored in the birth chamber in a well-mixed population (3600 by default)
   max_global_birth_chamber_size: 3600
   # Disable tracking of historical genotypes to conserve memory (off by default)
-  disable_genotype_classification: 0
-  # Is mate assessment perfect (0) or noisy (1) (0 by default)
-  noisy_assessment: 0
+  disable_genotype_classification: false
+  # Is mate assessment perfect (false) or noisy (true) (false by default)
+  noisy_assessment: false
   # Coefficient of variation for how noisy mate assessment is (0.1 by default)
   assessment_cv: 0.1
   # Force all females to use a specific mate preference; -1 = off (mate preferences can evolve); 0 = all females mate randomly; 1 = all prefer highest display A; 2 = highest display B; 3 = highest merit
   forced_preference: -1
   # Require all mating to happen within groups
-  in_groups: 0
+  in_groups: false
 
 # Parasites
 parasites:
   # Log parasite replications?
-  log_injections: 0
+  log_injections: false
   # What should happen to a parasite when it gives birth?
   # 0 = Leave the parasite thread state untouched.
   # 1 = Resets the state of the calling thread (for SMT parasites, this must be 1)
@@ -349,13 +349,13 @@ parasites:
   # The exponent of the equation proportion_overlap^x that determines the probability of infection succeding given the amount a host and parasite phenotype match.
   inject_qma_exponent: 0.2
   # Infection causes host steralization
-  inject_sterilizes_host: 0
+  inject_sterilizes_host: false
   # Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)
-  inject_is_virulent: 0
-  # Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0)
-  skip_reactions: 1
+  inject_is_virulent: false
+  # Parasite tasks do not get processed in the environment (true) or they do trigger reactions (false)
+  skip_reactions: true
   # They cannot match the first task the host is doing to infect
-  inject_skip_first_task: 0
+  inject_skip_first_task: false
   # If injection is task specific, with what probability should non-matching parasites infect the host
   inject_default_success: 0.0
   # The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment. Note that this should be set to a default even if virulence is evolving.
@@ -367,28 +367,28 @@ parasites:
   # New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation
   virulence_sd: 0.1
   # Parasites get their own memory spaces
-  mem_spaces: 1
+  mem_spaces: true
   # Parasites do not get copy mutation rates
-  no_copy_mut: 0
+  no_copy_mut: false
   # Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList
-  use_genotype_file: 0
+  use_genotype_file: false
   # Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList
-  host_use_genotype_file: 0
+  host_use_genotype_file: false
   # Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.
   full_vertical_trans: 0.0
 
 # Details on how the CPU works
 cpu:
   # Is the expiration functionality of '-expire' I/O instructions enabled?
-  io_expire: 1
+  io_expire: true
   # Metabolic rate penalty applied when the 'poison' instruction is executed.
   poison_penalty: 0.01
 
 # Multiple, distributed populations
 mp:
-  # Enable multi-process Avida; 0=disabled (default),
-  # 1=enabled.
-  enabled: 0
+  # Enable multi-process Avida; false = disabled (default),
+  # true = enabled.
+  enabled: false
   # Style of scheduling:
   # 0=non-MP aware (default)
   # 1=MP aware, integrated across worlds.
@@ -406,14 +406,14 @@ demes:
   competition_style: 0
   # Number of demes that participate in a tournament
   tournament_size: 0
-  # Should the calculated fitness is used?
-  # 0=yes (default)
-  # 1=no (all fitnesses=1)
-  override_fitness: 0
+  # Should the calculated fitness be overridden?
+  # false = no, use it (default)
+  # true = yes (all fitnesses=1)
+  override_fitness: false
   # Should demes use a distinct germline? 0: No, 1: Traditional germ lines, 2: Genotype tracking, 3: Organism flagging germline
   use_germline: 0
   # Prevent sterile demes from replicating?
-  prevent_sterile: 0
+  prevent_sterile: false
   # Reset resources in demes on replication?
   # 0 = reset both demes
   # 1 = reset target deme
@@ -424,7 +424,7 @@ demes:
   # source deme to the target deme
   replicate_size: 1
   # Log deme replications?
-  log_replicate: 0
+  log_replicate: false
   # Update at which to start logging deme replications
   replicate_log_start: 0
   # Probablity of an organism being transferred from the
@@ -520,17 +520,17 @@ demes:
   #  <0 = OFF
   founder_germline_propensity: -1.0
   # Give empty demes preference as targets of deme replication?
-  prefer_empty: 0
+  prefer_empty: false
   # The number of points a deme receives for each suicide.
   protection_points: 0
   # Uniform probability of offspring migrating to a new deme.
   uniform_migration_rate: 0.0
   # Enable shannon mutual information tracking for demes.
   track_shannon_info: 0
-  # Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): 0=OFF, 1=ON
-  mut_orgs_on_replication: 0
+  # Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): false = off, true = on
+  mut_orgs_on_replication: false
   # Are orgs considered part of the germline at start?
-  orgs_start_in_germ: 0
+  orgs_start_in_germ: false
 
 # Mutation reversion (most of these slow Avida down a lot and should normally be 0.0)
 reversion:
@@ -590,8 +590,8 @@ time:
   merit_bonus_effect: 0
   # in BASE_MERIT_METHOD 6, this creates valleys from
   # FITNESS_VALLEY_START to FITNESS_VALLEY_STOP
-  # (0 = off, 1 = on)
-  fitness_valley: 0
+  # (false = off, true = on)
+  fitness_valley: false
   # if FITNESS_VALLEY = 1, orgs with num_key_instructions
   # from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP
   # get fitness 1 (lowest)
@@ -605,7 +605,7 @@ time:
   # Instead of inheriting bonus from parent, use this value instead (0 = off)
   merit_default_bonus: 0
   # Should merit increases (above current) be applied immediately, or delayed until divide?
-  merit_inc_apply_immediate: 0
+  merit_inc_apply_immediate: false
   # Number of updates after taske until regain full value
   task_refractory_period: 0.0
   # 0 = default, 1 = sigmoidal,
@@ -624,7 +624,7 @@ time:
   thread_slicing_method: 0
   # Don't count each CPU cycle as part of gestation time
   #
-  no_cpu_cycle_time: 0
+  no_cpu_cycle_time: false
   # Max nops marked as executed when labels are used
   max_label_exe_size: 1
   # 0 = Disabled
@@ -691,18 +691,18 @@ genealogy:
   threshold: 3
   # Time allocated in test CPUs (multiple of length)
   test_cpu_time_mod: 20
-  # 0 = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does)
-  # 1 = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop
-  drop_extinct_genotypes: 0
+  # false = keep a genotype without living organisms while another genotype names it as a parent (as the C++ does)
+  # true = drop it as soon as its last organism dies: memory stays flat with sexual reproduction, ancestry (lineages, coalescence, kin distance) is not tracked and actions that need it stop
+  drop_extinct_genotypes: false
 
 # Organism network communication
 network:
   # Message drop rate
   drop_prob: 0.0
-  # Whether all messages are logged; 0=false (default), 1=true.
-  log_messages: 0
-  # Whether retrieved messages are logged; 0=false (default), 1=true.
-  log_retmessages: 0
+  # Whether all messages are logged; false (default) or true.
+  log_messages: false
+  # Whether retrieved messages are logged; false (default) or true.
+  log_retmessages: false
 
 # Organism message-based communication
 messaging:
@@ -718,24 +718,24 @@ messaging:
   # 0 = off
   # 2 = message creates parallel thread
   active_messages_enabled: 0
-  # 0: Don't check tasks on send, 1: Check tasks on send (default)
-  check_task_on_send: 1
+  # false: Don't check tasks on send, true: Check tasks on send (default)
+  check_task_on_send: true
   # Turns neural networking system on/off.
   # Requires USE_AVATARS be turned on.
-  neural_networking: 0
+  neural_networking: false
   # Allows organisms to create self communication loops.
   # An organism's input avatars can receive messages from it's own output avatars.
-  self_communication: 0
+  self_communication: false
 
 # Buying and selling
 buy_sell:
   # Enable storage of all inputs bought from other orgs
-  save_received: 0
+  save_received: false
 
 # Resource hoarding
 hoarding:
   # Enable resource bin use.  This serves as a guard on most resource hoarding code.
-  use_resource_bins: 0
+  use_resource_bins: false
   # Fraction of available environmental resource an organism absorbs.
   absorb_resource_fraction: 0.0025
   # What to do if a collect instruction is called on a range of resources.
@@ -752,9 +752,9 @@ hoarding:
   # The fraction of available environmental resource to compare available stored resource to when deciding whether to use stored resource.
   env_fraction_threshold: 1.0
   # Return an organism's stored resources to the world when it dies?
-  return_stored_on_death: 1
+  return_stored_on_death: true
   # Split mother cell's resources between two daughter cells on division?
-  split_on_divide: 1
+  split_on_divide: true
   # Resource to be collected by the "collect-specific" instruction.
   collect_specific_resource: 0
   # Resources to be collected by the "collect-specific-ratio" instruction in a non 1:1 ratio. Specify as 'resourceID1:ratio1, resouceID2:ratio2' etc
@@ -775,7 +775,7 @@ analyze:
   # Maximum number of analyze threads, -1 == use all available.
   max_concurrency: -1
   # Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count
-  inject_resets_tasks: 0
+  inject_resets_tasks: false
   # String variable accessible from analysis scripts
   option_1: ''
   # String variable accessible from analysis scripts
@@ -788,8 +788,8 @@ analyze:
 
 # Energy model
 energy:
-  # Enable Energy Model. 0/1 (off/on)
-  enabled: 0
+  # Enable Energy Model (true = on, false = off)
+  enabled: false
   # Energy given to organism upon injection.
   given_on_inject: 0.0
   # Energy given to offspring upon birth.
@@ -815,17 +815,17 @@ energy:
   fix_metabolic_rate: -1.0
   # Fraction of replaced organism's energy take by new resident
   frac_energy_transfer: 0.0
-  # Log sleep start and end times. 0/1 (off/on)
+  # Log sleep start and end times (true = on, false = off).
   # WARNING: may use lots of memory.
-  log_sleep_times: 0
+  log_sleep_times: false
   # Fraction of organisms energy to relinquish
   frac_energy_relinquish: 1.0
   # Who get energy passed from a parent deme
   # 0 = Energy divided among organisms injected to offspring deme
   # 1 = Energy divided among cells in offspring deme
   passed_on_deme_replication_method: 0
-  # Inherit energy rate from parent? 0=no  1=yes
-  inherit_exe_rate: 0
+  # Inherit energy rate from parent? false = no, true = yes
+  inherit_exe_rate: false
   # Percent of cell's energy decayed by attack
   attack_decay_rate: 0.0
   # Threshold percent below which energy level is considered low.  Requires ENERGY_CAP.
@@ -847,13 +847,13 @@ energy_sharing:
   increment: 0.01
   # Fraction of shared resource lost in transfer
   resource_sharing_loss: 0.0
-  # 0/1 (off/on) - Whether to update an organism's metabolic rate on donate or reception/application of energy
-  update_metabolic: 0
+  # Whether to update an organism's metabolic rate on donate or reception/application of energy (true = on, false = off)
+  update_metabolic: false
 
 # Tracking metrics known from an earlier run of the experiment
 second_pass:
   # Enable tracking of coalescence clades
-  track_cclades: 0
+  track_cclades: false
   # File storing coalescence IDs
   track_cclades_ids: coalescence.ids
 
@@ -864,7 +864,7 @@ gene_expression:
   # Max number of CPU cycles a programid executes before it is removed.
   max_programid_age: 2000
   # Create executable programids from the genome without explicit allocation and copying?
-  implicit_gene_expression: 0
+  implicit_gene_expression: false
   # Relative rate of non-promoter sites creating programids.
   implicit_bg_promoter_rate: 0.0
   # Number of programids recycled per CPU cycle. 0 = OFF
@@ -876,7 +876,7 @@ gene_expression:
 promoters:
   # Use the promoter/terminator execution scheme.
   # Certain instructions must also be included.
-  enabled: 0
+  enabled: false
   # Maximum number of instructions to execute before terminating. 0 = off
   inst_max: 0
   # Chance of not terminating after each cpu cycle.
@@ -884,9 +884,9 @@ promoters:
   # Chance of not terminating after each instruction.
   processivity_inst: 1.0
   # Place a promoter's base bit code in register BX when starting execution from it?
-  to_register: 0
+  to_register: false
   # Does termination reset the thread's state?
-  termination_resets: 0
+  termination_resets: false
   # What happens when there are no active promoters?
   # 0 = Start execution at the beginning of the genome.
   # 1 = Kill the organism.
@@ -905,7 +905,7 @@ promoters:
   # 1 = Based off the instruction number
   inst_code_default_type: 0
   # Sense a new regulation value before each CPU cycle?
-  constitutive_regulation: 0
+  constitutive_regulation: false
 
 # Output colours for data files printed in HTML mode (the first six for lineages, the rest for mutation tests)
 colors:
@@ -941,8 +941,8 @@ movement:
   vitality_bin_extremes: 1.0
   # vitality multiplier for center bin (with 1 stddev of the mean population age)
   vitality_bin_center: 10.0
-  # Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)
-  deadly_boundaries: 0
+  # Are bounded grid border cell deadly? If true, orgs stepping onto boundary cells will disappear into oblivion (aka die)
+  deadly_boundaries: false
   # % chance a step is not counted as part of easterly/northerly travel.
   step_counting_error: 0
   # Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).
@@ -957,7 +957,7 @@ movement:
   #  1 Random
   avatar_birth_facing: 0
   # Log and print locations for all births place.
-  track_birth_locs: 0
+  track_birth_locs: false
 
 # Sensing
 sensing:
@@ -993,22 +993,22 @@ sensing:
   #  # If 4, look executions fail for predators.
   pred_confusion: 0
   # # track (final) settings for look sensor use
-  track_look_settings: 0
+  track_look_settings: false
   # # track (final) output from sensor use
-  track_look_output: 0
+  track_look_output: false
   # If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.
   use_display: 0
-  # If 1, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)
-  use_mimics: 0
+  # If true, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)
+  use_mimics: false
   # Odds that a mimic will appear to other organisms as the thing it is mimicing.
   mimic_odds: 1.0
-  # Should offspring set forage target at birth? 0: No 1: Yes
-  set_ft_at_birth: 0
+  # Should offspring set forage target at birth? false: No, true: Yes
+  set_ft_at_birth: false
 
 # Pheromones
 pheromone:
-  # Enable pheromone usage. 0/1 (off/on)
-  enabled: 0
+  # Enable pheromone usage (true = on, false = off)
+  enabled: false
   # Amount of pheromone to add per drop
   amount: 1.0
   # Where to drop pheromone
@@ -1023,8 +1023,8 @@ pheromone:
   exploit_log_start: 0
   # Update at which to start logging explore moves
   explore_log_start: 0
-  # Log injection of organisms.  0/1 (off/on)
-  log_inject: 0
+  # Log injection of organisms (true = on, false = off)
+  log_inject: false
   # Update at which to start logging injection of
   # organisms
   inject_log_start: 0
@@ -1059,14 +1059,14 @@ reputation:
   alt_benefit: 1
   # Number multiplied by the number of your raw materials
   alt_cost: 1
-  # Rotate an organism to face its donor 0/1 (off/on)
-  rotate_on_donate: 0
+  # Rotate an organism to face its donor (false = off, true = on)
+  rotate_on_donate: false
   # Reward an organism for having a good reputation
-  reward: 0
+  reward: false
   # Percentage of times that a donation fails
   donation_failure_percent: 0
-  # Should all the organisms receive the same amount 0/1 (off/on)
-  randomize_raw_material_amount: 0
+  # Should all the organisms receive the same amount (false = same amount, true = randomized)?
+  randomize_raw_material_amount: false
   # 0=none
   # 1=inter-species only
   # 2=different tag only
@@ -1075,15 +1075,15 @@ reputation:
   # 1=reputations are inherited
   # 2=tags are inherited
   inherit: 0
-  # 0=generalists allowed
-  # 1=only specialists
-  specialists: 0
+  # false = generalists allowed
+  # true = only specialists
+  specialists: false
   # -1=no cap on string amounts
   # #=CAP
   string_amount_cap: -1
-  # 0=off
-  # 1=on
-  match_already_produced: 0
+  # false = off
+  # true = on
+  match_already_produced: false
 
 # Group formation and predator-prey
 groups:
@@ -1093,8 +1093,8 @@ groups:
   use_form_groups: 0
   # Default group to assign to organisms not asserting a group membership (-1 indicates disabled)
   default_group: -1
-  # Should offspring inherit the parent's opinion? 0: No... reset on divide, etc. 1: Yes
-  inherit_opinion: 1
+  # Should offspring inherit the parent's opinion? false: No... reset on divide, etc. true: Yes
+  inherit_opinion: true
   # Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.
   opinion_buffer_size: 1
   # Percent chance for failing to switch groups. If negative, is % chance of death.
@@ -1109,7 +1109,7 @@ groups:
   # 2=immigrants + sex
   tolerance_variations: 0
   # Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)
-  track_tolerance: 0
+  track_tolerance: false
   #  -2: no predators, but track prey stats
   #  -1: no predators in experiment
   #  0: don't allow a predator to switch to being a prey (prey to pred always allowed)
@@ -1142,29 +1142,29 @@ groups:
   #  Number of updates markings in cells will remain effective on territory move.
   marking_expire_date: -1
   # Turn off prey mutations in the exp hardware repro inst.
-  prey_mut_off: 0
+  prey_mut_off: false
 
 # Deme networks
 deme_network:
   # 0=topology, structure of network determines fitness.
   type: 0
   # Whether the deme's network must be connected before an actual fitness is calculated.
-  requires_connectedness: 1
+  requires_connectedness: true
   # Network measure used to determine fitness; see cDemeTopologyNetwork.h.
   topology_fitness: 0
   # Number of updates after which a link decays; 0=no decay (default).
   link_decay: 0
   # Whether death of an organism in
   # the deme removes its links;
-  # 0=no (default);
-  # 1=yes.
-  remove_node_on_death: 0
+  # false = no (default);
+  # true = yes.
+  remove_node_on_death: false
 
 # Horizontal gene transfer
 hgt:
-  # Whether HGT is enabled; 0=false (default),
-  # 1=true.
-  enabled: 0
+  # Whether HGT is enabled; false (default),
+  # true.
+  enabled: false
   # Source of HGT fragments; 0=dead organisms (default),
   # 1=parent.
   source: 0
@@ -1209,14 +1209,14 @@ alarm:
   # Number of hops to broadcast an alarm
   bcast_hops: 1
   # Does sending an alarm move sender IP to alarm label?
-  # 0=no
-  # 1=yes
-  self: 0
+  # false = no
+  # true = yes
+  self: false
 
 # Division of labor
 division_of_labor:
   # Print data for an age-task histogram
-  age_poly_tracking: 0
+  age_poly_tracking: false
   # The number of times the deme must perform each reaction in order to replicate
   reaction_thresh: 0
   # Cost of task switching in cycles

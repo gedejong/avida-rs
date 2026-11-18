@@ -12,7 +12,7 @@ groups:
   tolerance_window: 3
   max_tolerance: 10
   tolerance_variations: 1
-  track_tolerance: 1
+  track_tolerance: true
 
 instruction_sets:
   - name: heads_default

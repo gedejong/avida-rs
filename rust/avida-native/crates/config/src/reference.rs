@@ -4,7 +4,7 @@
 //! fails when the page in the tree differs; run it with
 //! `AVIDA_UPDATE_REFERENCE=1` to rewrite the page.
 
-use crate::config::{all_entries, EntryType};
+use crate::config::all_entries;
 use crate::experiment::{
     CELL_KEYS, EVENT_KEYS, GRADIENT_KEYS, GRID_KEYS, INST_KEYS, INST_SET_KEYS, PROCESS_KEYS,
     REACTION_KEYS, REQUISITE_KEYS, RESOURCE_KEYS, STOCK_SETS,
@@ -69,10 +69,11 @@ An old setting name gets its new place in the answer.
 ### Values
 
 Every value is read by the parser the C++ program used for it, so a number
-means what it meant in `avida.cfg`. A setting whose type is an integer or a
-flag also takes `true` and `false` (1 and 0). A number setting refuses a
-value that does not start like a number (the C++ program read such a value as
-0). YAML does not interpret anything here: `1.0`, `0x10` and `yes` reach the
+means what it meant in `avida.cfg`. A flag is an on/off switch: it takes
+`true` or `false`, and `1` or `0`, and refuses anything else (`avida convert`
+writes `true` and `false`). A setting whose type is an integer also takes
+`true` and `false` (1 and 0). A number setting refuses a value that does not
+start like a number (the C++ program read such a value as 0). YAML does not interpret anything here: `1.0`, `0x10` and `yes` reach the
 parser as the text written.
 
 ### The command line
@@ -225,15 +226,6 @@ becomes, after `avida convert arm-a` and
 ## Settings by group
 "#;
 
-fn type_name(ty: EntryType) -> &'static str {
-    match ty {
-        EntryType::Int => "integer",
-        EntryType::Double => "number",
-        EntryType::Bool => "flag",
-        EntryType::Str => "text",
-    }
-}
-
 fn cell(s: &str) -> String {
     s.split('\n')
         .map(str::trim)
@@ -270,7 +262,7 @@ pub fn reference_page() -> String {
         .replace("EVENT_KEY_LIST", &code_list(EVENT_KEYS));
     o.push('\n');
     o.push_str("Each group lists its settings with the C++ name, the type and the default.\n");
-    o.push_str("The descriptions are those of the C++ program.\n");
+    o.push_str("The descriptions are those of the C++ program, with `true` and `false` for the 0 and 1 of a flag.\n");
     for g in GROUPS {
         o.push_str(&format!("\n### `{}`\n\n{}.\n\n", g.key, g.title));
         o.push_str("| Key | C++ name | Type | Default | Description |\n|---|---|---|---|---|\n");
@@ -283,8 +275,8 @@ pub fn reference_page() -> String {
                 "| `{}` | {} | {} | `{}` | {} |\n",
                 s.key,
                 old,
-                type_name(s.ty()),
-                cell(s.default()),
+                s.kind().name(),
+                cell(&s.default_display()),
                 cell(s.desc())
             ));
         }

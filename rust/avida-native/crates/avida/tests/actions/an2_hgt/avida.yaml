@@ -4,7 +4,7 @@
 general:
   verbosity: 3
 hgt:
-  enabled: 1
+  enabled: true
 
 instruction_sets:
   - name: instset-heads.cfg

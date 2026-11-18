@@ -13,7 +13,7 @@ time:
 altruism:
   max_donates: 1000
 energy:
-  enabled: 1
+  enabled: true
   given_on_inject: 1000.0
   frac_energy_decay_at_org_birth: 0.05
   num_cycles_exc_before_0_energy: 1000

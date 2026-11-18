@@ -7,9 +7,9 @@ reputation:
   raw_material_amount: 0
   auto: 3
   alt_benefit: 2
-  specialists: 1
+  specialists: true
   string_amount_cap: 10
-  match_already_produced: 1
+  match_already_produced: true
 
 instruction_sets:
   - name: instset-reputation.cfg

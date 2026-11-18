@@ -12,7 +12,7 @@ demes:
   count: 5
   migration_method: 4
 hgt:
-  enabled: 1
+  enabled: true
 
 instruction_sets:
   - name: instset-heads.cfg

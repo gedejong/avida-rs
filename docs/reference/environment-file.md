@@ -43,9 +43,9 @@ Each entry declares one resource. The name `infinite`, or no resource at all in 
 | `xdiffuse`, `ydiffuse` | 1.0 | How fast the resource diffuses along each axis (0.0 to 1.0). |
 | `xgravity`, `ygravity` | 0 | How fast the resource moves in one direction along each axis (-1.0 to 1.0). |
 | `deme` | false | The resource belongs to each [deme](../concepts/demes.md). |
-| `energy` | false | An energy resource. Needs `energy.enabled: 1`, otherwise the environment is rejected. |
+| `energy` | false | An energy resource. Needs `energy.enabled: true`, otherwise the environment is rejected. |
 | `collectable` | | Whether organisms can collect it into internal bins with instructions. See [internal resources](../concepts/internal-resources.md). |
-| `hgt` | | A pool of genome fragments for horizontal gene transfer; needs `hgt.enabled: 1`, and no other options except the defaults. |
+| `hgt` | | A pool of genome fragments for horizontal gene transfer; needs `hgt.enabled: true`, and no other options except the defaults. |
 
 Examples:
 

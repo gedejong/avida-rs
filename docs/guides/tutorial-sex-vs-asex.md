@@ -30,4 +30,4 @@ If you forget the ancestor, the run stops with `error: invalid instruction set '
 
 Pilot (2 seeds, 15,000 updates): the sexual populations ended far fitter (median 1.3 million against 7,400) and found EQU in both runs, the asexual in neither. Two seeds cannot carry a claim like that. This is the tutorial to repeat with eight seeds.
 
-Settings that change how sex works are listed in [reproduction, birth and sex](../concepts/reproduction.md#sexual-reproduction), for example `recombination.two_fold_cost_sex: 1`, which lets only one recombined offspring be born, so that sex pays its two-fold cost.
+Settings that change how sex works are listed in [reproduction, birth and sex](../concepts/reproduction.md#sexual-reproduction), for example `recombination.two_fold_cost_sex: true`, which lets only one recombined offspring be born, so that sex pays its two-fold cost.

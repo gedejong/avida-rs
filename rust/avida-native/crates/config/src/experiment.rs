@@ -18,10 +18,9 @@
 //! of sets (`- my-sets.yaml`). There is no general include and no `$NAME`
 //! substitution.
 
-use crate::config::EntryType;
 use crate::feedback::Feedback;
 use crate::init_file::get_absolute_path;
-use crate::naming::{self, SettingDef, SettingInfo};
+use crate::naming::{self, SettingDef, SettingInfo, ValueKind};
 use crate::string_util::as_double;
 use crate::yaml::{self, Node, NodeKind};
 use crate::Config;
@@ -696,21 +695,29 @@ fn unknown_top_level_message(key: &str) -> String {
 }
 
 /// The text loaded into a setting: `true` and `false` stand for 1 and 0
-/// where the setting is an integer or a flag; anything else must start the
-/// way a number does where the setting is a number (the C++ parser read a
-/// word as 0).
+/// where the setting is an integer, and a flag takes `true`, `false`, `1`
+/// and `0` and nothing else; a number setting must start the way a number
+/// does (the C++ parser read a word as 0).
 pub fn setting_value(info: &SettingInfo, text: &str) -> Result<String, String> {
-    let ty = info.ty();
-    if matches!(ty, EntryType::Int | EntryType::Bool) {
+    let kind = info.kind();
+    if kind == ValueKind::Flag {
+        return match text.trim() {
+            "true" | "True" | "TRUE" | "1" => Ok("1".into()),
+            "false" | "False" | "FALSE" | "0" => Ok("0".into()),
+            _ => Err(format!(
+                "setting '{}' takes true or false, not '{text}'",
+                info.path()
+            )),
+        };
+    }
+    if kind == ValueKind::Int {
         match text {
             "true" | "True" | "TRUE" => return Ok("1".into()),
             "false" | "False" | "FALSE" => return Ok("0".into()),
             _ => {}
         }
     }
-    if matches!(ty, EntryType::Int | EntryType::Double | EntryType::Bool)
-        && !starts_like_number(text)
-    {
+    if matches!(kind, ValueKind::Int | ValueKind::Double) && !starts_like_number(text) {
         return Err(format!(
             "setting '{}' takes a number, not '{text}'",
             info.path()
@@ -1400,6 +1407,53 @@ fn render_inst_set(ctx: &Ctx<'_>, node: &Node) -> Result<Vec<String>, String> {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn a_flag_takes_true_false_one_and_zero_only() {
+        for (text, want) in [("true", 1), ("false", 0), ("1", 1), ("0", 0), ("TRUE", 1)] {
+            for path in [
+                "reproduction.prefer_empty",
+                "general.speculative",
+                "mp.enabled",
+            ] {
+                let mut c = Config::new();
+                c.set_path(path, text, ".").unwrap();
+                let info = naming::setting_by_path(path).unwrap();
+                assert_eq!(c.setting_text(&info), want.to_string(), "{path} {text}");
+            }
+        }
+        for text in ["2", "-1", "yes", "on", "0.5", "", "abc"] {
+            for path in ["reproduction.prefer_empty", "general.speculative"] {
+                let e = Config::new().set_path(path, text, ".").unwrap_err();
+                assert!(e.contains(path) && e.contains("true or false"), "{e}");
+            }
+        }
+    }
+
+    #[test]
+    fn an_integer_that_is_no_flag_keeps_its_numbers_and_refuses_text() {
+        let mut c = Config::new();
+        c.set_path("divide.require_single_reaction", "2", ".")
+            .unwrap();
+        assert_eq!(c.require_single_reaction, 2);
+        let e = c
+            .set_path("divide.require_single_reaction", "abc", ".")
+            .unwrap_err();
+        assert!(e.contains("takes a number"), "{e}");
+        assert!(!naming::setting_by_path("divide.require_single_reaction")
+            .unwrap()
+            .is_flag());
+    }
+
+    #[test]
+    fn flags_display_as_true_and_false() {
+        let info = naming::setting_by_path("reproduction.prefer_empty").unwrap();
+        assert_eq!(info.display("1"), "true");
+        assert_eq!(info.display("0"), "false");
+        assert_eq!(info.default_display(), "true");
+        let n = naming::settings().iter().filter(|s| s.is_flag()).count();
+        assert_eq!(n, 83);
+    }
     use super::*;
 
     fn scratch(name: &str) -> std::path::PathBuf {

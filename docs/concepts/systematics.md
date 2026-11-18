@@ -27,7 +27,7 @@ Because every genotype records its parent, the genotypes form a tree. Three tool
 
 ## Coalescence clades
 
-With `second_pass.track_cclades: 1`, the program tracks coalescence clades and `PrintCCladeCounts` and its relatives report them. The ids go to the file named by `second_pass.track_cclades_ids` (stock `coalescence.ids`).
+With `second_pass.track_cclades: true`, the program tracks coalescence clades and `PrintCCladeCounts` and its relatives report them. The ids go to the file named by `second_pass.track_cclades_ids` (stock `coalescence.ids`).
 
 ## Turning it off
 

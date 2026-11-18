@@ -11,7 +11,7 @@ groups:
   default_group: 0
   tolerance_window: 3
   max_tolerance: 10
-  track_tolerance: 1
+  track_tolerance: true
 
 instruction_sets:
   - name: heads_default

@@ -90,9 +90,9 @@ fn settings_of(cmd: &CmdLineOutcome, args: &[String]) -> Vec<Setting> {
                 from_command_line: from_cmdline.contains(&path),
                 name: path,
                 old_name: info.old,
-                kind: info.ty().type_name(),
-                default: defaults.setting_text(&info),
-                value: cmd.config.setting_text(&info),
+                kind: info.kind().type_name(),
+                default: info.display(&defaults.setting_text(&info)),
+                value: info.display(&cmd.config.setting_text(&info)),
                 desc: info.desc(),
             }
         })
