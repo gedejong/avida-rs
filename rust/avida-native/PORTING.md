@@ -335,6 +335,25 @@ cleared 0.25 (measured chance levels in `ARCHITECTURE.md`). The hand-written
 `sub` in both the stock and the modular set. `default-heads-modular.org` is
 the stock ancestor with its search label adapted to six nops.
 
+Additions of 2026-11-18, for stage 8 of the composed-computation experiment
+(`docs/guides/experiment-composed-computation.md`). None changes a
+configuration that does not name it.
+
+- `field_arith` argument `width` (default 32): only the `width / stride`
+  whole fields in the low `width` bits are judged. `width=24` keeps the top
+  byte of the inputs (0x0F, 0x33, 0x55, which the logic tasks need to see
+  every row of the truth table) out of the arithmetic.
+- `field_arith` functions `carry`, `(a & b) << 1`, and `partial`,
+  `(a ^ b) ^ ((a & b) << 1)`, both in `w + 1` result bits: the two steps of a
+  ripple adder before `add`.
+- Environment line `INPUT_AND_MASK <mask>` (hexadecimal with `0x`, or
+  decimal): the mask is ANDed onto every input `SetupInputs` hands out, in
+  the world and in the test CPU. It is applied after the random draws, so a
+  run with a mask draws the same random numbers as one without. A mask that
+  clears bits of the top byte makes the logic tasks see incomplete truth
+  tables; keep the top byte set (`0xFF......`).
+  `crates/environment/src/evaluation.rs`.
+
 ## Extension beyond the C++: knockout map and reuse measures (opt-in, 2026-11-15)
 
 Accepted by the maintainer on 2026-11-15. `PrintKnockoutMap [file]` and
@@ -389,6 +408,87 @@ genotypes stops with `unsupported:`: `PrintMODESData`,
 `PrintPhylogenyMetrics` and `SavePhylogeny` when the events are read, and the
 kin-distance check of the donate instructions at first use. The front ends
 show no Ancestry layer in such a run.
+
+## Extension beyond the C++: expected quality per genotype (opt-in, 2026-11-18)
+
+Today a task's quality for an organism is the one draw of inputs it has in
+hand when it outputs, so an organism that is right on most inputs is paid
+for the luck of the draw. A task with `expect=1` (`field_arith` only so far;
+`TaskLib::task_expected(id)` is the generic accessor, so other tasks can opt
+in) is paid the genotype's average quality over several test-CPU runs with
+random inputs instead. Two port-only settings
+(`config/src/port_settings.rs`, like `EXECUTION_MODE`): `EXPECTED_QUALITY_DRAWS`
+(default 8; the number of runs; 0 turns the feature off, and then a task with
+`expect=1` stops the run at load with a message naming both) and
+`EXPECTED_QUALITY_MIN` (default 0.25; a stored average below it counts as 0).
+
+**What changes.** Only task entries with `expect=1`, and only when the
+organism's own draw gives a quality above 0 (a draw of 0 stays 0 and the
+reaction does not fire, as before). The value the environment gets from
+`Environment::test_output` is then the genotype's stored average for that
+entry, which may be 0, so the reaction then does not fire. Everything
+downstream of the quality (the task mark, `cur_task_quality`, resource
+consumption, the `pow` bonus) sees that one value. The hook is
+`TaskEvaluator::expected_quality`, called right after the task's own test;
+every evaluator but a population organism's keeps the quality (the test
+CPU's evaluators never substitute, which is what keeps the trial runs from
+recursing).
+
+**The table.** Made lazily, the first time a living organism of the genotype
+has a positive own quality on an expected entry: `EXPECTED_QUALITY_DRAWS`
+runs of the genome on one test CPU with random inputs
+(`use_random_inputs(true)`; `INPUT_AND_MASK` and specific inputs apply in
+`Environment::setup_inputs` as for any test). Per run and expected entry the
+quality is `last_task_quality / last_task_count` (the mean over the times the
+task was performed in that run; a run that does not perform it, or whose
+organism never divides, counts 0); the table is the mean over the runs, with
+averages below `EXPECTED_QUALITY_MIN` stored as 0. It is kept per genotype
+(group id) in `WorldHost::expected`, dropped with the genotype
+(`prune_expected`, the way `prune_phenplast` does it: a sweep once the cache
+has doubled, at least 512 tables, keeping what is in the genotype arbiter;
+with `DROP_EXTINCT_GENOTYPES 1` that is the living genotypes only;
+`World::prune_expected_tables` sweeps at once). A genotype whose table was
+dropped and is asked for again gets a new table, from the same private
+stream, so the same values.
+
+**Random numbers and side effects.** The trial runs draw from a private
+stream (`avida_hardware::parallel::stream` of the run's seed and an FNV-1a
+hash of the genome's text, not of the genotype id), never from the world's
+RNG: a run with the feature on and no expected task is byte-identical to
+today, and with expected tasks the world's stream is disturbed only through
+the changed pay. The same genome has the same table in a run, and a table
+depends on the seed. The runs report nothing to the world's `Stats` (the
+phenotype's task counters go to a stand-in that drops them), leave no host
+operation behind (`WorldHost::pending` is cut back; the kaboom snapshot is
+restored as after a plasticity test), and a kill asked for by a trial
+(`MAX_PREY_BT`) stops the run instead of being dropped. The set-up is the
+plasticity test's (`WorldHost::run_in_test_world`, shared with
+`test_plasticity`): the test organisms see the host as the world in cell -1.
+
+**Parallel mode.** `EXECUTION_MODE 1` with an `expect=1` task stops at
+start-up with `unsupported: EXECUTION_MODE 1 with a task that has expect=1`.
+The table is made at an output, which needs the world, and the bursts cannot
+reach it; the substitution is not in the bursts' shared output test. Making
+the tables at `activate_organism` would cost the runs for every new
+genotype whether or not it ever outputs, and was not done.
+
+**What it leaves alone.** Environments without `expect=1` (every stock and
+reference configuration), the consistency suite, and the test CPU's own
+output tests (a `PrintDominantGenotype` test, `RECALCULATE` and the other
+analyze commands see the task's own quality).
+
+**Cost.** One table is `EXPECTED_QUALITY_DRAWS` test-CPU runs of the genome, about
+2 ms for 8 runs in a release build (the extra 153 s below over 67,271
+tables; the two runs also differ in what the population does). On `19-above-xor/arms/pay+masked` (60x60, 3000 updates, seed 41, the
+HALFADD, ADD2_PLANES and ADD2 reactions with `:thresh=0.5:expect=1` in place
+of `:thresh=1`): 54.2 s without and 207.2 s with, 67,271 tables made, 9,755
+kept at the end. A world in which almost every offspring is a new genotype
+pays that for every one that does the task at all.
+`AVIDA_EXECUTION_STATS=1` prints the count at the end of the run. Tests:
+`crates/avida/tests/expected_quality.rs` (no change without an expected task,
+exact solver, a partial solver against an independent mean, the minimum, the
+load errors, the input mask, extinction) and
+`expect_marks_the_entry_and_nothing_else` in `crates/tasks/tests/field_arith.rs`.
 
 ## Views the C++ does not have: Ladder and arm comparison (2026-11-15)
 

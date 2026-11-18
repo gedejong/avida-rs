@@ -390,3 +390,74 @@ Every population that held XOR at some sample held it at the end.
 **What this says about stages 5 and 6.** Their wall below XOR was made by the pay scale: the steps added in stage 5 pay 3 and 4 and XOR was left at 2. Neither more time nor islands could help against a reward that pointed the other way.
 
 Verdict: positive for the pay of XOR, no difference shown for the other two settings; accepted by the maintainer on 2026-11-18.
+
+
+### Stage 8: the rungs above the one-bit half adder
+
+Design, fixed on 2026-11-18 before any stage 8 run.
+
+**What the stage 7 runs show about the next wall.** HALFADD, ADD2_PLANES and ADD2 were performed by at most 7 organisms at any sample. Every genotype of four saved populations that showed such organisms was run in the test CPU, and none performs any of the three, even once: the counts are chance. An organism that outputs plain XOR matches the packed half adder on about one draw in 6,000. So where XOR was found often and not kept, these rungs are not found.
+
+**Why they are hard to find.** HALFADD_PLANES is judged on every second bit, which masks the operands for the organism. The packed rungs compare the whole word, so the organism has to build the mask itself (for HALFADD the constant `0x55555555`, a loop that runs 16 times), mask both inputs, shift the carry and merge; none of these pieces is paid. The hand-written HALFADD has 82 instructions against 49 for HALFADD_PLANES. The pay scale also repeats the fault of stage 5: the four rungs pay 4, 5, 6 and 7, below XOR's 8.
+
+**Additions to the simulator for this stage** (`PORTING.md`): the environment line `INPUT_AND_MASK`, which clears bits of the inputs every organism is given; the argument `width` of `field_arith`, which limits the judged fields to the low bits of the word; and the functions `carry` and `partial`, the two steps of a ripple adder.
+
+**Arms.** All start from `x8-f50-m25` of stage 7 (XOR paid 8, floor 50, copy mutation rate 0.0025). In all of them the four field rungs are judged on the low 24 bits (`width=24`), which leaves the top byte of the inputs, on which the logic tasks rely, out of the arithmetic.
+
+| Arm | Change |
+|---|---|
+| `base` | none: the rungs above XOR pay 4, 5, 6, 7 |
+| `pay` | they pay 9, 10, 11, 12, so that every rung pays more than any rung below it |
+| `pay+masked` | `pay`, and `INPUT_AND_MASK 0xFF6DB6DB`: the low 24 bits of every input hold two-bit operands in three-bit fields, the layout of ADD2. ADD2 is then XOR, AND, a shift, a second XOR and AND, a shift and a merge, with no mask to build |
+| `pay+masked+steps` | `pay+masked`, and the two steps of the adder are paid on resources of their own: CARRY, `(a & b) << 1`, pays 9 and PARTIAL, `(a ^ b) ^ carry`, pays 10 |
+
+CARRY and PARTIAL are judged in every arm and unpaid outside the last. The masked arms leave HALFADD as hard as it was, since its fields are laid out differently; one mask cannot serve both packed rungs.
+
+Seeds 41 to 52 in each arm (48 runs, none of the seeds used before), 100,000 updates, no stopping rule, outputs as in stage 7.
+
+**Primary outcome.** A population is above the wall if at any sample 360 organisms hold ADD2_PLANES or ADD2. Three planned comparisons, Fisher's exact test, two-sided, 12 against 12, uncorrected and with a Holm correction over the three: `pay` against `base` (is it the pay), `pay+masked` against `pay` (is it the mask), `pay+masked+steps` against `pay+masked` (do paid steps carry populations up). A test reaches p < 0.05 from 5 of 12 against 0 of 12.
+
+**Secondary, without tests.** Each of HALFADD, ADD2_PLANES, ADD2, CARRY and PARTIAL: populations holding it at some sample and at the end, and the time it was first held. Whether a population that holds ADD2 uses `call` for the two rounds (the reuse measures and the test CPU). Genome length and generations as before.
+
+**Known properties of the design.** With masked inputs a plain XOR output equals the two-bit sum whenever no field carries, about one draw in a hundred; such organisms are paid for ADD2 on that draw. This is far below the 360 organisms of the outcome but it is pay for XOR that the unmasked arms do not give. An arm with graded credit (pay in proportion to the bits right) was planned and dropped after a 6,000-update trial of the mechanics: about four in ten organisms were paid for outputs that are right by luck on one draw, more with every further output they made, which rewards outputting often and drains the rungs' resources.
+
+Lab folder `19-above-xor`. Before the runs: a 4,000-update trial of the four arms wrote every file.
+
+#### Results (2026-11-18)
+
+All 48 runs ran to 100,000 updates, on five rented servers of two cheap types.
+
+**Primary outcome: negative.** No population in any arm got above the wall, so each of the three comparisons is 0 of 12 against 0 of 12 (Fisher p = 1).
+
+Populations (of 12) that held a rung at some sample, and the most organisms performing it at any sample in any run:
+
+| Arm | XOR | HALFADD_PLANES | CARRY | PARTIAL | HALFADD | ADD2_PLANES | ADD2 |
+|---|---|---|---|---|---|---|---|
+| `base` | 11 | 7 | 0 (151) | 0 (7) | 0 (7) | 0 (6) | 0 (7) |
+| `pay` | 10 | 7 | 0 (146) | 0 (6) | 0 (4) | 0 (5) | 0 (6) |
+| `pay+masked` | 10 | 8 | 0 (147) | 0 (34) | 0 (13) | 0 (4) | 0 (34) |
+| `pay+masked+steps` | 9 | 4 | 12 (3,441) | 0 (43) | 0 (18) | 0 (5) | 0 (41) |
+
+**The pay above XOR is not what holds populations back,** and neither is the mask: `pay` and `pay+masked` look like `base`. The higher counts of ADD2 and PARTIAL in the masked arms (34 to 43 organisms) are the chance matches the design names.
+
+**A paid single step is found by every population.** With CARRY paid, all 12 populations hold it, first between updates 2,700 and 21,700, and keep it. Unpaid, it turns up in at most 151 organisms and is held by none.
+
+**The step that combines two results is found by none.** PARTIAL is the XOR of the first sum with the carry. At the end of the run 7 of the 12 populations of `pay+masked+steps` hold XOR and CARRY together in about 3,000 organisms each, the two ingredients, and none holds PARTIAL. Making it asks the organism to keep one computed value while it computes the other and then to apply XOR to the pair, which is a second use of the code it already has for XOR.
+
+**Paying CARRY cost something below it.** In `pay+masked+steps` two populations that held XOR lost it, 5 of 12 end without XOR, and only 4 hold HALFADD_PLANES against 7 or 8 in the other arms. This was not a planned comparison.
+
+Across stages 5 to 8 the pattern is the same: a function that one further step reaches is found within some ten thousand updates once it pays more than what it displaces (XOR in stage 7, CARRY here), and a function that needs two intermediate results kept and combined is not found at all in 100,000 updates.
+
+**In the test CPU.** The four most abundant genotypes of four populations of `pay+masked+steps` were run on 30 draws of masked inputs each. Ten of the sixteen perform CARRY in 30 of 30 rounds; three of those, one in each of three populations, also perform XOR in 30 of 30, and none of the sixteen performs PARTIAL in more than one round. The most abundant genotype is carried by 4 to 15 of the 3,600 organisms, so these are samples of very mixed populations.
+
+Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-18.
+
+## Candidate future experiments
+
+Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 (the first two) is the one being prepared.
+
+- **Expected pay per genotype.** A new genotype is run in the test CPU on many draws of inputs and every copy is paid its average quality, in place of the one draw an organism is judged on now. This removes pay for lucky draws (the half-adder leak of stage 5, the lottery that ruled out graded credit in stage 8) and makes graded credit usable.
+- **Pay for information.** From the same test runs, pay a genotype for how much its outputs tell about the target (mutual information), so that an organism that outputs the ingredients of the next step is paid before any single output is right.
+- **Competition between organisms as the source of selection.** Host and parasite on computed keys (a parasite infects a host only by performing a function the host performs; Zaman and others 2014 found hosts reach more complex functions with parasites than without), with the ladder kept as unpaid measurement. If that moves populations, a prediction contest between neighbours: an organism gains merit by predicting a value its neighbour computes and the neighbour loses it, which needs new instructions.
+- **Differentiable programs** as a fallback: a distribution over instructions at each genome position and fitness as an expectation with a gradient. It replaces mutation and selection with something close to gradient descent, and is kept apart from the evolutionary line for that reason.
+- **Wider adders** (ADD3, ADD4; files prepared, layout to be redesigned so that a rung keeps the fields of the rung below).

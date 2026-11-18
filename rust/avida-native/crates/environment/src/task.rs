@@ -101,6 +101,17 @@ pub trait TaskRegistry {
         false
     }
 
+    /// Whether task entry `id` asked for the genotype's expected quality
+    /// (`expect=1`, a port addition). No library's other tasks do.
+    fn task_expected(&self, _id: i32) -> bool {
+        false
+    }
+
+    /// Whether any task entry asked for the genotype's expected quality.
+    fn has_expected_tasks(&self) -> bool {
+        false
+    }
+
     /// `cTaskLib::UseNeighborOutput()`.
     fn use_neighbor_output(&self) -> bool {
         false
@@ -156,6 +167,26 @@ pub trait TaskEvaluator<T: ?Sized> {
     ) -> f64
     where
         T: Sized;
+
+    /// Expected quality per genotype (a port addition): `quality` is the
+    /// positive quality the organism's own draw gave task entry `task_id`,
+    /// an entry with `expect=1`. Returns the quality to pay, the genotype's
+    /// average over several test-CPU runs (0 below the minimum), or
+    /// `quality` itself where the evaluator does not substitute (every
+    /// evaluator but a population organism's). The test CPUs run on `env`
+    /// as `task_probability`'s do, and must not draw from `rng`.
+    fn expected_quality(
+        &mut self,
+        _env: &mut Environment<T>,
+        _rng: &mut AvidaRng,
+        _task_id: i32,
+        quality: f64,
+    ) -> f64
+    where
+        T: Sized,
+    {
+        quality
+    }
 
     /// HGT metabolism: if the organism's cell is not -1 and holds genome
     /// fragments, `cell.PopGenomeFragment(ctx)`, record

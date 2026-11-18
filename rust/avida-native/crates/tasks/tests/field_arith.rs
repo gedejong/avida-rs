@@ -495,3 +495,95 @@ fn naive_outputs_score_above_chance_on_the_packed_rungs() {
         );
     }
 }
+
+#[test]
+fn width_limits_the_fields_to_the_low_bits() {
+    // add, two-bit operands, three-bit fields, the low 24 bits only: eight
+    // fields, and nothing above bit 23 is compared.
+    let (lib, id, _) = load("fn=add:bits=2:mode=packed:width=24").unwrap();
+    let (graded, gid, _) = load("fn=add:bits=2:mode=packed:width=24:thresh=0").unwrap();
+    let mut rng = Rng(0x5EED);
+    for _ in 0..200 {
+        let (a, b) = (rng.next(), rng.next());
+        let mut want = 0u32;
+        for k in 0..8 {
+            want |= (((a >> (3 * k)) & 3) + ((b >> (3 * k)) & 3)) << (3 * k);
+        }
+        let junk = rng.next() & 0xFF00_0000;
+        assert_eq!(
+            eval(&lib, id, &inputs(a, b), &outputs(1, &[want | junk])),
+            1.0
+        );
+        // One wrong bit below bit 24 costs 2 of the 24 compared bits.
+        let q = eval(&graded, gid, &inputs(a, b), &outputs(1, &[want ^ 1]));
+        assert!((q - 22.0 / 24.0).abs() < 1e-12, "{q}");
+        assert_eq!(eval(&lib, id, &inputs(a, b), &outputs(1, &[want ^ 1])), 0.0);
+    }
+    // With pre-masked operands the two-round carry expression is the sum.
+    for _ in 0..200 {
+        let (a, b) = (rng.next() & 0xFF6D_B6DB, rng.next() & 0xFF6D_B6DB);
+        let (s1, c1) = (a ^ b, (a & b) << 1);
+        let (s2, c2) = (s1 ^ c1, (s1 & c1) << 1);
+        assert_eq!(eval(&lib, id, &inputs(a, b), &outputs(1, &[s2 | c2])), 1.0);
+    }
+    // The planes rung needs no mask at all.
+    let (lib, id, _) = load("fn=add:bits=2:mode=planes:width=24").unwrap();
+    for _ in 0..200 {
+        let (a, b) = (rng.next(), rng.next());
+        let (s1, c1) = (a ^ b, (a & b) << 1);
+        let (s2, c2) = (s1 ^ c1, (s1 & c1) << 1);
+        let outs = [s1, s2 >> 1, (c1 | c2) >> 2];
+        assert_eq!(eval(&lib, id, &inputs(a, b), &outputs(3, &outs)), 1.0);
+    }
+    let errs = load("fn=add:bits=2:width=2").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("width=2")), "{errs:?}");
+}
+
+#[test]
+fn carry_and_partial_are_the_steps_of_the_two_bit_adder() {
+    let (carry, cid, _) = load("fn=carry:bits=2:mode=packed:width=24").unwrap();
+    let (partial, pid, _) = load("fn=partial:bits=2:mode=packed:width=24").unwrap();
+    let (add, aid, _) = load("fn=add:bits=2:mode=packed:width=24").unwrap();
+    let mut rng = Rng(0xC0FFEE);
+    for _ in 0..300 {
+        // Operands as INPUT_AND_MASK 0xFF6DB6DB hands them out.
+        let (a, b) = (rng.next() & 0xFF6D_B6DB, rng.next() & 0xFF6D_B6DB);
+        let (s1, c1) = (a ^ b, (a & b) << 1);
+        let (s2, c2) = (s1 ^ c1, (s1 & c1) << 1);
+        let i = inputs(a, b);
+        assert_eq!(eval(&carry, cid, &i, &outputs(1, &[c1])), 1.0);
+        assert_eq!(eval(&partial, pid, &i, &outputs(1, &[s2])), 1.0);
+        assert_eq!(eval(&add, aid, &i, &outputs(1, &[s2 | c2])), 1.0);
+        // Per field, against plain arithmetic.
+        for k in 0..8 {
+            let (x, y) = ((a >> (3 * k)) & 3, (b >> (3 * k)) & 3);
+            assert_eq!((c1 >> (3 * k)) & 7, (x & y) << 1);
+            assert_eq!(((s2 | c2) >> (3 * k)) & 7, x + y);
+        }
+    }
+}
+
+/// `expect=1` only marks the entry (the quality it computes is the same);
+/// the library answers per entry.
+#[test]
+fn expect_marks_the_entry_and_nothing_else() {
+    let (plain, id, _) = load("fn=xor:bits=2").unwrap();
+    assert!(!plain.task_expected(id));
+    assert!(!plain.has_expected());
+    let (marked, id, _) = load("fn=xor:bits=2:expect=1").unwrap();
+    assert!(marked.task_expected(id));
+    assert!(marked.has_expected());
+    assert!(!marked.task_expected(id + 1), "no such entry");
+    let (off, id, _) = load("fn=xor:bits=2:expect=0").unwrap();
+    assert!(!off.task_expected(id));
+    let Err(errors) = load("fn=xor:bits=2:expect=2") else {
+        panic!("expect=2 loaded");
+    };
+    assert!(errors.iter().any(|e| e.contains("expect=2")), "{errors:?}");
+    let input = inputs(0x1234, 0x0f0f);
+    let out = outputs(1, &[0x1234 ^ 0x0f0f]);
+    assert_eq!(
+        eval(&plain, 0, &input, &out),
+        eval(&marked, 0, &input, &out)
+    );
+}

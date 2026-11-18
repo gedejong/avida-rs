@@ -72,6 +72,12 @@ impl TaskEntry {
     pub fn field_spec(&self) -> Option<&eval_field::FieldSpec> {
         self.field.as_ref()
     }
+    /// Whether the entry asked for the genotype's expected quality
+    /// (`expect=1` of `field_arith`; a port addition, other tasks may opt
+    /// in later).
+    pub fn is_expected(&self) -> bool {
+        self.field.as_ref().is_some_and(|f| f.is_expected())
+    }
     /// `GetArguments()` (`None` where the C++ would dereference `NULL`).
     pub fn arguments(&self) -> Option<&ArgContainer> {
         self.args.as_ref()
@@ -101,6 +107,16 @@ impl TaskLib {
     /// `cTaskLib(cWorld*)`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Whether task entry `id` is "expected" (see [`TaskEntry::is_expected`]).
+    pub fn task_expected(&self, id: usize) -> bool {
+        self.task_array.get(id).is_some_and(|t| t.is_expected())
+    }
+
+    /// Whether any task entry is "expected".
+    pub fn has_expected(&self) -> bool {
+        self.task_array.iter().any(|t| t.is_expected())
     }
 
     /// `GetSize()`.

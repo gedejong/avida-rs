@@ -665,6 +665,13 @@ impl World {
             if let Some(stats) = stepper.parallel_stats() {
                 eprintln!("{}", stats.summary());
             }
+            if self.env.has_expected_tasks() {
+                eprintln!(
+                    "expected quality: {} genotype tables computed, {} kept",
+                    self.host.expected_computed,
+                    self.host.expected.len()
+                );
+            }
         }
         result
     }

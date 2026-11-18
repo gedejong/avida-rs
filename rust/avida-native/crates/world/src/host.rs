@@ -21,9 +21,13 @@ use avida_analyze::cpu::PhenPlastGenotype;
 use avida_analyze::PhenPlastSummary;
 use avida_apto::AvidaRng;
 use avida_environment::StateGrid;
+use avida_genome::Genome;
 use avida_hardware::task_adapter::{OutputHost, PlasticityTest};
-use avida_hardware::test_cpu::{CpuTestInfo, TestCpuHost, TestWorld};
+use avida_hardware::test_cpu::{CpuTestInfo, TestCpu, TestCpuHost, TestWorld};
+use avida_phenotype::PhenotypeStats;
 use avida_tasks::TaskWorld;
+
+use crate::energy::NoPhenotypeStats;
 
 /// A `cStats` call made while the stats object was lent out.
 #[derive(Debug, Clone, PartialEq)]
@@ -142,6 +146,18 @@ pub struct WorldHost {
     /// that have left the systematics arena are dropped (the C++ frees
     /// them with the group).
     pub phenplast_prune_at: usize,
+    /// The expected-quality table of each genotype (by group id): for every
+    /// task entry the average of its quality over `EXPECTED_QUALITY_DRAWS`
+    /// test-CPU runs with random inputs, 0 below `EXPECTED_QUALITY_MIN` (only
+    /// the entries with `expect=1` are filled). Made the first time a living
+    /// organism of the genotype solves such an entry at all.
+    pub expected: HashMap<i32, Vec<f64>>,
+    /// Size of [`WorldHost::expected`] at which the tables of genotypes that
+    /// have left the systematics arena are dropped.
+    pub expected_prune_at: usize,
+    /// Tables made so far (a genotype whose table was dropped and is asked
+    /// for again counts twice).
+    pub expected_computed: u64,
     /// The genotype (group id) of the organism whose output is tested,
     /// set by `output_services` when a `phenplastbonus` method is in use.
     pub cur_genotype: Option<i32>,
@@ -320,10 +336,89 @@ impl WorldHost {
     /// `cPhenPlastUtil::TestPlasticity(ctx, world, genome)` for the tested
     /// organism's genotype: a `cPhenPlastGenotype` of
     /// `GENOTYPE_PHENPLAST_CALC` trials on a fresh test CPU, drawing from
-    /// the world RNG in the middle of the organism's output test. The test
-    /// organisms see this host as the world (cell -1); the tested
-    /// organism's cell and kaboom snapshot are put back afterwards.
+    /// the world RNG in the middle of the organism's output test.
     fn test_plasticity(&mut self, test: PlasticityTest<'_>) -> Option<PhenPlastSummary> {
+        let trials = test.config.genotype_phenplast_calc;
+        self.run_in_test_world(test, None, |tw, genome| {
+            let mut info = CpuTestInfo::default();
+            PhenPlastGenotype::new(tw, genome, trials, &mut info)
+                .map(|pp| pp.summary())
+                .map_err(|e| e.to_string())
+        })
+    }
+
+    /// The expected-quality table of the tested organism's genotype
+    /// (PORTING.md, "Expected quality per genotype"): `EXPECTED_QUALITY_DRAWS`
+    /// runs of its genome on one test CPU with random inputs, for every task
+    /// entry with `expect=1` the run's quality (the mean over the times the
+    /// task was performed in that run, 0 when it was not) averaged over the
+    /// runs, and averages below `EXPECTED_QUALITY_MIN` stored as 0.
+    ///
+    /// The runs draw from a private stream (the run's seed and a hash of
+    /// the genome), report nothing to the statistics and leave no pending
+    /// host operation behind, so the world's random stream and outputs are
+    /// touched only through the changed pay.
+    fn compute_expected_table(&mut self, test: PlasticityTest<'_>) -> Option<Vec<f64>> {
+        let draws = test.config.port.expected_quality_draws.max(0) as usize;
+        let min = test.config.port.expected_quality_min;
+        let num_tasks = test.environment.num_tasks().max(0) as usize;
+        let expected: Vec<usize> = (0..num_tasks)
+            .filter(|&t| test.environment.task_expected(t as i32))
+            .collect();
+        let seed = test.rng.seed();
+        let key = test
+            .services
+            .map(|svc| genome_hash(&svc.genome.as_string()))?;
+        let mut rng = avida_hardware::parallel::stream(seed, key);
+        let mut quiet = NoPhenotypeStats;
+        let first_op = self.pending.len();
+        let sums = self.run_in_test_world(test, Some((&mut rng, &mut quiet)), |tw, genome| {
+            let mut cpu = TestCpu::new(tw)?;
+            let mut sums = vec![0.0f64; num_tasks];
+            for _ in 0..draws {
+                let mut info = CpuTestInfo::default();
+                info.use_random_inputs(true);
+                cpu.test_genome(tw, &mut info, genome)?;
+                let Some(ph) = info.test_phenotype(0) else {
+                    continue;
+                };
+                for &t in &expected {
+                    let count = ph.last_task_count.get(t).copied().unwrap_or(0);
+                    if count > 0 {
+                        sums[t] += ph.last_task_quality[t] / f64::from(count);
+                    }
+                }
+            }
+            Ok(sums)
+        });
+        // Nothing the test runs reported is the world's business.
+        self.pending.truncate(first_op);
+        let mut table = sums?;
+        for (t, v) in table.iter_mut().enumerate() {
+            if !expected.contains(&t) {
+                *v = 0.0;
+                continue;
+            }
+            *v /= draws as f64;
+            if *v < min {
+                *v = 0.0;
+            }
+        }
+        Some(table)
+    }
+
+    /// Runs `f` on a test world made from `test` and the host: the test
+    /// organisms see this host as the world (cell -1), and the tested
+    /// organism's cell and kaboom snapshot are put back afterwards. `f`
+    /// gets the genome of the tested genotype. With `private`, the runs use
+    /// that random stream and statistics instead of the output test's, and
+    /// a kill they ask for stops the run (nothing carries it out).
+    fn run_in_test_world<R>(
+        &mut self,
+        test: PlasticityTest<'_>,
+        private: Option<(&mut AvidaRng, &mut dyn PhenotypeStats)>,
+        f: impl FnOnce(&mut TestWorld<'_>, &Genome) -> Result<R, String>,
+    ) -> Option<R> {
         let Some(svc) = test.services else {
             // `output_services` lends them whenever the summary is missing.
             if self.fatal.is_none() {
@@ -353,17 +448,20 @@ impl WorldHost {
         std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
         let first_op = self.pending.len();
         // The kills this test asks for are carried out when the step ends.
-        let outer_kill_ok = std::mem::replace(&mut self.kill_ok, true);
+        let outer_kill_ok = std::mem::replace(&mut self.kill_ok, private.is_none());
         self.cur_cell = -1;
-        let trials = test.config.genotype_phenplast_calc;
         let own_kaboom = test.own_kaboom;
+        let (rng, stats): (&mut AvidaRng, &mut dyn PhenotypeStats) = match private {
+            Some((rng, stats)) => (rng, stats),
+            None => (test.rng, test.stats),
+        };
         let result = {
             let mut tw = TestWorld {
                 config: test.config,
                 environment: test.environment,
-                rng: test.rng,
+                rng,
                 hardware_manager: svc.hardware_manager,
-                stats: test.stats,
+                stats,
                 host: &mut *self,
                 update: svc.update,
                 tot_creatures: svc.tot_creatures,
@@ -376,8 +474,7 @@ impl WorldHost {
                 verbosity: test.config.verbosity,
                 test_sterilize: svc.test_sterilize,
             };
-            let mut info = CpuTestInfo::default();
-            PhenPlastGenotype::new(&mut tw, &svc.genome, trials, &mut info).map(|pp| pp.summary())
+            f(&mut tw, &svc.genome)
         };
         self.cur_cell = saved_cell;
         self.kill_ok = outer_kill_ok;
@@ -395,15 +492,22 @@ impl WorldHost {
         std::mem::swap(&mut self.kaboom_cells, &mut self.plast_kaboom_cells);
         Self::apply_cleared_kaboom(&mut self.kaboom_cells, &self.pending[first_op..]);
         match result {
-            Ok(summary) => Some(summary),
+            Ok(r) => Some(r),
             Err(e) => {
                 if self.fatal.is_none() {
-                    self.fatal = Some(e.to_string());
+                    self.fatal = Some(e);
                 }
                 None
             }
         }
     }
+}
+
+/// FNV-1a of a genome's text: the key of its private random stream.
+fn genome_hash(genome: &str) -> u64 {
+    genome.bytes().fold(0xcbf2_9ce4_8422_2325, |h, b| {
+        (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
+    })
 }
 
 impl TaskWorld for WorldHost {
@@ -686,6 +790,28 @@ impl TaskWorld for WorldHost {
 }
 
 impl OutputHost for WorldHost {
+    /// The quality to pay for the `expect=1` task entry `task_id`: the
+    /// genotype's stored average, made the first time it is asked for.
+    fn expected_quality(&mut self, test: PlasticityTest<'_>, task_id: i32, quality: f64) -> f64 {
+        let Some(gid) = self.cur_genotype else {
+            // An organism without a genotype has no table to pay from.
+            return quality;
+        };
+        if !self.expected.contains_key(&gid) {
+            match self.compute_expected_table(test) {
+                Some(table) => {
+                    self.expected_computed += 1;
+                    self.expected.insert(gid, table);
+                }
+                None => return 0.0,
+            }
+        }
+        usize::try_from(task_id)
+            .ok()
+            .and_then(|t| self.expected[&gid].get(t).copied())
+            .unwrap_or(0.0)
+    }
+
     /// `cPhenPlastUtil::GetTaskProbability(ctx, world, genotype, task_id)`.
     /// Reached only when a process of the reaction sets `phenplastbonus`
     /// and the organism is not in a test CPU.

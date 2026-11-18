@@ -87,6 +87,14 @@ impl TaskRegistry for TaskLibRegistry {
     fn use_neighbor_output(&self) -> bool {
         self.0.use_neighbor_output()
     }
+
+    fn task_expected(&self, id: i32) -> bool {
+        usize::try_from(id).is_ok_and(|i| self.0.task_expected(i))
+    }
+
+    fn has_expected_tasks(&self) -> bool {
+        self.0.has_expected()
+    }
 }
 
 /// What a population run lends `cPhenPlastUtil::TestPlasticity` beyond the
@@ -153,6 +161,14 @@ pub trait OutputHost: TaskWorld {
     fn task_probability(&mut self, test: PlasticityTest<'_>, task_id: i32) -> f64;
     /// HGT metabolism, see [`TaskEvaluator::metabolize_genome_fragment`].
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32>;
+    /// Expected quality per genotype (a port addition): the quality to pay
+    /// for task entry `task_id` when the organism's own draw gave
+    /// `quality > 0`. A host that keeps no per-genotype tables (the test
+    /// CPU's, the burst's, analyze mode's) leaves the quality alone, which
+    /// is what keeps the test CPU's own runs from substituting.
+    fn expected_quality(&mut self, _test: PlasticityTest<'_>, _task_id: i32, quality: f64) -> f64 {
+        quality
+    }
 }
 
 /// The organism half of [`TaskWorld`] answered from a snapshot of
@@ -437,6 +453,28 @@ impl TaskEvaluator<TaskLibRegistry> for OrgTaskEvaluator<'_> {
         // `consume-public-good`.
         self.world.org.kaboom_executed = own_kaboom;
         probability
+    }
+
+    fn expected_quality(
+        &mut self,
+        env: &mut Env,
+        rng: &mut AvidaRng,
+        task_id: i32,
+        quality: f64,
+    ) -> f64 {
+        let mut own_kaboom = self.world.org.kaboom_executed;
+        let test = PlasticityTest {
+            environment: env,
+            config: self.config,
+            rng,
+            stats: &mut *self.stats,
+            forage_target: self.world.org.forage_target,
+            own_kaboom: &mut own_kaboom,
+            services: self.plasticity.as_ref(),
+        };
+        let paid = self.world.host.expected_quality(test, task_id, quality);
+        self.world.org.kaboom_executed = own_kaboom;
+        paid
     }
 
     fn metabolize_genome_fragment(&mut self, rng: &mut AvidaRng) -> Option<i32> {

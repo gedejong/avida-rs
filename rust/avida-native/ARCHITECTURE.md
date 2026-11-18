@@ -114,6 +114,8 @@ differ from their defaults):
 | `EXECUTION_MODE` | `0` exact (default): the C++ scheduler, one instruction per time slice, byte parity. `1` parallel. Anything else is rejected at start-up. |
 | `EXECUTION_THREADS` | worker threads of the parallel mode; `0` (default) or less means every core `std::thread::available_parallelism` reports |
 
+The other port-only settings are `DROP_EXTINCT_GENOTYPES` (see "Dropping extinct genotypes"), and `EXPECTED_QUALITY_DRAWS` (default 8) with `EXPECTED_QUALITY_MIN` (default 0.25), which pay a genotype's average task quality to tasks with `expect=1` (exact mode only; PORTING.md, "Expected quality per genotype").
+
 ### What an update does
 
 `world/src/parallel.rs` (`ParallelExec`, driven by `Stepper::step_slice`,

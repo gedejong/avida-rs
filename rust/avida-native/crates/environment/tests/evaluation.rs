@@ -1060,3 +1060,33 @@ fn swap_inputs() {
     assert_eq!(a, vec![4]);
     assert_eq!(b, vec![1, 2, 3]);
 }
+
+#[test]
+fn input_and_mask_clears_bits_without_changing_the_random_stream() {
+    let plain = input_env(5, false);
+    let mut masked = input_env(5, false);
+    let config = Config::new();
+    masked
+        .load_line("INPUT_AND_MASK 0xFF6DB6DB", &mut Feedback::new(), &config)
+        .unwrap();
+    for random in [true, false] {
+        let (mut r1, mut r2) = (AvidaRng::new(31), AvidaRng::new(31));
+        let (mut a, mut b) = (Vec::new(), Vec::new());
+        plain.setup_inputs(&mut r1, &mut a, random);
+        masked.setup_inputs(&mut r2, &mut b, random);
+        let expect: Vec<i32> = a
+            .iter()
+            .map(|v| ((*v as u32) & 0xFF6D_B6DB) as i32)
+            .collect();
+        assert_eq!(b, expect);
+        assert_ne!(a, b);
+        assert_eq!(r1.get_uint(1 << 20), r2.get_uint(1 << 20));
+    }
+    // A decimal mask parses; anything else is an error.
+    masked
+        .load_line("INPUT_AND_MASK 255", &mut Feedback::new(), &config)
+        .unwrap();
+    assert!(masked
+        .load_line("INPUT_AND_MASK banana", &mut Feedback::new(), &config)
+        .is_err());
+}

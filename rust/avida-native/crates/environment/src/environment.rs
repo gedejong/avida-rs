@@ -62,6 +62,9 @@ pub struct Environment<T> {
     pub(crate) use_specific_inputs: bool,
     pub(crate) specific_inputs: Vec<i32>,
     pub(crate) mask: u32,
+    /// `INPUT_AND_MASK` (a port addition, PORTING.md): ANDed onto every
+    /// input an organism is given; all ones leaves the inputs alone.
+    pub(crate) input_and_mask: u32,
     pub(crate) state_grids: Vec<StateGrid>,
     pub(crate) possible_group_ids: BTreeSet<i32>,
     pub(crate) possible_target_ids: BTreeSet<i32>,
@@ -228,6 +231,7 @@ impl<T> Environment<T> {
             use_specific_inputs: false,
             specific_inputs: Vec::new(),
             mask: 0,
+            input_and_mask: u32::MAX,
             state_grids: Vec::new(),
             possible_group_ids,
             possible_target_ids: BTreeSet::new(),
@@ -676,6 +680,7 @@ impl<T: TaskRegistry> Environment<T> {
             "CELL" => self.load_cell(line, fb),
             "GRID" => self.load_state_grid(line, fb),
             "GRADIENT_RESOURCE" => self.load_gradient_resource(line, fb),
+            "INPUT_AND_MASK" => self.load_input_and_mask(line, fb),
             _ => {
                 fb.error(format!("unknown environment keyword '{}'", ty));
                 return false;
@@ -1741,6 +1746,28 @@ impl<T: TaskRegistry> Environment<T> {
             grid,
         ));
         true
+    }
+
+    /// `INPUT_AND_MASK <mask>`: the mask in hexadecimal (`0x...`) or decimal.
+    fn load_input_and_mask(&mut self, mut desc: String, fb: &mut Feedback) -> bool {
+        let word = pop_word(&mut desc);
+        let parsed = match word.strip_prefix("0x").or_else(|| word.strip_prefix("0X")) {
+            Some(hex) => u32::from_str_radix(hex, 16).ok(),
+            None => word.parse::<u32>().ok(),
+        };
+        match parsed {
+            Some(mask) => {
+                self.input_and_mask = mask;
+                true
+            }
+            None => {
+                fb.error(format!(
+                    "INPUT_AND_MASK needs a 32-bit mask (0x... or decimal), got '{}'",
+                    word
+                ));
+                false
+            }
+        }
     }
 
     /// `LoadSetActive(desc, feedback)`: `SET_ACTIVE REACTION name [0|false]`.

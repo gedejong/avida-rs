@@ -203,6 +203,42 @@ fn prune_phenplast(w: &mut World) {
     w.host.phenplast_prune_at = 2 * w.host.phenplast.len();
 }
 
+/// Fewest expected-quality tables kept before [`prune_expected`] looks for
+/// dead genotypes.
+const EXPECTED_PRUNE_MIN: usize = 512;
+
+/// Drops the expected-quality table of every genotype that has left the
+/// systematics arena (neither active nor historic; with
+/// `DROP_EXTINCT_GENOTYPES 1` that is every genotype without a living
+/// organism). The genotype being tested is kept. Sweeps again when the
+/// cache has doubled.
+pub(crate) fn prune_expected(w: &mut World) {
+    let Some(arb) = w.systematics.genotypes() else {
+        return;
+    };
+    let live: std::collections::HashSet<i32> = arb
+        .iter_groups()
+        .into_iter()
+        .chain(arb.historic())
+        .filter_map(|h| arb.genotype(h).map(|x| x.id()))
+        .collect();
+    let cur = w.host.cur_genotype;
+    w.host
+        .expected
+        .retain(|id, _| live.contains(id) || Some(*id) == cur);
+    w.host.expected_prune_at = 2 * w.host.expected.len();
+}
+
+impl World {
+    /// Drops the expected-quality tables of the genotypes that have left
+    /// the systematics arena now, where the output test does it only once
+    /// the cache has doubled (for tests and front ends).
+    pub fn prune_expected_tables(&mut self) {
+        self.host.cur_genotype = None;
+        prune_expected(self);
+    }
+}
+
 impl OrgInterface for PopulationInterface<'_> {
     fn take_habitat_to_die(&mut self) -> bool {
         std::mem::take(&mut self.w.res_env.habitat.running_to_die)
@@ -212,8 +248,11 @@ impl OrgInterface for PopulationInterface<'_> {
         let cell_id = self.cell_id;
         let me = self.org_uid();
         // `cEnvironment::GetTaskProbability` may test the genotype's
-        // plasticity during the output test (`phenplastbonus`).
-        let genotype = if self.w.env.uses_phenplast_bonus() {
+        // plasticity during the output test (`phenplastbonus`), and a task
+        // with `expect=1` asks for the genotype's expected quality.
+        let phenplast_in_use = self.w.env.uses_phenplast_bonus();
+        let expected_in_use = self.w.env.has_expected_tasks();
+        let genotype = if phenplast_in_use || expected_in_use {
             self.own_genotype()
         } else {
             None
@@ -225,12 +264,19 @@ impl OrgInterface for PopulationInterface<'_> {
         {
             prune_phenplast(w);
         }
-        // The genome to test, unless the summary is attached already.
+        if genotype.is_some()
+            && w.host.expected.len() >= w.host.expected_prune_at.max(EXPECTED_PRUNE_MIN)
+        {
+            prune_expected(w);
+        }
+        // The genome to test, unless every summary and table the output
+        // test may ask for is attached already.
         let plast_genome = genotype
             .filter(|_| {
-                w.host
-                    .cur_genotype
-                    .is_some_and(|gid| !w.host.phenplast.contains_key(&gid))
+                w.host.cur_genotype.is_some_and(|gid| {
+                    (phenplast_in_use && !w.host.phenplast.contains_key(&gid))
+                        || (expected_in_use && !w.host.expected.contains_key(&gid))
+                })
             })
             .map(|g| Genome::from_string(&w.systematics.property(g, "genome").string_value()));
         w.host.cur_cell = cell_id;

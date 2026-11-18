@@ -177,8 +177,28 @@ pub struct World {
 ///
 /// The port's own `EXECUTION_MODE 1` rejects the settings it cannot run
 /// with ([`crate::parallel::check_parallel_supported`]).
-pub fn check_supported(cfg: &Config, _env: &Env) -> Result<(), String> {
-    crate::parallel::check_parallel_supported(cfg)
+pub fn check_supported(cfg: &Config, env: &Env) -> Result<(), String> {
+    crate::parallel::check_parallel_supported(cfg)?;
+    if env.has_expected_tasks() {
+        if cfg.port.expected_quality_draws <= 0 {
+            return Err(
+                "error: the environment has a task with expect=1, which pays the \
+                 genotype's expected quality, but EXPECTED_QUALITY_DRAWS is 0 (the feature is \
+                 off); set EXPECTED_QUALITY_DRAWS above 0 or take expect=1 out of the \
+                 environment\n"
+                    .to_string(),
+            );
+        }
+        if cfg.port.execution_mode == avida_config::port_settings::EXECUTION_MODE_PARALLEL {
+            return Err(
+                "unsupported: EXECUTION_MODE 1 with a task that has expect=1 (the \
+                 genotype's expected quality is made at the first output test of the genotype, \
+                 which needs the world; the bursts cannot reach it)\n"
+                    .to_string(),
+            );
+        }
+    }
+    Ok(())
 }
 
 impl World {

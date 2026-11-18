@@ -136,6 +136,13 @@ impl<T: TaskRegistry> Environment<T> {
                 input_array[i] = input_array[i % 3].wrapping_shl((i / 3) as u32);
             }
         }
+        // `INPUT_AND_MASK` (port addition): after the draws, so that the
+        // random stream is the same with and without a mask.
+        if self.input_and_mask != u32::MAX {
+            for v in input_array.iter_mut() {
+                *v = ((*v as u32) & self.input_and_mask) as i32;
+            }
+        }
     }
 
     /// `SwapInputs(ctx, src, dest)`.
@@ -247,6 +254,15 @@ impl<T: TaskRegistry> Environment<T> {
                     self.change_resource(rid as usize, &res_name, 0);
                 }
             }
+
+            // Expected quality (port addition): an entry with `expect=1`
+            // that the organism's own draw solved at all is paid at the
+            // genotype's average quality instead (possibly 0).
+            let task_quality = if task_quality > 0.0 && self.tasklib.task_expected(task_id) {
+                taskctx.expected_quality(self, rng, task_id, task_quality)
+            } else {
+                task_quality
+            };
 
             // task_probability is in [0,1], or -1 if not needed. Some
             // phenplastbonus settings force the task to be counted even if
@@ -605,6 +621,18 @@ impl<T: TaskRegistry> Environment<T> {
             return true;
         }
         false
+    }
+
+    /// Whether any task entry asked for the genotype's expected quality
+    /// (`expect=1`, a port addition).
+    pub fn has_expected_tasks(&self) -> bool {
+        self.tasklib.has_expected_tasks()
+    }
+
+    /// Whether task entry `task_id` asked for the genotype's expected
+    /// quality (`expect=1`).
+    pub fn task_expected(&self, task_id: i32) -> bool {
+        self.tasklib.task_expected(task_id)
     }
 
     /// Whether any process of any reaction sets a `phenplastbonus` method

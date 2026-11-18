@@ -7,11 +7,18 @@
 //! whole fields from bit 0. The operand of a field is the low `bits` (w) bits
 //! of the field; the other bits are masked away, so that the sum of two
 //! operands never leaves its field. The expected result of a field is
-//! `fn(a_field, b_field)` in `r` bits: `w + 1` for `add` and `halfadd`, `w`
-//! for the logic functions. `stride` is the field width and defaults to `r`
+//! `fn(a_field, b_field)` in `r` bits: `w + 1` for `add`, `halfadd`, `carry`
+//! and `partial`, `w` for the logic functions. `carry` is `(a & b) << 1` and
+//! `partial` is `(a ^ b) ^ ((a & b) << 1)`, the two steps of a ripple adder
+//! before `add` (for two-bit operands `add` is `partial | ((a ^ b) & carry) << 1`). `stride` is the field width and defaults to `r`
 //! (no padding), which makes `add` with `bits=2` three-bit fields; a larger
 //! stride leaves the bits above the result unused (`stride=4`, `bits=2`:
 //! `((a & 0x33333333) + (b & 0x33333333)) & 0x77777777`, eight adders).
+//!
+//! `width` (default 32) limits the fields to the low `width` bits of the
+//! word: `n = width / stride` whole fields, the bits above them are not
+//! compared. `width=24` leaves the top byte of the inputs, which the logic
+//! tasks rely on, out of the arithmetic.
 //!
 //! `mode=packed` compares the newest output with the expected word on the
 //! `r` result bits of every whole field. `mode=planes` takes the result as
@@ -21,6 +28,13 @@
 //!
 //! The quality is `max(0, 2f - 1)` for the fraction `f` of compared bits that
 //! are right (chance earns nothing), and 0 below `thresh`.
+//!
+//! `expect=1` marks the entry as "expected" (PORTING.md, "Expected quality
+//! per genotype"): when `EXPECTED_QUALITY_DRAWS` is above 0, the world pays
+//! the genotype's average quality over several test-CPU runs in place of the
+//! quality of the organism's own draw. The task itself computes the same
+//! quality either way; the flag is only read through
+//! [`FieldSpec::is_expected`].
 
 use crate::arg_schema::{ArgContainer, ArgSchema, ArgType, Feedback};
 use crate::io_buffer::IoBuffer;
@@ -34,6 +48,11 @@ pub enum FieldFn {
     /// One-bit add: the sum bit and the carry bit. `add` with `bits=1`.
     HalfAdd,
     Add,
+    /// The first carry word of a ripple adder, `(a & b) << 1`, in `w + 1` bits.
+    Carry,
+    /// The sum after one carry round, `(a ^ b) ^ ((a & b) << 1)`, in `w + 1`
+    /// bits: what `add` is before the second round's carry is merged in.
+    Partial,
 }
 
 /// Parsed arguments of one `field_arith` entry.
@@ -48,6 +67,8 @@ pub struct FieldSpec {
     stride: u32,
     planes: bool,
     thresh: f64,
+    /// `expect=1`: the pay uses the genotype's expected quality.
+    expect: bool,
     /// Operand bits of every whole field.
     operand_mask: u32,
     /// Result bits of every whole field.
@@ -66,7 +87,9 @@ fn schema() -> ArgSchema {
     s.add_string("mode", 1, "packed");
     s.add_int("bits", 0, 1);
     s.add_int("stride", 1, 0);
+    s.add_int("width", 2, 32);
     s.add_double("thresh", 0, 1.0);
+    s.add_int("expect", 3, 0);
     s
 }
 
@@ -92,9 +115,11 @@ impl FieldSpec {
             "or" => FieldFn::Or,
             "halfadd" => FieldFn::HalfAdd,
             "add" => FieldFn::Add,
+            "carry" => FieldFn::Carry,
+            "partial" => FieldFn::Partial,
             other => {
                 feedback.error(format!(
-                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add)",
+                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, carry, partial)",
                     other
                 ));
                 return None;
@@ -122,7 +147,7 @@ impl FieldSpec {
             return None;
         }
         let result_bits = match func {
-            FieldFn::HalfAdd | FieldFn::Add => bits + 1,
+            FieldFn::HalfAdd | FieldFn::Add | FieldFn::Carry | FieldFn::Partial => bits + 1,
             _ => bits,
         };
         let stride = match args.get_int(1) {
@@ -141,7 +166,20 @@ impl FieldSpec {
             feedback.error(format!("field_arith: thresh={} is not in 0..1", thresh));
             return None;
         }
-        let fields = 32 / stride;
+        let width = args.get_int(2);
+        if !(stride as i32..=32).contains(&width) {
+            feedback.error(format!(
+                "field_arith: width={} is not in {}..32 (the stride)",
+                width, stride
+            ));
+            return None;
+        }
+        let expect = args.get_int(3);
+        if !(0..=1).contains(&expect) {
+            feedback.error(format!("field_arith: expect={} is not 0 or 1", expect));
+            return None;
+        }
+        let fields = width as u32 / stride;
         let repeat = |unit: u32| (0..fields).fold(0u32, |m, k| m | (unit << (k * stride)));
         Some(FieldSpec {
             func,
@@ -150,11 +188,18 @@ impl FieldSpec {
             stride,
             planes,
             thresh,
+            expect: expect == 1,
             operand_mask: repeat((1u32 << bits) - 1),
             result_mask: repeat(((1u64 << result_bits) - 1) as u32),
             plane_mask: repeat(1),
             fields,
         })
+    }
+
+    /// Whether the entry asked for the genotype's expected quality
+    /// (`expect=1`).
+    pub fn is_expected(&self) -> bool {
+        self.expect
     }
 
     /// Operand width w.
@@ -192,6 +237,8 @@ impl FieldSpec {
             FieldFn::Or => a | b,
             // Each field sum is below 2^(w+1) <= 2^stride: no carry leaves a field.
             FieldFn::HalfAdd | FieldFn::Add => (a + b) & self.result_mask,
+            FieldFn::Carry => ((a & b) << 1) & self.result_mask,
+            FieldFn::Partial => ((a ^ b) ^ ((a & b) << 1)) & self.result_mask,
         }
     }
 
