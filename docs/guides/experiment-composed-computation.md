@@ -452,6 +452,67 @@ Across stages 5 to 8 the pattern is the same: a function that one further step r
 
 Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-18.
 
+### Stage 9: graded pay, with and without the genotype's expected quality
+
+Stage 8 left one step unmade: combining two computed values. An exact rung pays nothing for an answer that is nearly right, so the population gets no signal on the way there. Graded pay gives that signal, and on masked inputs the partly right answers form a slope of their own. The average quality of an answer against the packed two-bit adder, over all operand pairs:
+
+| Answer | Bits right | Quality |
+|---|---|---|
+| an input, or zero | 54 % | 0.08 |
+| `a OR b` | 67 % | 0.33 |
+| `a XOR b` | 79 % | 0.58 |
+| `(a XOR b) OR carry` | 92 % | 0.83 |
+| `(a XOR b) XOR carry` (PARTIAL) | 96 % | 0.92 |
+| the sum | 100 % | 1.00 |
+
+A trial before stage 8 showed why graded pay failed on a single draw: with eight fields per draw the quality of one answer scatters by about 0.16, so a threshold is passed by luck in a large share of organisms. Expected quality (`expect=1`, `PORTING.md`) pays a genotype its average over 8 test runs and nothing below an average of 0.5, which takes the luck out.
+
+**Question.** Does tiered pay for the two-bit adder get populations past the combining step, and does it need expected quality to do so?
+
+**Arms** (lab folder `20-expected-pay`), each 12 populations, seeds 41 to 52, on the masked inputs of stage 8:
+
+| Arm | Change |
+|---|---|
+| `exact` | the 12 runs of `pay+masked` from stage 8, not run again |
+| `tiers` | three tiers of ADD2 are paid on the organism's own draw: quality at least 0.45 pays 9, at least 0.70 pays 10, at least 0.85 pays 11 |
+| `tiers+expected` | the same tiers, paid on the genotype's expected quality |
+
+The tiers are separate reactions because a reaction pays once per gestation: an organism that outputs XOR first and the sum later collects the lowest tier on the first output and the higher ones on the second.
+
+**Measurement.** ADD2 (exact, pay 12), PARTIAL and CARRY (exact, unpaid) are judged on the organism's own draw in every arm, so the outcome is measured the same way whatever the pay rule.
+
+**Primary outcome.** Populations in which exact ADD2 is held (360 organisms at a sample). Two planned comparisons, Fisher exact with Holm correction: `tiers+expected` against `exact`, and `tiers+expected` against `tiers`.
+
+**Secondary.** Populations holding PARTIAL; the highest tier held in each population; the time to each.
+
+**Known weakness.** Plain XOR earns the lowest tier, so that tier pays for nothing new. It is kept because without it there is no first step on the slope.
+
+#### Results (2026-11-19)
+
+All 24 runs ran to 100,000 updates. One run of `tiers+expected` was run a second time because its server stopped answering before the result was fetched; a run with the same seed gives the same result.
+
+**Primary outcome: negative.** No population in any arm held the exact two-bit adder: 0 of 12 in `tiers+expected` against 0 of 12 in `exact` and against 0 of 12 in `tiers` (Fisher p = 1 for both).
+
+Populations (of 12) that held a rung at some sample, and the most organisms performing it at any sample in any run:
+
+| Arm | XOR | HALFADD_PLANES | lowest tier | middle tier | top tier | PARTIAL | ADD2 |
+|---|---|---|---|---|---|---|---|
+| `exact` | 10 | 8 | | | | 0 (34) | 0 (34) |
+| `tiers` | 5 | 1 | 12 | 6 | 0 (211) | 0 (71) | 0 (69) |
+| `tiers+expected` | 12 | 4 | 12 | 2 | 0 (10) | 0 (82) | 0 (82) |
+
+**Expected quality takes the luck out, as designed.** On a single draw the lowest tier is held by all 12 populations while only 5 hold XOR. With expected quality all 12 hold XOR (12 of 12 against 5 of 12, Fisher p = 0.005, not a planned comparison), and the lowest tier is first held within a few thousand updates of XOR in every population. The middle tier is held at the end by 4 populations on a single draw and by none with expected quality.
+
+**It does not carry a population over the combining step.** PARTIAL is performed by at most 82 organisms at any sample, CARRY by at most 269, and the top tier by at most 10 in `tiers+expected`.
+
+**The tiers pay for many different outputs, which the design did not foresee.** A reaction fires on the first output that passes its threshold, and the organisms of these populations output a series of different logic results in one gestation. Each output is one more chance to land near the sum. In the test CPU (the four most abundant genotypes of four populations, 30 draws of masked inputs each) genotypes that do not perform XOR pass the lowest tier in 20 to 29 of 30 draws; genotypes that perform every logic task pass the middle tier in 12 to 18 draws and the top tier in 2 to 5. Expected quality averages over draws of inputs and does not touch this: a genotype that reliably outputs ten values reliably passes a low threshold. None of the sixteen genotypes performs CARRY or PARTIAL in more than four draws. The table of average qualities in the design above holds for an organism with one output and does not describe these organisms.
+
+**The tiers cost something below them.** HALFADD_PLANES is held by 8 populations in `exact`, 1 in `tiers` and 4 in `tiers+expected`. This was not a planned comparison.
+
+Across stages 8 and 9 the step that combines two computed values has been offered exact pay, a paid step on either side of it, graded pay and graded pay without the luck, and no population has made it.
+
+Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-19.
+
 ## Candidate future experiments
 
 Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 (the first two) is the one being prepared.
