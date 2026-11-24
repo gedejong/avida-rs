@@ -775,7 +775,18 @@ The next carry is taken from the new partial sum (`c & ~(s ^ c)` is `c & s`), so
 | `gates` 46 | 28,245 | `nop-C` to `gate-6` (XOR); one more not needed |
 | `pgates-long` 54 | 54,731 | `nop-C` to `pgate-4` (AND NOT); four more not needed |
 
-This differs from the single-mutant scan after stage 9, where no single change made the step; those populations had no gate instructions, and with gates the populations got to within one change of it.
+**A population at the XOR level is not one mutation from the step; the lines got there by a change that did nothing at the time.** The one-mutation neighbourhood of a genotype here is every single substitution and every tandem duplication of up to 60 instructions, each run in the test CPU on 20 draws, the candidates again on 400; a neighbour gets past the XOR level when more than 60 % of its outputs passing 0.5 also pass 0.7 (XOR 26 to 38 %, the OR-merge form 74 %). The most common organism at update 50,000 of each of the seven `pgates-long` and the seven `nogates-long` populations of stage 13 has no such neighbour. On the lines of descent, the parent of the step has 3 to 34 (the change that was made among them), and going back along each line, the first genotype that has one is:
+
+| Line | One mutation from the step since | The change that put it there | Its effect then | Step made at |
+|---|---|---|---|---|
+| `pgates` 42 | update 39,923 | `if-n-equ` to `pgate-11` (with a second substitution not needed) | outputs passing 0.5 from 77 to 88 %, the others unchanged | 49,725 |
+| `gates` 46 | 24,670 | `swap-stk` to `nop-D` after a `gate-8` | none | 28,245 |
+| `gates-mut3x` 49 | 145,219 | `gate-5` to `if-n-equ` | none | 145,552 |
+| `pgates-long` 54 | 51,773 | `swap-stk` to `pgate-14` (with a second substitution not needed) | outputs passing 0.5 from 77 to 93 %, of those passing 0.7 from 34 to 44 % | 54,731 |
+
+In the genotype that made the step, undoing that change takes the step's gain away again (back to the XOR level in `pgates` 42, `gates` 46 and `pgates-long` 54; `gates-mut3x` 49 then passes no 0.5 at all). The wait between the two was 333 to 9,800 updates. What the changes did can be read in two of them. In `gates-mut3x` 49 the carry round (`gate-4`, `shift-l`, `gate-6`) was already written out, but a `gate-5` between its first two instructions wrote `~CX` into BX and destroyed the carry; the `if-n-equ` in its place skips `shift-l` only when carry and partial sum are equal, which here means both are 0, so the round became intact while the output still came from another register, and the step (`nop-C` to `nop-B` after an `IO`) output it. In `gates` 46 the `nop-D` sent the result of `gate-8`, `a & b`, into DX, where nothing overwrote it. In both, a computed value was kept alive before anything used it. Lenski and others (2003) found that complex functions in Avida came by way of mutations that were neutral or even harmful when they arose; Blount, Borland and Lenski (2008) call such a preparing change in *E. coli* potentiation.
+
+The single-mutant scan after stage 9 found no single change that made the step either; the difference with gates lies in what the lines found a few changes earlier, and four lines do not say how often that happens without gates.
 
 **Each further carry round came, in 12 of 15 steps, from a tandem duplication of the round's code.** A slip mutation (`divide_slip_prob` 0.05) copied a stretch of the genome next to itself, and the copy held a round.
 
@@ -796,9 +807,45 @@ This differs from the single-mutant scan after stage 9, where no single change m
 
 The three other steps belong to the carry-vector line of `gates` 46: its two-bit sum came by substitutions between updates 242,881 and 276,937, and its descendant `w4-g46` 42 reached the three- and four-bit sums by single substitutions at updates 14,034 and 203,931.
 
-**Reading.** A round written as a block that takes carry and partial sum in two registers and leaves them in the same two registers is a function that can be applied again, and a tandem duplication applies it again: one mutation, one more carry round. That explains why stage 13 found the climb from an evolved two-bit adder short and the first combining step the hard one: before the first round exists there is nothing to duplicate. It also fits the slow ancestor of stage 13: `g46` computes carries by the other algorithm, whose rounds the duplications did not extend in the lines traced. Duplication stands in for the loop that no population built: the rounds are unrolled, and `call` stayed unused. The sizes of the duplicated stretches suggest that a compact round is extended sooner (the 6- and 12-instruction duplications of `w4-m49` 42 within 1,400 updates, the 34- and 40-instruction ones of `s4` 51 after a million), but nine lines do not test that.
+**From each two-bit adder, a duplication is the only single mutation that gives the three-bit sum.** The neighbourhoods of the four stage 13 ancestors on the three-bit judge (duplications up to 120 instructions):
 
-Limits: nine lines of descent, chosen among the populations that reached the sum, so the study says how the sum was built where it was built and nothing about why other populations stalled. Levels come from 100 test-CPU draws per genotype, so a level change can be placed a few genotypes off. Several stretches of the lines (274 genotypes in `gates-mut3x` 49) are genotypes whose offspring differ from themselves in the test CPU; they were counted by the tasks of their own gestation. The rebuilt dataflow is that of one input set; the exactness on every field pair and on 100 random draws suggests no input-dependent branch, without proving it.
+| Ancestor | Length | Substitutions giving the three-bit sum | Duplications giving it | Their lengths | Rate per birth (`v32` settings) |
+|---|---|---|---|---|---|
+| `m49` | 190 | 0 of 8,360 | 19 of 15,660 | 6 to 107 | 2.6e-5 |
+| `p44` | 211 | 0 of 9,284 | 19 of 18,180 | 14 to 120 | 2.1e-5 |
+| `p42` | 448 | 0 of 19,712 | 12 of 46,620 | 12 to 117 | 3.0e-6 |
+| `g46` | 398 | 0 of 17,512 | 402 of 40,620 | 30 to 120, most near 120 | 1.3e-4 |
+
+A neighbour counts when it breeds true and at least 95 % of its outputs passing 0.5 are exact on 400 draws; the ancestors are at 66 to 71 %. The rate per birth is the slip probability 0.05 times the share of the (from, to) pairs of a slip that make one of these duplications. At about 136 births per update (60 x 60), a population of `m49` or `p44` makes such a mutant every 300 updates or so and one of `p42` every 2,500; they took 3,400 to 9,300, 2,800 to 3,600 and 16,400 to 35,000 updates to reach 90 % exact in `v32`, so the ancestor with the rarest route was the slowest of the three, and each took about ten times as long, or more, as the first such mutant needs to appear. `g46` makes them most often and was the slowest (52,000 to 278,000): its duplications are long, near the 120 the search stopped at, and its populations, with the longest genomes, kept many offspring that did not compute the sum (stage 13, question 1).
+
+**Reading.** A round written as a block that takes carry and partial sum in two registers and leaves them in the same two registers is a function that can be applied again, and a tandem duplication applies it again: one mutation, one more carry round. That explains why stage 13 found the climb from an evolved two-bit adder short and the first combining step the hard one: before the first round exists there is nothing to duplicate, and the first round was reached only after a change that did nothing at the time had kept a computed value alive, so the wait at the XOR level is a wait for a neutral change in the right place followed by a second, selected one. The carry-vector adder of `g46` can be extended by duplication too, but only by long ones, and its lines in fact moved by substitutions. Duplication stands in for the loop that no population built: the rounds are unrolled, and `call` stayed unused. The sizes of the duplicated stretches suggest that a compact round is extended sooner (the 6- and 12-instruction duplications of `w4-m49` 42 within 1,400 updates, the 34- and 40-instruction ones of `s4` 51 after a million), but nine lines do not test that.
+
+Limits: nine lines of descent, chosen among the populations that reached the sum, so the study says how the sum was built where it was built and nothing about why other populations stalled. Levels come from 100 test-CPU draws per genotype, so a level change can be placed a few genotypes off. Several stretches of the lines (274 genotypes in `gates-mut3x` 49) are genotypes whose offspring differ from themselves in the test CPU; they were counted by the tasks of their own gestation. The rebuilt dataflow is that of one input set; the exactness on every field pair and on 100 random draws suggests no input-dependent branch, without proving it. The neighbourhoods hold single mutations only (no two at once, no insertion of one instruction, which the settings do not make), duplications only up to 60 or 120 instructions, and slip deletions not at all; a screen on 20 draws can miss a neighbour that is better only on some inputs. The potentiation search is a bisection and assumes that once a line is one mutation away it stays so; four lines are a small sample.
+
+The tools are in the lab folder `29-lineage` (`nbhd.py`, `confirm.py`, `pot.py`, with the scratch test).
+
+### Stage 14: does the extension of the adder need duplication?
+
+Design fixed on 2026-11-24, before any run, and started on the maintainer's go the same day (rented servers, at most USD 15). Lab folder `30-slip`.
+
+**Question.** The lineage study found that each extra carry round came, in 12 of 15 cases, from a tandem duplication, and the one-mutation neighbourhoods say why: from each of the four two-bit adders no single substitution gives the three-bit sum, while 12 to 402 duplications do. If that is the route, populations that cannot copy a stretch of their own code should extend the adder far more slowly or not at all, even with the same rate of insertions and deletions.
+
+**Arms.** All four use the `v32` arms of stage 13 unchanged (the three-bit judge, `2^(32 q)`, the four two-bit ancestors `m49`, `p42`, `p44`, `g46`, copy mutation 0.0025, 60 x 60, exact mode) and differ only in what a slip mutation (`divide_slip_prob` 0.05 per divide, half of them deletions) inserts:
+
+| Arm | `mutation.slip_fill_mode` | `divide_slip_prob` | The inserted stretch |
+|---|---|---|---|
+| `dup` | `duplication` | 0.05 | a copy of the stretch, in order (stage 13) |
+| `scrambled` | `scrambled` | 0.05 | the same instructions in shuffled order |
+| `random` | `random` | 0.05 | random instructions of the same length |
+| `noslip` | (any) | 0 | no slip mutation |
+
+Six seeds per ancestor (71 to 76), so 24 populations per arm and 96 runs, each 150,000 updates (first proposed with three seeds and 100,000 updates; raised before the runs because `g46` needed more than 100,000 updates in stage 13 and the cost is small). In stage 13 the population's share of organisms scoring 1.0, among those passing Q50, reached 90 % in every `v32` population of `m49`, `p42` and `p44` between updates 3,400 and 35,000, and in those of `g46` between 52,000 and 278,000.
+
+**Outcome.** Populations holding the three-bit sum at 150,000 updates by the rule of stage 13 (at least 90 % of the organisms that pass Q50 score 1.0, confirmed on the most common organism alone with mutation off). Planned comparison: `dup` against `random`, which keeps the length changes and takes away only the copying, Fisher exact, two-sided. Secondary: `scrambled` against `random` (does the order of the copied instructions matter, or only their kinds), `noslip` against `random` (does an inserted random stretch help at all), and the time to 80 % exact in each arm.
+
+**Prediction**, written before the runs: `dup` 20 or more of 24 (all 18 of `m49`, `p42` and `p44`, and some of `g46`); `random`, `scrambled` and `noslip` clearly fewer. A scrambled copy keeps a round only when the shuffle happens to restore the order (1 in 360 for the shortest round found, six instructions with one repeated), so `scrambled` should behave like `random`. If `random` does as well as `dup`, the duplications on the lines of descent were one route among several, and the reading after stage 13 is wrong.
+
+**Cost.** Stage 13's `v32` runs took 5 to 9 hours for 300,000 updates on the rented cores, so about 2.5 to 4.5 hours for 150,000; 96 runs on 32 rented cores, about 12 hours and about EUR 2.
 
 ## Candidate future experiments
 
