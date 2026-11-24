@@ -563,6 +563,46 @@ fn carry_and_partial_are_the_steps_of_the_two_bit_adder() {
     }
 }
 
+/// The logic steps on the two computed words, from which `partial` is
+/// composed the way `xor` is composed from `nand`, `and` and `or`.
+#[test]
+fn the_xc_steps_compose_partial() {
+    let task = |f: &str| load(&format!("fn={f}:bits=2:mode=packed:width=24")).unwrap();
+    let (nand, nid, _) = task("nand_xc");
+    let (and, aid, _) = task("and_xc");
+    let (or, oid, _) = task("or_xc");
+    let (andn_xc, xid, _) = task("andn_xc");
+    let (andn_cx, cid, _) = task("andn_cx");
+    let (partial, pid, _) = task("partial");
+    let (add, sid, _) = task("add");
+    let mut rng = Rng(0xBADC0DE);
+    for _ in 0..300 {
+        let (a, b) = (rng.next() & 0xFF6D_B6DB, rng.next() & 0xFF6D_B6DB);
+        let (x, c) = (a ^ b, (a & b) << 1);
+        let i = inputs(a, b);
+        let one = |v: u32| outputs(1, &[v]);
+        // The bits above `width` are not judged: a plain 32-bit nand passes.
+        assert_eq!(eval(&nand, nid, &i, &one(!(x & c))), 1.0);
+        assert_eq!(eval(&and, aid, &i, &one(x & c)), 1.0);
+        assert_eq!(eval(&or, oid, &i, &one(x | c)), 1.0);
+        assert_eq!(eval(&andn_xc, xid, &i, &one(x & !c)), 1.0);
+        assert_eq!(eval(&andn_cx, cid, &i, &one(c & !x)), 1.0);
+        // partial from the steps, three ways.
+        for v in [(x | c) & !(x & c), (x & !c) | (c & !x), x ^ c] {
+            assert_eq!(eval(&partial, pid, &i, &one(v)), 1.0);
+        }
+        // and_xc is the second round's carry before its shift.
+        assert_eq!(eval(&add, sid, &i, &one((x ^ c) | ((x & c) << 1))), 1.0);
+        // Neither computed word alone is one of the steps, unless they agree.
+        if x & c & 0xFF_FFFF != 0 {
+            assert!(eval(&or, oid, &i, &one(x ^ c)) < 1.0);
+            assert!(eval(&andn_xc, xid, &i, &one(x)) < 1.0);
+        }
+    }
+    let errs = load("fn=nor_xc:bits=2").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("nand_xc")), "{errs:?}");
+}
+
 /// `expect=1` only marks the entry (the quality it computes is the same);
 /// the library answers per entry.
 #[test]

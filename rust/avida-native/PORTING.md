@@ -395,6 +395,41 @@ configuration that does not name it.
 - `field_arith` functions `carry`, `(a & b) << 1`, and `partial`,
   `(a ^ b) ^ ((a & b) << 1)`, both in `w + 1` result bits: the two steps of a
   ripple adder before `add`.
+- Instruction `sense-ahead-resource0` on the heads CPU (2026-11-19): the
+  amount of resource 0 in the faced cell, truncated, into BX. The C++
+  `sense-faced-resource0` passes the faced cell to `DoSenseResourceX`, which
+  ignores it and reads the organism's own cell; the port keeps that, and the
+  new instruction does what the name of the old one says. Not on the list of
+  organism-local instructions of the parallel mode, so it runs in the
+  sequential part there.
+- Instruction `sense-climb-resource0` on the heads CPU (2026-11-19), after
+  the `sense-target` instruction of Grabowski, Elsberry, Ofria and Pennock
+  (GECCO 2008, "On the Evolution of Motility and Intelligent Tactic
+  Response"), which is not in the C++ of the tag: the amount of resource 0
+  under the organism into BX, and the bonus multiplied by
+  `amount / highest` when the amount is higher than the highest this
+  organism has read in this life (a highest amount below 1 counts as 1). The first execution of a life only notes the amount. The highest
+  amount is CPU state, cleared with the registers at a divide.
+- Gate instructions `gate-0` to `gate-15` on the heads CPU (2026-11-20):
+  the sixteen two-input logic functions, named by their truth table (bit
+  `2a + b` of the number is the result for the operand bits `a` and `b`;
+  `gate-7` is `nand`, `gate-6` xor, `gate-8` and, `gate-14` or). Each
+  computes `?BX? = table(BX, CX)` on every bit, with its modifier read as
+  `nand` reads it, and runs in the bursts of the parallel mode. A copy
+  mutation in `h-copy` that hits a gate instruction writes, with probability
+  0.75, the gate whose table differs in one entry drawn at random (when the
+  set has it), so that one mutation changes the result on a quarter of the
+  operand pairs; otherwise it writes a random instruction of the set as the
+  C++ does. Two more random numbers are drawn only when the instruction read
+  is a gate, so a set without gates draws as before. The other mutation
+  kinds (insertions, divide and slip mutations, the other copy instructions)
+  are unchanged. `pgate-0` to `pgate-15` are the same sixteen functions
+  without that rule: a mutation of one writes a random instruction.
+- `field_arith` functions `nand_xc`, `and_xc`, `or_xc`, `andn_xc` and
+  `andn_cx` (2026-11-19): the logic steps on the two computed words
+  `x = a ^ b` and `c = (a & b) << 1`, in `w + 1` result bits (`~(x & c)`,
+  `x & c`, `x | c`, `x & ~c`, `c & ~x`). `partial` is `x ^ c`; the steps are
+  to it what `nand`, `and` and `or` are to `xor`.
 - Environment line `INPUT_AND_MASK <mask>` (hexadecimal with `0x`, or
   decimal): the mask is ANDed onto every input `SetupInputs` hands out, in
   the world and in the test CPU. It is applied after the random draws, so a

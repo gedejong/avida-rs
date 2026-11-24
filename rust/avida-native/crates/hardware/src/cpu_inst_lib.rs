@@ -38,7 +38,7 @@ const fn d(
 
 /// `s_f_array`, in order. The NOP table is its first three entries.
 #[rustfmt::skip]
-pub static CPU_INST_DEFS: [CpuInstDef; 566] = [
+pub static CPU_INST_DEFS: [CpuInstDef; 600] = [
     d("nop-A", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
     d("nop-B", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
     d("nop-C", "Inst_Nop", C::Nop, F::DEFAULT | F::NOP, "No-operation instruction; modifies other instructions"),
@@ -184,7 +184,48 @@ pub static CPU_INST_DEFS: [CpuInstDef; 566] = [
     d("sense-resource0", "Inst_SenseResource0", C::Environment, F::STALL, ""),
     d("sense-resource1", "Inst_SenseResource1", C::Environment, F::STALL, ""),
     d("sense-resource2", "Inst_SenseResource2", C::Environment, F::STALL, ""),
+    // Port addition (PORTING.md): the amount of resource 0 in the faced cell.
+    // `sense-faced-resource0` reads the organism's own cell, as in the C++.
+    d("sense-ahead-resource0", "Inst_SenseAheadResource0", C::Environment, F::STALL, ""),
+    // Port addition: resource 0 under the organism, paid when it is a new
+    // best of this life.
+    d("sense-climb-resource0", "Inst_SenseClimbResource0", C::Environment, F::STALL, ""),
     d("sense-faced-resource0", "Inst_SenseFacedResource0", C::Environment, F::STALL, ""),
+    // Port addition (PORTING.md, "Gate instructions"): the sixteen two-input
+    // logic functions of BX and CX into ?BX?, named by their truth table.
+    d("gate-0", "Inst_Gate0", C::ArithmeticLogic, 0, ""),
+    d("gate-1", "Inst_Gate1", C::ArithmeticLogic, 0, ""),
+    d("gate-2", "Inst_Gate2", C::ArithmeticLogic, 0, ""),
+    d("gate-3", "Inst_Gate3", C::ArithmeticLogic, 0, ""),
+    d("gate-4", "Inst_Gate4", C::ArithmeticLogic, 0, ""),
+    d("gate-5", "Inst_Gate5", C::ArithmeticLogic, 0, ""),
+    d("gate-6", "Inst_Gate6", C::ArithmeticLogic, 0, ""),
+    d("gate-7", "Inst_Gate7", C::ArithmeticLogic, 0, ""),
+    d("gate-8", "Inst_Gate8", C::ArithmeticLogic, 0, ""),
+    d("gate-9", "Inst_Gate9", C::ArithmeticLogic, 0, ""),
+    d("gate-10", "Inst_Gate10", C::ArithmeticLogic, 0, ""),
+    d("gate-11", "Inst_Gate11", C::ArithmeticLogic, 0, ""),
+    d("gate-12", "Inst_Gate12", C::ArithmeticLogic, 0, ""),
+    d("gate-13", "Inst_Gate13", C::ArithmeticLogic, 0, ""),
+    d("gate-14", "Inst_Gate14", C::ArithmeticLogic, 0, ""),
+    d("gate-15", "Inst_Gate15", C::ArithmeticLogic, 0, ""),
+    // The same functions, mutated as any other instruction.
+    d("pgate-0", "Inst_Gate0", C::ArithmeticLogic, 0, ""),
+    d("pgate-1", "Inst_Gate1", C::ArithmeticLogic, 0, ""),
+    d("pgate-2", "Inst_Gate2", C::ArithmeticLogic, 0, ""),
+    d("pgate-3", "Inst_Gate3", C::ArithmeticLogic, 0, ""),
+    d("pgate-4", "Inst_Gate4", C::ArithmeticLogic, 0, ""),
+    d("pgate-5", "Inst_Gate5", C::ArithmeticLogic, 0, ""),
+    d("pgate-6", "Inst_Gate6", C::ArithmeticLogic, 0, ""),
+    d("pgate-7", "Inst_Gate7", C::ArithmeticLogic, 0, ""),
+    d("pgate-8", "Inst_Gate8", C::ArithmeticLogic, 0, ""),
+    d("pgate-9", "Inst_Gate9", C::ArithmeticLogic, 0, ""),
+    d("pgate-10", "Inst_Gate10", C::ArithmeticLogic, 0, ""),
+    d("pgate-11", "Inst_Gate11", C::ArithmeticLogic, 0, ""),
+    d("pgate-12", "Inst_Gate12", C::ArithmeticLogic, 0, ""),
+    d("pgate-13", "Inst_Gate13", C::ArithmeticLogic, 0, ""),
+    d("pgate-14", "Inst_Gate14", C::ArithmeticLogic, 0, ""),
+    d("pgate-15", "Inst_Gate15", C::ArithmeticLogic, 0, ""),
     d("sense-faced-resource1", "Inst_SenseFacedResource1", C::Environment, F::STALL, ""),
     d("sense-faced-resource2", "Inst_SenseFacedResource2", C::Environment, F::STALL, ""),
     d("if-resources", "Inst_IfResources", C::Conditional, F::STALL, ""),

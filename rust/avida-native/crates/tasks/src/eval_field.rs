@@ -7,10 +7,15 @@
 //! whole fields from bit 0. The operand of a field is the low `bits` (w) bits
 //! of the field; the other bits are masked away, so that the sum of two
 //! operands never leaves its field. The expected result of a field is
-//! `fn(a_field, b_field)` in `r` bits: `w + 1` for `add`, `halfadd`, `carry`
-//! and `partial`, `w` for the logic functions. `carry` is `(a & b) << 1` and
+//! `fn(a_field, b_field)` in `r` bits: `w + 1` for `add`, `halfadd`, `carry`,
+//! `partial` and the `_xc` steps, `w` for the logic functions. `carry` is `(a & b) << 1` and
 //! `partial` is `(a ^ b) ^ ((a & b) << 1)`, the two steps of a ripple adder
-//! before `add` (for two-bit operands `add` is `partial | ((a ^ b) & carry) << 1`). `stride` is the field width and defaults to `r`
+//! before `add` (for two-bit operands `add` is `partial | ((a ^ b) & carry) << 1`).
+//! `nand_xc`, `and_xc`, `or_xc`, `andn_xc` and `andn_cx` are the logic steps
+//! on those two computed words, `x = a ^ b` and `c = (a & b) << 1`, also in
+//! `w + 1` bits: `~(x & c)`, `x & c`, `x | c`, `x & ~c` and `c & ~x`. They
+//! are the steps from which `partial` (`x ^ c`) is composed, as `nand`, `and`
+//! and `or` of the inputs are the steps below `xor`. `stride` is the field width and defaults to `r`
 //! (no padding), which makes `add` with `bits=2` three-bit fields; a larger
 //! stride leaves the bits above the result unused (`stride=4`, `bits=2`:
 //! `((a & 0x33333333) + (b & 0x33333333)) & 0x77777777`, eight adders).
@@ -53,6 +58,23 @@ pub enum FieldFn {
     /// The sum after one carry round, `(a ^ b) ^ ((a & b) << 1)`, in `w + 1`
     /// bits: what `add` is before the second round's carry is merged in.
     Partial,
+    /// `~(x & c)` for `x = a ^ b` and `c = (a & b) << 1`, in `w + 1` bits.
+    NandXc,
+    /// `x & c`: the carry of the second round, before its shift.
+    AndXc,
+    /// `x | c`.
+    OrXc,
+    /// `x & ~c`.
+    AndnXc,
+    /// `c & ~x`.
+    AndnCx,
+}
+
+impl FieldFn {
+    /// Functions whose result has one bit more than the operands.
+    fn widens(self) -> bool {
+        !matches!(self, FieldFn::Xor | FieldFn::And | FieldFn::Or)
+    }
 }
 
 /// Parsed arguments of one `field_arith` entry.
@@ -117,9 +139,14 @@ impl FieldSpec {
             "add" => FieldFn::Add,
             "carry" => FieldFn::Carry,
             "partial" => FieldFn::Partial,
+            "nand_xc" => FieldFn::NandXc,
+            "and_xc" => FieldFn::AndXc,
+            "or_xc" => FieldFn::OrXc,
+            "andn_xc" => FieldFn::AndnXc,
+            "andn_cx" => FieldFn::AndnCx,
             other => {
                 feedback.error(format!(
-                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, carry, partial)",
+                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, carry, partial, nand_xc, and_xc, or_xc, andn_xc, andn_cx)",
                     other
                 ));
                 return None;
@@ -146,10 +173,7 @@ impl FieldSpec {
             feedback.error("field_arith: halfadd needs bits=1 (use fn=add for wider fields)");
             return None;
         }
-        let result_bits = match func {
-            FieldFn::HalfAdd | FieldFn::Add | FieldFn::Carry | FieldFn::Partial => bits + 1,
-            _ => bits,
-        };
+        let result_bits = if func.widens() { bits + 1 } else { bits };
         let stride = match args.get_int(1) {
             0 => result_bits,
             s if (result_bits as i32..=32).contains(&s) => s as u32,
@@ -231,6 +255,7 @@ impl FieldSpec {
     /// `k * stride ..`, nothing outside the result bits of whole fields.
     pub fn expected(&self, a: u32, b: u32) -> u32 {
         let (a, b) = (a & self.operand_mask, b & self.operand_mask);
+        let (x, c) = (a ^ b, (a & b) << 1);
         match self.func {
             FieldFn::Xor => a ^ b,
             FieldFn::And => a & b,
@@ -238,7 +263,12 @@ impl FieldSpec {
             // Each field sum is below 2^(w+1) <= 2^stride: no carry leaves a field.
             FieldFn::HalfAdd | FieldFn::Add => (a + b) & self.result_mask,
             FieldFn::Carry => ((a & b) << 1) & self.result_mask,
-            FieldFn::Partial => ((a ^ b) ^ ((a & b) << 1)) & self.result_mask,
+            FieldFn::Partial => (x ^ c) & self.result_mask,
+            FieldFn::NandXc => !(x & c) & self.result_mask,
+            FieldFn::AndXc => x & c & self.result_mask,
+            FieldFn::OrXc => (x | c) & self.result_mask,
+            FieldFn::AndnXc => x & !c & self.result_mask,
+            FieldFn::AndnCx => c & !x & self.result_mask,
         }
     }
 

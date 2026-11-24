@@ -20,7 +20,8 @@ use crate::head_cpu::HeadCpu;
 use crate::nhardware::*;
 use crate::org_interface::{with_neighbor_state, Faced, OrgInterface};
 use crate::organism::{OrgState, Organism};
-use avida_genome::Instruction;
+use avida_apto::AvidaRng;
+use avida_genome::{InstSet, Instruction};
 use std::sync::OnceLock;
 
 /// A `cHardwareCPU` instruction handler.
@@ -1132,6 +1133,130 @@ binop!(/// `Inst_Mult`
     inst_mult, |a, b| a.wrapping_mul(b));
 binop!(/// `Inst_Nand`
     inst_nand, |a, b| !(a & b));
+/// The two-input logic function with truth table `table` on every bit of
+/// `a` and `b`: bit `2 * a + b` of the table is the result (7 is nand, 6
+/// xor, 8 and, 14 or).
+pub(crate) fn gate_fn(table: u32, a: i32, b: i32) -> i32 {
+    let pick = |bit: u32, term: i32| if table >> bit & 1 == 1 { term } else { 0 };
+    pick(0, !a & !b) | pick(1, !a & b) | pick(2, a & !b) | pick(3, a & b)
+}
+
+/// A gate instruction (port addition): `?BX? = table(BX, CX)`, with its
+/// modifier read as `nand` reads it.
+fn gate(hw: &mut HardwareCpu, table: u32) -> R {
+    let dst = hw.find_modified_register(REG_BX);
+    let (a, b) = (hw.reg(REG_BX), hw.reg(REG_CX));
+    hw.set_reg(dst, gate_fn(table, a, b));
+    Ok(true)
+}
+
+/// `gate-0`
+fn inst_gate0(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 0)
+}
+
+/// `gate-1`
+fn inst_gate1(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 1)
+}
+
+/// `gate-2`
+fn inst_gate2(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 2)
+}
+
+/// `gate-3`
+fn inst_gate3(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 3)
+}
+
+/// `gate-4`
+fn inst_gate4(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 4)
+}
+
+/// `gate-5`
+fn inst_gate5(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 5)
+}
+
+/// `gate-6`
+fn inst_gate6(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 6)
+}
+
+/// `gate-7`
+fn inst_gate7(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 7)
+}
+
+/// `gate-8`
+fn inst_gate8(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 8)
+}
+
+/// `gate-9`
+fn inst_gate9(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 9)
+}
+
+/// `gate-10`
+fn inst_gate10(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 10)
+}
+
+/// `gate-11`
+fn inst_gate11(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 11)
+}
+
+/// `gate-12`
+fn inst_gate12(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 12)
+}
+
+/// `gate-13`
+fn inst_gate13(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 13)
+}
+
+/// `gate-14`
+fn inst_gate14(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 14)
+}
+
+/// `gate-15`
+fn inst_gate15(hw: &mut HardwareCpu, _: &mut OrgState, _: &mut dyn OrgInterface) -> R {
+    gate(hw, 15)
+}
+
+/// The probability that a copy mutation of a gate instruction steps to a
+/// gate whose truth table differs in one entry.
+const GATE_STEP_PROB: f64 = 0.75;
+
+/// The instruction a copy mutation writes in place of `read`: for a gate
+/// instruction, mostly a gate one truth-table entry away (when the set has
+/// it), so that a mutation changes the result on a quarter of the input
+/// pairs; otherwise, and for every other instruction, a random instruction
+/// of the set as in the C++. No random number is drawn beyond the C++'s
+/// unless `read` is a gate.
+fn copy_mutated_inst(set: &InstSet, read: Instruction, rng: &mut AvidaRng) -> Instruction {
+    let table = set
+        .name_of(read)
+        .strip_prefix("gate-")
+        .and_then(|t| t.parse::<u32>().ok())
+        .filter(|t| *t < 16);
+    if let Some(table) = table {
+        if rng.p(GATE_STEP_PROB) {
+            let near = table ^ (1 << rng.get_uint(4));
+            if let Ok(inst) = set.get_inst(&format!("gate-{near}")) {
+                return inst;
+            }
+        }
+    }
+    set.random_inst(rng)
+}
+
 binop!(/// `Inst_Nor`
     inst_nor, |a, b| !(a | b));
 binop!(/// `Inst_Or`
@@ -2398,7 +2523,7 @@ fn inst_head_copy(hw: &mut HardwareCpu, org: &mut OrgState, world: &mut dyn OrgI
     if HardwareCpu::test_copy_mut(org, world)
         && !in_no_mut_list(world.config(), read_head.get_inst(&hw.memory))
     {
-        read_inst = hw.base.inst_set.random_inst(world.rng());
+        read_inst = copy_mutated_inst(&hw.base.inst_set, read_inst, world.rng());
         write_head.set_flag_mutated(&mut hw.memory);
         write_head.set_flag_copy_mut(&mut hw.memory);
     }
@@ -3086,6 +3211,22 @@ fn core_handler(method: &str) -> Option<InstFn> {
         "Inst_Div" => inst_div,
         "Inst_Mod" => inst_mod,
         "Inst_Nand" => inst_nand,
+        "Inst_Gate0" => inst_gate0,
+        "Inst_Gate1" => inst_gate1,
+        "Inst_Gate2" => inst_gate2,
+        "Inst_Gate3" => inst_gate3,
+        "Inst_Gate4" => inst_gate4,
+        "Inst_Gate5" => inst_gate5,
+        "Inst_Gate6" => inst_gate6,
+        "Inst_Gate7" => inst_gate7,
+        "Inst_Gate8" => inst_gate8,
+        "Inst_Gate9" => inst_gate9,
+        "Inst_Gate10" => inst_gate10,
+        "Inst_Gate11" => inst_gate11,
+        "Inst_Gate12" => inst_gate12,
+        "Inst_Gate13" => inst_gate13,
+        "Inst_Gate14" => inst_gate14,
+        "Inst_Gate15" => inst_gate15,
         "Inst_Or" => inst_or,
         "Inst_Nor" => inst_nor,
         "Inst_And" => inst_and,
@@ -3344,5 +3485,126 @@ mod tests {
         assert!(handler_ported("Inst_Collect"));
         assert_eq!(handler_table().len(), CPU_INST_DEFS.len());
         assert_eq!(unported_methods(), Vec::<&str>::new());
+    }
+}
+
+#[cfg(test)]
+mod gate_tests {
+    use super::{copy_mutated_inst, gate_fn};
+    use avida_apto::rng::AvidaRng;
+    use avida_genome::inst_set::InstCodeConfig;
+    use avida_genome::{Feedback, InstSet};
+
+    fn set(names: &[String]) -> InstSet {
+        let mut is = InstSet::new("t", 0, crate::hardware_manager::cpu_inst_lib(), 10, 1);
+        let lines: Vec<String> = names.iter().map(|n| format!("INST {n}")).collect();
+        assert!(is.load_with_string_list(
+            &lines,
+            InstCodeConfig::default(),
+            &mut Feedback::default()
+        ));
+        is
+    }
+
+    fn with_gates(skip: Option<u32>) -> InstSet {
+        let mut names = vec![
+            "nop-A".to_string(),
+            "nop-B".to_string(),
+            "nop-C".to_string(),
+        ];
+        names.extend(
+            (0..16)
+                .filter(|t| Some(*t) != skip)
+                .map(|t| format!("gate-{t}")),
+        );
+        names.push("h-copy".to_string());
+        set(&names)
+    }
+
+    #[test]
+    fn a_copy_mutation_of_a_gate_mostly_writes_a_gate_one_entry_away() {
+        let is = with_gates(None);
+        let read = is.get_inst("gate-6").unwrap();
+        let mut rng = AvidaRng::new(7);
+        let n = 40_000;
+        let mut near = [0usize; 16];
+        let mut other = 0usize;
+        for _ in 0..n {
+            let w = copy_mutated_inst(&is, read, &mut rng);
+            match is
+                .name_of(w)
+                .strip_prefix("gate-")
+                .map(|t| t.parse::<u32>().unwrap())
+            {
+                Some(t) if (t ^ 6).count_ones() == 1 => near[t as usize] += 1,
+                _ => other += 1,
+            }
+        }
+        // Each of the four neighbours of 0110 (2, 4, 7, 14): 0.75 / 4 by the
+        // rule plus 0.25 / 20 by the random draw.
+        let expect = n as f64 * (0.75 / 4.0 + 0.25 / 20.0);
+        for t in [2usize, 4, 7, 14] {
+            let z = (near[t] as f64 - expect) / expect.sqrt();
+            assert!(z.abs() < 4.0, "gate-{t}: {} against {expect:.0}", near[t]);
+        }
+        let expect_other = n as f64 * 0.25 * 16.0 / 20.0;
+        assert!(
+            ((other as f64 - expect_other) / expect_other.sqrt()).abs() < 4.0,
+            "other {other}"
+        );
+    }
+
+    #[test]
+    fn without_the_neighbour_the_mutation_is_a_random_instruction() {
+        let is = with_gates(Some(7));
+        let read = is.get_inst("gate-15").unwrap(); // neighbours 14, 13, 11, 7
+        let mut rng = AvidaRng::new(11);
+        let n = 40_000;
+        let near = (0..n)
+            .filter(|_| {
+                let w = copy_mutated_inst(&is, read, &mut rng);
+                matches!(is.name_of(w), "gate-14" | "gate-13" | "gate-11")
+            })
+            .count();
+        // Three neighbours present, one missing: 0.75 * 3/4 plus 0.25 * 3/19 for
+        // the random draws, and the missing step falls back to a random draw
+        // (0.75 / 4 * 3/19).
+        let p = 0.75 * 0.75 + 0.25 * 3.0 / 19.0 + 0.75 * 0.25 * 3.0 / 19.0;
+        let expect = n as f64 * p;
+        assert!(
+            ((near as f64 - expect) / expect.sqrt()).abs() < 4.0,
+            "{near} against {expect:.0}"
+        );
+    }
+
+    #[test]
+    fn a_non_gate_draws_exactly_as_before() {
+        let is = with_gates(None);
+        let read = is.get_inst("nop-B").unwrap();
+        let (mut r1, mut r2) = (AvidaRng::new(3), AvidaRng::new(3));
+        for _ in 0..1000 {
+            assert_eq!(
+                copy_mutated_inst(&is, read, &mut r1),
+                is.random_inst(&mut r2)
+            );
+        }
+    }
+
+    #[test]
+    fn a_gate_is_its_truth_table_on_every_bit() {
+        let (a, b) = (0b1100, 0b1010);
+        // Bit 2a + b of the table: the low four result bits spell the table
+        // backwards for these operands.
+        for table in 0..16u32 {
+            let out = gate_fn(table, a, b) & 0xF;
+            let spelled = (0..4).fold(0, |acc, i| acc | ((table >> i & 1) as i32) << i);
+            assert_eq!(out, spelled, "gate-{table}");
+        }
+        assert_eq!(gate_fn(7, a, b), !(a & b));
+        assert_eq!(gate_fn(6, a, b), a ^ b);
+        assert_eq!(gate_fn(8, a, b), a & b);
+        assert_eq!(gate_fn(14, a, b), a | b);
+        assert_eq!(gate_fn(0, a, b), 0);
+        assert_eq!(gate_fn(15, a, b), -1);
     }
 }

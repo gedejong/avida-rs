@@ -39,6 +39,8 @@ pub(crate) fn handler(method: &str) -> Option<InstFn> {
         "Inst_SenseFacedResource0" => |h, o, w| do_sense_resource_x(h, o, w, REG_BX, 0),
         "Inst_SenseFacedResource1" => |h, o, w| do_sense_resource_x(h, o, w, REG_BX, 1),
         "Inst_SenseFacedResource2" => |h, o, w| do_sense_resource_x(h, o, w, REG_BX, 2),
+        "Inst_SenseAheadResource0" => inst_sense_ahead_resource0,
+        "Inst_SenseClimbResource0" => inst_sense_climb_resource0,
         "Inst_SenseResourceID" => inst_sense_resource_id,
         "Inst_SenseOpinionResourceQuantity" => inst_sense_opinion_resource_quantity,
         "Inst_SenseNextResLevel" => inst_sense_next_res_level,
@@ -341,6 +343,53 @@ fn do_sense_resource_x(
         return Ok(false);
     }
     hw.set_reg(reg_to_set, res_count[resid] as i32);
+    Ok(true)
+}
+
+/// `sense-ahead-resource0`, a port addition: the amount of resource 0 in
+/// the faced cell, truncated, into BX. What `sense-faced-resource0` reads by
+/// its name; that one reads the organism's own cell, as the C++ does.
+fn inst_sense_ahead_resource0(
+    hw: &mut HardwareCpu,
+    org: &mut OrgState,
+    world: &mut dyn OrgInterface,
+) -> R {
+    let res_count = world.get_faced_cell_resources(org);
+    let Some(&amount) = res_count.first() else {
+        return Ok(false);
+    };
+    hw.set_reg(REG_BX, amount as i32);
+    Ok(true)
+}
+
+/// `sense-climb-resource0`, a port addition after the `sense-target`
+/// instruction of Grabowski, Elsberry, Ofria and Pennock (GECCO 2008): the
+/// amount of resource 0 under the organism, truncated, into BX, and pay for
+/// climbing. The first execution of a life only notes the amount. A later
+/// one that reads more than the highest amount read so far multiplies the
+/// bonus by `amount / highest` (a highest amount below 1 counts as 1). The
+/// pay of a life is therefore `highest / first` however the organism got
+/// there: going down and up again earns nothing, and on a hill that falls
+/// off exponentially every step towards the top pays the same factor.
+fn inst_sense_climb_resource0(
+    hw: &mut HardwareCpu,
+    org: &mut OrgState,
+    world: &mut dyn OrgInterface,
+) -> R {
+    let res_count = resources_with_deme(org, world);
+    let Some(&amount) = res_count.first() else {
+        return Ok(false);
+    };
+    let now = amount as i32;
+    hw.set_reg(REG_BX, now);
+    match hw.climb_best {
+        Some(best) if now > best => {
+            org.phenotype.cur_bonus *= f64::from(now) / f64::from(best.max(1));
+            hw.climb_best = Some(now);
+        }
+        Some(_) => {}
+        None => hw.climb_best = Some(now),
+    }
     Ok(true)
 }
 

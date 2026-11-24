@@ -195,6 +195,9 @@ pub struct HardwareCpu {
 
     /// `m_last_cell_data`
     pub(crate) last_cell_data: (bool, i32),
+    /// Port-only: the highest amount `sense-climb-resource0` has read in
+    /// this life, `None` before its first execution.
+    pub(crate) climb_best: Option<i32>,
     /// `m_flash_info`
     pub(crate) flash_info: (u32, u32),
     /// `m_cycle_counter`
@@ -257,6 +260,7 @@ impl HardwareCpu {
             last_reg: num_regs - 1,
             epigenetic_saved_stack: CpuStack::default(),
             last_cell_data: (false, 0),
+            climb_best: None,
             flash_info: (0, 0),
             cycle_counter: 0,
             promoters_enabled: cfg.promoters_enabled != 0,
@@ -549,6 +553,7 @@ impl HardwareCpu {
         }
 
         self.last_cell_data = (false, 0);
+        self.climb_best = None;
         self.flash_info = (0, 0);
         self.cycle_counter = 0;
     }
