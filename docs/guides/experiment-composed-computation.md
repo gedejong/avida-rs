@@ -513,9 +513,296 @@ Across stages 8 and 9 the step that combines two computed values has been offere
 
 Verdict: negative on the primary outcome, accepted by the maintainer on 2026-11-19.
 
+### After stage 9: how far away is the combining step
+
+A check on the saved populations of stage 8, not a stage of its own. From five populations of `pay+masked+steps` that hold XOR and CARRY, the most abundant genotype that performs both in 30 of 30 draws was taken (two from one population), and every single mutation of it was run in the test CPU on three draws of masked inputs: each instruction of the set at each position as a substitution and as an insertion, and each deletion.
+
+| Genotype (seed, length) | Single mutants | Keep XOR and CARRY | PARTIAL or ADD2 in 2 of 3 draws |
+|---|---|---|---|
+| 41, 635 | 36,830 | 26,505 | 0 |
+| 41, 635 (second) | 36,830 | 26,458 | 0 |
+| 43, 827 | 47,966 | 38,776 | 0 |
+| 44, 655 | 37,990 | 32,031 | 0 |
+| 47, 250 | 14,500 | 8,834 | 0 |
+
+**No single mutation of any of the five makes the combining step,** out of 174,116 tried. Seven in ten leave XOR and CARRY intact, so the populations can drift, but the step itself needs at least two changes, and nothing on the ladder pays for the first of them. That fits what stages 8 and 9 found: pay on the far side of the step, exact or graded, cannot select for a first change that earns nothing.
+
+Limits: duplications of a stretch of the genome (slip mutations, which these runs allow) were not scanned, and a mutant that makes the step on fewer than two of three draws would be missed.
+
+**The logic steps on the two computed values are no closer.** The same scan was repeated on four of the genotypes (137,286 single mutants) for five new exact functions of `x = a ^ b` and `c = (a & b) << 1` (`field_arith` with `fn=nand_xc`, `and_xc`, `or_xc`, `andn_xc`, `andn_cx`), the steps from which PARTIAL (`x ^ c`) would be composed as XOR was composed in stage 7. It used only input draws on which no step equals `x`, `c`, zero or all ones for any pair of inputs. No mutant performs `or_xc`, `andn_xc` or `andn_cx` in 2 of 3 draws. 121 mutants pass `nand_xc` or `and_xc` in 2 of 3 draws, and none of them in more than 17 of 30. On ordinary draws `x & c` is zero in about a third of the cases, so `nand_xc`, `and_xc` and `andn_cx` would also be paid by coincidence. A ladder of these steps was therefore not run: what is missing is any output that depends on both computed values, whatever the function.
+
+### Stage 10: the same ladder on the experimental hardware
+
+**Question.** Does the hardware change what populations reach above XOR? The experimental hardware (type 3) finds its labels by direct search and has no `call`.
+
+**Arms** (lab folder `23-heads-ex`), each 12 populations, seeds 41 to 52, 100,000 updates, on the ladder of stage 8 with both adder steps paid (CARRY 9, PARTIAL 10) and masked inputs:
+
+| Arm | Change |
+|---|---|
+| `modular` | the modular heads set, as in stage 8 |
+| `ex` | a heads-style set on the experimental hardware (`label`, `search-lbl-direct-s`, `if-copied-lbl-direct`), with an ancestor written for it |
+
+#### Results (2026-11-20)
+
+Populations (of 12) that hold a rung at the end:
+
+| Arm | CARRY | XOR | HALFADD_PLANES | PARTIAL | ADD2 |
+|---|---|---|---|---|---|
+| `modular` | 12 | 7 | 4 | 0 | 0 |
+| `ex` | 12 | 9 | 7 | 0 | 0 |
+
+**Negative.** Neither arm reaches PARTIAL or ADD2, and the differences below them are within chance (Fisher p about 0.67 for XOR and 0.41 for HALFADD_PLANES). The hardware is not what holds populations below the combining step.
+
+Verdict: negative, accepted by the maintainer on 2026-11-20.
+
+### Stage 11: one judged output, graded pay, and gate instructions
+
+Stage 9 ended with two lessons: graded pay must judge one designated output, and nothing pays for the first of the two or more changes the combining step needs. This stage changes both.
+
+**One judged output with graded pay.** A reaction with `requisite: {divide_only: 1}` is tested at divide, on the organism's newest output, once per life. The reaction GRADED pays `2^(12 q)` for the quality `q` of that output against the packed two-bit sum (`field_arith`, `fn=add:bits=2:mode=packed:width=24:thresh=0.25`; quality is `max(0, 2f - 1)` for a share `f` of right bits). It uses no resource. Four unpaid reactions on the same output (Q50, Q70, Q90, Q100; quality at least 0.5, 0.7, 0.9 and exactly 1.0) are the measurement. The eight logic rungs NOT to XOR are paid as in stage 8, on masked inputs.
+
+**Gate instructions** (`PORTING.md`). `gate-0` to `gate-15` each write one two-input logic function of BX and CX to a register; the instruction's number is the function's truth table, so `gate-6` is XOR and `gate-8` is AND. A copy mutation that hits a gate writes, three times in four, the gate whose table differs in one entry, so one mutation changes the result on a quarter of the input pairs.
+
+What one output scores against the packed two-bit sum, calculated over masked inputs:
+
+| Output | Mean quality | Pass 0.7 | Pass 0.9 | Exactly 1.0 |
+|---|---|---|---|---|
+| `a XOR b` | 0.58 | 26 % | 5 % | 1 % |
+| XOR, with the shifted carry merged by OR | 0.83 | 74 % | 35 % | 35 % |
+| XOR, with the shifted carry merged by XOR (the sum after one carry round) | 0.92 | 99 % | 74 % | 35 % |
+| the sum | 1.00 | 100 % | 100 % | 100 % |
+
+The sum is the one-round sum combined with a second carry. The half-built forms of that second round score no better than the one-round sum.
+
+**Arms** (lab folder `24-soft-gates`), each 12 populations, seeds 41 to 52, 100,000 updates:
+
+| Arm | Instruction set |
+|---|---|
+| `graded` | the modular heads set |
+| `graded+gates` | the same with `gate-0` to `gate-15` |
+
+#### Results (2026-11-20)
+
+The outcome measure was chosen after the data were seen: a population is past the XOR level when most of the organisms that pass Q50 also pass Q70.
+
+| Arm | Past the XOR level | Hold the sum |
+|---|---|---|
+| `graded` | 0 of 12 | 0 |
+| `graded+gates` | 5 of 12 | 0 |
+
+**With gates, five populations get past XOR; without, none** (Fisher exact p = 0.037). They crossed at updates 28,900 to 95,300. In `graded` seven of twelve populations lost XOR during the run.
+
+**What the five compute**, from the most common organism of each run alone with mutation off: three match the one-round sum (99 to 100 % pass 0.7, 55 to 71 % pass 0.9, 21 to 43 % score 1.0), one is an intermediate below it, and one had too few offspring to judge. For the first time a population's output depends on two computed values, the step no population made in stages 8 and 9. The genomes are 224 to 1,019 instructions long and mostly gates.
+
+Verdict: positive for the step past XOR, on a measure chosen after the fact; no population holds the sum. Accepted by the maintainer on 2026-11-20.
+
+### Stage 12: three times the run length, and whether the gate mutation rule matters
+
+**Question.** Does the sum appear with more time, does the gates' special mutation rule matter, and does a higher mutation rate help?
+
+**Arms** (lab folder `25-gates-long`), each 10 populations, seeds 41 to 50, 300,000 updates, on the environment of stage 11:
+
+| Arm | Change |
+|---|---|
+| `gates` | the `graded+gates` arm of stage 11 |
+| `pgates` | `pgate-0` to `pgate-15` in place of the gates: the same functions, and a copy mutation writes a random instruction as for any other |
+| `gates-mut3x` | `gates` with a copy mutation rate of 0.0075 in place of 0.0025 |
+
+#### Results (2026-11-20)
+
+All 30 runs ran to 300,000 updates. Populations at the end, by the shares of Q70, Q90 and Q100 among the organisms that pass Q50:
+
+| Arm | XOR level or just above | One-round sum | Other intermediate | The sum |
+|---|---|---|---|---|
+| `gates` | 4 | 4 | 1 | 1 |
+| `pgates` | 5 | 2 | 1 | 2 |
+| `gates-mut3x` | 5 | 4 | 0 | 1 |
+
+**Four populations hold the two-bit adder.** The most common organism of each, alone with mutation off, scores exactly 1.0 on every judged output:
+
+| Population | Genome length | Judged outputs | Exactly 1.0 |
+|---|---|---|---|
+| `pgates` seed 42 | 448 | 1,735 | 100 % |
+| `pgates` seed 44 | 211 | 10,679 | 100 % |
+| `gates-mut3x` seed 49 | 190 | 10,800 | 100 % |
+| `gates` seed 46 | 398 | 2,743 | 100 % |
+| `gates` seed 44 (one-round sum, for comparison) | 332 | 5,062 | 31.7 % |
+
+In three of them 95 to 98 % of the population scores 1.0 at the end; in `gates` seed 46 the sum was still spreading (84 %).
+
+**No arm stands out.** One, two and one of ten is no difference: neither the gates' mutation rule nor the tripled mutation rate shows a benefit. The two arms with the rule and the one without it get past the XOR level equally often (6, 6 and 5 of 10).
+
+**Time mattered.** Three of the four reached the sum after update 150,000; stage 11 stopped at 100,000.
+
+**How they got there:**
+
+| Population | Route | The sum spreads in |
+|---|---|---|
+| `pgates` 42 | one-round sum from update 80,000 to 155,000 | about 2,200 updates |
+| `gates-mut3x` 49 | XOR level until 147,000, one-round sum until 188,000 | about 4,000 updates |
+| `pgates` 44 | the OR form from 40,000 to 70,000, never the one-round sum | about 4,000 updates |
+| `gates` 46 | one-round sum from 36,000 to 250,000 | more than 50,000 updates, unfinished |
+
+There are at least two routes, and the wait below the sum ranges from 30,000 to more than 200,000 updates.
+
+Limits: the stage has no arm without gate instructions at this run length (stage 11 had one at 100,000 updates), and the classes of the first table are read from shares, with only the eight most telling populations tested directly.
+
+Verdict: positive, the two-bit adder evolved in 4 of 30 populations. Accepted by the maintainer on 2026-11-20.
+
+### Stage 13: wider sums, the size of the pay step, and the gates over a long run
+
+Design fixed on 2026-11-21, before the main runs. Lab folder `28-weekend`. Every arm uses the environment and the instruction sets of stage 12; only the judged sum, the input mask and the pay of GRADED change. Copy mutation rate 0.0025 in every arm.
+
+**Ancestors.** The most common organism of each of the four populations that hold the two-bit sum at the end of stage 12: `p42` and `p44` (`pgates` seeds 42 and 44; 448 and 211 instructions, pgate set), `m49` (`gates-mut3x` seed 49; 190, gate set; it evolved at a copy mutation rate of 0.0075) and `g46` (`gates` seed 46; 398, gate set).
+
+**Wider sums.** `field_arith` with `bits=3` (four-bit fields, six of them in the low 24 bits, input mask `0xFF777777`) or `bits=4` (five-bit fields, four of them, mask `0xFF07BDEF`). The Q marks judge the same sum as GRADED.
+
+What a ripple adder that stops after a given number of carry rounds scores, calculated over masked inputs:
+
+| Judged sum | Adder | Mean quality | Exactly 1.0 |
+|---|---|---|---|
+| three bits | the two-bit adder | 0.967 | 67 % |
+| four bits | the two-bit adder | 0.937 | 58 % |
+| four bits | the three-bit adder | 0.988 | 88 % |
+
+Measured before the runs, each ancestor alone with mutation off: against the three-bit sum 51 to 60 % of its outputs are exact (`p44` 52 %, the others 57 to 60 %); against the four-bit sum 9 % (`p44`) and 20 to 25 % (the others). The evolved adders are partly tied to the field layout they evolved on.
+
+**Pay.** At `2^(12 q)` the last step to the three-bit sum is worth 1.31 times the pay, against 1.94 times for the last step to the two-bit sum in stage 12. At `2^(32 q)` it is worth 2.06 times. For four bits, `2^(64 q)` makes the last step (from the three-bit adder) worth 1.70 times.
+
+**Arms:**
+
+| Arm | Start | Judged and paid | Seeds | Updates |
+|---|---|---|---|---|
+| `v12-*` | each of the four ancestors | three-bit sum, `2^(12 q)` | 61 to 63 | 300,000 |
+| `v32-*` | each of the four ancestors | three-bit sum, `2^(32 q)` | 61 to 63 | 300,000 |
+| `w4-*` | each of the four ancestors | four-bit sum, `2^(64 q)` | 41 to 43 | 3,000,000 |
+| `pgates-long` | the modular ancestor | two-bit sum, as `pgates` in stage 12 | 51 to 57 | 3,000,000 |
+| `nogates-long` | the modular ancestor | two-bit sum, as `graded` in stage 11 (no gates) | 51 to 57 | 3,000,000 |
+
+A population with its line of descent is saved every 50,000 updates.
+
+**Questions and primary outcomes.**
+
+1. Does the size of the pay step decide whether the three-bit sum is reached? Populations holding the three-bit sum at 300,000 updates (at least 90 % of the organisms that pass Q50 score 1.0, confirmed on the most common organism alone with mutation off), `v32` against `v12`, 12 against 12, Fisher exact.
+2. Does the climb go on to four bits? Populations of `w4` holding the four-bit sum at the end, of 12, by the same rule. Secondary: the time to the three-bit level (a share at 1.0 near 88 %) and to the sum; how the sum is built (a carry round written out again, a loop or `call`), from the line of descent and the genomes.
+3. Are the gate instructions necessary given time? Populations past the XOR level at the end (most organisms that pass Q50 also pass Q70, the rule of stages 11 and 12), `pgates-long` against `nogates-long`, 7 against 7, Fisher exact. Secondary: populations holding the two-bit sum, and the time to each.
+
+**Seen before the runs.** In a 3,000-update smoke run of `v32-p44` (seed 41, not one of the seeds above) 91 % of judged outputs were exact at the end, and 8 of the 10 most common genotypes compute the three-bit sum alone. The three-bit step can therefore be fast, which is why the three-bit runs are short.
+
+**Cut-off.** The runs are on rented servers with 32 cores in all (four with 8 cores each). At 08:00 CET on 2026-11-24 any run still going is stopped; a long arm is then compared at the update its slowest run reached.
+
+**Change on 2026-11-21, after about 330,000 updates** (agreed with the maintainer the same day). By then 9 of the 12 `w4` populations showed the four-bit pattern (96 to 98 % of judged outputs exact), held from update 6,200 to 67,600, and the three `g46` populations stood at 83 to 89 %. In five populations (`m49` seed 41, `p44` seed 42, `p42` seed 43, `g46` seeds 41 and 43) most of the four most common genotypes compute the four-bit sum exactly alone with mutation off. Question 2 was answered, and nothing in the design pushes these populations further: on random inputs long carry chains are rare, so a four-bit adder is already exact on 88 % of eight-bit sums and a six-bit adder on 99 %, and wider sums need inputs with long carry chains. The `w4` runs were stopped between updates 380,600 and 432,100, and their cores went to a new arm:
+
+| Arm | Start | Judged and paid | Seeds | Updates |
+|---|---|---|---|---|
+| `s4` | the modular ancestor, pgate set | four-bit sum, `2^(64 q)` | 51 to 62 | 3,000,000 |
+
+4. Can a population climb from scratch to the four-bit sum? Populations of `s4` holding the four-bit sum at the end, of 12, by the rule of question 1. On the four-bit judge XOR scores 0.39, the one-round sum 0.79, the two-bit adder 0.94 and the three-bit adder 0.99. Secondary: the time to each level, compared with the time to the two-bit sum in `pgates-long`.
+
+The stopped slots took queued three-bit runs, so for some hours each server runs 10 or 11 simulations on 8 cores.
+
+#### Results (2026-11-24)
+
+All runs ended as planned except two: `nogates-long` seed 51 ran slower than the others (a genome of about 50 instructions for most of the run) and was stopped at the cut-off at update 2,724,400, so the arm `nogates-long` is compared at that update; the `w4` runs were stopped early, as described above. The batch cost EUR 9.80. Every population counted below was confirmed on its most common organism, alone, with mutation off, on the last saved population (update 2,700,000 for `nogates-long`).
+
+**Question 1: the size of the pay step does not decide the three-bit sum.** Populations holding it at 300,000 updates: 9 of 12 at `2^(12 q)` against 11 of 12 at `2^(32 q)` (Fisher exact p = 0.59).
+
+| Ancestor | `v12`, share exact at the end | `v32` |
+|---|---|---|
+| `m49` | 97, 98, 97 % | 99, 98, 98 % |
+| `p42` | 97, 95, 96 % | 98, 98, 98 % |
+| `p44` | 96, 96, 96 % | 97, 98, 97 % |
+| `g46` | 81, 89, 64 % | 91, 92, 87 % |
+
+All misses come from `g46`. In three of its four populations below the bar the most common organism computes the three-bit sum exactly alone; the share is pulled down by offspring that do not, and its genomes are the longest (the most common organisms have 315 to 530 instructions). Only `v12-g46` seed 63 has not reached it (its most common organism is exact on 66 % of outputs).
+
+**Question 2: the climb from the two-bit to the four-bit sum is short.** When the `w4` runs were stopped (updates 380,600 to 432,100), 10 of 12 populations held the four-bit sum by the rule, and in all 12 the most common organism computes it exactly alone. The two below the bar are `g46` seeds 41 and 43 (83 and 89.9 % exact). In the nine populations of `m49`, `p42` and `p44` the share stayed above 90 % from update 6,200 to 67,600. The genomes did not grow by a block per carry round: the most common organisms are 254 to 383 instructions long in eight of those nine (621 in `m49` seed 42), against 190 to 448 in the ancestors.
+
+**Question 3: with gate instructions populations get past XOR; without them few do.**
+
+| Arm | Past the XOR level | One-round sum or higher | Two-bit sum |
+|---|---|---|---|
+| `pgates-long` | 7 of 7 | 7 of 7 | 4 of 7 |
+| `nogates-long` | 2 of 7 | 0 of 7 | 0 of 7 |
+
+Past the XOR level: Fisher exact p = 0.021 (the planned comparison); the two-bit sum: p = 0.070. With gates, the share passing 0.7 first stayed above half at updates 57,600 to 963,100, and the four populations that hold the sum held it above 90 % from updates 112,400, 184,600, 206,900 and 413,800. Of the other three, seed 57 is exact on 71 % of outputs (its most common organism on 76.5 %), and seeds 51 and 56 are at the one-round sum (organisms 99/77/37 % and 99/71/31 % passing 0.7/0.9/1.0; calculated 99/74/35 %). Without gates, seed 55 is at the OR-merge form (organism 70/30/30 %; calculated 74/35/35 %) from update 201,800, and seed 56 a little past it (88/50/31 %) from 559,600; the five others are at the XOR level (26 to 29 % pass 0.7; calculated 26 %) after 2.7 million updates.
+
+**Question 4: one population climbed from scratch to the four-bit sum, quickly; others followed late or not at all.** The shares passing 0.7/0.9/1.0 that each form gets on the four-bit judge, among outputs that pass 0.5: XOR 41/2/2 %, the OR-merge form 65/22/22 %, the one-round sum 84/18/18 %, the two-bit adder 99/58/58 %, the three-bit adder 100/88/88 %.
+
+| Most common organism alone at 3,000,000 | Seeds | Population share exact |
+|---|---|---|
+| the four-bit sum, exact on every output | 52, 51 | 97 %, 87 % |
+| exact on 96.6 % | 57 | 88 % |
+| near the three-bit adder (85.8 % exact) | 56 | 79 % |
+| between the one-round sum and the two-bit adder (89 to 98/54 to 68/24 to 32 %) | 53, 54, 55, 59, 61, 62 | 10 to 16 % |
+| between XOR and the one-round sum (78 to 80/23 to 25/4 to 5 %) | 58, 60 | 2 to 3 % |
+
+By the rule 1 of 12 holds the four-bit sum: seed 52, above 90 % from update 81,100, half of its outputs exact from 8,200. That is faster than any `pgates-long` population reached the two-bit sum. Seed 51 computes the four-bit sum exactly but stays below the bar on the share (its genome is 232 instructions; 87 % of outputs exact). Seeds 51, 56 and 57 were at the lower levels for more than a million updates: half of their outputs were exact from updates 1,188,200, 2,397,400 and 2,212,000. Seed 57 held above 90 % from 2,347,900 and fell back to 88 % by the end.
+
+**Reading.** The step that combines two computed values, which no population made in stages 8 to 10, is made reliably once it has been made once: from an evolved two-bit adder the three- and four-bit sums followed in nearly every population, at either pay step. From scratch the obstacle is the first combining step, as before: with gate instructions every population passed XOR and four of seven reached the two-bit sum in 3 million updates, without them none reached even the one-round sum. With the four-bit judge one population of twelve went from scratch to the four-bit sum in 81,000 updates; whether the steeper pay of that judge (`2^(64 q)`, so that one step up from XOR multiplies the pay by about 2^25) explains it was not tested.
+
+Limits: the three- and four-bit questions start from four ancestors only, so 12 populations per arm are 4 lineages, not 12 independent origins; the `w4` arms were stopped after about 400,000 updates on the maintainer's agreement once their outcome was clear; and the comparison of pay steps covers only the step from two to three bits.
+
+Verdict: positive on questions 2 and 3, negative on question 1 (no effect of the pay step), and 1 of 12 on question 4. Accepted by the maintainer on 2026-11-24.
+
+### After stage 13: how the adders work and how they were built
+
+A study of saved populations, not a stage of its own (2026-11-24, lab folder `29-lineage`). Nine lines of descent: stage 12 `pgates` seeds 42 and 44, `gates-mut3x` seed 49 and `gates` seed 46; stage 13 `pgates-long` seed 54, `s4` seeds 51 and 52, `w4-m49` seed 42 and `w4-g46` seed 42.
+
+**Method.** The line of descent runs from the most abundant genotype of the last saved population back to the injected ancestor, through the parent column of the saved population (1,519 to 38,311 genotypes). Every genotype on it was run in the test CPU on 100 draws of masked inputs, and its level read from the shares passing 0.7, 0.9 and 1.0, as in the stages. A change of level counts when it holds for the next 5 genotypes (40 on the lines from scratch at 3 million updates). Where one birth brought several changes, every subset of them was run on 200 draws to find which were needed. For the logic, the most abundant genotype of each line was traced in the test CPU on inputs whose sum needs every carry round; the dataflow to the judged output was rebuilt from the instructions (the destination register from the `nop` that follows) and checked against the sum on every pair of field values. The tools are a scratch test, `crates/hardware/tests/zz_logic.rs` (not committed), and the scripts in the lab folder.
+
+**All nine adders are straight-line code and exact on every pair of field values.** None uses a loop or `call`; every value on the way to the output is computed once, at its own place in the genome. They use two algorithms.
+
+*Ripple with the sum updated in place* (6 of 9: stage 12 `pgates` 42 and 44, `gates-mut3x` 49, `pgates-long` 54, `s4` 52, `w4-m49` 42). With `s0 = a ^ b` and the carry word `c1 = (a & b) << 1`, each round is
+
+| Instruction | Effect |
+|---|---|
+| `gate-4` (AND NOT) | BX = BX & ~CX: the carry, minus the bits where the new sum is set |
+| `shift-l` | BX = BX << 1: the next carry word |
+| `gate-6`, `nop-C` (XOR) | CX = BX ^ CX: the next partial sum |
+
+The next carry is taken from the new partial sum (`c & ~(s ^ c)` is `c & s`), so the round needs two registers only, carry in BX and partial sum in CX, and leaves them in the same layout. Four lines use this round, sometimes with an instruction of no effect in between; three of them found it independently from scratch (`gates-mut3x` 49 in stage 12 with gates, `pgates-long` 54 and `s4` 52 in stage 13 with pgates), and `w4-m49` 42 inherited it; `pgates` 44 uses the mirrored gate (`gate-2`, `~BX & CX`); `pgates` 42 keeps the carry complemented, in a five-instruction round (NOR, XOR, `shift-l`, `inc`, XNOR: shifting `~x` left and adding one gives `~(x << 1)`). Some merge the last carry with OR, which is exact once no carry is left. The four-bit adder of `s4` 52 is 13 operations between positions 327 and 344 of its 375 instructions.
+
+*Carry vector by iteration* (3 of 9: `gates` 46 of stage 12, its descendant `w4-g46` 42, and `s4` 51). With `g = a & b` and `t = a ^ b` (or `a | b`), the organism computes the carry into every bit at once, `K = (g | (t & K)) << 1` repeated from `K = g << 1`, and outputs `a ^ b ^ K`. A round needs `g`, `t` and `K` at the same time; with six registers, these organisms read the inputs again with `IO` inside the rounds, and their genomes are longer (232 to 575 instructions).
+
+**The first combining step took one change in each of the five lines where it was tested.** In the births that took a population from the XOR level to the OR-merge form or the one-round sum, the parent was one change away from the step; the other changes of the same birth were not needed.
+
+| Line | Update | The change that was needed |
+|---|---|---|
+| `pgates` 42 | 49,725 | `pgate-3` (NOT) to `pgate-1` (NOR); two more substitutions in the birth not needed |
+| `pgates` 44 | 28,835 | one instruction inserted |
+| `gates-mut3x` 49 | 145,552 | `nop-C` to `nop-B`, which sends a gate's result to another register; two more not needed |
+| `gates` 46 | 28,245 | `nop-C` to `gate-6` (XOR); one more not needed |
+| `pgates-long` 54 | 54,731 | `nop-C` to `pgate-4` (AND NOT); four more not needed |
+
+This differs from the single-mutant scan after stage 9, where no single change made the step; those populations had no gate instructions, and with gates the populations got to within one change of it.
+
+**Each further carry round came, in 12 of 15 steps, from a tandem duplication of the round's code.** A slip mutation (`divide_slip_prob` 0.05) copied a stretch of the genome next to itself, and the copy held a round.
+
+| Line | Step | Update | Duplicated stretch |
+|---|---|---|---|
+| `pgates` 42 | one-round sum to two-bit sum | 152,526 | 13 instructions |
+| `pgates` 44 | OR-merge form to two-bit sum | 68,810 | 14 |
+| `gates-mut3x` 49 | one-round sum to two-bit sum | 185,536 | 6 (a deletion and a substitution in the same birth not needed) |
+| `pgates-long` 54 | one-round sum to two-bit sum | 104,244 | 50 |
+| `s4` 52 | XOR level to one-round sum | 5,425 | 16 |
+| `s4` 52 | to the two-bit level | 5,505 | 8, with a substitution next to it |
+| `s4` 52 | to the three-bit level | 8,331 | 8 |
+| `s4` 52 | to the four-bit sum | 63,540 | 5 (a substitution in the same birth not needed) |
+| `s4` 51 | two-bit to three-bit level | 1,181,622 | 34 |
+| `s4` 51 | to the four-bit sum | 1,502,727 | 40 |
+| `w4-m49` 42 | two-bit sum to three-bit level | 871 | 6 |
+| `w4-m49` 42 | to the four-bit sum | 1,368 | 12 |
+
+The three other steps belong to the carry-vector line of `gates` 46: its two-bit sum came by substitutions between updates 242,881 and 276,937, and its descendant `w4-g46` 42 reached the three- and four-bit sums by single substitutions at updates 14,034 and 203,931.
+
+**Reading.** A round written as a block that takes carry and partial sum in two registers and leaves them in the same two registers is a function that can be applied again, and a tandem duplication applies it again: one mutation, one more carry round. That explains why stage 13 found the climb from an evolved two-bit adder short and the first combining step the hard one: before the first round exists there is nothing to duplicate. It also fits the slow ancestor of stage 13: `g46` computes carries by the other algorithm, whose rounds the duplications did not extend in the lines traced. Duplication stands in for the loop that no population built: the rounds are unrolled, and `call` stayed unused. The sizes of the duplicated stretches suggest that a compact round is extended sooner (the 6- and 12-instruction duplications of `w4-m49` 42 within 1,400 updates, the 34- and 40-instruction ones of `s4` 51 after a million), but nine lines do not test that.
+
+Limits: nine lines of descent, chosen among the populations that reached the sum, so the study says how the sum was built where it was built and nothing about why other populations stalled. Levels come from 100 test-CPU draws per genotype, so a level change can be placed a few genotypes off. Several stretches of the lines (274 genotypes in `gates-mut3x` 49) are genotypes whose offspring differ from themselves in the test CPU; they were counted by the tasks of their own gestation. The rebuilt dataflow is that of one input set; the exactness on every field pair and on 100 random draws suggests no input-dependent branch, without proving it.
+
 ## Candidate future experiments
 
-Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 (the first two) is the one being prepared.
+Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 took up the first; stages 11 and 12 reached the two-bit adder by another road (one judged output, graded pay, gate instructions).
 
 - **Expected pay per genotype.** A new genotype is run in the test CPU on many draws of inputs and every copy is paid its average quality, in place of the one draw an organism is judged on now. This removes pay for lucky draws (the half-adder leak of stage 5, the lottery that ruled out graded credit in stage 8) and makes graded credit usable.
 - **Pay for information.** From the same test runs, pay a genotype for how much its outputs tell about the target (mutual information), so that an organism that outputs the ingredients of the next step is paid before any single output is right.
