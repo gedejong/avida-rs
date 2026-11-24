@@ -324,6 +324,9 @@ pub(super) fn zoom_reset(ui: &mut Ui, mem: ChartMemory) -> bool {
 pub(super) fn draw_run_series(
     p: &mut PlotUi<'_>,
     reset: bool,
+    // What the chart plots: another measure or scale starts its value axis
+    // afresh.
+    what: impl std::hash::Hash + std::fmt::Debug,
     fit: impl FnOnce(&mut PlotUi<'_>, Option<(f64, f64)>) -> (f64, f64),
     hover: &mut Option<f64>,
 ) -> Shown {
@@ -336,6 +339,13 @@ pub(super) fn draw_run_series(
         Shown::of(p)
     };
     let (lo, hi) = fit(p, shown.range);
+    // The value axis widens at once and narrows slowly, so a peak that
+    // leaves the part shown does not make the chart jump.
+    let key = (p.response().id, what);
+    if reset {
+        super::ease::forget(p.ctx(), &key);
+    }
+    let (lo, hi) = super::ease::eased_range(p.ctx(), key, (lo, hi), false);
     p.set_plot_bounds_y(lo..=hi);
     if p.response().contains_pointer() {
         if let Some(c) = p.pointer_coordinate() {
@@ -604,6 +614,7 @@ fn time_series(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
                         draw_run_series(
                             p,
                             reset,
+                            (key, log, window),
                             |p, range| {
                                 let pts = if window <= 1 && !log {
                                     cache.get_range(history, key, max_points, range).to_vec()
@@ -1114,6 +1125,7 @@ fn tasks(ui: &mut Ui, state: &mut AppState, cache: &mut SeriesCache) {
                     draw_run_series(
                         p,
                         reset,
+                        "tasks",
                         |p, range| {
                             let mut all: Vec<[f64; 2]> = Vec::new();
                             let mut lines = Vec::new();

@@ -16,6 +16,7 @@ use egui_plot::{Plot, PlotBounds};
 use crate::model::filtering::prop_title;
 use crate::model::{format, AppState};
 use crate::ui::charts::{log_spacer, round_marks};
+use crate::ui::ease;
 use crate::ui::theme::{semibold, Tokens};
 use crate::ui::widgets;
 
@@ -265,6 +266,10 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
     };
     let (x0, x1) = room(x0, x1, axes.x, axes.log_x);
     let (y0, y1) = room(y0, y1, axes.y, axes.log_y);
+    // Widen at once, narrow slowly: a stray organism does not make the
+    // plot jump back and forth.
+    let (x0, x1) = ease::eased_range(ui.ctx(), ("scatter-x", axes.x, axes.log_x), (x0, x1), false);
+    let (y0, y1) = ease::eased_range(ui.ctx(), ("scatter-y", axes.y, axes.log_y), (y0, y1), false);
 
     let readout_h = 18.0;
     let height = (ui.available_height() - readout_h - 40.0).max(200.0);

@@ -18,6 +18,7 @@ pub mod filtering;
 pub mod format;
 pub mod genotypes;
 pub mod history;
+pub mod hold;
 pub mod layers;
 pub mod log;
 pub mod metrics;

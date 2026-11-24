@@ -238,6 +238,24 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
             };
             let scale = state.map.scale(layer);
             let hist = Histogram::new(values, BINS, scale);
+            // The range widens at once and narrows slowly (in the logarithm
+            // on a log scale), so a stray value does not make the bars jump.
+            let hist = {
+                let log = hist.scale == Scale::Log;
+                let to = |v: f64| if log { v.ln() } else { v };
+                let from = |v: f64| if log { v.exp() } else { v };
+                let (lo, hi) = crate::ui::ease::eased_range(
+                    ui.ctx(),
+                    ("histogram", layer, log),
+                    (to(hist.min), to(hist.max)),
+                    !log,
+                );
+                if lo == to(hist.min) && hi == to(hist.max) {
+                    hist
+                } else {
+                    Histogram::with_range(values, BINS, from(lo), from(hi), hist.scale)
+                }
+            };
             let sub = sel.as_ref().map(|s| hist.counts_where(values, &s.mask));
             let counted_sub = sub.as_ref().map(|c| c.iter().map(|&n| u64::from(n)).sum::<u64>());
             let explanation = format!(
@@ -302,6 +320,13 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
                 })
                 .collect();
             let edge_labels = edges.clone();
+            let tallest = hist.counts.iter().copied().max().unwrap_or(0).max(1);
+            let (_, top) = crate::ui::ease::eased_range(
+                ui.ctx(),
+                ("histogram-count", layer),
+                (0.0, f64::from(tallest) * 1.05),
+                true,
+            );
             let r = static_plot(ui, "layer-histogram")
                 .height(height)
                 .show_grid([false, true])
@@ -316,6 +341,8 @@ pub fn show(ui: &mut Ui, state: &mut AppState) {
                     }
                 })
                 .show(ui, |p| {
+                    // The count axis holds still too.
+                    p.set_plot_bounds_y(0.0..=top);
                     p.bar_chart(BarChart::new("cells", bars));
                     if sub.is_some() {
                         p.bar_chart(BarChart::new("matching organisms", overlay));

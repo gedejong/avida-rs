@@ -89,6 +89,9 @@ pub struct MapSettings {
     pub vision: ColorVision,
     scales: BTreeMap<LayerId, Scale>,
     locked: BTreeMap<LayerId, (f64, f64)>,
+    /// The colour range each layer showed last, on its scale, held still
+    /// between frames ([`crate::model::hold`]).
+    held: BTreeMap<LayerId, (Scale, f64, f64)>,
 }
 
 impl Default for MapSettings {
@@ -99,6 +102,7 @@ impl Default for MapSettings {
             vision: ColorVision::Normal,
             scales: BTreeMap::new(),
             locked: BTreeMap::new(),
+            held: BTreeMap::new(),
         }
     }
 }
@@ -146,6 +150,39 @@ impl MapSettings {
         self.locked.remove(&layer);
     }
 
+    /// Holds the automatic colour range of `layer` still over the values'
+    /// own range `data`, `dt` seconds after the last call. Returns whether
+    /// the range is still narrowing (the map then wants another render).
+    pub fn hold_range(&mut self, layer: LayerId, data: &Legend, dt: f64) -> bool {
+        if data.is_degenerate() || self.locked.contains_key(&layer) {
+            self.held.remove(&layer);
+            return false;
+        }
+        // Only the layer shown is held: a range from an earlier visit says
+        // nothing now.
+        self.held.retain(|l, _| *l == layer);
+        let log = data.scale == Scale::Log;
+        let to = |v: f64| if log { v.ln() } else { v };
+        let from = |v: f64| if log { v.exp() } else { v };
+        let prev = self
+            .held
+            .get(&layer)
+            .filter(|h| h.0 == data.scale)
+            .map(|h| (to(h.1), to(h.2)));
+        let ((lo, hi), moving) =
+            crate::model::hold::hold(prev, (to(data.min), to(data.max)), dt, !log);
+        self.held.insert(layer, (data.scale, from(lo), from(hi)));
+        moving
+    }
+
+    /// The held legend of `layer`, when it is on `data`'s scale and covers
+    /// it.
+    fn held_legend(&self, layer: LayerId, data: &Legend) -> Option<Legend> {
+        let &(scale, lo, hi) = self.held.get(&layer)?;
+        (scale == data.scale && lo <= data.min && hi >= data.max)
+            .then(|| Legend::new(lo, hi, scale))
+    }
+
     /// The locked legend of `layer`, if any.
     pub fn locked_legend(&self, layer: LayerId) -> Option<Legend> {
         self.locked
@@ -188,9 +225,10 @@ pub fn render_map(
     let (mut rgba, legend) = if layer == LayerId::Genotype {
         (render_rgba(map, layer, &palette, scale), None)
     } else {
-        let legend = settings
-            .locked_legend(layer)
-            .or_else(|| layer_legend(map, layer, scale));
+        let legend = settings.locked_legend(layer).or_else(|| {
+            let data = layer_legend(map, layer, scale)?;
+            Some(settings.held_legend(layer, &data).unwrap_or(data))
+        });
         let rgba = match &legend {
             Some(l) => render_rgba_with_legend(map, layer, &palette, l),
             None => render_rgba(map, layer, &palette, scale),

@@ -238,6 +238,7 @@ fn group(ui: &mut Ui, index: usize, g: &OeGroup, intro: Option<&str>) {
                 draw_run_series(
                     p,
                     reset,
+                    i,
                     |p, range| {
                         let fit = y_fit(&pts, range, whole);
                         p.line(

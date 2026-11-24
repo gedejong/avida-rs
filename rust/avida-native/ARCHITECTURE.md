@@ -1753,6 +1753,16 @@ colour) for every measure that has a subset value, from the update the filter
 was set. Not in the terminal interface: the scatter view, drag selection and
 the family histogram overlay.
 
+**Ranges that hold still (2026-11-20, desktop GUI).** At the maintainer's
+request ("quick up, slow down, like in an equalizer") the automatic ranges of
+the map's colour scale, the histogram's axes and the time-series and scatter
+axes widen at once, with 15 % headroom, when a value falls outside, and narrow
+only while more than 30 % of the range lies unused on a side, closing about two
+thirds of the gap in 4 s (`crates/gui/src/model/hold.rs`, `ui/ease.rs`;
+`MapSettings::hold_range` for the map). On a log scale the range is held in the
+logarithm. A plot switched to another property or scale, or not drawn in the
+last frames, starts at its values again; a locked map range is not touched.
+
 ## Modular heads set (opt-in extension, 2026-11-14)
 
 `avida-core/support/config/instset-heads-modular.yaml` (set `heads_modular`, hardware type 0) is the stock heads set plus `nop-D`, `nop-E`, `nop-F`, `call` and `return`. It is a port-only extension for experiments on code reuse; no stock configuration reaches it, and with every existing set the heads CPU computes what it did before (the consistency suite, and the default run's time, are the checks).

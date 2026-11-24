@@ -47,6 +47,8 @@ pub struct AvidaApp {
     path_input: String,
     map_texture: Option<TextureHandle>,
     map_image: Option<MapImage>,
+    /// When the map's colour range was last stepped.
+    map_range_at: Option<std::time::Instant>,
     series: SeriesCache,
     last_generation: u64,
     ctx: egui::Context,
@@ -117,6 +119,7 @@ impl AvidaApp {
             path_input: String::new(),
             map_texture: None,
             map_image: None,
+            map_range_at: None,
             series: SeriesCache::default(),
             last_generation: 0,
             ctx,
@@ -444,6 +447,22 @@ impl AvidaApp {
             return;
         }
         self.state.map_dirty = false;
+        // The colour range holds still between frames.
+        let layer = self.state.map.layer;
+        let data = self.state.frame.as_ref().and_then(|f| {
+            avida_viewmodel::layer_legend(f.map.as_ref()?, layer, self.state.map.scale(layer))
+        });
+        if let Some(data) = data {
+            let now = std::time::Instant::now();
+            let dt = self
+                .map_range_at
+                .map_or(0.0, |t| now.duration_since(t).as_secs_f64().min(0.25));
+            self.map_range_at = Some(now);
+            if self.state.map.hold_range(layer, &data, dt) {
+                self.state.map_dirty = true;
+                ctx.request_repaint();
+            }
+        }
         let Some(frame) = &self.state.frame else {
             return;
         };

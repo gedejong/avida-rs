@@ -5,6 +5,7 @@ pub mod charts;
 pub mod command_palette;
 pub mod compare;
 pub mod config;
+mod ease;
 pub mod environment;
 pub mod filter_bar;
 pub mod genotypes;
