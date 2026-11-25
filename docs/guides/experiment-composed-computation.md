@@ -879,6 +879,20 @@ Verdict: positive on the planned comparison, as predicted. Accepted by the maint
 
 The tools are in the lab folder `30-slip` (`confirm.py` for the confirmation and `confirm.tsv` with its results, `diffanc.py` for the comparison with the ancestor).
 
+**After stage 14: how the seven `scrambled` populations built their round** (traced 2026-11-25, at the maintainer's request). On each line of descent, from the most common organism at update 150,000 back to the ancestor with every genotype run on 100 draws, the three-bit sum arrives in one birth, from 62 to 73 % exact to 100 %, and stays. In five of the seven lines that birth inserts a shuffled copy of the stretch that holds a carry round:
+
+| Line | Update | The birth that brings the sum |
+|---|---|---|
+| `m49` seed 71 | 130,255 | a shuffled copy of 5 instructions, round and one more |
+| `m49` seed 72 | 28,786 | a shuffled copy of 8 instructions |
+| `m49` seed 76 | 10,921 | a copy of the 4-instruction round in its own order, and a substitution |
+| `p44` seed 71 | 52,515 | a shuffled copy of 15 instructions, one of them changed |
+| `p44` seed 72 | 97,652 | a shuffled copy of 15 instructions, and a substitution |
+| `p42` seed 75 | 53,616 | one substitution (`pgate-0` to `pgate-3`) |
+| `p44` seed 74 | 29,666 | one substitution (`swap` to `pgate-2`) |
+
+The round of `m49` is four instructions (`gate-6 nop-C`, `gate-4`, `shift-l`): a shuffle keeps their order once in 24, and the other two copies work in another order in their place. The rounds of `p44` lie in longer stretches, most of whose instructions do nothing there, so a shuffle that keeps the few that matter in a working order is not rare either. Most `scrambled` populations therefore extended the adder by copying too: a shuffled copy carries the round's instructions to the right place. This fits the counts of stage 14: `scrambled` did better than `random` for `m49` (3 of 6 against 0) and `p44` (3 against 0), not for `p42` (1 against 3). The lab folder `30-slip` has the tools (`lod_eval.sh`, `lod_story.py`, `stepcheck.py`, `slipcheck.py`).
+
 ### Stage 15: is a whole adder composed by copying too?
 
 Design fixed on 2026-11-25, before any run; to start on the maintainer's go. Lab folder `32-compose`.
@@ -900,6 +914,29 @@ Design fixed on 2026-11-25, before any run; to start on the maintainer's go. Lab
 **Seen before the runs.** A smoke run of 3,000 updates of `dup-m49` and `dup-s52` on seed 81: in `dup-m49` 75 % of the organisms that pass Q50 on `add3` were exact at update 3,000, in `dup-s52` 3 of 1,106. Seed 81 was one of the planned seeds when the design above was written (81 to 86); the planned seeds were moved to 91 to 96 before any planned run, so that no planned population has been seen.
 
 **Cost.** A simulation step costs about the same per update as in stage 14 (the population's time slice, not the genome length, sets it), so about 3 hours per run on the rented cores; 60 runs on 32 cores in two waves, about 6 to 8 hours and about EUR 1 to 1.50.
+
+**Results.** All 60 runs reached 150,000 updates; the last server was deleted on 2026-11-25 at 16:08, six and a half hours after the start, and the batch cost about EUR 0.61. The most common organism of every population was run alone with mutation off on 400 draws of the `add3` judge.
+
+| Arm | Measure | `s52` | `m49` | `p44` | `p42` | `g46` | All |
+|---|---|---|---|---|---|---|---|
+| `dup` | holds the three-operand sum (the rule) | 1 | 0 | 1 | 0 | 0 | **2 of 30** |
+| `dup` | most common organism exact on 90 % of draws or more | 5 | 3 | 4 | 3 | 0 | 15 of 30 |
+| `random` | holds the three-operand sum (the rule) | 0 | 0 | 0 | 0 | 0 | **0 of 30** |
+| `random` | most common organism exact on 90 % of draws or more | 0 | 2 | 0 | 0 | 0 | 2 of 30 |
+
+Two most common organisms are exact on every judged output: `dup` `p44` seed 94 (population 91.1 % exact) and `dup` `s52` seed 92 (96.0 %; it breeds true on 83 % of the draws). Fifteen others stand at one level, exact on 91.0 % of the draws (91.5 % for two), passing Q50 on all of them; on the same 400 draws they fail on the same 36. Four are at about 70 % (69.8 and 70.2 %), the rest at 0 to 33 %. `dup` `m49` seed 94 passes the population share (90.7 %), but its most common organism is at 91.0 %, so it fails the confirmation; `dup` `p44` seed 91 stands at 89.8 %. Every organism at 70 % or above has given up the exact two-operand sum (0 of 400 draws), which is paid less. Most `random` populations ended at one of two lower levels that also occur in `dup`: 6.9 % exact with Q50 on 65 % of the draws (10 populations) or 3.9 % with Q50 on 84 % (6), both with the exact two-operand sum on 3 % of the draws or fewer; their genomes shrank (76 to 576 instructions, 20 of 30 under 300).
+
+**What the 91 % level is.** It matches an adder of four carry rounds applied twice. With 3-bit operands the first application gives `a + b` exactly (at most 14 in a field). The second adds `c` to that, and a carry that runs from bit 0 to bit 4 of a field needs a fifth round. A model of rounds of XOR, AND and shift on 200,000 random draws of the mask gives 90.9 % exact for four rounds then four, and 100 % for four then five. The genomes have not been read to confirm it.
+
+Planned comparison: `dup` 2 of 30 against `random` 0 of 30, Fisher exact two-sided p = 0.49. The prediction (18 or more in `dup`) is not met. Secondary: within `dup`, the ancestors one duplication from the sum 2 of 18 against the other two 0 of 12 (p = 0.50). Time to 80 % exact: 14 of 30 `dup` populations, from update 3,200 to 140,500 (`p44` seeds 91 and 92 and `m49` seed 94 within 4,800); 2 of 30 `random`, at 107,100 and 148,400. Not planned, with the measure chosen after the data: a most common organism exact on 90 % of the draws or more, `dup` 15 of 30 against `random` 2 of 30, p = 0.00037; within `dup`, 12 of 18 against 3 of 12 (p = 0.060).
+
+**Reading.** Copying composes the adder with itself: in half the `dup` populations the most common organism feeds an adder's sum and the next input to an adder, against 2 of 30 when the inserted stretch is random, and the fastest got there within 5,000 updates. The composition comes one carry round short, and in 150,000 updates two populations added the missing round. In stage 14 a missing round came by copying within 2,000 to 42,000 updates. Here the round helps only in the second application, and why it came so rarely is open. The single duplications measured before the runs, from `m49`, `s52` and `p44`, give the exact sum; a recount from `m49`, `p42` and `g46` at a bar of 88 % found no single mutation that reaches only the 91 % level. So the populations at 91 % got there by more than one mutation, or by an exact organism losing a round, and only their lines of descent can tell which. `p42` reached the 91 % level in 3 of 6 `dup` populations, although no single mutation from it gives the three-operand sum.
+
+Limits: five ancestors, six seeds each, 150,000 updates. The 91 % level is read from the shares and a model, not from the genomes. The rule counts exact organisms only; it was fixed before the runs and is applied unchanged.
+
+Verdict: negative on the planned comparison; the prediction failed. Not planned: copying composes the adder with itself, one carry round short, in 15 of 30 `dup` populations against 2 of 30 `random`. Accepted by the maintainer on 2026-11-25.
+
+The tools are in the lab folder `32-compose` (`popconfirm.py` for the confirmation and `popconfirm.tsv` with its results; `confirm.py` with `HI=0.88` for the recount of the neighbourhoods).
 
 ## Candidate future experiments
 
