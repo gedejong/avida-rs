@@ -938,6 +938,60 @@ Verdict: negative on the planned comparison; the prediction failed. Not planned:
 
 The tools are in the lab folder `32-compose` (`popconfirm.py` for the confirmation and `popconfirm.tsv` with its results; `confirm.py` with `HI=0.88` for the recount of the neighbourhoods).
 
+**After stage 15: how the populations reached the 91 % level** (traced 2026-11-25, after the maintainer accepted the stage). Nine lines of descent, from the most common organism at update 150,000 back to the ancestor, every genotype run on 100 draws: the two exact populations, six with a most common organism at 91 %, and `random` `m49` seed 95.
+
+On every line the 91 % level arrives in one birth, from at most 30 % exact to 87 to 98 %, but the births differ:
+
+| Line | Update | The birth that brings the 91 % level |
+|---|---|---|
+| `dup` `p44` seed 92 | 1,421 | a tandem copy of 61 instructions |
+| `dup` `p44` seed 91 | 2,943 | a duplication of 56 instructions |
+| `dup` `p44` seed 94 | 20,724 | a tandem copy of 17 (a copy of 12 had given 70 % at 17,170; a copy of 10 gave the exact sum at 41,943) |
+| `dup` `s52` seed 91 | 22,744 | a tandem copy of 25 |
+| `dup` `p42` seed 93 | 20,748 | one substitution, `mov-head` to `nop-E` (27 % to 90 %), with no insertion of 8 or more on the line before it |
+| `dup` `s52` seed 92 | 50,112 | one substitution, `h-copy` to `if-less` (2 % to 98 %), after copies of 78 and 204 instructions at 17,749 and 35,494; exact from 57,831 |
+| `dup` `m49` seed 93 | 112,744 | a deletion of 34 and an insertion of 22, after a 70 % level from 78,076 |
+| `random` `m49` seed 95 | 106,296 | two substitutions |
+
+Two populations counted at 91 % were exact for most of the run. In `m49` seed 94 the exact sum arrived at update 4,773 in one birth, a tandem copy of 22 instructions and a substitution (a route measured before the runs), and the line stayed exact until update 148,615; the population's share stood at 89 to 93 % from update 5,000 on. `p44` seed 91 was exact from update 64,488 to 146,358, at 85 to 92 %. Their most common organisms at the end, with 7 and 12 copies, are recent variants one round short. So four populations held the exact sum for much of the run, at 85 to 97 %, and the others with a most common organism at 91 % stand at 77 to 88 %, one of them with the exact sum in part (below). The bar of 90 % falls inside the range of the exact populations, as it did for `g46` in stage 14.
+
+**What the end populations hold.** 300 organisms drawn at random from each of six end populations, their genotypes run on 100 draws:
+
+| Population | Exact | At 91 % | Other (lower, or not breeding true in the test CPU) |
+|---|---|---|---|
+| `dup` `s52` seed 92 | 54 % | 7 % | 39 % |
+| `dup` `m49` seed 94 | 50 % | 14 % | 36 % |
+| `dup` `p44` seed 94 | 41 % | 5 % | 54 % |
+| `dup` `p44` seed 92 | 21 % | 18 % | 61 % |
+| `dup` `p42` seed 93 | 0 % | 62 % | 38 % |
+| `dup` `s52` seed 91 | 0 % | 59 % | 41 % |
+
+At about 0.9 mutations per birth, a third to a half of the organisms compute neither level. Where the exact sum is held, 79 to 89 % of the organisms that compute one of the two levels are exact. `p44` seed 92, counted at 91 % by its most common genotype (7 copies), holds both levels about equally. The confirmation on the most common genotype, which has 4 to 27 copies among about 3,000 genotypes, says little about such a mix.
+
+The missing round is one duplication away. The one-mutation neighbourhoods of three most common organisms at 91 % (`p42` seed 93, `p44` seed 92 and `s52` seed 91; every substitution and every tandem duplication up to 40 instructions, candidates confirmed on 400 draws at 99 %) contain 29, 285 and 2 duplications that give the exact sum (6 to 40 instructions), at 1.0e-5, 1.4e-4 and 1.5e-6 per birth, and no substitution that does. Each of these runs made 5.0 to 6.3 million births after update 30,000, so about 50, 860 and 10 such offspring were born.
+
+**Competitions.** Each of the three organisms at 91 % (A) shares a 60 x 60 world, filled in alternate rows, with one competitor: the exact neighbour with the shortest copy, the one with the longest (for `s52` the two give the same genome), and as a control a copy of the same length as the shortest, placed elsewhere, that stays at 91 %. First with mutation off, one seed, 8,000 updates (a generation takes 26 to 52 updates). An exact neighbour of `p44` does not breed true even with mutation off: its offspring are 7 instructions shorter or longer, and exact too. The test CPU counts a genome as viable when a descendant within its test depth breeds true, as the C++ did, so the viable shares of the neighbourhoods include such genomes. The competitor's share counts its whole lineage.
+
+| A | Exact, shortest copy | Exact, longest copy | Control |
+|---|---|---|---|
+| `p44` seed 92 | 100 % | 100 % | 89 % |
+| `s52` seed 91 | 100 % | (the same genome) | 30 % |
+| `p42` seed 93 | 91 % | 64 % | 54 % |
+
+The first 500 updates move the controls too (`p44`'s to 84 %). After update 1,000 the exact lineages gain about 4 % per generation for `p44` and `s52` and 2 % for `p42`, and the controls drift. The pay rule suggests about 9 %: a draw with one carry bit wrong pays about 2^-5 of a full draw.
+
+Then with the mutation rates of the runs (the shortest copy and the control, two seeds each, the competitor's lineage labelled), with 300 organisms of each end population run as above:
+
+| A | Exact lineage at update 8,000 | Exact / at 91 %, of 300 | Control lineage | Exact / at 91 %, of 300 |
+|---|---|---|---|---|
+| `p44` seed 92 | 100 and 96 % | 35 / 10 and 34 / 8 % | 39 and 46 % | 3 / 39 and 0 / 48 % |
+| `s52` seed 91 | 90 and 100 % | 36 / 14 and 49 / 9 % | 56 and 79 % | 0 / 52 and 0 / 53 % |
+| `p42` seed 93 | 53 and 45 % | 26 / 34 and 21 / 43 % | 52 and 72 % | 0 / 70 and 0 / 60 % |
+
+**Reading.** The step that was in reach was taken where it pays and arises often enough. In `p44` seed 92 it was taken: a fifth of the organisms at the end are exact, as many as at 91 %, and in competition the exact lineage wins with mutation on. In `s52` seed 91 it is rare, about 10 such offspring in the run, and with an advantage of about 4 % per generation most such offspring are lost by chance. In `p42` seed 93 it does not pay under mutation: the exact lineage wins with mutation off, and with it on it neither wins nor loses (53 and 45 %); why is not measured. Where the exact sum is held under mutation, about a fifth of the organisms that compute either level fall back to 91 %, so a population that holds it stands near the bar of 90 % on the share. Limits: three organisms, one or two seeds per competition, 8,000 updates.
+
+The lab folder `32-compose` has the tools (`lod_eval.sh`, `lod_levels.py`, `lod_copies.py`, `run_nbhd91.sh` with its log `nbhd91-run.log`, `sample_eval.py` for the samples; `make_comp.py`, `run_comp.sh`, `comp_count.py` for the competitions without mutation, `run_compmut.sh` and `comp_mut_count.py` with it).
+
 ## Candidate future experiments
 
 Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 took up the first; stages 11 and 12 reached the two-bit adder by another road (one judged output, graded pay, gate instructions).
