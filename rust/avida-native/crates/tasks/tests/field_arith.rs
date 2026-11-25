@@ -627,3 +627,56 @@ fn expect_marks_the_entry_and_nothing_else() {
         eval(&marked, 0, &input, &out)
     );
 }
+
+/// `add3`: the sum of the three newest inputs, `w + 2` result bits per field.
+/// With `bits=3`, `stride=5`, `width=24` (inputs masked to `0xFF739CE7`) it is
+/// what an evolved four-bit adder computes when applied a second time, to its
+/// own sum and the next input.
+#[test]
+fn add3_sums_the_three_newest_inputs() {
+    let three = |a: u32, b: u32, c: u32| {
+        let mut i = IoBuffer::new(3);
+        i.add(c as i32);
+        i.add(a as i32);
+        i.add(b as i32);
+        i
+    };
+    let (add3, id3, er) = load("fn=add3:bits=3:stride=5:mode=packed:width=24").unwrap();
+    let (add, id2, _) = load("fn=add:bits=3:stride=5:mode=packed:width=24").unwrap();
+    assert_eq!(er.get_min_inputs(), 3, "add3 reads three inputs");
+    let mut rng = Rng(0xADD3);
+    let one = |v: u32| outputs(1, &[v]);
+    for _ in 0..300 {
+        let m = 0xFF73_9CE7;
+        let (a, b, c) = (rng.next() & m, rng.next() & m, rng.next() & m);
+        let field = |v: u32, k: u32| (v >> (5 * k)) & 7;
+        // Plain arithmetic per field: the sum of the low 24 bits is the sum
+        // of the fields, since no field sum (at most 21) leaves its field.
+        let s = (a & 0xFF_FFFF) + (b & 0xFF_FFFF) + (c & 0xFF_FFFF);
+        for k in 0..4 {
+            assert_eq!((s >> (5 * k)) & 31, field(a, k) + field(b, k) + field(c, k));
+        }
+        let i = three(a, b, c);
+        assert_eq!(eval(&add3, id3, &i, &one(s)), 1.0);
+        // The adder applied twice: (a + b) + c, in any order of operands.
+        let ab = ((a & 0xFF_FFFF) + (b & 0xFF_FFFF)) & 0xFF_FFFF;
+        assert_eq!(eval(&add3, id3, &i, &one(ab + (c & 0xFF_FFFF))), 1.0);
+        assert_eq!(eval(&add3, id3, &three(c, a, b), &one(s)), 1.0);
+        // The two-operand sum is right on add and, unless c adds nothing, not on add3.
+        assert_eq!(eval(&add, id2, &i, &one(ab)), 1.0);
+        if c & 0x73_9CE7 != 0 {
+            assert!(eval(&add3, id3, &i, &one(ab)) < 1.0);
+        }
+    }
+    // Two stored inputs are not enough.
+    let mut two = IoBuffer::new(3);
+    two.add(1);
+    two.add(2);
+    assert_eq!(eval(&add3, id3, &two, &one(3)), 0.0);
+    // The default stride is w + 2; a smaller stride is refused.
+    let (_, _, _) = load("fn=add3:bits=2").unwrap();
+    let errs = load("fn=add3:bits=3:stride=4").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("stride=4")), "{errs:?}");
+    let errs = load("fn=sub:bits=2").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("add3")), "{errs:?}");
+}

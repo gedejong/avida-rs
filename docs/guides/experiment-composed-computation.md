@@ -879,6 +879,28 @@ Verdict: positive on the planned comparison, as predicted. Accepted by the maint
 
 The tools are in the lab folder `30-slip` (`confirm.py` for the confirmation and `confirm.tsv` with its results, `diffanc.py` for the comparison with the ancestor).
 
+### Stage 15: is a whole adder composed by copying too?
+
+Design fixed on 2026-11-25, before any run; to start on the maintainer's go. Lab folder `32-compose`.
+
+**Question.** Stages 13 and 14 showed that a carry round is extended by copying it: a round that leaves its two registers as it found them is a function, and a tandem duplication applies it twice. An evolved adder is a function one level up: it reads two words and leaves their sum in a register, where the next input can meet it. Does copying compose whole functions the way it composed rounds, so that a population that adds two numbers comes to add three?
+
+**Task.** A new opt-in function of `field_arith`, `add3`: the sum of the three newest inputs, `a + b + c`, in `w + 2` result bits per field (`PORTING.md`). With the inputs masked to 3-bit operands in 5-bit fields (`INPUT_AND_MASK 0xFF739CE7`; `bits=3`, `stride=5`, `width=24`), an evolved four-bit adder computes the two-operand sum exactly, and the three-operand sum (at most 21) fits the same fields, so the adder applied to its own sum and the next input computes it.
+
+**Ancestors.** The most common organism of five populations that hold the four-bit sum at the end of stage 13: `s52` (`s4` seed 52, grown from scratch; 375 instructions, pgate set) and the four `w4` populations of seed 42, grown from the two-bit ancestors: `m49` (621, gate set), `g46` (575, gate set), `p42` (353, pgate set) and `p44` (317, pgate set). Each computes the two-operand sum of the new layout exactly on 400 draws, and the three-operand sum on none (its output passes 0.5 on the `add3` judge in 11 to 16 % of draws).
+
+**Measured before the runs.** One-mutation neighbourhoods on the `add3` judge: every substitution and every tandem duplication up to 80 instructions (up to 200 for `p42` and `g46`), candidates confirmed on 400 draws. From `m49`, `s52` and `p44` single duplications give the three-operand sum exactly: 56, 7 and 7 of them, each copying a stretch that holds IO instructions together with the adder's rounds (16 to 73 instructions), at 7.2e-6, 2.5e-6 and 3.5e-6 per birth. From `p42` and `g46` no single mutation does, and from none of the five does a substitution.
+
+**Arms.** `dup` (`slip_fill_mode` duplication) against `random` (random instructions of the same length), the planned comparison of stage 14; `scrambled` and `noslip` are left out, since neither differed from `random` there. Everything else as in the `w4` arms of stage 13: 60 x 60, copy mutation 0.0025, slip 0.05 per divide, the stock divide insertion and deletion, exact mode, one judged output (the newest at the divide). Pay on that output: `2^(64 q)` for `add3` (thresh 0.25) and `2^(32 q)` for the two-operand sum of the same layout (thresh 0.25), so that the adder stays paid while the three-operand sum pays more; the eight logic tasks as before. Unpaid marks: Q50 to Q100 on `add3`, and the exact two-operand sum. Six seeds per ancestor (91 to 96): 30 populations per arm, 60 runs, 150,000 updates each.
+
+**Outcome.** Populations holding the three-operand sum at 150,000 updates by the rule of stage 13 (at least 90 % of the organisms that pass Q50 on `add3` score 1.0, confirmed on the most common organism alone with mutation off). Planned comparison: `dup` against `random`, Fisher exact, two-sided. Secondary: within `dup`, the three ancestors one duplication from the sum (18 populations) against the two that are not (12); the time to 80 % exact in each arm.
+
+**Prediction**, written before the runs: `dup` 18 or more of 30, among them all 18 populations of `m49`, `s52` and `p44`; `random` clearly fewer; within `dup`, `p42` and `g46` fewer and later than the other three. If `random` does as well as `dup`, whole functions are not composed the way rounds were.
+
+**Seen before the runs.** A smoke run of 3,000 updates of `dup-m49` and `dup-s52` on seed 81: in `dup-m49` 75 % of the organisms that pass Q50 on `add3` were exact at update 3,000, in `dup-s52` 3 of 1,106. Seed 81 was one of the planned seeds when the design above was written (81 to 86); the planned seeds were moved to 91 to 96 before any planned run, so that no planned population has been seen.
+
+**Cost.** A simulation step costs about the same per update as in stage 14 (the population's time slice, not the genome length, sets it), so about 3 hours per run on the rented cores; 60 runs on 32 cores in two waves, about 6 to 8 hours and about EUR 1 to 1.50.
+
 ## Candidate future experiments
 
 Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 took up the first; stages 11 and 12 reached the two-bit adder by another road (one judged output, graded pay, gate instructions).

@@ -341,7 +341,7 @@ impl TaskLib {
             // Port addition, not in the C++.
             "field_arith" => {
                 if let Some((spec, args)) = eval_field::FieldSpec::load(info, feedback) {
-                    envreqs.set_min_inputs(envreqs.get_min_inputs().max(2));
+                    envreqs.set_min_inputs(envreqs.get_min_inputs().max(spec.operands()));
                     envreqs.set_min_outputs(envreqs.get_min_outputs().max(spec.outputs_needed()));
                     self.new_task(name, "FieldArith", TaskKind::FieldArith, 0, Some(args));
                     if let Some(entry) = self.task_array.last_mut() {

@@ -7,7 +7,7 @@
 //! whole fields from bit 0. The operand of a field is the low `bits` (w) bits
 //! of the field; the other bits are masked away, so that the sum of two
 //! operands never leaves its field. The expected result of a field is
-//! `fn(a_field, b_field)` in `r` bits: `w + 1` for `add`, `halfadd`, `carry`,
+//! `fn(a_field, b_field)` in `r` bits: `w + 2` for `add3`, `w + 1` for `add`, `halfadd`, `carry`,
 //! `partial` and the `_xc` steps, `w` for the logic functions. `carry` is `(a & b) << 1` and
 //! `partial` is `(a ^ b) ^ ((a & b) << 1)`, the two steps of a ripple adder
 //! before `add` (for two-bit operands `add` is `partial | ((a ^ b) & carry) << 1`).
@@ -15,7 +15,9 @@
 //! on those two computed words, `x = a ^ b` and `c = (a & b) << 1`, also in
 //! `w + 1` bits: `~(x & c)`, `x & c`, `x | c`, `x & ~c` and `c & ~x`. They
 //! are the steps from which `partial` (`x ^ c`) is composed, as `nand`, `and`
-//! and `or` of the inputs are the steps below `xor`. `stride` is the field width and defaults to `r`
+//! and `or` of the inputs are the steps below `xor`. `add3` (2026-11-25) takes
+//! a third operand, `c = input[2]`, and expects `a + b + c` in `w + 2` bits: an
+//! adder applied twice, the second time to its own sum and a new input. `stride` is the field width and defaults to `r`
 //! (no padding), which makes `add` with `bits=2` three-bit fields; a larger
 //! stride leaves the bits above the result unused (`stride=4`, `bits=2`:
 //! `((a & 0x33333333) + (b & 0x33333333)) & 0x77777777`, eight adders).
@@ -68,12 +70,32 @@ pub enum FieldFn {
     AndnXc,
     /// `c & ~x`.
     AndnCx,
+    /// `a + b + c` for the three newest inputs, in `w + 2` bits.
+    Add3,
 }
 
 impl FieldFn {
     /// Functions whose result has one bit more than the operands.
     fn widens(self) -> bool {
         !matches!(self, FieldFn::Xor | FieldFn::And | FieldFn::Or)
+    }
+
+    /// Result bits for operands of `bits` bits.
+    fn result_bits(self, bits: u32) -> u32 {
+        match self {
+            FieldFn::Add3 => bits + 2,
+            f if f.widens() => bits + 1,
+            _ => bits,
+        }
+    }
+
+    /// Inputs the function reads: three for `add3`, two for the others.
+    fn operands(self) -> i32 {
+        if self == FieldFn::Add3 {
+            3
+        } else {
+            2
+        }
     }
 }
 
@@ -83,7 +105,8 @@ pub struct FieldSpec {
     func: FieldFn,
     /// Operand width w, 1 to 4.
     bits: u32,
-    /// Result bits per field (r): w + 1 for the additions, else w.
+    /// Result bits per field (r): w + 2 for `add3`, w + 1 for the other
+    /// additions, else w.
     result_bits: u32,
     /// Field width, from `result_bits` to 32.
     stride: u32,
@@ -144,9 +167,10 @@ impl FieldSpec {
             "or_xc" => FieldFn::OrXc,
             "andn_xc" => FieldFn::AndnXc,
             "andn_cx" => FieldFn::AndnCx,
+            "add3" => FieldFn::Add3,
             other => {
                 feedback.error(format!(
-                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, carry, partial, nand_xc, and_xc, or_xc, andn_xc, andn_cx)",
+                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, add3, carry, partial, nand_xc, and_xc, or_xc, andn_xc, andn_cx)",
                     other
                 ));
                 return None;
@@ -173,7 +197,7 @@ impl FieldSpec {
             feedback.error("field_arith: halfadd needs bits=1 (use fn=add for wider fields)");
             return None;
         }
-        let result_bits = if func.widens() { bits + 1 } else { bits };
+        let result_bits = func.result_bits(bits);
         let stride = match args.get_int(1) {
             0 => result_bits,
             s if (result_bits as i32..=32).contains(&s) => s as u32,
@@ -236,6 +260,12 @@ impl FieldSpec {
         self.stride
     }
 
+    /// Inputs the task reads: 3 for `add3`, else 2. The environment hands
+    /// out at least this many.
+    pub fn operands(&self) -> i32 {
+        self.func.operands()
+    }
+
     /// Outputs the task reads: the result bits per field in `planes` mode, 1
     /// in `packed` mode. The environment makes the output buffer this large.
     pub fn outputs_needed(&self) -> i32 {
@@ -252,8 +282,9 @@ impl FieldSpec {
     }
 
     /// The expected result word: field `k`'s result at bits
-    /// `k * stride ..`, nothing outside the result bits of whole fields.
-    pub fn expected(&self, a: u32, b: u32) -> u32 {
+    /// `k * stride ..`, nothing outside the result bits of whole fields. `c`
+    /// is read by `add3` only.
+    pub fn expected(&self, a: u32, b: u32, c3: u32) -> u32 {
         let (a, b) = (a & self.operand_mask, b & self.operand_mask);
         let (x, c) = (a ^ b, (a & b) << 1);
         match self.func {
@@ -262,6 +293,8 @@ impl FieldSpec {
             FieldFn::Or => a | b,
             // Each field sum is below 2^(w+1) <= 2^stride: no carry leaves a field.
             FieldFn::HalfAdd | FieldFn::Add => (a + b) & self.result_mask,
+            // Each field sum is below 3 * 2^w < 2^(w+2) <= 2^stride.
+            FieldFn::Add3 => (a + b + (c3 & self.operand_mask)) & self.result_mask,
             FieldFn::Carry => ((a & b) << 1) & self.result_mask,
             FieldFn::Partial => (x ^ c) & self.result_mask,
             FieldFn::NandXc => !(x & c) & self.result_mask,
@@ -273,13 +306,18 @@ impl FieldSpec {
     }
 
     /// The number of compared bits the outputs get right, `None` when the
-    /// task cannot judge (fewer than two inputs, or in `planes` mode fewer
-    /// outputs than planes).
+    /// task cannot judge (fewer inputs than operands, or in `planes` mode
+    /// fewer outputs than planes).
     pub fn correct_bits(&self, input: &IoBuffer, output: &IoBuffer) -> Option<u32> {
-        if input.num_stored() < 2 {
+        if input.num_stored() < self.operands() {
             return None;
         }
-        let expected = self.expected(input.get(1) as u32, input.get(0) as u32);
+        let c3 = if self.operands() == 3 {
+            input.get(2) as u32
+        } else {
+            0
+        };
+        let expected = self.expected(input.get(1) as u32, input.get(0) as u32, c3);
         if !self.planes {
             if output.num_stored() < 1 {
                 return None;

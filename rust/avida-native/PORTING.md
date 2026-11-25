@@ -430,6 +430,11 @@ configuration that does not name it.
   `x = a ^ b` and `c = (a & b) << 1`, in `w + 1` result bits (`~(x & c)`,
   `x & c`, `x | c`, `x & ~c`, `c & ~x`). `partial` is `x ^ c`; the steps are
   to it what `nand`, `and` and `or` are to `xor`.
+- `field_arith` function `add3` (2026-11-25): the sum of the three newest
+  inputs, `a + b + c` with `c = input[2]`, in `w + 2` result bits per field
+  (the default stride is `w + 2`). The task asks the environment for three
+  inputs, the default number. An adder applied a second time, to its own sum
+  and the next input, computes it.
 - Environment line `INPUT_AND_MASK <mask>` (hexadecimal with `0x`, or
   decimal): the mask is ANDed onto every input `SetupInputs` hands out, in
   the world and in the test CPU. It is applied after the random draws, so a
