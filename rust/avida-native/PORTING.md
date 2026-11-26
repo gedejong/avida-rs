@@ -435,6 +435,14 @@ configuration that does not name it.
   (the default stride is `w + 2`). The task asks the environment for three
   inputs, the default number. An adder applied a second time, to its own sum
   and the next input, computes it.
+- `field_arith` functions `add4` to `add8` (2026-11-26): the sum of the `n`
+  newest inputs, `input[0]` to `input[n - 1]`, in `w + ceil(log2 n)` result
+  bits per field (`w + 2` for four operands, as for `add3`; `w + 3` for five
+  to eight, so 3-bit operands need a stride of 6). A task asks the environment
+  for `n` inputs, more than the default three, so every organism of such a
+  world gets `n` inputs and an input buffer of `n`, as the C++ environment did
+  for any task that asked for more (`cEnvironment.cc`, `GetMinInputs`). An
+  adder applied `n - 1` times computes the sum.
 - Environment line `INPUT_AND_MASK <mask>` (hexadecimal with `0x`, or
   decimal): the mask is ANDed onto every input `SetupInputs` hands out, in
   the world and in the test CPU. It is applied after the random draws, so a

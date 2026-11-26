@@ -680,3 +680,119 @@ fn add3_sums_the_three_newest_inputs() {
     let errs = load("fn=sub:bits=2").unwrap_err();
     assert!(errs.iter().any(|e| e.contains("add3")), "{errs:?}");
 }
+
+/// `add4`: the sum of the four newest inputs, `w + 2` result bits per field:
+/// the adder applied three times, each time to its own sum and the next input.
+#[test]
+fn add4_sums_the_four_newest_inputs() {
+    let four = |a: u32, b: u32, c: u32, d: u32| {
+        let mut i = IoBuffer::new(4);
+        i.add(d as i32);
+        i.add(c as i32);
+        i.add(a as i32);
+        i.add(b as i32);
+        i
+    };
+    let (add4, id4, er) = load("fn=add4:bits=3:stride=5:mode=packed:width=24").unwrap();
+    let (add3, id3, _) = load("fn=add3:bits=3:stride=5:mode=packed:width=24").unwrap();
+    assert_eq!(er.get_min_inputs(), 4, "add4 reads four inputs");
+    let mut rng = Rng(0xADD4);
+    let one = |v: u32| outputs(1, &[v]);
+    let low = |v: u32| v & 0xFF_FFFF;
+    for _ in 0..300 {
+        let m = 0xFF73_9CE7;
+        let (a, b, c, d) = (
+            rng.next() & m,
+            rng.next() & m,
+            rng.next() & m,
+            rng.next() & m,
+        );
+        let field = |v: u32, k: u32| (v >> (5 * k)) & 7;
+        // No field sum (at most 28) leaves its five bits.
+        let s = low(a) + low(b) + low(c) + low(d);
+        for k in 0..4 {
+            assert_eq!(
+                (s >> (5 * k)) & 31,
+                field(a, k) + field(b, k) + field(c, k) + field(d, k)
+            );
+        }
+        let i = four(a, b, c, d);
+        assert_eq!(eval(&add4, id4, &i, &one(s)), 1.0);
+        // ((a + b) + c) + d, and the operands in another order.
+        let abc = low(low(low(a) + low(b)) + low(c));
+        assert_eq!(eval(&add4, id4, &i, &one(abc + low(d))), 1.0);
+        assert_eq!(eval(&add4, id4, &four(d, c, b, a), &one(s)), 1.0);
+        // The three-operand sum of the same inputs is right on add3 and, unless
+        // d adds nothing, not on add4.
+        assert_eq!(eval(&add3, id3, &i, &one(abc)), 1.0);
+        if d & 0x73_9CE7 != 0 {
+            assert!(eval(&add4, id4, &i, &one(abc)) < 1.0);
+        }
+    }
+    // Three stored inputs are not enough.
+    let mut three = IoBuffer::new(4);
+    three.add(1);
+    three.add(2);
+    three.add(4);
+    assert_eq!(eval(&add4, id4, &three, &one(7)), 0.0);
+    let errs = load("fn=add4:bits=3:stride=4").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("stride=4")), "{errs:?}");
+    let errs = load("fn=sub:bits=2").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("add3 to add8")), "{errs:?}");
+}
+
+/// `add5` to `add8`: the sum of the `n` newest inputs in `w + 3` bits. With
+/// `bits=3`, `stride=6`, `width=24` (inputs masked to `0xFF1C71C7`, four
+/// fields) a sum of up to eight operands (at most 56) stays in its field.
+#[test]
+fn add5_to_add8_sum_the_newest_inputs() {
+    let newest = |v: &[u32]| {
+        // v[0] is input[0], the newest; add them oldest first.
+        let mut i = IoBuffer::new(v.len());
+        for &x in v.iter().rev() {
+            i.add(x as i32);
+        }
+        i
+    };
+    let one = |v: u32| outputs(1, &[v]);
+    let low = |v: u32| v & 0xFF_FFFF;
+    let m = 0xFF1C_71C7;
+    let mut rng = Rng(0xADD8);
+    for n in 5..=8usize {
+        let (task, id, er) =
+            load(&format!("fn=add{n}:bits=3:stride=6:mode=packed:width=24")).unwrap();
+        let (below, idb, _) = load(&format!(
+            "fn=add{}:bits=3:stride=6:mode=packed:width=24",
+            n - 1
+        ))
+        .unwrap();
+        assert_eq!(er.get_min_inputs(), n as i32, "add{n} reads {n} inputs");
+        for _ in 0..200 {
+            let v: Vec<u32> = (0..n).map(|_| rng.next() & m).collect();
+            let s: u32 = v.iter().map(|&x| low(x)).sum();
+            for k in 0..4 {
+                let f: u32 = v.iter().map(|&x| (x >> (6 * k)) & 7).sum();
+                assert_eq!((s >> (6 * k)) & 63, f, "no field sum leaves its field");
+            }
+            let i = newest(&v);
+            assert_eq!(eval(&task, id, &i, &one(s)), 1.0);
+            // The sum of the n - 1 newest is right on the rung below and, unless
+            // the oldest input adds nothing, not on this one.
+            let s1: u32 = v[..n - 1].iter().map(|&x| low(x)).sum();
+            assert_eq!(eval(&below, idb, &i, &one(s1)), 1.0);
+            if v[n - 1] & 0x1C_71C7 != 0 {
+                assert!(eval(&task, id, &i, &one(s1)) < 1.0);
+            }
+        }
+        // n - 1 stored inputs are not enough.
+        let short = newest(&vec![1; n - 1]);
+        assert_eq!(eval(&task, id, &short, &one(n as u32 - 1)), 0.0);
+        // Five to eight 3-bit operands need six result bits: stride 5 is refused.
+        let errs = load(&format!("fn=add{n}:bits=3:stride=5")).unwrap_err();
+        assert!(errs.iter().any(|e| e.contains("stride=5")), "{errs:?}");
+    }
+    // add3 and add4 keep w + 2 result bits: stride 5 holds them.
+    assert!(load("fn=add4:bits=3:stride=5").is_ok());
+    let errs = load("fn=add9:bits=3:stride=7").unwrap_err();
+    assert!(errs.iter().any(|e| e.contains("add9")), "{errs:?}");
+}

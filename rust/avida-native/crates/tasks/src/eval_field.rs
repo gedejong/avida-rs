@@ -7,7 +7,7 @@
 //! whole fields from bit 0. The operand of a field is the low `bits` (w) bits
 //! of the field; the other bits are masked away, so that the sum of two
 //! operands never leaves its field. The expected result of a field is
-//! `fn(a_field, b_field)` in `r` bits: `w + 2` for `add3`, `w + 1` for `add`, `halfadd`, `carry`,
+//! `fn(a_field, b_field)` in `r` bits: `w + ceil(log2 n)` for the sums `add3` to `add8`, `w + 1` for `add`, `halfadd`, `carry`,
 //! `partial` and the `_xc` steps, `w` for the logic functions. `carry` is `(a & b) << 1` and
 //! `partial` is `(a ^ b) ^ ((a & b) << 1)`, the two steps of a ripple adder
 //! before `add` (for two-bit operands `add` is `partial | ((a ^ b) & carry) << 1`).
@@ -17,7 +17,10 @@
 //! are the steps from which `partial` (`x ^ c`) is composed, as `nand`, `and`
 //! and `or` of the inputs are the steps below `xor`. `add3` (2026-11-25) takes
 //! a third operand, `c = input[2]`, and expects `a + b + c` in `w + 2` bits: an
-//! adder applied twice, the second time to its own sum and a new input. `stride` is the field width and defaults to `r`
+//! adder applied twice, the second time to its own sum and a new input. `add4` to
+//! `add8` (2026-11-26) sum the `n` newest inputs, `input[0]` to `input[n - 1]`, in
+//! `w + ceil(log2 n)` bits (`w + 2` for three and four operands, `w + 3` for five
+//! to eight): an adder applied `n - 1` times. `stride` is the field width and defaults to `r`
 //! (no padding), which makes `add` with `bits=2` three-bit fields; a larger
 //! stride leaves the bits above the result unused (`stride=4`, `bits=2`:
 //! `((a & 0x33333333) + (b & 0x33333333)) & 0x77777777`, eight adders).
@@ -70,8 +73,9 @@ pub enum FieldFn {
     AndnXc,
     /// `c & ~x`.
     AndnCx,
-    /// `a + b + c` for the three newest inputs, in `w + 2` bits.
-    Add3,
+    /// The sum of the `n` newest inputs, `n` from 3 to 8 (`add3` to `add8`),
+    /// in `w + ceil(log2 n)` bits.
+    Sum(u32),
 }
 
 impl FieldFn {
@@ -83,18 +87,18 @@ impl FieldFn {
     /// Result bits for operands of `bits` bits.
     fn result_bits(self, bits: u32) -> u32 {
         match self {
-            FieldFn::Add3 => bits + 2,
+            // n operands below 2^w each sum to below n * 2^w <= 2^(w + ceil(log2 n)).
+            FieldFn::Sum(n) => bits + (32 - (n - 1).leading_zeros()),
             f if f.widens() => bits + 1,
             _ => bits,
         }
     }
 
-    /// Inputs the function reads: three for `add3`, two for the others.
+    /// Inputs the function reads: `n` for the sum `addn`, two for the others.
     fn operands(self) -> i32 {
-        if self == FieldFn::Add3 {
-            3
-        } else {
-            2
+        match self {
+            FieldFn::Sum(n) => n as i32,
+            _ => 2,
         }
     }
 }
@@ -105,7 +109,7 @@ pub struct FieldSpec {
     func: FieldFn,
     /// Operand width w, 1 to 4.
     bits: u32,
-    /// Result bits per field (r): w + 2 for `add3`, w + 1 for the other
+    /// Result bits per field (r): w + ceil(log2 n) for the sums `add3` to `add8`, w + 1 for the other
     /// additions, else w.
     result_bits: u32,
     /// Field width, from `result_bits` to 32.
@@ -167,10 +171,15 @@ impl FieldSpec {
             "or_xc" => FieldFn::OrXc,
             "andn_xc" => FieldFn::AndnXc,
             "andn_cx" => FieldFn::AndnCx,
-            "add3" => FieldFn::Add3,
+            "add3" => FieldFn::Sum(3),
+            "add4" => FieldFn::Sum(4),
+            "add5" => FieldFn::Sum(5),
+            "add6" => FieldFn::Sum(6),
+            "add7" => FieldFn::Sum(7),
+            "add8" => FieldFn::Sum(8),
             other => {
                 feedback.error(format!(
-                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, add3, carry, partial, nand_xc, and_xc, or_xc, andn_xc, andn_cx)",
+                    "field_arith: unknown fn '{}' (xor, and, or, halfadd, add, add3 to add8, carry, partial, nand_xc, and_xc, or_xc, andn_xc, andn_cx)",
                     other
                 ));
                 return None;
@@ -260,7 +269,7 @@ impl FieldSpec {
         self.stride
     }
 
-    /// Inputs the task reads: 3 for `add3`, else 2. The environment hands
+    /// Inputs the task reads: `n` for `add3` to `add8`, else 2. The environment hands
     /// out at least this many.
     pub fn operands(&self) -> i32 {
         self.func.operands()
@@ -282,9 +291,10 @@ impl FieldSpec {
     }
 
     /// The expected result word: field `k`'s result at bits
-    /// `k * stride ..`, nothing outside the result bits of whole fields. `c`
-    /// is read by `add3` only.
-    pub fn expected(&self, a: u32, b: u32, c3: u32) -> u32 {
+    /// `k * stride ..`, nothing outside the result bits of whole fields. `more`
+    /// holds the further operands of a sum, `input[2]` onwards; the other
+    /// functions do not read it.
+    pub fn expected(&self, a: u32, b: u32, more: &[u32]) -> u32 {
         let (a, b) = (a & self.operand_mask, b & self.operand_mask);
         let (x, c) = (a ^ b, (a & b) << 1);
         match self.func {
@@ -293,8 +303,10 @@ impl FieldSpec {
             FieldFn::Or => a | b,
             // Each field sum is below 2^(w+1) <= 2^stride: no carry leaves a field.
             FieldFn::HalfAdd | FieldFn::Add => (a + b) & self.result_mask,
-            // Each field sum is below 3 * 2^w < 2^(w+2) <= 2^stride.
-            FieldFn::Add3 => (a + b + (c3 & self.operand_mask)) & self.result_mask,
+            // Each field sum is below n * 2^w <= 2^r <= 2^stride.
+            FieldFn::Sum(_) => {
+                more.iter().fold(a + b, |s, &v| s + (v & self.operand_mask)) & self.result_mask
+            }
             FieldFn::Carry => ((a & b) << 1) & self.result_mask,
             FieldFn::Partial => (x ^ c) & self.result_mask,
             FieldFn::NandXc => !(x & c) & self.result_mask,
@@ -312,12 +324,12 @@ impl FieldSpec {
         if input.num_stored() < self.operands() {
             return None;
         }
-        let c3 = if self.operands() == 3 {
-            input.get(2) as u32
-        } else {
-            0
-        };
-        let expected = self.expected(input.get(1) as u32, input.get(0) as u32, c3);
+        let mut more = [0u32; 6];
+        let extra = (self.operands() - 2) as usize;
+        for (k, m) in more.iter_mut().take(extra).enumerate() {
+            *m = input.get(2 + k as i32) as u32;
+        }
+        let expected = self.expected(input.get(1) as u32, input.get(0) as u32, &more[..extra]);
         if !self.planes {
             if output.num_stored() < 1 {
                 return None;
