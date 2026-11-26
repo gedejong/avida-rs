@@ -988,9 +988,26 @@ Then with the mutation rates of the runs (the shortest copy and the control, two
 | `s52` seed 91 | 90 and 100 % | 36 / 14 and 49 / 9 % | 56 and 79 % | 0 / 52 and 0 / 53 % |
 | `p42` seed 93 | 53 and 45 % | 26 / 34 and 21 / 43 % | 52 and 72 % | 0 / 70 and 0 / 60 % |
 
-**Reading.** The step that was in reach was taken where it pays and arises often enough. In `p44` seed 92 it was taken: a fifth of the organisms at the end are exact, as many as at 91 %, and in competition the exact lineage wins with mutation on. In `s52` seed 91 it is rare, about 10 such offspring in the run, and with an advantage of about 4 % per generation most such offspring are lost by chance. In `p42` seed 93 it does not pay under mutation: the exact lineage wins with mutation off, and with it on it neither wins nor loses (53 and 45 %); why is not measured. Where the exact sum is held under mutation, about a fifth of the organisms that compute either level fall back to 91 %, so a population that holds it stands near the bar of 90 % on the share. Limits: three organisms, one or two seeds per competition, 8,000 updates.
+Four more seeds of `p42` (2026-11-26): the exact lineage ends at 65, 39, 56 and 56 % (six seeds: 39 to 65 %, mean 52 %), the control at 63, 81, 39 and 40 %. The exact lineage loses ground in the first 500 updates (to 33 to 46 %), as it did with mutation off. From update 1,000 on, the exact lineage gains in all six seeds, from a mean of 42 to 52 %, about 0.3 % per generation against about 2 % with mutation off; the controls move both ways.
 
-The lab folder `32-compose` has the tools (`lod_eval.sh`, `lod_levels.py`, `lod_copies.py`, `run_nbhd91.sh` with its log `nbhd91-run.log`, `sample_eval.py` for the samples; `make_comp.py`, `run_comp.sh`, `comp_count.py` for the competitions without mutation, `run_compmut.sh` and `comp_mut_count.py` with it).
+**Offspring under mutation** (2026-11-26). 1,500 offspring of each genome, drawn with the runs' mutations in their order (a substitution per copied site at 0.0025, then one insertion, one deletion and one slip at 0.05 each), each run on 100 draws:
+
+| Genome | Unchanged | Exact | At 91 % | Other |
+|---|---|---|---|---|
+| `p42` seed 93, at 91 % | 32.5 % | 0.0 % | 62.1 % | 37.9 % |
+| `p42` seed 93, exact neighbour | 33.0 % | 61.2 % | 0.3 % | 38.5 % |
+| `p44` seed 92, at 91 % | 39.5 % | 0.2 % | 68.1 % | 31.7 % |
+| `p44` seed 92, exact neighbour | 39.0 % | 64.7 % | 0.5 % | 34.9 % |
+| `s52` seed 91, at 91 % | 43.6 % | 0.0 % | 66.0 % | 34.0 % |
+| `s52` seed 91, exact neighbour | 44.3 % | 67.5 % | 0.1 % | 32.3 % |
+
+The exact genomes lose about as many offspring to mutation as the 91 % genomes: the differences are 0.6, 3.2 and -1.7 points, against a sampling error of about 1.8. An exact offspring falls back to 91 % in 0.1 to 0.5 % of births. So the small advantage of `p42`'s exact sum under mutation does not come from a less robust genome, at least not over one generation.
+
+**Reading.** The step that was in reach was taken where it pays and arises often enough. In `p44` seed 92 it was taken: a fifth of the organisms at the end are exact, as many as at 91 %, and in competition the exact lineage wins with mutation on. In `s52` seed 91 it is rare, about 10 such offspring in the run, and with an advantage of about 4 % per generation most such offspring are lost by chance. In `p42` seed 93 it pays little under mutation, about 0.3 % per generation against about 2 % without, so the 50 or so such offspring had little chance; why mutation takes most of the advantage away is not measured. Where the exact sum is held under mutation, about a fifth of the organisms that compute either level are at 91 %, so a population that holds it stands near the bar of 90 % on the share. Limits: three organisms, one to six seeds per competition, 8,000 updates.
+
+**A holding rule by sample** (tried on stage 15 after the data, 2026-11-26; it does not change the stage's verdict). A population holds a level when, in samples of 300 organisms drawn at random from each of its last two saved populations (here updates 100,000 and 150,000), at least half of the organisms that compute (viable in the test CPU, and passing Q50 on at least half of 100 draws) are exact. On stage 15 it counts 4 of 30 `dup` populations and 0 of 30 `random` (Fisher p = 0.11): `m49` seed 94, `p44` seeds 91 and 94 and `s52` seed 92, the four whose lines were exact for most of the run. In them 59 to 84 % of the computing organisms are exact; in every other population none are, except `p44` seed 92 (none at update 100,000, 49 % at 150,000) and `p44` seed 93 (1 of 153). Proposed for the next stage, in place of the confirmation on the most common genotype; the population's share in `tasks.dat` would still be reported. `sample_rule.py` and `sample_rule.tsv` in `32-compose`.
+
+The lab folder `32-compose` has the tools (`lod_eval.sh`, `lod_levels.py`, `lod_copies.py`, `run_nbhd91.sh` with its log `nbhd91-run.log`, `sample_eval.py` for the samples; `make_comp.py`, `run_comp.sh`, `comp_count.py` for the competitions without mutation, `run_compmut.sh`, `run_compmut_seeds.sh` and `comp_mut_count.py` with it; `robust.py` and `robust.tsv` for the offspring under mutation).
 
 ## Candidate future experiments
 
