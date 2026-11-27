@@ -30,7 +30,7 @@ Each tutorial compares two or more *arms* (variants of one experiment) over seve
 
 ## Experiments in progress
 
-- [Can populations evolve composed computation?](experiment-composed-computation.md) An instruction set with subroutines against the stock set on a reward ladder that ends in a 2-bit adder. The design is fixed; results follow.
+- [Can populations evolve composed computation?](experiment-composed-computation.md) A series of experiments, stage by stage, on whether populations evolve adders and compose them: from a reward ladder below XOR to evolved four-bit adders, copying, and sums of several operands.
 
 ## About the results quoted
 
