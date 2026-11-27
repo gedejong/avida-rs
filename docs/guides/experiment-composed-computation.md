@@ -1035,6 +1035,38 @@ Design written on 2026-11-26, before any planned run. Lab folder `33-compose4`.
 
 **Cost.** Stage 15's runs took 78 to 211 minutes each for 150,000 updates on the rented cores. 48 runs, of which up to 18 may end at once, on 32 rented cores and this Mac's five: about 3 to 4 hours, about EUR 0.50. The watcher stops the batch at EUR 1.50.
 
+**Results.** All 48 runs ended; the last rented server was deleted on 2026-11-27 at 03:56, four and a half hours after the start, and the batch cost about EUR 0.51. Of the 18 populations of `p44` seeds 91 and 94 and `p42` seed 93, 17 died within 500 updates; `p44` seed 91 on seed 105 lived to update 150,000 (below). In the 30 populations of the five other ancestors the sum was taken up early or not at all: in 13, at least 100 organisms passed Q50 by update 2,500 (at update 500 to 2,500), and in the other 17 never more than 28 did in 150,000 updates.
+
+| Ancestor | Took the sum up by update 2,500 | Computing organisms at 91 % or better | Holds the sum (the rule) | Rule of stage 13 at 150,000 |
+|---|---|---|---|---|
+| `e` `m49` seed 94 | 5 | 5 | 1 | 1 |
+| `e` `s52` seed 92 | 0 | 0 | 0 | 0 |
+| `h` `m49` seed 93 | 1 | 0 | 0 | 0 |
+| `h` `p44` seed 95 | 2 | 2 | 2 | 2 |
+| `h` `s52` seed 91 | 5 | 5 | 0 | 1 |
+| `e` `p44` seeds 91 and 94, `h` `p42` seed 93 | 0 of 18 | 0 | 0 | 0 |
+| All | 13 of 48 | 12 of 48 | **3 of 48** | 4 of 48 |
+
+Each cell counts populations of six. "At 91 % or better": at least half of the computing organisms are exact on at least 0.84 of their Q50 draws, in both samples. "Took the sum up" is a measure chosen after the data.
+
+Three populations hold the sum: `e` `m49` seed 94 on seed 103 (126 of 183 computing organisms exact at update 100,000, 158 of 204 at 150,000) and `h` `p44` seed 95 on seeds 102 (99 of 122, 119 of 140) and 105 (98 of 148, 129 of 165). Their most common organisms are exact on all 400 draws, and the population's share (Q100 among Q50, each organism on its own draw) first passed 90 % at updates 3,700, 51,100 and 16,000. A fourth, `h` `s52` seed 91 on seed 106, passes the rule of stage 13 at 150,000 but not the rule: none of its 169 computing organisms in the sample at 100,000 is exact, and 147 of 182 are at 150,000. Its share first passed 90 % at update 140,500.
+
+Nine populations stand at the 91 % level: `e` `m49` seed 94 on seeds 101, 102, 104 and 105, and `h` `s52` seed 91 on seeds 101, 103, 104 and 105, with 82 to 93 % of the computing organisms there and at most one exact in each sample, plus `s52` seed 91 on seed 106 until after update 100,000. The most common organisms of seven of them are exact on 89.5 % of 400 draws (93.0 % for `s52` seed 91 on seed 104). The model of stage 15, an adder of four carry rounds applied twice, can take the three reads in three orders. In one order it fails on exactly the fields on which each of the seven fails, in all 1,600 fields of the 400 draws. For six organisms the second newest read is added last, and for `s52` seed 91 on seed 104 the newest. The model gives 91.1 % exact on 200,000 random draws of the 6-bit fields. This is stage 15's level, one carry round short. The most common organism of `m49` seed 94 on seed 105 is exact on 66.7 % and matches the model in no order, although 82 and 88 % of the computing organisms in its two samples are at the 91 % level. So `m49` seed 94, exact in the three-input world, came back one round short in four of the five populations that re-adapted, and `p44` seed 95, one round short in the old world, came back exact in both of its two. In the eight populations still at this level at update 150,000, the share never passed 88.8 %.
+
+`h` `m49` seed 93 on seed 102 computes the sum at a lower level: its most common organism is exact on 67.0 % of the draws and also fails in fields whose sum is below 16. `e` `p44` seed 91 on seed 105 took the sum up only at update 42,400. Its 200 and 234 computing organisms are all exact on fewer than 0.84 of their Q50 draws, and its most common organism (171 instructions, against 298 for the ancestor) passes Q50 on 64 % of the draws and is exact on 1.6 % of those.
+
+Planned comparison: the populations that hold the sum, `e` 1 of 12 against `h` 2 of 18, Fisher exact two-sided p = 1.0. The prediction is not met: 3 of the 30, not 5 to 20, and none of `s52` seed 91 by the rule (one at update 150,000 only). The populations of `p44` seeds 91 and 94 and `p42` seed 93 died or lived without the sum, as predicted. Secondary: at the 91 % level or better, `e` 5 of 12 against `h` 7 of 18 (p = 1.0). The share reached 80 % in 12 populations, at updates 500 to 52,400. At the 91 % level the share stands near 84 %, so this measure dates the rewiring of the reads and does not separate exact from one round short.
+
+Not planned, with the measure chosen after the data: the two ancestors whose neighbourhoods were richest before the runs (490 and 177 single mutants passing Q50 on at least 8 of 20 draws, against at most 60) took the sum up in 10 of 12 populations, and the other three viable ancestors in 3 of 18 (Fisher p = 0.00054).
+
+**Reading.** The adders rewired their reads quickly or not at all. Where the sum was taken up, it happened by update 2,500, while the world filled: 3,000 of its 3,600 cells were taken at updates 900 to 2,300 in these populations. Elsewhere the population filled the world without the sum (by update 2,500, or at 3,400 to 15,800 for the slower-growing populations of `s52` seed 92). In the rest of the 150,000 updates the sum never came, although a q of 0.25 on it multiplies merit by `2^16`. Which ancestor it was mattered more than whether it had been exact in the old world, and the neighbourhood scan before the runs had singled out the two ancestors that took the sum up most often. Most populations that rewired came back one carry round short, the level at which stage 15 ended, including four of the five from an ancestor that had been exact. Where the exact sum came, the share passed 90 % at updates 3,700 to 140,500. Two questions are open: why the sum was not taken up once the world was full, and how an exact ancestor came to lose a round while it rewired. The lines of descent would answer both.
+
+Limits: eight ancestors, six seeds each, 150,000 updates; three holding populations, so the planned comparison says little either way.
+
+Verdict: negative on the planned comparison; the prediction failed (3 of 30 hold the sum, against 5 to 20 predicted). Accepted by the maintainer on 2026-11-27. Stage 17 would start from three holding populations, from two ancestors, or from four with `s52` seed 91 on seed 106.
+
+The tools are in the lab folder `33-compose4` (`sample_rule.py` and `sample_rule.tsv` for the rule, `popconfirm.py` and `popconfirm.tsv` for the confirmation on 400 draws and the population's share, `errmodel.py` for the comparison of each field with the model).
+
 ## Candidate future experiments
 
 Ideas from the discussion with the maintainer on 2026-11-18, unordered; the order is decided later. Stage 9 took up the first; stages 11 and 12 reached the two-bit adder by another road (one judged output, graded pay, gate instructions).
